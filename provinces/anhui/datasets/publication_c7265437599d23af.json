@@ -1,0 +1,56 @@
+{
+  "id": "publication_c7265437599d23af",
+  "name": "辅助服务市场申报出清信息",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "spotGoods/FZFWSCSBCQXX",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择日期",
+          "选择日期"
+        ],
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "辅助服务市场",
+      "市场交易信息",
+      "辅助服务市场申报出清信息"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "scopes": [
+    {
+      "数据类型": "中标价格"
+    },
+    {
+      "数据类型": "机组中标台数"
+    }
+  ],
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "report_code": "FZFWSCSBCQXX",
+    "legacy_status": "period_report_collecting",
+    "scope_coverage": "observed_options_combinations_queued_not_all_verified",
+    "legacy_jobs": 572,
+    "legacy_saved": 1
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "period_report_collecting"
+    }
+  ]
+}

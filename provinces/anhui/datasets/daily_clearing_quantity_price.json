@@ -1,0 +1,44 @@
+{
+  "id": "daily_clearing_quantity_price",
+  "name": "日前实时各交易时段出清总电量及均价",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=rqssgyjysdcqzdljj",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场交易信息",
+      "现货市场申报出清信息",
+      "日前实时各交易时段出清总电量及均价"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "rqssgyjysdcqzdljj",
+    "value_layout": "time_series"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

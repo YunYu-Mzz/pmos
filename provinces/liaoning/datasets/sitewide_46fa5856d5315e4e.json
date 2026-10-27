@@ -1,0 +1,37 @@
+{
+  "id": "sitewide_46fa5856d5315e4e",
+  "name": "新能源总出力",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport001",
+    "frame": "/pdbln/report/PdblnReport001",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport001",
+    "component": "pdblnReport001",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "pending",
+    "options_api": "pdblnReportDic001"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "pending"
+    }
+  ]
+}

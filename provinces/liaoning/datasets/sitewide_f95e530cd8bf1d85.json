@@ -1,0 +1,37 @@
+{
+  "id": "sitewide_f95e530cd8bf1d85",
+  "name": "发电设备投产退役检修改造等计划执行情况",
+  "status": "candidate",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today",
+    "complete_only": true
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport087",
+    "frame": "/pdbln/report/PdblnReport087",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport087",
+    "component": "pdblnReport087",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{month}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "empty_sample"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "empty_sample"
+    }
+  ]
+}

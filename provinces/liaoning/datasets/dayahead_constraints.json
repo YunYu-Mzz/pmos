@@ -1,0 +1,36 @@
+{
+  "id": "dayahead_constraints",
+  "name": "日前市场各时段出清的断面约束及阻塞情况",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport050",
+    "frame": "/pdbln/report/PdblnReport050",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport050",
+    "component": "pdblnReport050",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/power_live.py API_SPECS",
+    "legacy_phase": "pending"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "pending"
+    }
+  ]
+}

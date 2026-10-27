@@ -1,0 +1,55 @@
+{
+  "id": "real_time_node_marginal_price",
+  "name": "实时节点边际电价（节点价格）",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=ssjdbjdj",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      },
+      {
+        "kind": "select",
+        "label": "数据类型",
+        "value": "节点价格"
+      },
+      {
+        "kind": "select",
+        "label": "节点名称",
+        "value": "华东.众兴/500kV.500kVII母线"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场交易信息",
+      "现货市场申报出清信息",
+      "实时节点边际电价"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "ssjdbjdj",
+    "value_layout": "time_series",
+    "note": "account-scoped selector"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

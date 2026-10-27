@@ -1,0 +1,35 @@
+{
+  "id": "tie_line_dayahead",
+  "name": "日前系统间联络线输电曲线预测",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport008",
+    "frame": "/pdbln/report/PdblnReport008",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport008",
+    "component": "pdblnReport008",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/power_live.py API_SPECS"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

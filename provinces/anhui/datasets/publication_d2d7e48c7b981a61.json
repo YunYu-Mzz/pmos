@@ -1,0 +1,49 @@
+{
+  "id": "publication_d2d7e48c7b981a61",
+  "name": "月度发电设备检修计划执行情况",
+  "status": "sampled",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=YDFDSBJXJHZXQK",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择月份",
+          "选择月份"
+        ],
+        "value": "{month}"
+      }
+    ],
+    "menu": [
+      "中长期市场",
+      "市场运行信息",
+      "发输变电设备检修计划执行情况（月）",
+      "月度发电设备检修计划执行情况"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "report_code": "YDFDSBJXJHZXQK",
+    "legacy_status": "period_report_collecting",
+    "scope_coverage": "single_scope",
+    "legacy_jobs": 10,
+    "legacy_saved": 4
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "period_report_collecting"
+    }
+  ]
+}

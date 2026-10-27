@@ -1,0 +1,55 @@
+{
+  "id": "queryGridActual96",
+  "name": "96点电网运行实际值",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoPub/exportActualTotalValue",
+    "body": {
+      "beginDate": "{date}",
+      "endDate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/dianwangyunxing96",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/dianwangyunxing96",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/infoPub/exportActualTotalValue"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "beginDate": "{date}",
+          "endDate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/infoPub/exportActualTotalValue",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/infoPub/queryActualTotalValue",
+    "evidence_sha256": "854b53e9a78b2432afcadef421582a7dbad90afe122bc5612cf74e50e836a472",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

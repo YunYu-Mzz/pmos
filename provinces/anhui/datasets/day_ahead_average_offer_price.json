@@ -1,0 +1,44 @@
+{
+  "id": "day_ahead_average_offer_price",
+  "name": "日前平均申报电价",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=rqpjbdj",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场交易信息",
+      "现货市场申报出清信息",
+      "日前平均申报电价"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "rqpjbdj",
+    "value_layout": "single_value"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "sitewide_bd7ccb40ebc935bd",
+  "name": "发输变电设备检修计划执行情况（日）",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport055",
+    "frame": "/pdbln/report/PdblnReport055",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport055",
+    "component": "pdblnReport055",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "admitted"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "admitted"
+    }
+  ]
+}

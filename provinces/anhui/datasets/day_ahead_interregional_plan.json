@@ -1,0 +1,43 @@
+{
+  "id": "day_ahead_interregional_plan",
+  "name": "日前各交易时段外来外送电交易计划",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=rqgtxysdswlwsdjyjh",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场预测信息",
+      "日前各交易时段外来外送电交易计划"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "rqgtxysdswlwsdjyjh",
+    "value_layout": "time_series"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

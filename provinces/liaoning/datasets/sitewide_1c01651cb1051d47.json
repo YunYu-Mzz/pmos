@@ -1,0 +1,38 @@
+{
+  "id": "sitewide_1c01651cb1051d47",
+  "name": "实时各时段出清电力及平均电价（市场出清结果总加）",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport013",
+    "frame": "/pdbln/report/PdblnReport013",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport013",
+    "component": "pdblnReport013",
+    "call": "initData",
+    "set": {
+      "queryParam.date": "{date}",
+      "queryParam.type": "市场出清结果总加"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "admitted",
+    "options_api": "pdblnReport013TypeList"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "admitted"
+    }
+  ]
+}

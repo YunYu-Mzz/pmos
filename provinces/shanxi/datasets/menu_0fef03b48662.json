@@ -1,0 +1,65 @@
+{
+  "id": "menu_0fef03b48662",
+  "name": "抽蓄电站水位",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/chouxudianzhanshuiwei",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/chouxudianzhanshuiwei",
+    "path": "/px-phbsx-retail-shop/infoGrid/cxdzsw",
+    "method": "POST",
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/infoGrid/cxdzsw"
+    },
+    "set": {
+      "queryConfig.pageInfo": {
+        "pageNum": 1,
+        "pageSize": 20,
+        "pageSizes": [
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ],
+        "total": 0
+      },
+      "date": "{date}"
+    },
+    "call": "handleCurrentChange",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "page_size": 20,
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "plain",
+    "component_source_sha256": "fb27dd4370fb22678bcb11ea12c8eb9344aff243847dcf396794b24f37dc98b5"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

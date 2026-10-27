@@ -1,0 +1,131 @@
+{
+  "id": "disclosure_38cb41a3fa114b61b826543b1ff98924",
+  "name": "可再生能源富余程度",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/dynamicTable/dynamicTableQueryData",
+    "method": "POST",
+    "prepare": [
+      {
+        "component": "chHeader",
+        "call": "setConfig",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "call": "getValues",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendDataToMain",
+        "payload": {
+          "viewName": "table2",
+          "viewId": "38cb41a3-fa11-4b61-b826-543b1ff98924",
+          "viewCode": "sn_xhpl_rqkzsfy_7_5",
+          "marketMain": "PHBSX",
+          "openWay": "1",
+          "pidTem": "1",
+          "uploadDepartment": "电力调度机构",
+          "uploadDepartmentId": "SCYYJG_SCYYJG_DDJG"
+        },
+        "unless": {
+          "component": "table2",
+          "match": {
+            "viewId": "38cb41a3-fa11-4b61-b826-543b1ff98924"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "table2",
+          "match": {
+            "viewId": "38cb41a3-fa11-4b61-b826-543b1ff98924"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendShowTmToMain",
+        "payload": true
+      },
+      {
+        "sleep": 0.5
+      }
+    ],
+    "component": "table2",
+    "match": {
+      "viewId": "38cb41a3-fa11-4b61-b826-543b1ff98924"
+    },
+    "set": {
+      "queryParam": {
+        "data": {
+          "dateTime": "{date}",
+          "dynamicFilter": {},
+          "infoCode": "sn_xhpl_rqkzsfy_7_5",
+          "marketId": "PHBSX",
+          "menuId": "38cb41a3-fa11-4b61-b826-543b1ff98924"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "total": 0
+        }
+      }
+    },
+    "call": "queryPage",
+    "pagination": {
+      "page": "queryParam.pageInfo.pageNum",
+      "records": "data.objectList.list",
+      "total": "data.objectList.total",
+      "last": "data.objectList.isLastPage",
+      "page_size": 20,
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json",
+    "data_field": "data.objectList"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "dynamic",
+    "component_source_sha256": "61d87dd81dcd16553e3b71728f45620b031f8121ceb27d0529af5a804b37bd81"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

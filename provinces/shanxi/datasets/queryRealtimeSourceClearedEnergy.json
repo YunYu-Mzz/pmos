@@ -1,0 +1,53 @@
+{
+  "id": "queryRealtimeSourceClearedEnergy",
+  "name": "实时各时段出清现货电量",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoPub/exportSsSpotPower",
+    "body": {
+      "infoDate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/ssgeshiduanxhdl",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/ssgeshiduanxhdl",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/infoPub/exportSsSpotPower"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "infoDate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/infoPub/exportSsSpotPower",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/infoPub/querySsSpotPower",
+    "evidence_sha256": "06c424ed16f357dd2593c4885383d44bbbb539118b897782bbe8bd7caf1b8c7a",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

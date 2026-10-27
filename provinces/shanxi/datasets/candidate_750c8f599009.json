@@ -1,0 +1,53 @@
+{
+  "id": "candidate_750c8f599009",
+  "name": "非市场机组总出力预测",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/fschjzzclycExport",
+    "body": {
+      "tdate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/feishichangjizuzongclyc",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/feishichangjizuzongclyc",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/fschjzzclycExport"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "tdate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/fschjzzclycExport",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/fschjzzclycQuery",
+    "evidence_sha256": "04de92f408b232136b2af874b8c7bf0fa66783da18c27ba3c88aaadb11c9b6a9",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

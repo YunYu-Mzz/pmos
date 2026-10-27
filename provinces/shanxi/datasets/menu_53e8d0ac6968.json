@@ -1,0 +1,62 @@
+{
+  "id": "menu_53e8d0ac6968",
+  "name": "用户实名验证情况新",
+  "status": "sampled",
+  "period": {
+    "kind": "snapshot"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/yonghushimingrenzheng",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/yonghushimingrenzheng",
+    "path": "/px-phbsx-retail-shop/reportForm/information/membersRealNameInfo",
+    "method": "POST",
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/reportForm/information/membersRealNameInfo"
+    },
+    "set": {
+      "queryConfig.pageInfo": {
+        "pageNum": 1,
+        "pageSize": 20,
+        "pageSizes": [
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ],
+        "total": 0
+      }
+    },
+    "call": "handleCurrentChange",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "page_size": 20,
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "realname",
+    "component_source_sha256": "816690c4b3f370a4cf5dc6bfecb20f64664e16d4e9eca25640967203f9f4aae8"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

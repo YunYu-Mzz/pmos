@@ -1,0 +1,55 @@
+{
+  "id": "querySectionConstraintsShadowPrice",
+  "name": "断面约束情况及影子价格",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoPub/exportShadowPrice",
+    "body": {
+      "strName": "龙小线+龙轩线",
+      "infoDate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/Selectdmyueshuyingziprice",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/Selectdmyueshuyingziprice",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/infoPub/exportShadowPrice"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "strName": "龙小线+龙轩线",
+          "infoDate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/infoPub/exportShadowPrice",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/infoPub/queryShadowPrice",
+    "evidence_sha256": "ea3ed0b49d9d61be214edd0b406fd1c3ee84d1452b276c86f8a332627fd64923",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

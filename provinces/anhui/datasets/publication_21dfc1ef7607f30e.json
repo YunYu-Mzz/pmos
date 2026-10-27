@@ -1,0 +1,47 @@
+{
+  "id": "publication_21dfc1ef7607f30e",
+  "name": "运行日主体调频费用",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "spotGoods/YXRZTTPFY",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择日期",
+          "选择日期"
+        ],
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "辅助服务市场",
+      "运行日主体调频费用"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "report_code": "YXRZTTPFY",
+    "legacy_status": "requires_adapter_review",
+    "scope_coverage": "single_scope",
+    "legacy_jobs": 286,
+    "legacy_saved": 0
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "requires_adapter_review"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "publication_ca56d970d3e3de1d",
+  "name": "月度日前统一结算点均价",
+  "status": "candidate",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=ydrqtjjsddjj",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择月份",
+          "选择月份"
+        ],
+        "value": "{month}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场结算信息",
+      "月度日前统一结算点均价"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "report_code": "ydrqtjjsddjj",
+    "legacy_status": "requires_adapter_review",
+    "scope_coverage": "single_scope",
+    "legacy_jobs": 10,
+    "legacy_saved": 0
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "requires_adapter_review"
+    }
+  ]
+}

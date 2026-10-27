@@ -1,0 +1,36 @@
+{
+  "id": "sitewide_2010f5bbae811586",
+  "name": "实际负荷",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport010",
+    "frame": "/pdbln/report/PdblnReport010",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport010",
+    "component": "pdblnReport010",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "admitted"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "admitted"
+    }
+  ]
+}

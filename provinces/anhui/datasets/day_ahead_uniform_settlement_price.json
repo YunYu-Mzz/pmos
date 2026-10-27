@@ -1,0 +1,55 @@
+{
+  "id": "day_ahead_uniform_settlement_price",
+  "name": "日前统一结算点电价及出清电量（电价）",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=rqtjjsddjcqdl",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      },
+      {
+        "kind": "select",
+        "label": "数据类型",
+        "value": "电价"
+      },
+      {
+        "kind": "select",
+        "label": "调度单元名称",
+        "value": "山西至简能源科技有限公司"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场交易信息",
+      "现货市场申报出清信息",
+      "日前统一结算点电价及出清电量"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "rqtjjsddjcqdl",
+    "value_layout": "time_series",
+    "note": "account-scoped selector"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

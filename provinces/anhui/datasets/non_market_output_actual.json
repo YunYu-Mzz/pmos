@@ -1,0 +1,43 @@
+{
+  "id": "non_market_output_actual",
+  "name": "非市场机组总出力",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=fscjzzcl",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场运行信息",
+      "非市场机组总出力"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "fscjzzcl",
+    "value_layout": "time_series"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

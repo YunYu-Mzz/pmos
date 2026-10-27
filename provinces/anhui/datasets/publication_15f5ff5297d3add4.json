@@ -1,0 +1,49 @@
+{
+  "id": "publication_15f5ff5297d3add4",
+  "name": "月度交易总体情况(绿电)",
+  "status": "candidate",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "REVIEW_FRAME",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择月份",
+          "选择月份"
+        ],
+        "value": "{month}"
+      }
+    ],
+    "menu": [
+      "中长期市场",
+      "市场交易信息",
+      "交易总体情况",
+      "月度交易总体情况(绿电)"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "legacy_status": "period_report_collecting",
+    "scope_coverage": "single_scope",
+    "legacy_jobs": 10,
+    "legacy_saved": 2,
+    "note": "report frame not identified in the observation; set request.frame"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "period_report_collecting"
+    }
+  ]
+}

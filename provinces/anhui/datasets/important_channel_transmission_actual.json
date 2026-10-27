@@ -1,0 +1,49 @@
+{
+  "id": "important_channel_transmission_actual",
+  "name": "重要通道实际输电情况",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=zytdsjsdqk",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      },
+      {
+        "kind": "select",
+        "label": "重要通道名称",
+        "value": "1000kV湖安Ⅰ线+1000kV湖安Ⅱ线"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场运行信息",
+      "重要通道实际输电情况"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "zytdsjsdqk",
+    "value_layout": "time_series",
+    "note": "account-scoped selector"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "id": "publication_2a213d7c51bd461a",
+  "name": "市场运营 → 其他信息 → 现货市场第三方校验报告",
+  "status": "sampled",
+  "period": {
+    "kind": "snapshot"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "/pxf-phdah-settlement-oinfpubgrid/#/pxf-phdah-settlement-oinfpubgrid/spotGoods/spotGoods?infoCode=",
+    "menu": [
+      "市场运营",
+      "其他信息",
+      "现货市场第三方校验报告"
+    ],
+    "action": "list",
+    "pagination": {
+      "page": "page",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.last",
+      "page_size": 10,
+      "max_pages": 100
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "documents": {
+    "fields": {
+      "id": "id",
+      "title": "title",
+      "published": "published"
+    },
+    "published_format": "date",
+    "record_only": true,
+    "stop_at_known": true,
+    "period": [
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*(3[01]|[12]\\d|0?[1-9])日\\s*[-—至~～]\\s*(?:(?:1[0-2]|0?[1-9])月\\s*)?(?:3[01]|[12]\\d|0?[1-9])日[^，,]*周",
+        "kind": "week_of_day"
+      },
+      {
+        "title_regex": "(20\\d{2})\\s*年?\\s*第\\s*(\\d{1,2})\\s*周",
+        "kind": "week"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*第?([一二三四1-4])季度",
+        "kind": "quarter"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*1日\\s*[-—至~～]\\s*(?:2[89]|3[01])日",
+        "kind": "month"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*(3[01]|[12]\\d|0?[1-9])日",
+        "kind": "day"
+      },
+      {
+        "title_regex": "(20\\d{2})[.\\-/](1[0-2]|0?[1-9])[.\\-/](3[01]|[12]\\d|0?[1-9])",
+        "kind": "day"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月",
+        "kind": "month"
+      },
+      {
+        "title_regex": "(20\\d{2})年度?",
+        "kind": "year"
+      }
+    ],
+    "download": {
+      "transport": "ui",
+      "frame": "/pxf-phdah-settlement-oinfpubgrid/#/pxf-phdah-settlement-oinfpubgrid/spotGoods/spotGoods?infoCode=",
+      "menu": [
+        "市场运营",
+        "其他信息",
+        "现货市场第三方校验报告"
+      ],
+      "action": "record",
+      "record": "{record}",
+      "skip_buttons": [
+        "预览"
+      ]
+    },
+    "download_response": {
+      "kind": "document"
+    }
+  },
+  "source": {
+    "legacy": "anhui/state/server_publication_queue_publication_2a213d7c51bd461a.json",
+    "legacy_status": "publication_queue",
+    "legacy_jobs": 2,
+    "legacy_saved_or_captured": 1,
+    "legacy_reported_none": 0
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "publication_queue"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "sitewide_7d2f4e6e4598aba8",
+  "name": "日前出清各类电源电量及台数（市场燃煤）",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport003",
+    "frame": "/pdbln/report/PdblnReport003",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport003",
+    "component": "pdblnReport003",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{date}",
+      "queryParam.name": "市场燃煤"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "admitted",
+    "options_api": "pdblnReportDic003"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "admitted"
+    }
+  ]
+}

@@ -1,0 +1,529 @@
+{
+  "id": "menu_8dd88ee4e39e",
+  "name": "日前输电断面约束及阻塞情况",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/riqiandmyueshuzeqk",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/riqiandmyueshuzeqk",
+    "path": "/px-phbsx-retail-shop/infoPub/queryRqRestrainBlock",
+    "method": "POST",
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/infoPub/queryRqRestrainBlock"
+    },
+    "set": {
+      "date": "{date}",
+      "selectOption": [
+        {
+          "strName": "湖关三回线"
+        },
+        {
+          "strName": "河平双"
+        },
+        {
+          "strName": "雁湖双回线"
+        },
+        {
+          "strName": "平城主变"
+        },
+        {
+          "strName": "城神线"
+        },
+        {
+          "strName": "霍寺双"
+        },
+        {
+          "strName": "荣原双"
+        },
+        {
+          "strName": "龙冶线"
+        },
+        {
+          "strName": "得崖双"
+        },
+        {
+          "strName": "忻州主变"
+        },
+        {
+          "strName": "雁岳双"
+        },
+        {
+          "strName": "阳泉主变"
+        },
+        {
+          "strName": "洪善主变"
+        },
+        {
+          "strName": "瑞天双"
+        },
+        {
+          "strName": "忻侯双回线"
+        },
+        {
+          "strName": "盐三II线+平银线"
+        },
+        {
+          "strName": "柳芮双"
+        },
+        {
+          "strName": "阳苏双＋阳红I线"
+        },
+        {
+          "strName": "滨杨双回线"
+        },
+        {
+          "strName": "侯村主变"
+        },
+        {
+          "strName": "霍州主变"
+        },
+        {
+          "strName": "云南线＋南古I线"
+        },
+        {
+          "strName": "运柳双"
+        },
+        {
+          "strName": "刘古+壶古线"
+        },
+        {
+          "strName": "瑞北双线"
+        },
+        {
+          "strName": "龙小线"
+        },
+        {
+          "strName": "渡寨双"
+        },
+        {
+          "strName": "苏紫双"
+        },
+        {
+          "strName": "稷龙双"
+        },
+        {
+          "strName": "北岳＃3+#4主变"
+        },
+        {
+          "strName": "阳苏双"
+        },
+        {
+          "strName": "稷闻双"
+        },
+        {
+          "strName": "侯新双回线"
+        },
+        {
+          "strName": "袁岚线＋云岚双回线"
+        },
+        {
+          "strName": "朔云线"
+        },
+        {
+          "strName": "贤兴线＋贤临线"
+        },
+        {
+          "strName": "卧湖三回"
+        },
+        {
+          "strName": "右翠双"
+        },
+        {
+          "strName": "湖寨双"
+        },
+        {
+          "strName": "龙城主变"
+        },
+        {
+          "strName": "运城主变"
+        },
+        {
+          "strName": "泉连双回线"
+        },
+        {
+          "strName": "城丹双＋城化线"
+        },
+        {
+          "strName": "湖关三+明海湖主变"
+        },
+        {
+          "strName": "寨贤双"
+        },
+        {
+          "strName": "向方双"
+        },
+        {
+          "strName": "文宜线＋夏文线"
+        },
+        {
+          "strName": "盐三II线"
+        },
+        {
+          "strName": "官阳双"
+        },
+        {
+          "strName": "龙小线+龙轩线"
+        },
+        {
+          "strName": "云古II线＋邢古线"
+        },
+        {
+          "strName": "丁崖主变"
+        },
+        {
+          "strName": "龙康线"
+        },
+        {
+          "strName": "雁同主变"
+        },
+        {
+          "strName": "高崖双回线"
+        },
+        {
+          "strName": "丹北双"
+        },
+        {
+          "strName": "吕胜双回线"
+        },
+        {
+          "strName": "榆久双回线"
+        },
+        {
+          "strName": "龙康线＋龙小线"
+        },
+        {
+          "strName": "北岳＃1主变"
+        },
+        {
+          "strName": "临汾主变"
+        },
+        {
+          "strName": "雁湖双+雁岳双"
+        },
+        {
+          "strName": "晋东双回线"
+        },
+        {
+          "strName": "崛南双"
+        },
+        {
+          "strName": "瑞白双"
+        },
+        {
+          "strName": "龙长线"
+        },
+        {
+          "strName": "北得双"
+        },
+        {
+          "strName": "苗忻双"
+        },
+        {
+          "strName": "小东双"
+        },
+        {
+          "strName": "稷梁双"
+        },
+        {
+          "strName": "朔州主变"
+        },
+        {
+          "strName": "明海湖＃3、4主变"
+        },
+        {
+          "strName": "介湖双"
+        },
+        {
+          "strName": "铺吉双"
+        },
+        {
+          "strName": "长久三回线"
+        },
+        {
+          "strName": "稷雄双"
+        }
+      ],
+      "selectValue": "{scope[strName]}",
+      "queryConfig": {
+        "data": {
+          "infoDate": "{date}",
+          "strName": "{scope[strName]}"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "pageSizes": [
+            20,
+            50,
+            100,
+            200,
+            500,
+            1000
+          ],
+          "total": 0
+        }
+      }
+    },
+    "call": "queryPage",
+    "pagination": {
+      "page": "queryConfig.pageInfo.pageNum",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "page_size": 20,
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "scopes": [
+    {
+      "strName": "湖关三回线"
+    },
+    {
+      "strName": "河平双"
+    },
+    {
+      "strName": "雁湖双回线"
+    },
+    {
+      "strName": "平城主变"
+    },
+    {
+      "strName": "城神线"
+    },
+    {
+      "strName": "霍寺双"
+    },
+    {
+      "strName": "荣原双"
+    },
+    {
+      "strName": "龙冶线"
+    },
+    {
+      "strName": "得崖双"
+    },
+    {
+      "strName": "忻州主变"
+    },
+    {
+      "strName": "雁岳双"
+    },
+    {
+      "strName": "阳泉主变"
+    },
+    {
+      "strName": "洪善主变"
+    },
+    {
+      "strName": "瑞天双"
+    },
+    {
+      "strName": "忻侯双回线"
+    },
+    {
+      "strName": "盐三II线+平银线"
+    },
+    {
+      "strName": "柳芮双"
+    },
+    {
+      "strName": "阳苏双＋阳红I线"
+    },
+    {
+      "strName": "滨杨双回线"
+    },
+    {
+      "strName": "侯村主变"
+    },
+    {
+      "strName": "霍州主变"
+    },
+    {
+      "strName": "云南线＋南古I线"
+    },
+    {
+      "strName": "运柳双"
+    },
+    {
+      "strName": "刘古+壶古线"
+    },
+    {
+      "strName": "瑞北双线"
+    },
+    {
+      "strName": "龙小线"
+    },
+    {
+      "strName": "渡寨双"
+    },
+    {
+      "strName": "苏紫双"
+    },
+    {
+      "strName": "稷龙双"
+    },
+    {
+      "strName": "北岳＃3+#4主变"
+    },
+    {
+      "strName": "阳苏双"
+    },
+    {
+      "strName": "稷闻双"
+    },
+    {
+      "strName": "侯新双回线"
+    },
+    {
+      "strName": "袁岚线＋云岚双回线"
+    },
+    {
+      "strName": "朔云线"
+    },
+    {
+      "strName": "贤兴线＋贤临线"
+    },
+    {
+      "strName": "卧湖三回"
+    },
+    {
+      "strName": "右翠双"
+    },
+    {
+      "strName": "湖寨双"
+    },
+    {
+      "strName": "龙城主变"
+    },
+    {
+      "strName": "运城主变"
+    },
+    {
+      "strName": "泉连双回线"
+    },
+    {
+      "strName": "城丹双＋城化线"
+    },
+    {
+      "strName": "湖关三+明海湖主变"
+    },
+    {
+      "strName": "寨贤双"
+    },
+    {
+      "strName": "向方双"
+    },
+    {
+      "strName": "文宜线＋夏文线"
+    },
+    {
+      "strName": "盐三II线"
+    },
+    {
+      "strName": "官阳双"
+    },
+    {
+      "strName": "龙小线+龙轩线"
+    },
+    {
+      "strName": "云古II线＋邢古线"
+    },
+    {
+      "strName": "丁崖主变"
+    },
+    {
+      "strName": "龙康线"
+    },
+    {
+      "strName": "雁同主变"
+    },
+    {
+      "strName": "高崖双回线"
+    },
+    {
+      "strName": "丹北双"
+    },
+    {
+      "strName": "吕胜双回线"
+    },
+    {
+      "strName": "榆久双回线"
+    },
+    {
+      "strName": "龙康线＋龙小线"
+    },
+    {
+      "strName": "北岳＃1主变"
+    },
+    {
+      "strName": "临汾主变"
+    },
+    {
+      "strName": "雁湖双+雁岳双"
+    },
+    {
+      "strName": "晋东双回线"
+    },
+    {
+      "strName": "崛南双"
+    },
+    {
+      "strName": "瑞白双"
+    },
+    {
+      "strName": "龙长线"
+    },
+    {
+      "strName": "北得双"
+    },
+    {
+      "strName": "苗忻双"
+    },
+    {
+      "strName": "小东双"
+    },
+    {
+      "strName": "稷梁双"
+    },
+    {
+      "strName": "朔州主变"
+    },
+    {
+      "strName": "明海湖＃3、4主变"
+    },
+    {
+      "strName": "介湖双"
+    },
+    {
+      "strName": "铺吉双"
+    },
+    {
+      "strName": "长久三回线"
+    },
+    {
+      "strName": "稷雄双"
+    }
+  ],
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "section",
+    "component_source_sha256": "174ea30d38a4ddf6a17b1b0e9cb1b7092eac0ee95174c1a1cf6bbf26b4a34412"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

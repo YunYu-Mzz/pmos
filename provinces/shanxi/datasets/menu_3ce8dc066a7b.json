@@ -1,0 +1,65 @@
+{
+  "id": "menu_3ce8dc066a7b",
+  "name": "日前备用总量",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/riqianbeiyongzl",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/riqianbeiyongzl",
+    "path": "/px-phbsx-retail-shop/infoPub/queryRqTotalReserves",
+    "method": "POST",
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/infoPub/queryRqTotalReserves"
+    },
+    "set": {
+      "queryConfig.pageInfo": {
+        "pageNum": 1,
+        "pageSize": 20,
+        "pageSizes": [
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ],
+        "total": 0
+      },
+      "date": "{date}"
+    },
+    "call": "handleCurrentChange",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "page_size": 20,
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "plain",
+    "component_source_sha256": "8db52f9b1f72320640874195ad8f068f162f4aed2ac112096ea4d3d0dc758f03"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

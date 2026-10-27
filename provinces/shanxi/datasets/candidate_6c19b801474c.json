@@ -1,0 +1,55 @@
+{
+  "id": "candidate_6c19b801474c",
+  "name": "节点分配因子",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/jdfpyzExport",
+    "body": {
+      "tdName": "山西.匡村站/220kV.西母线",
+      "tdate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/jiedianfenpeiyinzi",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/jiedianfenpeiyinzi",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/jdfpyzExport"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "tdName": "山西.匡村站/220kV.西母线",
+          "tdate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/jdfpyzExport",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/jdfpyzQuery",
+    "evidence_sha256": "7a98a59875af0e9281d77057f0f4ee698121331e7e382f7ebb0a3540b86d427d",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "id": "disclosure_renewable_curve",
+  "name": "省内可再生能源发电能力预测",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/tableCurve/queryBranchDispatchCurveData",
+    "method": "POST",
+    "prepare": [
+      {
+        "component": "chHeader",
+        "call": "setConfig",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "call": "getValues",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendDataToMain",
+        "payload": {
+          "viewName": "nintySixPoints",
+          "viewId": "a06f11a6-ba0f-43c9-b41b-3aa4e1a3099f",
+          "viewCode": "sn_xhpl_dqxnyfdnl_7_3",
+          "marketMain": "PHBSX",
+          "openWay": "1",
+          "pidTem": "1",
+          "uploadDepartment": "电力调度机构",
+          "uploadDepartmentId": "SCYYJG_SCYYJG_DDJG"
+        },
+        "unless": {
+          "component": "nintySixPoints",
+          "match": {
+            "viewId": "a06f11a6-ba0f-43c9-b41b-3aa4e1a3099f"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "nintySixPoints",
+          "match": {
+            "viewId": "a06f11a6-ba0f-43c9-b41b-3aa4e1a3099f"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendShowTmToMain",
+        "payload": true
+      },
+      {
+        "sleep": 0.5
+      }
+    ],
+    "component": "nintySixPoints",
+    "match": {
+      "viewId": "a06f11a6-ba0f-43c9-b41b-3aa4e1a3099f"
+    },
+    "set": {
+      "date": "{date}",
+      "queryParam.dateTime": "{date}"
+    },
+    "call": "queryData"
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "curve",
+    "component_source_sha256": "7662702401b614db59bb6afd4f15d3735234f1fc061f9b210c42ba3796a6909b"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

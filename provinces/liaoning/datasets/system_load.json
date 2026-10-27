@@ -1,0 +1,37 @@
+{
+  "id": "system_load",
+  "name": "系统负荷预测（日）",
+  "status": "enabled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport022",
+    "frame": "/pdbln/report/PdblnReport022",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport022",
+    "component": "pdblnReport022",
+    "call": "query",
+    "set": {
+      "queryParam.date": "{date}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "keepalive": true,
+  "source": {
+    "legacy": "browser_collector.js REPORTS",
+    "menu": "信息披露/综合查询/供需与约束/预测信息/系统负荷预测（日）"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

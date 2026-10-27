@@ -1,0 +1,171 @@
+{
+  "id": "pub_fzfwdyyz",
+  "name": "辅助服务调用原则",
+  "status": "sampled",
+  "period": {
+    "kind": "snapshot"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/ipDisclosureApply/getData",
+    "method": "POST",
+    "prepare": [
+      {
+        "script": "open_column_menu",
+        "args": {
+          "component": "attchViewQueryJY",
+          "source": "fzfwdyyz",
+          "guid": "421df82a-7410-44af-9383-ab79546a0846"
+        },
+        "unless": {
+          "component": "attchViewQueryJY",
+          "match": {
+            "infoCode": "fzfwdyyz",
+            "viewId": "421df82a-7410-44af-9383-ab79546a0846",
+            "__pmosReady": "fzfwdyyz"
+          }
+        }
+      }
+    ],
+    "component": "attchViewQueryJY",
+    "match": {
+      "infoCode": "fzfwdyyz",
+      "viewId": "421df82a-7410-44af-9383-ab79546a0846"
+    },
+    "call": "queryData",
+    "set": {
+      "queryParam.data.menuId": "421df82a-7410-44af-9383-ab79546a0846",
+      "tabFlag": false,
+      "resultValue": [],
+      "total": 0
+    },
+    "pagination": {
+      "page": "queryParam.pageInfo.pageNum",
+      "size": "queryParam.pageInfo.pageSize",
+      "page_size": 20,
+      "first_page": 1,
+      "records": "data.list",
+      "total": "data.total",
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "documents": {
+    "fields": {
+      "id": "guid",
+      "title": "title",
+      "published": "operateDate"
+    },
+    "published_format": "epoch_ms",
+    "expect": {
+      "marketId": "PDBLN"
+    },
+    "attachments": {
+      "path": "attachment",
+      "json_string": true,
+      "id": "id",
+      "name": "name"
+    },
+    "period": [
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*(3[01]|[12]\\d|0?[1-9])日\\s*[-—至~～]\\s*(?:(?:1[0-2]|0?[1-9])月\\s*)?(?:3[01]|[12]\\d|0?[1-9])日[^，,]*周",
+        "kind": "week_of_day"
+      },
+      {
+        "title_regex": "(20\\d{2})\\s*年?\\s*第\\s*(\\d{1,2})\\s*周",
+        "kind": "week"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*第?([一二三四1-4])季度",
+        "kind": "quarter"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*1日\\s*[-—至~～]\\s*(?:2[89]|3[01])日",
+        "kind": "month"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*(3[01]|[12]\\d|0?[1-9])日",
+        "kind": "day"
+      },
+      {
+        "title_regex": "(20\\d{2})[.\\-/](1[0-2]|0?[1-9])[.\\-/](3[01]|[12]\\d|0?[1-9])",
+        "kind": "day"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月",
+        "kind": "month"
+      },
+      {
+        "fields": {
+          "year": "fyear",
+          "month": "fmonth",
+          "day": "fday"
+        }
+      },
+      {
+        "title_regex": "(20\\d{2})年度?",
+        "kind": "year"
+      }
+    ],
+    "stop_at_known": true,
+    "download": {
+      "transport": "component",
+      "frame": "/pxf-settlement-outnetpub/",
+      "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+      "prepare": [
+        {
+          "script": "open_column_menu",
+          "args": {
+            "component": "attchViewQueryJY",
+            "source": "fzfwdyyz",
+            "guid": "421df82a-7410-44af-9383-ab79546a0846"
+          },
+          "unless": {
+            "component": "attchViewQueryJY",
+            "match": {
+              "infoCode": "fzfwdyyz",
+              "viewId": "421df82a-7410-44af-9383-ab79546a0846",
+              "__pmosReady": "fzfwdyyz"
+            }
+          }
+        }
+      ],
+      "component": "attchViewQueryJY",
+      "match": {
+        "infoCode": "fzfwdyyz",
+        "viewId": "421df82a-7410-44af-9383-ab79546a0846"
+      },
+      "call": "fileDownload",
+      "args": [
+        "{row}"
+      ],
+      "path": "/px-settlement-infpubmeex/fileService/download",
+      "method": "GET"
+    },
+    "download_response": {
+      "kind": "document"
+    }
+  },
+  "source": {
+    "legacy": "liaoning/state/local_adaptation_20261020/adapters",
+    "legacy_status": "first_list_page_verified_server_deployment_pending",
+    "legacy_dataset": "sitewide_a5f004c69bb52a4e",
+    "menu_guid": "421df82a-7410-44af-9383-ab79546a0846",
+    "info_code": "fzfwdyyz",
+    "view": "attchViewQueryJY",
+    "listed_rows": 2,
+    "listed_total": 2,
+    "listed_files": 2
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:13+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "first_list_page_verified_server_deployment_pending"
+    }
+  ]
+}

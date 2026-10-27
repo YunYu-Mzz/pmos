@@ -1,0 +1,131 @@
+{
+  "id": "disclosure_c9e82547327b4959a81a5a923d869ec2",
+  "name": "省内电力平衡裕度",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/dynamicTable/dynamicTableQueryData",
+    "method": "POST",
+    "prepare": [
+      {
+        "component": "chHeader",
+        "call": "setConfig",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "call": "getValues",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendDataToMain",
+        "payload": {
+          "viewName": "table2",
+          "viewId": "c9e82547-327b-4959-a81a-5a923d869ec2",
+          "viewCode": "sn_xhpl_dlphyd_7_4",
+          "marketMain": "PHBSX",
+          "openWay": "1",
+          "pidTem": "1",
+          "uploadDepartment": "电力调度机构",
+          "uploadDepartmentId": "SCYYJG_SCYYJG_DDJG"
+        },
+        "unless": {
+          "component": "table2",
+          "match": {
+            "viewId": "c9e82547-327b-4959-a81a-5a923d869ec2"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "table2",
+          "match": {
+            "viewId": "c9e82547-327b-4959-a81a-5a923d869ec2"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendShowTmToMain",
+        "payload": true
+      },
+      {
+        "sleep": 0.5
+      }
+    ],
+    "component": "table2",
+    "match": {
+      "viewId": "c9e82547-327b-4959-a81a-5a923d869ec2"
+    },
+    "set": {
+      "queryParam": {
+        "data": {
+          "dateTime": "{date}",
+          "dynamicFilter": {},
+          "infoCode": "sn_xhpl_dlphyd_7_4",
+          "marketId": "PHBSX",
+          "menuId": "c9e82547-327b-4959-a81a-5a923d869ec2"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "total": 0
+        }
+      }
+    },
+    "call": "queryPage",
+    "pagination": {
+      "page": "queryParam.pageInfo.pageNum",
+      "records": "data.objectList.list",
+      "total": "data.objectList.total",
+      "last": "data.objectList.isLastPage",
+      "page_size": 20,
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json",
+    "data_field": "data.objectList"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "dynamic",
+    "component_source_sha256": "61d87dd81dcd16553e3b71728f45620b031f8121ceb27d0529af5a804b37bd81"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

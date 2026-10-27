@@ -1,0 +1,231 @@
+{
+  "id": "pub_jyjg_wgxwtb",
+  "name": "市场运营／合规运作／违规行为通报及市场干预情况",
+  "status": "candidate",
+  "period": {
+    "kind": "snapshot"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/ipDisclosureApply/getData",
+    "method": "POST",
+    "prepare": [
+      {
+        "component": "chHeader",
+        "call": "setConfig",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "call": "getValues",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendDataToMain",
+        "payload": {
+          "viewName": "operationOrganizationQuery",
+          "viewId": "b19babfc-3f59-4885-ac48-b8c731926e12",
+          "viewCode": "jyjg_wgxwtb",
+          "marketMain": "PHBSX",
+          "openWay": "1",
+          "pidTem": "1",
+          "uploadDepartment": "电力交易机构",
+          "uploadDepartmentId": "SCYYJG_SCYYJG_JYJG"
+        },
+        "unless": {
+          "component": "operationOrganizationQuery",
+          "match": {
+            "viewId": "b19babfc-3f59-4885-ac48-b8c731926e12"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "operationOrganizationQuery",
+          "match": {
+            "viewId": "b19babfc-3f59-4885-ac48-b8c731926e12"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendShowTmToMain",
+        "payload": true
+      },
+      {
+        "sleep": 0.5
+      }
+    ],
+    "component": "operationOrganizationQuery",
+    "match": {
+      "viewId": "b19babfc-3f59-4885-ac48-b8c731926e12"
+    },
+    "call": "queryData",
+    "set": {
+      "queryParam": {
+        "data": {
+          "operateTimeArr": [
+            "2026-01-01",
+            "{date}"
+          ],
+          "startDate": "2026-01-01",
+          "endDate": "{date}",
+          "customInfoName": "",
+          "sourceName": "",
+          "marketId": "PHBSX",
+          "menuId": "b19babfc-3f59-4885-ac48-b8c731926e12"
+        },
+        "pageInfo": {
+          "pageSizes1": [
+            "20",
+            "50",
+            "100",
+            "200",
+            "500",
+            "1000"
+          ],
+          "pageSizes": [
+            20,
+            50,
+            100,
+            200,
+            500,
+            1000
+          ],
+          "pageSize": 20,
+          "pageNum": 1
+        }
+      },
+      "tabFlag": false,
+      "resultValue": [],
+      "total": 0
+    },
+    "pagination": {
+      "page": "queryParam.pageInfo.pageNum",
+      "size": "queryParam.pageInfo.pageSize",
+      "page_size": 20,
+      "first_page": 1,
+      "records": "data.list",
+      "total": "data.total",
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "documents": {
+    "fields": {
+      "id": "guid",
+      "title": "title",
+      "published": "operateDate"
+    },
+    "published_format": "epoch_ms",
+    "expect": {
+      "marketId": "PHBSX"
+    },
+    "attachments": {
+      "path": "attachment",
+      "json_string": true,
+      "id": "id",
+      "name": "name"
+    },
+    "period": [
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*(3[01]|[12]\\d|0?[1-9])日\\s*[-—至~～]\\s*(?:(?:1[0-2]|0?[1-9])月\\s*)?(?:3[01]|[12]\\d|0?[1-9])日[^，,]*周",
+        "kind": "week_of_day"
+      },
+      {
+        "title_regex": "(20\\d{2})\\s*年?\\s*第\\s*(\\d{1,2})\\s*周",
+        "kind": "week"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*第?([一二三四1-4])季度",
+        "kind": "quarter"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*1日\\s*[-—至~～]\\s*(?:2[89]|3[01])日",
+        "kind": "month"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月\\s*(3[01]|[12]\\d|0?[1-9])日",
+        "kind": "day"
+      },
+      {
+        "title_regex": "(20\\d{2})[.\\-/](1[0-2]|0?[1-9])[.\\-/](3[01]|[12]\\d|0?[1-9])",
+        "kind": "day"
+      },
+      {
+        "title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月",
+        "kind": "month"
+      },
+      {
+        "fields": {
+          "year": "fyear",
+          "month": "fmonth",
+          "day": "fday"
+        }
+      },
+      {
+        "title_regex": "(20\\d{2})年度?",
+        "kind": "year"
+      }
+    ],
+    "stop_at_known": true,
+    "download": {
+      "transport": "native",
+      "frame": "/pxf-settlement-outnetpub/",
+      "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+      "module": "63a1",
+      "export": "a",
+      "args": [
+        "{attachment[id]}",
+        null
+      ],
+      "path": "/px-settlement-infpubmeex/fileService/download",
+      "method": "GET"
+    },
+    "download_response": {
+      "kind": "document"
+    }
+  },
+  "source": {
+    "legacy": "shanxi/publication_adapter_catalog.json",
+    "legacy_status": "native_metadata_query_verified_not_live_queue",
+    "menu_guid": "b19babfc-3f59-4885-ac48-b8c731926e12",
+    "info_code": "jyjg_wgxwtb",
+    "listed_rows": 0,
+    "listed_files": 0,
+    "component_source_sha256": "0b2955bf40b33f7905536851f99f2fec22c90690a089e41d70a69e6c4aaec25c",
+    "note": "date filter is the publication date (from legacy startDate to today); file download calls the page's own helper (webpack module 63a1.a)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_metadata_query_verified_not_live_queue"
+    }
+  ]
+}

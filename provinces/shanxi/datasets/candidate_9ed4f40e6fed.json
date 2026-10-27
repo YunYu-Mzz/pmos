@@ -1,0 +1,55 @@
+{
+  "id": "candidate_9ed4f40e6fed",
+  "name": "机组状态",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/jzztExport",
+    "body": {
+      "tdName": "220kV思安光伏电站",
+      "tdate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/jizuzhuangtai",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/jizuzhuangtai",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/jzztExport"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "tdName": "220kV思安光伏电站",
+          "tdate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/jzztExport",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/jzztQuery",
+    "evidence_sha256": "39d46f8dfece4aa3f685cc6120ee6979466a567035c53188d276f0df300cb9cd",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

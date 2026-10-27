@@ -1,0 +1,67 @@
+{
+  "id": "queryRealtimeNodeMarginalPrice",
+  "name": "实时节点边际电价",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-other-outer/#/pxf-phbsx-other-outer/dayTime",
+    "open_url": "/pxf-phbsx-other-outer/#/pxf-phbsx-other-outer/dayTime",
+    "path": "/px-sy-retailsettlement-sx/resource/timeNodePrice",
+    "method": "POST",
+    "component": "/pxf-phbsx-other-outer/dayTime",
+    "set": {
+      "queryParam": {
+        "data": {
+          "nodeName": "",
+          "atDate": "{date}"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "pageSizes": [
+            20,
+            50,
+            100,
+            200,
+            500,
+            1000
+          ],
+          "total": 0
+        }
+      }
+    },
+    "call": "handleCurrentChange",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "page_size": 20,
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "node",
+    "component_source_sha256": "15e617bee62c2e421c3bd1b09b4243da04bfb4d341e225d70481a70bf1a345d8"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

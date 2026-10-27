@@ -1,0 +1,48 @@
+{
+  "id": "publication_a354e18e4e271ea9",
+  "name": "绿电交易申报及成交情况",
+  "status": "candidate",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "REVIEW_FRAME",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择月份",
+          "选择月份"
+        ],
+        "value": "{month}"
+      }
+    ],
+    "menu": [
+      "中长期市场",
+      "市场交易信息",
+      "绿电交易申报及成交情况"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "legacy_status": "period_report_collecting",
+    "scope_coverage": "single_scope",
+    "legacy_jobs": 10,
+    "legacy_saved": 3,
+    "note": "report frame not identified in the observation; set request.frame"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "period_report_collecting"
+    }
+  ]
+}

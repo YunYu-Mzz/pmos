@@ -1,0 +1,53 @@
+{
+  "id": "candidate_4b47a185032c",
+  "name": "发电总出力预测",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/fdzclycExport",
+    "body": {
+      "tdate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/fadianzongchuliyuce",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/fadianzongchuliyuce",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/fdzclycExport"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "tdate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/fdzclycExport",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/fdzclycQuery",
+    "evidence_sha256": "276f104a49cf54efabd0759a44f3977eb0789d8fbad0d39660808377eb483c59",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

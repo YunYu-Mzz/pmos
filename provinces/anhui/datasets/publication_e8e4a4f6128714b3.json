@@ -1,0 +1,54 @@
+{
+  "id": "publication_e8e4a4f6128714b3",
+  "name": "发电企业最大发电能力",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=FDQYZDFDNL",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择日期",
+          "选择日期"
+        ],
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "中长期市场",
+      "市场预测信息",
+      "发电企业最大发电能力"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "scopes": [
+    {
+      "时间范围": "26年及26年以后"
+    }
+  ],
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "report_code": "FDQYZDFDNL",
+    "legacy_status": "requires_adapter_review",
+    "scope_coverage": "observed_2026_time_range_only",
+    "legacy_jobs": 286,
+    "legacy_saved": 0,
+    "note": "secondary date/time selector needs review: 时间范围"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "requires_adapter_review"
+    }
+  ]
+}

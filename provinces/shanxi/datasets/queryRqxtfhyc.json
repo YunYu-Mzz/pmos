@@ -1,0 +1,52 @@
+{
+  "id": "queryRqxtfhyc",
+  "name": "日前系统负荷预测",
+  "status": "enabled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoGrid/rqtdxtfhycExcel",
+    "body": {
+      "date": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/riqiantongtiaofuhe",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/riqiantongtiaofuhe",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/infoGrid/rqtdxtfhycExcel"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "date": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/infoGrid/rqtdxtfhycExcel",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "keepalive": true,
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_tencent_current_process_active",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once; bootstrap inferred: this page's source is not cached, the same app's report pages share exportData"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_tencent_current_process_active"
+    }
+  ]
+}

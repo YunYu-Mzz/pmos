@@ -1,0 +1,55 @@
+{
+  "id": "candidate_c7334fde6d75",
+  "name": "省间现货日内出清",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/sjxxrncqExport",
+    "body": {
+      "endDate": "{date}",
+      "startDate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/shengjianxianhuorineichuqing",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shengjianxianhuorineichuqing",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrncqExport"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "endDate": "{date}",
+          "startDate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/sjxxrncqExport",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/sjxxrncqQuery",
+    "evidence_sha256": "be68ed871bed417281de7281eb0cbea1a1a2f79216e6c3e23b0fbfca99b48451",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

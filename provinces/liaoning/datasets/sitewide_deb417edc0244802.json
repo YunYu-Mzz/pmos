@@ -1,0 +1,37 @@
+{
+  "id": "sitewide_deb417edc0244802",
+  "name": "省内关键输电断面可用容量（年）",
+  "status": "candidate",
+  "period": {
+    "kind": "year",
+    "start": "2026",
+    "end": "today",
+    "complete_only": true
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport064",
+    "frame": "/pdbln/report/PdblnReport064",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport064",
+    "component": "pdblnReport064",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{year}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "empty_sample"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "empty_sample"
+    }
+  ]
+}

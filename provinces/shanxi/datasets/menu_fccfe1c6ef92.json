@@ -1,0 +1,41 @@
+{
+  "id": "menu_fccfe1c6ef92",
+  "name": "市场力分析指标",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shichangfenxizhibiao",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shichangfenxizhibiao",
+    "path": "/px-phbsx-retail-shop/infoGrid/sclfxzb",
+    "method": "POST",
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/infoGrid/sclfxzb"
+    },
+    "set": {
+      "date": "{date}"
+    },
+    "call": "queryPage"
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "market",
+    "component_source_sha256": "aeb2c688c526e7d8a14f1f853099fefccc72ce8098faf37e84e2c9157e609b9b"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

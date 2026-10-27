@@ -1,0 +1,37 @@
+{
+  "id": "centralized_wind_daily",
+  "name": "集中式新能源总出力预测（日）（风电）",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport017",
+    "frame": "/pdbln/report/PdblnReport017",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport017",
+    "component": "pdblnReport017",
+    "call": "initData",
+    "set": {
+      "queryParam.date": "{date}",
+      "queryParam.name": "风电"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/power_live.py API_SPECS",
+    "legacy_phase": "admitted"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "admitted"
+    }
+  ]
+}

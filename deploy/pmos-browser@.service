@@ -1,0 +1,20 @@
+# Logged-in browser for one province (%i), kept separate from the collector so
+# collector restarts never lose the website login. The DevTools port listens on
+# loopback only; the collector finds it through DevToolsActivePort.
+# Install: copy to /etc/systemd/system/, adjust User/DISPLAY/paths, then
+#   systemctl enable --now pmos-browser@shanxi
+[Unit]
+Description=PMOS logged-in browser (%i)
+After=network-online.target
+
+[Service]
+User=pmos
+Environment=DISPLAY=:97
+ExecStart=/usr/bin/google-chrome --no-first-run --no-default-browser-check --start-maximized \
+  --user-data-dir=/home/pmos/pmos-browser/%i \
+  --remote-debugging-address=127.0.0.1 --remote-debugging-port=0
+Restart=no
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

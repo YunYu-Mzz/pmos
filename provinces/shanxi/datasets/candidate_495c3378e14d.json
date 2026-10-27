@@ -1,0 +1,55 @@
+{
+  "id": "candidate_495c3378e14d",
+  "name": "省内机组预计划结果",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/snjzyjhjgExport",
+    "body": {
+      "tdName": "山西.丰汇电厂/10kV.虚拟发电机",
+      "tdate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/shengneijizuyujihuajieguo",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shengneijizuyujihuajieguo",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/snjzyjhjgExport"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "tdName": "山西.丰汇电厂/10kV.虚拟发电机",
+          "tdate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/snjzyjhjgExport",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/snjzyjhjgQuery",
+    "evidence_sha256": "7f3658876576a2ee855f8dcbde56c5e2ad73d7cd7df13eea60834a0a40fc2bad",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

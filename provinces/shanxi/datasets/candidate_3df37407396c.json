@@ -1,0 +1,38 @@
+{
+  "id": "candidate_3df37407396c",
+  "name": "省内现货交易结果 当前账户出清电价",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-spotgoods-province/trade/exportUserCurve",
+    "body": {
+      "spotType": "1",
+      "membersType": "30",
+      "appType": "2",
+      "dayStr": "{date}"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection_external_restore",
+    "query_endpoint": "/px-spotgoods-province/trade/queryUserCurve",
+    "evidence_sha256": "8f8fe3a9d3979a82b0da44ec1ff2bdf4f028998f1a5d74438b95beef083e71c3",
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection_external_restore"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "id": "candidate_ea05dae852f6",
+  "name": "用户侧现货统一结算点电价",
+  "status": "verified",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today",
+    "complete_only": true
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/yhcxhtyjsddjExport",
+    "body": {
+      "tdate": "{month}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/yonghucexianhuotyjsdj",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/yonghucexianhuotyjsdj",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/yhcxhtyjsddjExport"
+      },
+      "set": {
+        "date": "{month}",
+        "queryConfig.data": {
+          "tdate": "{month}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/yhcxhtyjsddjExport",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/yhcxhtyjsddjQuery",
+    "evidence_sha256": "bdda58425583d7832641a8fdfa2ca0b35883ec6ba359134bbb7e283105ee7422",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

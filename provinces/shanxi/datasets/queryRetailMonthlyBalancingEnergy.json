@@ -1,0 +1,38 @@
+{
+  "id": "queryRetailMonthlyBalancingEnergy",
+  "name": "售电公司月度调平电量新",
+  "status": "verified",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today",
+    "complete_only": true
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/reportForm/information/powerTpEnergyMonthExport",
+    "body": {
+      "participantNames": "",
+      "mktMonth": "{month}"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "current_process_template_recovery_pending",
+    "query_endpoint": "/px-phbsx-retail-shop/reportForm/information/powerTpEnergyMonth",
+    "page_route": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shoudiangongsitiaopingEn",
+    "evidence_sha256": "2f244681fa9ef8c939c5c210d3ec1eb8ae197fb0c6b79e359d5a5634633b2843",
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "current_process_template_recovery_pending"
+    }
+  ]
+}

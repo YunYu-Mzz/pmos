@@ -1,0 +1,35 @@
+{
+  "id": "queryUnitsUnder72Hours",
+  "name": "开机不满72小时机组",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoGrid/kjbmwtjzExcel",
+    "body": {
+      "date": "{date}"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "current_process_template_recovery_pending",
+    "query_endpoint": "/px-phbsx-retail-shop/infoGrid/kjbmwtjz",
+    "evidence_sha256": "53040a2938bc7faa088f40b28ced5fbd302676e7bbcae27250ddd73a60bc7839",
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "current_process_template_recovery_pending"
+    }
+  ]
+}

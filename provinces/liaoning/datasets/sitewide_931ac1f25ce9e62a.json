@@ -1,0 +1,38 @@
+{
+  "id": "sitewide_931ac1f25ce9e62a",
+  "name": "重要通道实际输电情况（高岭直流通道）",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport030",
+    "frame": "/pdbln/report/PdblnReport030",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport030",
+    "component": "pdblnReport030",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{date}",
+      "queryParam.name": "高岭直流通道"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "admitted",
+    "options_api": "pdblnReportDic030"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "admitted"
+    }
+  ]
+}

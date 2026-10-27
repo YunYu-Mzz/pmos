@@ -1,0 +1,53 @@
+{
+  "id": "candidate_2e1f8d6d3b00",
+  "name": "省间联络线输电情况",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoGrid/sjllxsdqkExcel",
+    "body": {
+      "date": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/sjllxsdqk",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/sjllxsdqk",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/infoGrid/sjllxsdqkExcel"
+      },
+      "set": {
+        "date": "{date}",
+        "queryConfig.data": {
+          "date": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/infoGrid/sjllxsdqkExcel",
+      "method": "POST"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/infoGrid/sjllxsdqk",
+    "evidence_sha256": "6d37b36fc1ba896ce161e484c5acc0b20e85e3b29f0c311262d81e66488e617a",
+    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

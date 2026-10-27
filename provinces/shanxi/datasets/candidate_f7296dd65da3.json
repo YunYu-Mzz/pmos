@@ -1,0 +1,36 @@
+{
+  "id": "candidate_f7296dd65da3",
+  "name": "省间现货出清电量情况",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/sjxxrqcqdlqkExport",
+    "body": {
+      "endDate": "{date}",
+      "startDate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_waiting_sequential_collection",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/sjxxrqcqdlqkQuery",
+    "evidence_sha256": "c03631ec8e96ec9a73f46158b318694aca5d4ff780cfc88837f6fb553b466d66",
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_waiting_sequential_collection"
+    }
+  ]
+}

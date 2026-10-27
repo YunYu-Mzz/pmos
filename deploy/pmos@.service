@@ -1,0 +1,17 @@
+# Collector worker for one province (%i). Attaches to pmos-browser@%i over
+# loopback CDP. Restart=no: a fault holds for human review instead of looping.
+[Unit]
+Description=PMOS collector (%i)
+After=pmos-browser@%i.service
+
+[Service]
+User=pmos
+WorkingDirectory=/home/pmos/pmos
+Environment=PMOS_DATA=/home/pmos/pmos-data
+ExecStart=/home/pmos/pmos/.venv/bin/python -m pmos %i run
+Restart=no
+KillSignal=SIGTERM
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

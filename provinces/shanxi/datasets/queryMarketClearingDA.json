@@ -1,0 +1,36 @@
+{
+  "id": "queryMarketClearingDA",
+  "name": "日前市场出清概况",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoPub/exportDayVoidance",
+    "body": {
+      "beginDate": "{date}",
+      "endDate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_tencent_current_process_sequential",
+    "query_endpoint": "/px-phbsx-retail-shop/infoPub/queryDayVoidance",
+    "evidence_sha256": "2938b98b04f0f1ff37a54da6046874ccf859853578681817d31eddf0dc53ab77",
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_tencent_current_process_sequential"
+    }
+  ]
+}

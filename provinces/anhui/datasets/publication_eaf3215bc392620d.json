@@ -1,0 +1,59 @@
+{
+  "id": "publication_eaf3215bc392620d",
+  "name": "日前中长期交易合同分解电量及电价曲线(发电侧)",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=rqzqcjhtfjdljddjqxdfdc",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择日期",
+          "选择日期"
+        ],
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场边界信息",
+      "日前中长期交易合同分解电量及电价曲线(发电侧)"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "scopes": [
+    {
+      "数据类型": "电量",
+      "机组名称": "仙源兴源水电二站#1机"
+    },
+    {
+      "数据类型": "电价",
+      "机组名称": "仙源兴源水电二站#1机"
+    }
+  ],
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "report_code": "rqzqcjhtfjdljddjqxdfdc",
+    "legacy_status": "requires_adapter_review",
+    "scope_coverage": "incremental_unambiguous_scope_candidates_other_identities_pending",
+    "legacy_jobs": 287,
+    "legacy_saved": 0
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "requires_adapter_review"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "queryMustRunStopUnits",
+  "name": "日前必开必停机组",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/infoGrid/rqbkbtjzExcel",
+    "body": {
+      "date": "{date}"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "current_process_template_recovery_pending",
+    "query_endpoint": "/px-phbsx-retail-shop/infoGrid/rqbkbtjz",
+    "evidence_sha256": "318048eccc5bfaa9b60608c92de68fcd3a089e6125e071d76e505a2eaccba1d1",
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "current_process_template_recovery_pending"
+    }
+  ]
+}

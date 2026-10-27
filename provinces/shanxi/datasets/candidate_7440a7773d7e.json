@@ -1,0 +1,36 @@
+{
+  "id": "candidate_7440a7773d7e",
+  "name": "省间现货出清电价情况",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phbsx-retail-shop/informationRelease/sjxxrqcqdjqkExport",
+    "body": {
+      "endDate": "{date}",
+      "startDate": "{date}"
+    }
+  },
+  "response": {
+    "kind": "xlsx"
+  },
+  "source": {
+    "legacy": "shanxi/dataset_catalog.json",
+    "legacy_status": "verified_tencent_current_process_sequential",
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/sjxxrqcqdjqkQuery",
+    "evidence_sha256": "5cf02cc18c3c2a616ab7907a394c3ed8bc7b6c63e79733664419f8b5ceb154ad",
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "verified_tencent_current_process_sequential"
+    }
+  ]
+}

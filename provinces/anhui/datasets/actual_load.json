@@ -1,0 +1,44 @@
+{
+  "id": "actual_load",
+  "name": "实际负荷",
+  "status": "enabled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=sjfh",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": "选择日期",
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场运行信息",
+      "实际负荷"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "keepalive": true,
+  "source": {
+    "legacy": "powercrawler/daily_reports.py",
+    "info_code": "sjfh",
+    "value_layout": "time_series"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": null
+    }
+  ]
+}

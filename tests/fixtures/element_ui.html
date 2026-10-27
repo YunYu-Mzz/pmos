@@ -1,0 +1,77 @@
+<!doctype html>
+<!-- Offline stand-in for a PMOS disclosure page: Element UI menu tree, article
+     table with el-pagination, and an article dialog with attachment buttons. -->
+<html><head><meta charset="utf-8"><title>fixture</title>
+<style>
+  .hidden { display: none; }
+  .el-tree-node__children { padding-left: 16px; }
+  .el-tree-node:not(.is-expanded) > .el-tree-node__children { display: none; }
+  .el-dialog__headerbtn { width: 0; height: 0; overflow: visible; border: 0; padding: 0; }
+  .el-dialog__close { display: inline-block; width: 20px; height: 20px; cursor: pointer; }
+</style></head>
+<body>
+<ul class="el-menu"><li class="el-menu-item" id="top">中长期市场</li><li class="el-menu-item">现货市场</li></ul>
+<div id="tree" class="hidden"></div>
+<div id="listing" class="hidden">
+  <table><tbody id="rows"></tbody></table>
+  <div class="el-pagination">
+    <span class="el-pagination__total" id="total"></span>
+    <button class="btn-prev" id="prev">‹</button>
+    <ul class="el-pager"><li class="number active" id="active">1</li></ul>
+    <button class="btn-next" id="next">›</button>
+    <span class="el-pagination__jump">前往<div class="el-pagination__editor"><input id="editor" value="1"></div>页</span>
+  </div>
+</div>
+<div id="dialog" class="el-dialog hidden"><div class="el-dialog__header">
+  <button class="el-dialog__headerbtn"><i class="el-dialog__close" id="close"></i></button></div>
+  <div class="el-dialog__body" id="body"></div></div>
+<script>
+const PER = 10;
+const ARTICLES = Array.from({length: 23}, (_, i) => ({
+  title: `2026年${(i % 12) + 1}月市场信息披露报告${i}`, date: `2026-10-${String(23 - i).padStart(2, '0')}`,
+  files: i === 11 ? [] : i === 12 ? null : [`报告${i}.pdf`, `附表${i}.pdf`]}));
+const tree = [{label: '中长期市场', children: [{label: '市场运行信息', children: [
+  {label: '市场信息披露报告(月)'}, {label: '市场信息披露报告(年)'}]}]}];
+let page = 1;
+function node(item) {
+  const li = document.createElement('div'); li.className = 'el-tree-node';
+  const content = document.createElement('div'); content.className = 'el-tree-node__content';
+  if (item.children) { const icon = document.createElement('span'); icon.className = 'el-tree-node__expand-icon'; icon.textContent = '▸';
+    icon.onclick = () => li.classList.toggle('is-expanded'); content.append(icon); }
+  const label = document.createElement('span'); label.className = 'el-tree-node__label'; label.textContent = item.label;
+  if (!item.children) label.onclick = () => { document.querySelectorAll('.is-current').forEach(n => n.classList.remove('is-current'));
+    li.classList.add('is-current'); open(1); };
+  content.append(label); li.append(content);
+  if (item.children) { const box = document.createElement('div'); box.className = 'el-tree-node__children';
+    item.children.forEach(c => box.append(node(c))); li.append(box); }
+  return li;
+}
+document.getElementById('top').onclick = () => { const t = document.getElementById('tree'); t.innerHTML = ''; tree.forEach(n => t.append(node(n))); t.classList.remove('hidden'); };
+function open(n) {
+  page = n; const pages = Math.ceil(ARTICLES.length / PER);
+  document.getElementById('listing').classList.remove('hidden');
+  document.getElementById('rows').innerHTML = ARTICLES.slice((n - 1) * PER, n * PER)
+    .map(a => `<tr><td><span class="title">${a.title}</span></td><td>${a.date}</td></tr>`).join('');
+  document.querySelectorAll('#rows .title').forEach(e => e.onclick = () => show(ARTICLES.find(a => a.title === e.textContent)));
+  document.getElementById('total').textContent = `共 ${ARTICLES.length} 条`;
+  document.getElementById('active').textContent = n; document.getElementById('editor').value = n;
+  document.getElementById('prev').disabled = n === 1; document.getElementById('next').disabled = n === pages;
+}
+document.getElementById('next').onclick = () => open(page + 1);
+document.getElementById('prev').onclick = () => open(page - 1);
+document.getElementById('editor').onkeydown = e => { if (e.key === 'Enter') open(Number(e.target.value)); };
+function show(a) {
+  const body = document.getElementById('body');
+  body.innerHTML = a.files === null ? `<h3>${a.title}</h3>`  /* an unavailable article: bare title */
+    : `<h3>${a.title}</h3><p>发布时间：${a.date}</p>` + (a.files.length ? '' : '<p>本月市场运行平稳，详细数据如下表。</p><table><tr><td>电量</td><td>12.5</td></tr></table>');
+  for (const name of a.files || []) {
+    const b = document.createElement('button'); b.textContent = name;
+    b.onclick = () => { const blob = new Blob([`%PDF-1.4\n${name}\n%%EOF\n`], {type: 'application/pdf'});
+      const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = name; document.body.append(link); link.click(); link.remove(); };
+    body.append(b);
+    const preview = document.createElement('button'); preview.textContent = '预览'; body.append(preview);
+  }
+  document.getElementById('dialog').classList.remove('hidden');
+}
+document.getElementById('close').onclick = () => document.getElementById('dialog').classList.add('hidden');
+</script></body></html>

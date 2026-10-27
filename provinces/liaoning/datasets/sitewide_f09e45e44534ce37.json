@@ -1,0 +1,37 @@
+{
+  "id": "sitewide_f09e45e44534ce37",
+  "name": "发输变电设备检修计划（月）（新）",
+  "status": "candidate",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today",
+    "complete_only": true
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport063",
+    "frame": "/pdbln/report/PdblnReport063",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport063",
+    "component": "pdblnReport063",
+    "call": "initData",
+    "set": {
+      "queryParam.mdate": "{month}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py",
+    "legacy_phase": "failed"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T10:28:32+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "failed"
+    }
+  ]
+}

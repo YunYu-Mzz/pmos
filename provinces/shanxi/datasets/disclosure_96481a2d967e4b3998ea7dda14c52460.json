@@ -1,0 +1,134 @@
+{
+  "id": "disclosure_96481a2d967e4b3998ea7dda14c52460",
+  "name": "售电公司信息",
+  "status": "sampled",
+  "period": {
+    "kind": "snapshot"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/ipMembersDisclosureNew/queryMembersDisApply",
+    "method": "POST",
+    "prepare": [
+      {
+        "component": "chHeader",
+        "call": "setConfig",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "call": "getValues",
+        "await": true,
+        "unless": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "chHeader",
+          "equals": {
+            "marketHeader": "PHBSX"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendDataToMain",
+        "payload": {
+          "viewName": "marketShowQueryZHC",
+          "viewId": "96481a2d-967e-4b39-98ea-7dda14c52460",
+          "viewCode": "n_sdgsjbxx",
+          "marketMain": "PHBSX",
+          "openWay": "1",
+          "pidTem": "1",
+          "uploadDepartment": "售电公司",
+          "uploadDepartmentId": "SCZT_SCZT_SDGS"
+        },
+        "unless": {
+          "component": "marketShowQueryZHC",
+          "match": {
+            "infoCode": "n_sdgsjbxx"
+          }
+        }
+      },
+      {
+        "wait": {
+          "component": "marketShowQueryZHC",
+          "match": {
+            "infoCode": "n_sdgsjbxx"
+          }
+        }
+      },
+      {
+        "component": "chHeader",
+        "emit": "sendShowTmToMain",
+        "payload": true
+      },
+      {
+        "sleep": 0.5
+      }
+    ],
+    "component": "marketShowQueryZHC",
+    "match": {
+      "infoCode": "n_sdgsjbxx"
+    },
+    "set": {
+      "queryParam": {
+        "data": {
+          "memberType": "30",
+          "memberName": "",
+          "infoCode": [],
+          "time": [],
+          "marketId": "PHBSX",
+          "generatorType": [],
+          "marketCode": "PHBSX"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 20
+        }
+      },
+      "pageObj.pageSize": 20
+    },
+    "call": "handleCurrent",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "page_size": 20,
+      "max_pages": 1000
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "member",
+    "component_source_sha256": "0810066cc326c9566fc7e1d7b6c81026f2a3b446ecd1016a2cecdcae6a8fe7c6",
+    "note": "full member list: hundreds of pages per snapshot at the response interval"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}

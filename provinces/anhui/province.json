@@ -1,0 +1,26 @@
+{
+  "id": "anhui",
+  "name": "安徽",
+  "origin": "https://pmos.ah.sgcc.com.cn",
+  "browser": {
+    "profile_dir": "~/pmos-browser/anhui",
+    "page_url_contains": "/pxf-settlement-outnetpub/"
+  },
+  "policy": {
+    "response_interval_seconds": 60,
+    "max_per_hour": null,
+    "max_per_day": null,
+    "request_timeout_seconds": 45,
+    "max_consecutive_empty": 2,
+    "renew_after_idle_seconds": 600,
+    "probe_after_idle_seconds": 300
+  },
+  "session": {
+    "keepalive_dataset": "actual_load",
+    "probe": null,
+    "collection_order": [
+      "actual_load"
+    ]
+  },
+  "notices": {}
+}

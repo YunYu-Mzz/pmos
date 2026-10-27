@@ -1,0 +1,59 @@
+{
+  "id": "publication_766faf647ce06167",
+  "name": "1日前中长期交易合同分解电量及电价曲线用电侧",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "ui",
+    "frame": "infoCode=rqzqcjhtfjdljddjqxydc",
+    "action": "export",
+    "fields": [
+      {
+        "kind": "date",
+        "placeholder": [
+          "请选择日期",
+          "选择日期"
+        ],
+        "value": "{date}"
+      }
+    ],
+    "menu": [
+      "现货市场",
+      "省内现货市场",
+      "市场边界信息",
+      "1日前中长期交易合同分解电量及电价曲线用电侧"
+    ]
+  },
+  "response": {
+    "kind": "excel"
+  },
+  "scopes": [
+    {
+      "数据类型": "电量",
+      "电力用户名称": "山西至简能源科技有限公司"
+    },
+    {
+      "数据类型": "电价",
+      "电力用户名称": "山西至简能源科技有限公司"
+    }
+  ],
+  "source": {
+    "legacy": "anhui period_report_queue",
+    "report_code": "rqzqcjhtfjdljddjqxydc",
+    "legacy_status": "period_report_collecting",
+    "scope_coverage": "all_rendered_account_options_queued",
+    "legacy_jobs": 572,
+    "legacy_saved": 2
+  },
+  "history": [
+    {
+      "at": "2026-10-23T11:50:14+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "period_report_collecting"
+    }
+  ]
+}

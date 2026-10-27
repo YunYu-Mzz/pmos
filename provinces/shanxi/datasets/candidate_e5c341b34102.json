@@ -1,0 +1,48 @@
+{
+  "id": "candidate_e5c341b34102",
+  "name": "注册公示 山西公告信息",
+  "status": "candidate",
+  "period": {
+    "kind": "snapshot"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-service-omarketservice/#/pxf-service-omarketservice/publicInfo",
+    "open_url": "/pxf-service-omarketservice/#/pxf-service-omarketservice/publicInfo",
+    "path": "/px-settlement-infpubquery/ipDisclosureApplyApi/scfwQueryData",
+    "method": "POST",
+    "component": "PublicInfoCard",
+    "set": {
+      "queryParam": {
+        "data": {
+          "customInfoName": "",
+          "marketId": "PHBSX"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 6,
+          "size": 0,
+          "total": 0
+        }
+      }
+    },
+    "call": "queryInit"
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi/adapters/native_dispatch.py",
+    "legacy_status": "native_json_queue_validated",
+    "strategy": "public",
+    "component_source_sha256": "7edf47aa9ffd8fee5d3ed97a16281c7e4c3db604d98fd33eaa0c8a61a12a39a6",
+    "note": "single page of the public notice cards (pageSize 6); paging not observed"
+  },
+  "history": [
+    {
+      "at": "2026-10-23T12:01:41+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "native_json_queue_validated"
+    }
+  ]
+}
