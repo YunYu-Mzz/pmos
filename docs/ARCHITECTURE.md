@@ -1,91 +1,90 @@
-# 架构说明
+# 五省统一架构、迁移与回滚
 
-## 为什么能统一
+本方案以现有PMOS为唯一公共引擎。第一阶段只有辽宁、安徽、山西的离线实现；陕西、冀北是后续适配目标，没有迁入配置或队列。共用代码不共用登录上下文、账号凭据、出口、队列、锁、原件或故障。
 
-三省都是同一套国网电力交易平台（`pmos.ah/ln/sx.sgcc.com.cn`）：相同的 Vue 前端、网关请求头、业务状态码、"会话已注销"提示和会话超时规律。旧代码之所以变成三份，是因为每省各自摸索、为单次事故写了大量一次性脚本（山西约 270 个、辽宁约 160 个、安徽约 70 个部署/维护脚本）。新代码把平台共性收进 `pmos/`，把省份差异全部变成数据（`provinces/<省>/`）。
+## 模块边界与目录
 
-## 分层
-
+```text
+pmos/
+  pmos/
+    engine.py             共用顺序引擎；transport/decoder注入
+    ledger.py             本实例任务/attempt；发送前提交；已消费保护
+    contracts.py          版本化业务身份、ParsedArtifact、无凭据契约
+    adapters/native.py    三种明确的离线形态；不生成网站参数
+    province.py/spec.py   省份历史目录及规格；不授予线上资格
+    pacing.py/faults.py   响应后节流、预算、错误作用域
+    archive.py/validate.py 容器/原件SHA、responses/quarantine与original
+    offline.py            临时实例演示、受控原件只读回放
+    legacy.py             显式旧manifest映射；无队列写入
+    resources.py          纯资源准入判定，无GC/重连副作用
+    reporting.py          短读快照、schema2指标字段handoff，无网络发送
+    browser/              既有实验传输；本阶段不能由CLI启用
+  provinces/{liaoning,anhui,shanxi}/
+    province.json         非敏感参考策略、release=offline_only
+    offline.json          本次可回放形态、来源代码、资格
+    datasets/ scripts/    既有435规格及页面胶水，待逐项重验
+  tests/fixtures/         固定脱敏JSON；原有本地HTML夹具
+  evidence/               代码指纹、样本摘要、测试结果，不存生产原件
+  examples/               安全配置样例
+  docs/ tools/ deploy/    规范、离线测试入口、禁用的历史service模板
 ```
-cli.py ── engine.py ──┬── ledger.py   (SQLite：任务 + 每次请求的尝试记录)
-                      ├── pacing.py   (响应后间隔、可选上限)
-                      ├── faults.py   (失败 → 停哪一层、能否保活)
-                      ├── validate.py (响应 → 原件 / 空 / 失败)
-                      ├── archive.py  (内容寻址原件 + manifest)
-                      ├── spec.py / province.py (声明式配置)
-                      └── transport ──┬── browser/attach.py   (CDP 附加，绝不关闭浏览器)
-                                      ├── browser/transport.py (fetch / component / native / ui)
-                                      ├── browser/ui.py       (Element UI 填表、开帧)
-                                      └── browser/session.py  (注销提示、请求捕获)
-```
 
-引擎不直接依赖浏览器：`transport.send(request) -> Response` 和 `check_session() -> Fault | None` 都由外部注入。测试用假对象，生产用浏览器实现。
+生产目标：`/private/pmos/<province>/<account-alias>/<instance>/`各自包含ledger、state、original、responses、quarantine、samples；凭据和profile放独立私密目录，权限0700/0600。当前 `Province.instance()`仍是 `PMOS_DATA/<province>`，上线前必须显式配置每个账号独立PMOS_DATA并完成跨root同账号owner协议；不能谎称多账号互斥已做好。
 
-## 一次请求的生命周期
+## 接口契约
 
-1. 检查是否存在未结尝试；有则拒绝发送。
-2. 计算间隔：距最近一次任意响应结束不足 N 秒则不发；采集和样本另受小时/日上限约束。
-3. 写入 `attempts(kind, dataset, period, started_at, outcome='pending')` 并提交。
-4. 通过传输方式发送。
-5. 判定响应：HTTP 状态 → JSON 业务码（导出接口拒绝时会返回 JSON）→ 文件容器校验。
-6. 先归档原件（fsync），再写 manifest，最后确认任务；尝试记录更新为 `success`、`empty`、`failed` 或 `unknown`。
-
-进程在第 3 到第 6 步之间中断时，尝试会一直停在 `pending`。下次启动会阻断，直到人工核实后执行 `settle-unknown`。这样保证已经可能被服务器处理过的请求不会被悄悄重发。
-
-## 工作循环（`Engine.tick`）
-
-每个 tick 只做一件事，优先级从上到下：
-
-1. 页面出现注销/网络环境变化提示 → 阻断，不再保活。
-2. 已有阻断 → 进入挂起：失败类别允许时继续续期保活；保活第一次失败就停止，不重试。
-3. 存在未结尝试 → 阻断。
-4. 有待执行的适配命令（样本）→ 执行一个。
-5. 采集关闭、暂停、全部完成或在等待间隔 → 执行会话保持（需要时续期，或做时间探测）。
-6. 否则采集下一条待办任务（按 `collection_order` 选报表，同一报表最新周期优先）。
-
-公告栏目（`documents`）是两级任务：每天的列表任务逐页翻（每页一个尝试，游标持久化），把新附件写进台账 `items` 表并生成附件任务；附件任务逐个下载。两类任务都走同一套间隔、台账和故障分类：文件校验不通过或记录不符合 `expect` 只隔离该栏目。
-
-## 会话保持的依据
-
-旧系统的日志给出了同一结论：
-
-- **山西**：10-13 最后一次导出在 10:26:05，时间接口 10:51 成功、10:56 失败；10-20 两次掉线分别发生在最后一次业务请求后 30 分钟和 32 分钟。另一方面，只靠导出撑过了 24.7 小时，最长一次登录持续约 4 天 20 小时。
-- **辽宁**：空闲 33 分钟时会话仍在，42 分钟时已失效。连续采集期间从未掉线。
-- **网站自带续期无效**：前端每 60 秒调用一次 `refreshExpireTime`，但传入的 token 是一个还没取到值的 Promise，服务器因此返回 4000/40302。时间接口轮询也不算活动。
-
-因此 `renew_after_idle_seconds`（默认 600）到点后，引擎会用 `session.keepalive_dataset` 重新读取一个已经采过的周期。这次请求只做校验、不归档，不计入采集上限，但计入共享间隔。
-
-## 失败分类（`faults.py`）
-
-| 类别 | 例子 | 处理 |
+| 接口 | 输入/输出 | 不变量与本次边界 |
 |---|---|---|
-| auth | 401、10003、"会话已注销" | 停整个省份，不保活 |
-| permission | 40302、403 | 适配样本：报表标为 `denied`；正式采集：停整个省份 |
-| rate_limit | 429、"访问过于频繁" | 停整个省份，不保活 |
-| network | 超时、连接断开 | 停整个省份，不保活；尝试记为 `unknown` |
-| unknown | 未知业务码、返回 HTML 页面、文件类型变化 | 停整个省份，不保活 |
-| site_data | HTTP 200 且业务成功，但文件损坏 | 只隔离该报表，其余继续 |
-| local | 模板缺失、报表帧未打开、我们自己的问题 | 停整个省份，允许续期保活 |
+| TaskIdentity v1 | province/account_alias/dataset/period(kind及真实起止)/dimensions/page/operation → canonical SHA | 数字ID与字符串ID不同；页码独立；session/template修订放receipt，不能换身份绕过去重。本次已有类型，但旧435规格仍用(dataset,period,scope)台账键，完整v1绑定及旧ID对照是上线门槛 |
+| ProvinceAdapter | reviewed source contract + raw response → ParsedArtifact | 保留原字段、0/负值/缺值、源坐标或source_field；未知单位null；本次3形态，后续按省分模块亦可，不能强塞通用fetch |
+| Transport | send(explicit request) → Response(status/content_type/body/parts) | 当前fake可运行；未来需ObservedOperation(真实请求集合、attempt、起止、sending knowledge)包住UI/native多步，所有旁路请求均先仲裁。本阶段不宣称UI点击=1次网站请求 |
+| Ledger | durable begin → receive/spool → finish → archive/confirm | pending优先阻断；任何已派发业务身份即使failed/unknown/成功未confirm也不可自动重发；分页scope含页；网络端不宣称exactly-once |
+| Archive | 原bytes + receipt → SHA/path/size | 文件fsync+目录fsync+manifestfsync；坏文件进quarantine；业务有效original与spool不重复计数；空响应原文也保存，0字节不当有效原件 |
+| SessionOwner（目标） | province/account/profile绑定、lease、generation → granted operation | 同账号的旧worker、新worker、keeper、适配必须共用owner；一个新root里的flock不足以排除旧worker。本次测试只证明同实例不能有第二worker |
+| SessionEvidence（目标） | transport_connected、business_authenticated、renewal_verified、observed_at、generation、evidence_ref | 分开unknown/stale/verified；TIME或SDK成功不推导真实业务登录及续期。本次没有在线会话证明 |
+| ResourceAdmission | cgroup计费、driver RSS、各自限额、inflight/keeper_pending → admit/wait/hold | 不把Chrome RSS简单加和当cgroup；不动在途，不重连/关闭profile；纯逻辑已测，实际资源采样和维护尚待接入 |
+| ReportHandoff | 只读验证后源receipt → schema2 coverage指标字段 | 唯一中央sender/receiver/writer另行接收；完整metrics、HMAC、SMTP、IMAP、Feishu及读回状态分别验收。本次只本地字段，不发信、不写飞书 |
 
-"允许保活"只对已确认是本地原因的阻断开放。可能掩盖 401/403 的笼统错误不会进入允许名单，这是旧系统复查时反复暴露的问题。
+旧queue与新identity关联还需保留manifest/reference、旧任务ID、source SHA、模板/页面代次、query/export实际attempt、空/非空及解析资格。不得只按文件SHA合并不同范围；同字节可对应不同业务身份。
 
-## 运行与部署
+## 错误和保活策略
 
-- **浏览器服务**：`deploy/pmos-browser@.service`。有界面的 Chrome，持久配置目录，`--remote-debugging-address=127.0.0.1`。重启采集服务不会影响它。
-- **采集服务**：`deploy/pmos@.service`，执行 `python -m pmos %i run`，`Restart=no`。出错后挂起等待人工处理，不会自己反复重启。
-- **一省一进程**：每省一个独立运行目录（`PMOS_DATA/<省>`）和进程锁，三省可以同机运行而互不影响。
-- **系统升级**：服务器上的 needrestart 已配置为不自动重启 `liaoning-*`/`shanxi-*` 服务。新服务名为 `pmos-*`，部署时同样需要加入排除列表。
+优先序：真实认证/风控或全局未知保护 ＞ 未结束请求 ＞ owner/在途仲裁 ＞ 人工停止边界 ＞ 省份策略 ＞ 数据集调度。已证实本地等待不能清除更高优先级保护。
 
-## 与旧系统的对应
+| 分类 | 动作 | 保活 |
+|---|---|---|
+| auth、HTTP401、业务401/10003、可见注销 | 全省保护，保留浏览器和证据 | 停止；等待新授权/人工登录与基准验证 |
+| 精确HTTP200/40302 | 样本隔离来源；正式采集仅在明确省份策略下隔离对应dataset/scope | 仅健康范围、无未知/在途、owner批准时允许；泛HTTP403仍全局保护 |
+| rate/network/unknown、HTTP200业务500/未知码 | 保留attempt和未明结果，不自动重放 | 停止；同请求的有界被动观察也需要单独契约，不是重发 |
+| 正常业务响应但文件坏、结构不匹配 | 原bytes保留quarantine，隔离来源；不确认为成功 | 健康且未占用共享锁时可继续，首个新故障立即保护 |
+| 缺模板、已证实零发送的本地frame等待 | 不创建假attempt，不自动bootstrap；等待证据 | 只用已有合格独立keeper，不靠新的模板请求救场 |
+| 泛Python异常、磁盘故障、未知本地归因 | 禁止自动认定“可保活本地问题”；人工审查 | 默认停止。只有明确允许名单可放行 |
+| resource hold | 保留队列和连接，安全边界后有界回收/回差恢复，必须新健康证据 | 按省份keeper资源预算，不与在途竞争 |
+| 报告故障 | 只影响报告链路，记录阶段；未知写入先读回 | 不改变采集/登录/采集block |
 
-| 旧系统 | 新代码 |
-|---|---|
-| 山西 `browser_transport.ObservedTransport` | `browser/transport.py` 的 `fetch` 传输 |
-| 辽宁 `browser_collector.js`（组件 + watchXHR） | `component` 传输（捕获网络响应，不再修改 XHR 原型） |
-| 安徽 `adapters/daily.py` 填表导出 | `ui` 传输 + `browser/ui.py` |
-| 三套 Crawlee 队列 + journal | `ledger.py`（SQLite，一个文件） |
-| 三套 `server_*.json` 状态与五种限速来源 | `state.py` + `pacing.py` |
-| 山西 `session_hold` / 辽宁 `hold_keepalive` | `engine._hold` + `faults.decide` |
-| 各省 `dataset_catalog.json` 的运行时标志 | 规格文件 `status`（配置），运行时隔离写在 `state/` |
+保活动作也经过共享真实请求审计和所有权，不计业务原件；“采完/人工暂停业务”不自动等于“用户停止所有请求”。必须明确collection暂停、idle hold、stop-all三种控制语义，保留各省最新授权。当前历史Engine的control仍是旧语义，CLI控制全部禁用；正式上线前必须补stop-all/keeper显式状态契约，不能直接使用历史start/stop说明。
 
-旧系统里按进程号、事故时间编写的恢复脚本没有迁移，相应的情况统一由 `ack`、`settle-unknown` 和规格生命周期处理。
+山西最终驱动修复限定Python/Playwright/Node源码版本及明确已完成Route/Request；不把内部Dispatcher清理直接移植。本阶段只做模板缓存淘汰与内存准入纯函数。上线前必须补齐异步任务上限、监听器卸载、断连处理、driver-private版本核验与健康连接下的真实内存观察；不能以定期重连代替修复。
+
+## 旧队列、原件兼容和迁移
+
+1. 先固定省份、账号别名、源代码/运行代码SHA、原owner、当前策略与授权引用。只导出非敏感状态，禁止读取profile、Cookie或私密配置。
+2. 各省由原owner在已结算边界冻结**只读导出**：pending、leased/reserved、sent、unknown、denied、failed、saved、empty、已发未确认和完整分页frontier。此次没有冻结或导出生产队列。
+3. 建立旧ID→TaskIdentity v1逐项映射。真实范围缺失、旧cursor不可稳定标识、只有日期而无主体、状态歧义，全部pending_review。先导入所有已消耗/未知/拒绝墓碑，再考虑未尝试任务；manifest存在不能证明其他身份未发。
+4. `legacy.review_manifest`只按显式字段映射核对受控路径和SHA，不写旧文件，输出queue_import_ready=false。目前不提供一键迁移队列，避免省略第2/3步；需要新的经审核导出适配器后再接入。
+5. 原件保持旧路径/不可变内容；新目录先保存受控引用和source SHA，不大批复制。新解析写侧车，保留旧parsed及其schema版本。复用原件不计新增网站请求，不从空目录补发旧日期。
+6. 影子模式比较每省新旧身份数、唯一文件/来源、原件SHA、空/非空、业务周期、节点/成员/线路/分页覆盖。明确列表不等于附件、日期两端不等于连续、原件格式通过不等于字段语义通过。
+7. 取得单省具体切换授权，持原owner锁，排除keeper/协调器在途，在原Chrome上handoff；不得先启动新worker再停旧worker。不能以新root避开旧锁。
+8. 首批只做已授权、明确未消费的新范围；通过小预算再扩到队列，最后才安排长稳观察和自动运行。
+
+## 分阶段和回滚
+
+| 阶段 | 本次状态 | 放行条件 |
+|---|---|---|
+| A 文档/源码/故障审查、保留已有框架 | 完成，证据有SHA | 无生产改动，明确历史与现状 |
+| B 共用离线引擎和三省样本 | 完成，固定夹具及9份原件回放 | 所选形态通过，不称全站完成 |
+| C 完整身份映射/旧队列影子导出、资源与owner协议 | 待做 | 导出由原owner授权、逐项差异0/显式hold；完整操作计数 |
+| D 单省受控上线 | 未授权、未执行 | 满足ACCEPTANCE中的小预算、keepalive及回滚条件 |
+| E 第二/第三省，再加陕西/冀北 | 待稳定后逐省 | 不共享队列、账号和会话，新增scope独立验收 |
+
+回滚恢复旧**代码/调度所有权**，不回退业务事实。持同一owner锁停止新派发，等已发请求结算；结果未知则保留保护，不启动旧worker接手未知范围。导出新版本期间所有attempt/response/原件/未知/拒绝身份并映射回旧侧，再恢复明确未消费队列；不覆盖旧数据库、不重建队列、不重新seed、不清block。原Chrome、profile、原件和旧一次性恢复回执一直保留。新旧两侧都不能安全接手时停在hold等待审查，不能用“回滚”作为重发授权。

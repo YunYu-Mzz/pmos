@@ -1,130 +1,34 @@
-# 适配规范：新省份与新报表
+# 新省份/新来源适配规范
 
-目标：每个报表都经过同一套流程，状态和证据写进规格文件，任何人都能看出它为什么可以自动采集。
+本版只允许离线动作。旧文档中的capture/sample/enable/start/ack命令现被CLI拒绝；保留历史函数和规格便于审阅，不代表可以上线使用。
 
-## 报表生命周期
+## 本阶段能运行的流程
 
-```
-candidate ──样本成功──▶ sampled ──另一周期也成功──▶ verified ──人工启用──▶ enabled
-    │                                                                    │
-    └─ 样本 40302/403 ─▶ denied（永不自动重试）      文件校验失败 ─▶ 运行时隔离该报表
-retired：保留历史，不再调度
-```
+1. 先读该省最新AGENTS/HANDOFF/故障与数据契约。记录授权的真实间隔、owner、会话代次、scope和源代码SHA；旧目录数字不能代替业务语义。
+2. 从明确允许的本地原件及非敏感回执选择样本。只读该原件，核对登记SHA；不读凭据、不导入会执行生产入口的模块。路径和摘要记入evidence，原件不复制到Git。
+3. 在 `provinces/<province>/offline.json` 声明已观察的响应形态、成功码和待验收资格；只写有证据的字段。复杂情况用明确decoder接口增加纯函数，不让配置拼出未验证网站请求。
+4. 建立固定脱敏夹具，覆盖非空/空、0/负值/null、缺字段、结构漂移、HTTP200业务错误、40302、超时未知、分页及重复身份。夹具保留形态，替换主体和值，并注明fixture；不能把它冒充网站回执。
+5. 经 `tools/test_offline.py` 和 `offline-demo` 走同一Engine验证。必要时用 `replay` 读取登记SHA的原件，输出摘要及缺证。状态分别标记offline_passed、sample_only、online_pending；这些不是旧spec.status的同义词。
+6. 完整身份/owner/旧队列/保活证据齐备后才准备上线验收；由用户批准ACCEPTANCE列出的具体动作。本任务不得为凑资格执行任何网站请求。
 
-- 状态写在 `provinces/<省>/datasets/<报表>.json` 的 `status` 字段；每次变化都在 `history` 里追加一条带时间的记录（样本周期、原件 SHA256、失败原因）。
-- `enabled` 只能由 `verified` 经人工命令进入。跳过验证必须写明原因（`--force-reason`），原因会记录在规格里。
-- 运行时的临时隔离（如连续两个空周期、文件损坏）记在运行目录的 `state/dataset_holds.json`，不修改仓库里的规格。
+## 扩展陕西/冀北及其他省
 
-## 一、新增省份
+先等待其现有实现和范围稳定，届时独立读取各自最新材料；本阶段不生成猜测origin、接口、业务码、默认筛选和保活动作。
 
-```bash
-python -m pmos new-province hebei --name 河北 --origin https://pmos.he.sgcc.com.cn
-```
+新省实现必须提供：稳定省份ID、账号别名/实例隔离、原owner和独立profile绑定、原始响应decoder、实际周期/维度/分页、允许的传输步骤和附带请求清单、成功/空/错误判定、原件来源类型、单位/字段证据、只读旧队列映射、保活资格和报告范围。共用Engine、Ledger、Archive、节流和错误协议；页面胶水留在该省，并随源码SHA审阅。
 
-生成 `provinces/hebei/province.json`，然后按需修改：
+若新增形态能复用现有decoder，用新的契约及独立样本证明，不能仅因字段名相同就复用业务含义。遇到加密/SDK签名，交给原生页面方法，不落盘认证头、不逆猜参数、不把旧日期替换到未核实字段。
 
-| 字段 | 说明 |
-|---|---|
-| `browser.profile_dir` 或 `browser.cdp_url` | 怎样找到已登录浏览器的调试端口；本机差异写在运行目录的 `browser.json` |
-| `browser.page_url_contains` | 站点有多个标签页时，用来选定唯一工作页 |
-| `policy.response_interval_seconds` | 响应结束后的间隔，至少 30 秒 |
-| `policy.max_per_hour` / `max_per_day` | 可选上限；`null` 表示不限 |
-| `policy.renew_after_idle_seconds` | 业务空闲多久后续期，默认 600 秒；该平台约 30 分钟注销，不要超过 1500 秒 |
-| `session.keepalive_dataset` | 用于续期的报表；必须是 `enabled` 且标记 `keepalive: true` 的按日报表 |
-| `session.probe` | 可选的时间探测接口，例如 `{"path": "/px-trade-auction/auctionFeignAll/queryCurrentTime"}`；它只用于尽早发现掉线，不算业务活动 |
-| `session.collection_order` | 采集顺序，未列出的报表按 id 排在后面 |
+## 资格与真实范围
 
-然后部署浏览器服务（`deploy/pmos-browser@.service`），由人在浏览器里登录（密码 + 短信验证码，采集器不会代填）。
+- legacy candidate/sampled/verified：历史来源的观察资格，保留历史；旧enabled已取消。
+- offline_passed：纯逻辑与固定夹具通过。
+- sample_only：明确原件在某日期/主体/页码通过；异日样本也不等于全scope覆盖。
+- online_pending：统一运行时、模板、owner、保活、内存和实际请求节奏未验收。
+- online_accepted / scheduled：后续必须关联具体授权、预算、原件SHA和观察回执；当前没有此类记录。
 
-## 二、新增报表（标准五步）
+目录、快照日期、业务统计期、预测交付期、发布时间、更新时间和规则截止分别保存。缺单位或字段释义时为null/未核实，不作推算；空列表不外推全年无数据；0值不当空；源重复行保留。分页以真实request/response身份和总数为证，不用错误pages字段提前完成。
 
-### 1. 捕获请求
+## 对旧规格的限制
 
-```bash
-python -m pmos hebei capture --minutes 10
-```
-
-这期间由人在浏览器里打开目标报表，选好日期，点一次“查询”和“导出”。记录写在运行目录的 `captures/*.jsonl`，内容是每个接口调用的路径、方法、请求体（敏感键已打码）、HTTP 状态、业务码、返回类型和大小。**请求头、Cookie、Token 一律不保存。**
-
-### 2. 生成候选规格
-
-```bash
-python -m pmos hebei candidate 12 --id system_load_forecast --name 系统负荷预测（日） \
-    --period day --start 2026-01-01 --date-field date
-```
-
-- 第 12 条捕获记录会变成 `datasets/system_load_forecast.json`，状态为 `candidate`。
-- 请求体里与周期相符的值会被替换成占位符（`{date}`、`{month}` 等）。用 `--date-field` 限定只替换哪些字段，避免误替换。
-- 按站点实际情况选择传输方式（`--transport`）：
-
-| 情况 | 传输方式 |
-|---|---|
-| 导出/查询接口可直接重放（山西的绝大多数导出） | `fetch`（默认） |
-| 接口每次需要前端现算的令牌或签名 | `component`：调用报表的 Vue 组件方法 |
-| 只能通过页面操作得到文件 | `ui`：填表、点查询/导出 |
-
-  后两种需要手工补全 `frame`、`open_url` 或 `menu`、`component`/`call`/`set` 或 `fields`/`action`，格式见 [DATASET_SPEC.md](DATASET_SPEC.md)。
-
-### 3. 校验规格
-
-```bash
-python -m pmos hebei check
-```
-
-### 4. 取两个不同周期的样本
-
-```bash
-python -m pmos hebei sample system_load_forecast 2026-10-11
-python -m pmos hebei sample system_load_forecast 2026-10-12
-```
-
-- 样本由正在运行的工作进程执行。它与正式采集共用限速、台账和浏览器连接，不会额外并发。
-- 第一个成功样本把状态改为 `sampled`；另一个周期也成功后改为 `verified`。同一周期重复成功不算数。
-- 样本原件保存在运行目录 `samples/`，与正式原件分开。
-- 被拒（40302/403）时状态改为 `denied`，不会再自动尝试，也不会停掉该省其他报表。
-- 认证、限流、网络或未知异常仍会停住整个省份，等人工处理。
-
-### 公告栏目
-
-公告/附件栏目按 [DATASET_SPEC.md](DATASET_SPEC.md#公告与附件documents) 写 `documents` 规格，验证分两步：
-
-```bash
-python -m pmos hebei sample pub_xxx 2026-10-23              # 第一页列表 → sampled
-python -m pmos hebei sample pub_xxx 2026-10-23 --scope file # 下载一个附件 → verified
-```
-
-### 5. 启用
-
-```bash
-python -m pmos hebei enable system_load_forecast
-```
-
-工作进程会在下一轮自动生成该报表的历史周期任务（从 `period.start` 到今天，最新的在前），已有原件的周期不会重复采集。
-
-## 三、只在必要时写代码
-
-规格无法表达时，按以下顺序处理：
-
-1. 先确认能否用 `component`、`native` 或 `ui` 方式让网站前端自己完成；需要先把页面带到某个状态时，用 `prepare` 步骤（设字段、发事件、调方法、等待）。翻页用 `pagination`，公告附件用 `documents`。
-2. 页面胶水实在无法声明时，写一个省份页面脚本 `provinces/<省>/scripts/<名称>.js`（一个异步函数），在 `prepare` 里按名称引用。脚本只做页面内的准备，不直接发请求、不保存数据。
-3. 仍然不行，再在 `pmos/browser/` 增加一种通用传输方式，或在 `validate.py` 增加通用校验，并补离线测试。
-3. 不要写只为某次事故、某个进程号或某个日期服务的一次性脚本。旧系统里大量这类脚本正是维护困难的原因。
-
-## 四、上线与日常运维
-
-- 新省份或新传输方式第一次上线时，先只启用保活报表，实测会话能稳定维持后，再逐个启用其他报表。
-- 掉线后，人在浏览器重新登录，然后执行：
-
-  ```bash
-  python -m pmos <省> status
-  python -m pmos <省> ack auth_expired
-  ```
-
-  `ack` 必须写出被解除的阻断原因，原因不符时拒绝执行。
-- 出现未结请求（进程在请求途中被中断）时，先到网站核实，再执行：
-
-  ```bash
-  python -m pmos <省> settle-unknown <attempt>
-  ```
-
-- 不要在浏览器里点网站弹出的“会话已注销”对话框的“确定”。它会调用服务器注销，把所有标签页一起登出。
+`datasets/*.json`目前435份，是保留的迁移目录。原UI/export/component/native逻辑尚未完成真实伴随请求计账；禁止将 `prepare/open_url/bootstrap` 当纯本地操作，也不能复制旧“自动导出一次抓模板”的说明。本阶段唯一明确移除的是缺页面源码佐证的山西负荷bootstrap，其他定义保留待审，不表示获准调用。

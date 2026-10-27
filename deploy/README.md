@@ -1,22 +1,7 @@
-# 部署
+# 部署模板处于禁用状态
 
-每个省份运行两个服务：
+本版是离线交付。两个历史systemd模板都带 `ExecStartPre=/usr/bin/false`；CLI也拒绝run/capture/采集控制/解除保护/启用操作。不要安装、启动或移除门禁来做试验。
 
-- `pmos-browser@<省>`：有界面的 Chrome，由人登录，调试端口只监听 127.0.0.1。
-- `pmos@<省>`：采集进程，通过本机 CDP 附加到上面的浏览器，`Restart=no`。
+目标仍是浏览器owner与业务worker独立、每省账号独立profile与运行根目录；未来worker只能附加原已登录浏览器，不能随服务退出关闭Chrome。当前跨root同账号owner交接、完整真实请求计账、资源维护和模板资格尚未完成，不能照旧模板部署。
 
-步骤：
-
-1. 准备虚拟显示和 VNC（可沿用旧系统的 display/desktop/vnc 服务）。
-2. 安装 `pmos-browser@.service`，按实际调整用户、`DISPLAY`、配置目录。
-3. 启动浏览器服务，人工登录，打开目标页面。
-4. 在运行目录写 `browser.json`，例如：
-
-   ```json
-   {"profile_dir": "/home/pmos/pmos-browser/shanxi"}
-   ```
-
-5. 安装并启动 `pmos@.service`，然后执行 `python -m pmos <省> start`。
-6. 把 `needrestart-pmos.conf` 放进 `/etc/needrestart/conf.d/`，防止系统升级时自动重启浏览器。
-
-不要让新旧两套采集器同时对同一账号发请求。
+上线门槛、小预算和回滚见 `../docs/ACCEPTANCE.md`、`../docs/ARCHITECTURE.md`。本任务没有安装service、timer、cron或Codex自动任务，也没有修改现有生产服务。

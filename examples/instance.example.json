@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "release_mode": "offline_only",
+  "live_enabled": false,
+  "province": "liaoning",
+  "account_alias": "example-account-a",
+  "instance_alias": "example-instance-a",
+  "runtime_root": "/PRIVATE/pmos/liaoning/example-account-a/example-instance-a",
+  "owner_protocol": "pending_legacy_handoff_review",
+  "browser_attachment": "not_configured",
+  "mail_handoff": "existing_unique_sender_and_central_receiver_only",
+  "policy_reference": "read latest province authorization before any live release",
+  "credential_storage": "private_existing_owner_only_never_copy_into_repository"
+}

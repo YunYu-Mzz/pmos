@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-27",
+  "python_version": "3.12.14",
+  "implementation_commit": "9695f13f041251c5ff801ecbe1798c776a87cf51",
+  "tests": {
+    "command": "python3 tools/test_offline.py",
+    "discovered": 91,
+    "passed": 90,
+    "skipped": 1,
+    "skip_reason": "local UI browser test explicitly opt-in; no browser started",
+    "network_connect_forbidden": true,
+    "log_sha256": "c7675cef624c3ced2bc97a3aa36410e2840983571e5983dcc982c309e03f242c"
+  },
+  "demo": [
+    {
+      "province": "liaoning",
+      "task_key": "73b28679f46dddc17d98bcf83c846633f2f3c83d6ea73757a0d520fbca83a891",
+      "fixture": true,
+      "website_requests": 0,
+      "fixture_dispatches": 1,
+      "task_status": "saved",
+      "archive_verified": true,
+      "reseed_added": 0,
+      "spacing_remaining": 15.0,
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false
+    },
+    {
+      "province": "anhui",
+      "task_key": "7c0a81e92d807779e0129f0eefc4f81036fd9c2b6d6edb2cf3205e32f6abd531",
+      "fixture": true,
+      "website_requests": 0,
+      "fixture_dispatches": 1,
+      "task_status": "saved",
+      "archive_verified": true,
+      "reseed_added": 0,
+      "spacing_remaining": 20.0,
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false
+    },
+    {
+      "province": "shanxi",
+      "task_key": "e8f308fbadbb2aa3a87d4950f4b2ea37a0e6b58cc204d951dc9efa24fec9c3d1",
+      "fixture": true,
+      "website_requests": 0,
+      "fixture_dispatches": 1,
+      "task_status": "saved",
+      "archive_verified": true,
+      "reseed_added": 0,
+      "spacing_remaining": 15.0,
+      "rows": 3,
+      "empty": false,
+      "pagination": {
+        "page": 1,
+        "page_size": 20,
+        "reported_total": 3,
+        "reported_pages": 0,
+        "expected_pages": 1,
+        "last": true,
+        "selected_page_complete": true,
+        "all_pages_verified": true
+      },
+      "unit": null,
+      "semantic_state": "source_fields_only",
+      "full_dataset_coverage_verified": false
+    }
+  ],
+  "real_originals": {
+    "samples": 9,
+    "per_province": 3,
+    "sha256_matches_archive_names": true,
+    "sources_unchanged": true,
+    "source_references_unchanged": 34
+  },
+  "production_actions": {
+    "site_requests": 0,
+    "browser_attachments": 0,
+    "service_or_timer_changes": 0,
+    "queue_writes": 0,
+    "credential_reads": 0,
+    "mail_or_feishu_writes": 0
+  },
+  "qualification": {
+    "liaoning": "offline_passed_selected_samples_only_online_pending",
+    "anhui": "offline_passed_selected_samples_only_online_pending",
+    "shanxi": "offline_passed_selected_samples_only_online_pending",
+    "shaanxi": "not_migrated",
+    "jibei": "not_migrated"
+  },
+  "limitations": [
+    "No cross-root legacy owner handoff",
+    "No full identity or queue migration",
+    "No production memory/driver lifecycle acceptance",
+    "No new mail/Feishu end-to-end acceptance",
+    "No stable installed-wheel asset packaging; source-checkout workflow only"
+  ],
+  "git_review": {
+    "branch": "codex/pmos-offline-unification",
+    "baseline_commit": "86c5cc3",
+    "reviewed_repository_files": 504,
+    "possible_secret_literals_found": 0,
+    "files_over_500kb": 0,
+    "outside_pmos_status_entries_preserved": 216,
+    "root_gitignore_preexisting_diff_preserved": true,
+    "remote_created_or_pushed": false
+  }
+}

@@ -1,0 +1,341 @@
+{
+  "review_date": "2026-10-27",
+  "mode": "local_offline_only",
+  "not_a_live_health_check": true,
+  "source_code_references": [
+    {
+      "path": "liaoning/AGENTS.md",
+      "sha256": "99c00b9462495145800c1bdf24b768561b383c85cade1d2e31a97b40e3cfe1f8"
+    },
+    {
+      "path": "liaoning/lncrawler/native_envelope.py",
+      "sha256": "2e840a16bd024858cf9c4d769a35cf7737235c42dc298797b7a5788398ecbf85"
+    },
+    {
+      "path": "liaoning/lncrawler/field_quality.py",
+      "sha256": "58fcd66a264c0adc8bec5c453a1944e82eaaf8b62c859b8e362ba3ce26d7014d"
+    },
+    {
+      "path": "liaoning/lncrawler/memory_lifecycle.py",
+      "sha256": "f3d7dd4db2b52b315a2fc73c92faacd7a39dc8d54460832b5d02de15275ba367"
+    },
+    {
+      "path": "liaoning/lncrawler/memory_guard.py",
+      "sha256": "ae576c1fafc48fa6439a6395a21c01e6d380845a4740ac6e10db860ddec30b62"
+    },
+    {
+      "path": "liaoning/lncrawler/browser_owner.py",
+      "sha256": "0d0932236e9a70d80e8ebd43e5c431497a135f5e392f9d6de3ea6b505dff7390"
+    },
+    {
+      "path": "liaoning/lncrawler/server_dimension_collection.py",
+      "sha256": "e04e8cdf0ce9f1bacf302019c8f64eb1783f0cd43a2e4770da1acc23a4b50503"
+    },
+    {
+      "path": "liaoning/lncrawler/native_read_gate.py",
+      "sha256": "475e18d24f65b326e5a49f6c6bf45f39f5ee5e5494fc0d4afab50fb392d3aa03"
+    },
+    {
+      "path": "liaoning/lncrawler/schedule.py",
+      "sha256": "c3c0a2828c4ade39a6a25d771200b17ecfebd801128d6bc43ed45fcc38e41757"
+    },
+    {
+      "path": "liaoning/lncrawler/queue.py",
+      "sha256": "e5ff63ec234d2fb715f2521f1a0de97d07164fb71c0cdae11ac37e0217fd4580"
+    },
+    {
+      "path": "liaoning/reporting/snapshot.py",
+      "sha256": "8c9777a03a95a3816563d9f04ede294d4134e7b69a7383a3d91a195980997d5a"
+    },
+    {
+      "path": "anhui/AGENTS.md",
+      "sha256": "4fc68d2a6fdbb9aabb7b216ca5ac9a92845e01788b8731bc1547e3f052ac38fa"
+    },
+    {
+      "path": "anhui/HANDOFF.md",
+      "sha256": "326ce78aaf85f09bf284c9dd862f762b5a78cba8ddcb97fddfa0bd0a93e0d7ec"
+    },
+    {
+      "path": "anhui/powercrawler/native_curve.py",
+      "sha256": "613e1485a12eb0366b3b205b6e343842c2f9065fa27c47a3551e1899cd271797"
+    },
+    {
+      "path": "anhui/powercrawler/native_tables.py",
+      "sha256": "15597c6afa3b85bda834e01105f90711095322e97c050f01b629bca4af7eb5e7"
+    },
+    {
+      "path": "anhui/powercrawler/native_rollout.py",
+      "sha256": "f7d71474d9e4359e3af123c75012f6f536863e918a66e475bf8b2a1b13acf8b8"
+    },
+    {
+      "path": "anhui/powercrawler/adaptation_keepalive.py",
+      "sha256": "ccf9ee79dbf25bd541576fcfdeec72fb11f87c678fa1994d7c746ad8e36e7f02"
+    },
+    {
+      "path": "anhui/powercrawler/archive.py",
+      "sha256": "8357f615c5f99475dee745b98c4777ececae7b7d181cd2ea8419a02224966023"
+    },
+    {
+      "path": "anhui/powercrawler/queue.py",
+      "sha256": "412abcae5816f8eb4d06603f1a7712e55170e8f06a951d8c680eb2ab76947971"
+    },
+    {
+      "path": "anhui/reporting/snapshot.py",
+      "sha256": "8427c869f258644e13e522c3424cdc57786d88c1eabc0713cffad0e47517e45f"
+    },
+    {
+      "path": "shanxi/AGENTS.md",
+      "sha256": "fcc2cceb02afa9805f3f465120639a3d07437adcc7b0627c39cdc9b9ba965bc8"
+    },
+    {
+      "path": "shanxi/HANDOFF.md",
+      "sha256": "794b488504daa57f9f967de1cb28eb71734cbc0f851165d220ce7de1a84b5ddf"
+    },
+    {
+      "path": "shanxi/adapters/native_menu_json.py",
+      "sha256": "d38f5bc62bddac9df097d12327973bd7d6cad11b62097794c96fbcbcc1317945"
+    },
+    {
+      "path": "shanxi/adapters/native_json_queue.py",
+      "sha256": "cb1cfee6affd481605d5b442f883d9ae3941fb84f7bb9d656794ae09c01e9007"
+    },
+    {
+      "path": "shanxi/adapters/browser_transport.py",
+      "sha256": "ab191591316219b5ed3aa0cdff057116c5e2d2d22160304aa6353d7fc0ff81f1"
+    },
+    {
+      "path": "shanxi/adapters/existing_chrome.py",
+      "sha256": "5e08f3bb649df9b4835063982eed143c6e1390daa39bedb2b526f7b363b43025"
+    },
+    {
+      "path": "shanxi/adapters/sequence_memory.py",
+      "sha256": "5f9f12913eced96ad616b476ed45ed3a8596106bb7b8d544e81d28dbbba0bb8f"
+    },
+    {
+      "path": "shanxi/powercrawler/memory_lifecycle.py",
+      "sha256": "b027c7075a12675b82d744021c520c1c506ace4381478ca8b8f524efe37c918b"
+    },
+    {
+      "path": "shanxi/reporting/report_bridge.py",
+      "sha256": "80bb3117a112636cbdc168b336d68d186a584391cf55040e500d910090fd8849"
+    },
+    {
+      "path": "shanxi/verification/20261026/memory_repair/README.md",
+      "sha256": "0c11dd657ab07b5ed3a1b80312c25595aa007f4a9e94b282088628de574591f9"
+    },
+    {
+      "path": "shanxi/verification/20261027/resource_wait_repair/README.md",
+      "sha256": "914fdd443dffbfc25e498d880dceb2f3650550229258ae283accfd4fbe4638c7"
+    },
+    {
+      "path": "pmos/live_test_reports/shanxi_20261023/result.json",
+      "sha256": "aa4660533a0e2d22d0207db177863c2929727ed69452756461ea980663da0937"
+    },
+    {
+      "path": "docs/五省采集与适配故障复盘_20261027.md",
+      "sha256": "92f222a082a0c636ee80c0b5f36005df0e27f6fb48bd05f242350a893fb9dbd1"
+    },
+    {
+      "path": "docs/province_unification/shanxi_review.md",
+      "sha256": "517b66d15befe50fd0ef91ea405e57e8597e7d4d9b43a10a3393ec2fbce7a762"
+    }
+  ],
+  "replayed_samples": [
+    {
+      "source_ref": "liaoning/data/2026/original/local_collection/system_load/2026-10-15/2f4d99eaad13a57184a0669df4e5cb1261d82af159742d42ea7b0ff9fe7b4197/response.json",
+      "province": "liaoning",
+      "source_sha256": "2f4d99eaad13a57184a0669df4e5cb1261d82af159742d42ea7b0ff9fe7b4197",
+      "size": 2059,
+      "parsed_sha256": "3dc514a6c994caebddc30106deaf3b8a58bdd8accde3e4a2a0eb543ac71311d0",
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "liaoning/data/2026/original/local_collection/system_load/2026-10-16/b88436fdf059753c42eaff1ab1a36386fa6a67f4086f5940e26e4d9137eb8c89/response.json",
+      "province": "liaoning",
+      "source_sha256": "b88436fdf059753c42eaff1ab1a36386fa6a67f4086f5940e26e4d9137eb8c89",
+      "size": 2059,
+      "parsed_sha256": "853ceb5310a502acb2e02b7cf0fbcafe969b419219e2aad12e45d4083187ee70",
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "liaoning/data/2026/original/local_collection/system_load/2026-10-17/a1bee4bf5fd672f152f3106cc5523a27a81ab2356a02e24da44842b578f87701/response.json",
+      "province": "liaoning",
+      "source_sha256": "a1bee4bf5fd672f152f3106cc5523a27a81ab2356a02e24da44842b578f87701",
+      "size": 2059,
+      "parsed_sha256": "f1caeef85e31bec57e8fdb98866e0b5786fb39ff668e599e45cee1ff937c9115",
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "anhui/data/2026/native_curves/province_system_load_forecast/2026-10-02/abc87de7868a554d33297463e2d0fb2509a32e498f0836b6c3f4e306760d3e24.json",
+      "province": "anhui",
+      "source_sha256": "abc87de7868a554d33297463e2d0fb2509a32e498f0836b6c3f4e306760d3e24",
+      "size": 2057,
+      "parsed_sha256": "46e16ac04b2ae614db67bd1e14438d8e20edd72207937d58ac86d0b1782c3585",
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "anhui/data/2026/native_curves/province_system_load_forecast/2026-10-03/36e7d2b35d0ba8f36232427af5f02c486ab088a887bb5d1132e933f4ac6037e1.json",
+      "province": "anhui",
+      "source_sha256": "36e7d2b35d0ba8f36232427af5f02c486ab088a887bb5d1132e933f4ac6037e1",
+      "size": 2057,
+      "parsed_sha256": "c0d31f16e9b81fe7792b9705305b0a20852ab72c08b0a41fb1fd285bb3ffe216",
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "anhui/data/2026/native_curves/province_system_load_forecast/2026-10-04/76bcc0fbbf4748ab2e70f8a83703f6bd6f27522e055ebc4170ddd655c6ded360.json",
+      "province": "anhui",
+      "source_sha256": "76bcc0fbbf4748ab2e70f8a83703f6bd6f27522e055ebc4170ddd655c6ded360",
+      "size": 2057,
+      "parsed_sha256": "614653057c694ba8fad14317be15c997d4c31d72a73b1d2ab7940d0ad761a91d",
+      "rows": 96,
+      "empty": false,
+      "pagination": null,
+      "unit": null,
+      "semantic_state": "selected_curve_grid_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "shanxi/data/2026/native_query/menu_af7397f1e57d/2026-10-16/0001_92d6b55bfe644f514a75735737974cd04f793ffbf256939da0bbbd4b106d17d6.json",
+      "province": "shanxi",
+      "source_sha256": "92d6b55bfe644f514a75735737974cd04f793ffbf256939da0bbbd4b106d17d6",
+      "size": 604,
+      "parsed_sha256": "3c04d1eb6bbf103d22d1f63a525c26d2505d7e6eb2c8106e937ba37f7ca5dc87",
+      "rows": 3,
+      "empty": false,
+      "pagination": {
+        "page": 1,
+        "page_size": 20,
+        "reported_total": 3,
+        "reported_pages": 1,
+        "expected_pages": 1,
+        "last": true,
+        "selected_page_complete": true,
+        "all_pages_verified": true
+      },
+      "unit": null,
+      "semantic_state": "source_fields_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "shanxi/data/2026/native_query/menu_af7397f1e57d/2026-10-17/0001_21c321dda07e1f9c9efad7bdeed33b92dbe186f7ecc4b29ad5356abcac478ae3.json",
+      "province": "shanxi",
+      "source_sha256": "21c321dda07e1f9c9efad7bdeed33b92dbe186f7ecc4b29ad5356abcac478ae3",
+      "size": 604,
+      "parsed_sha256": "29adc49c710646f6fb484d7e3562e856101bf89a329eca7eb824329224214949",
+      "rows": 3,
+      "empty": false,
+      "pagination": {
+        "page": 1,
+        "page_size": 20,
+        "reported_total": 3,
+        "reported_pages": 1,
+        "expected_pages": 1,
+        "last": true,
+        "selected_page_complete": true,
+        "all_pages_verified": true
+      },
+      "unit": null,
+      "semantic_state": "source_fields_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    },
+    {
+      "source_ref": "shanxi/data/2026/native_query/menu_af7397f1e57d/2026-10-18/0001_5bbac0bab251b5e059276e149b2f79a63950d3fe0fbe1154db97f7457d8f2938.json",
+      "province": "shanxi",
+      "source_sha256": "5bbac0bab251b5e059276e149b2f79a63950d3fe0fbe1154db97f7457d8f2938",
+      "size": 604,
+      "parsed_sha256": "02f07daf3576c25c19ae37e0616556357eae038b55bdc7fa3c2a6a73d903c369",
+      "rows": 3,
+      "empty": false,
+      "pagination": {
+        "page": 1,
+        "page_size": 20,
+        "reported_total": 3,
+        "reported_pages": 1,
+        "expected_pages": 1,
+        "last": true,
+        "selected_page_complete": true,
+        "all_pages_verified": true
+      },
+      "unit": null,
+      "semantic_state": "source_fields_only",
+      "full_dataset_coverage_verified": false,
+      "website_requests": 0,
+      "validation": "sample_only",
+      "source_unchanged": true,
+      "archive_name_sha256_verified": true
+    }
+  ],
+  "historical_pmos_trial": {
+    "result": "stopped_at_step3_no_retry",
+    "offline_tests_passed": 40,
+    "block": "request_template_missing",
+    "site_requests_sent_by_pmos": 0,
+    "collected_dates": [],
+    "keepalive_attempts": 0,
+    "hold_observation_minutes": 0,
+    "pmos_running": false
+  },
+  "limitations": [
+    "No production queue or credential migration",
+    "No online acceptance",
+    "Only selected native JSON shapes, not full provincial catalogue",
+    "Units and disclosure timing not inferred"
+  ]
+}
