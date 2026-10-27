@@ -1,0 +1,27 @@
+{
+  "status": 0,
+  "message": "",
+  "data": {
+    "list": [
+      {
+        "ELECTRICITY_VALUE": 0,
+        "PLANT_NAME": "脱敏测试主体A",
+        "T_DATE": "2026-10-18"
+      },
+      {
+        "ELECTRICITY_VALUE": -2,
+        "PLANT_NAME": "脱敏测试主体B",
+        "T_DATE": "2026-10-18"
+      },
+      {
+        "ELECTRICITY_VALUE": null,
+        "PLANT_NAME": "脱敏测试主体C",
+        "T_DATE": "2026-10-18"
+      }
+    ],
+    "pageNum": 1,
+    "pageSize": 20,
+    "total": 3,
+    "pages": 0
+  }
+}

@@ -113,6 +113,14 @@ async def sample(engine, spec: DatasetSpec, period: str, scope: str | None = Non
     if spec.documents is not None and scope == "file":
         return await _sample_document(engine, spec, period)
     key, values = (scope, spec.scope_values(scope)) if scope else spec.scope_items()[0]
+    # A repeated proven sample is a local read, never another site request.
+    previous = [r for r in engine.samples.records(spec.id) if r["period"] == period and r.get("scope", "") == key]
+    if previous and any(h.get("event") == "sample_ok" and h.get("period") == period for h in spec.history):
+        record = previous[-1]
+        if not engine.samples.verify(record):
+            raise Fault("sample_original_hash_mismatch", "local")
+        return {"dataset": spec.id, "period": period, "result": "saved", "status": spec.status,
+                "sha256": record["sha256"], "reused": True}
     request = spec.build(period, values)
     if "pagination" in spec.request:
         from .paging import apply, first_page

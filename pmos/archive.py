@@ -41,6 +41,8 @@ class Archive:
             raise ArchiveError("dataset_id_invalid")
         if scope and not SCOPE.fullmatch(scope):
             raise ArchiveError("scope_invalid")
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", period) or ".." in period:
+            raise ArchiveError("period_invalid")
         path = self.root / dataset / period
         return path / scope if scope else path
 
@@ -96,7 +98,9 @@ class Archive:
         return [r for r in rows if dataset is None or r["dataset"] == dataset]
 
     def verify(self, record: dict) -> bool:
-        path = self.root / record["path"]
+        path = (self.root / record["path"]).resolve()
+        if not path.is_relative_to(self.root.resolve()):
+            raise ArchiveError("original_path_outside_archive")
         return path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == record["sha256"]
 
     def latest_period(self, dataset: str) -> str | None:

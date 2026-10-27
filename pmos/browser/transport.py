@@ -167,15 +167,33 @@ _NATIVE_JS = """args => {
 class Templates:
     """Latest observed request per site path, captured from the page itself."""
 
-    def __init__(self, origin: str, clock=time.monotonic):
+    def __init__(self, origin: str, clock=time.monotonic, *, max_items: int = 128, ttl: float = 900):
         self.origin = origin
         self.clock = clock
         self.items: dict[str, dict] = {}
         self.sending = 0
         self.pending: set = set()
+        self.max_items, self.ttl = max_items, ttl
+        self._context = self._listener = None
 
     def observe(self, context, spawn) -> None:
-        context.on("request", lambda request: self._request(request, spawn))
+        self.detach()
+        self._context = context
+        self._listener = lambda request: self._request(request, spawn)
+        context.on("request", self._listener)
+
+    def detach(self) -> None:
+        if self._context is not None:
+            self._context.remove_listener("request", self._listener)
+        self._context = self._listener = None
+        self.items.clear()
+
+    def prune(self) -> None:
+        for path, template in list(self.items.items()):
+            if self.clock() - template["at"] > self.ttl or template["frame"].is_detached():
+                self.items.pop(path, None)
+        while len(self.items) > self.max_items:
+            self.items.pop(min(self.items, key=lambda key: self.items[key]["at"]))
 
     def _request(self, request, spawn) -> None:
         if self.sending:
@@ -191,11 +209,14 @@ class Templates:
             headers = {k.lower(): v for k, v in (await request.all_headers()).items()
                        if k.lower() in platform.REPLAY_HEADERS}
             self.items[path] = {"frame": request.frame, "headers": headers, "method": request.method,
-                                "body": request.post_data, "at": self.clock()}
+                                "body": None, "at": self.clock()}
+            # Do not retain request bodies / their driver backing buffers.
+            self.prune()
         except Exception:
             pass  # a vanished frame simply leaves no template
 
     def get(self, path: str, max_age: float | None = None) -> dict:
+        self.prune()
         template = self.items.get(path)
         if template is None:
             raise Fault("request_template_missing", "local")

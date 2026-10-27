@@ -8,6 +8,8 @@ Description=PMOS logged-in browser (%i)
 After=network-online.target
 
 [Service]
+# Offline release: no service/browser launch until a separately reviewed release.
+ExecStartPre=/usr/bin/false
 User=pmos
 Environment=DISPLAY=:97
 ExecStart=/usr/bin/google-chrome --no-first-run --no-default-browser-check --start-maximized \

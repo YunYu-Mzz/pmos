@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "province": "liaoning",
+  "dataset": "system_load",
+  "shape": "wide_curve_list",
+  "success_statuses": [
+    0
+  ],
+  "unit": null,
+  "interval_reference_seconds": 15,
+  "status": "offline_sample_only",
+  "live_acceptance": "pending",
+  "source_code": "liaoning/lncrawler/field_quality.py"
+}

@@ -42,7 +42,8 @@ class Outcome:
 
 
 def _json(response: Response) -> object | None:
-    if response.media_type not in {"application/json", "text/json", "text/plain"}:
+    if (response.media_type not in {"application/json", "text/json", "text/plain"}
+            and not response.body.lstrip().startswith((b"{", b"["))):
         return None
     try:
         return json.loads(response.body)
@@ -50,18 +51,23 @@ def _json(response: Response) -> object | None:
         return None
 
 
-def classify_envelope(body: object, http_status: int) -> Fault | None:
+def classify_envelope(body: object, http_status: int, _depth: int = 0) -> Fault | None:
     """A JSON envelope that is not a business success, as a Fault."""
     status = platform.business_status(body)
     message = platform.message_text(body)
-    if status in platform.SUCCESS_STATUS:
-        return None
+    if _depth > 8:
+        return Fault("envelope_depth_exceeded", "unknown", http_status=http_status)
     if status in platform.AUTH_STATUS or platform.AUTH_TEXT.search(message):
         return Fault("auth_expired", "auth", http_status=http_status, business_status=status)
     if status in platform.RATE_LIMIT_STATUS or platform.RATE_LIMIT_TEXT.search(message):
         return Fault("rate_limited", "rate_limit", http_status=http_status, business_status=status)
     if status in platform.PERMISSION_STATUS:
         return Fault("permission_denied", "permission", http_status=http_status, business_status=status)
+    if status in platform.SUCCESS_STATUS:
+        child = body.get("data") if isinstance(body, dict) else None
+        if isinstance(child, dict) and ("status" in child or "code" in child) and ("data" in child or "message" in child):
+            return classify_envelope(child, http_status, _depth + 1)
+        return None
     return Fault("unexpected_business_status", "unknown", http_status=http_status, business_status=status)
 
 
@@ -86,7 +92,7 @@ def evaluate(spec_response: dict, response: Response) -> Outcome:
     if response.parts:
         # Every file of the action must pass on its own.
         return Outcome("saved", ".parts", detail={"parts": [evaluate(spec_response, part) for part in response.parts]})
-    if response.media_type == CAPTURE_TYPE:
+    if response.media_type == CAPTURE_TYPE and 200 <= response.status < 300:
         # Our own record of what the page showed (an article without files).
         try:
             json.loads(response.body)

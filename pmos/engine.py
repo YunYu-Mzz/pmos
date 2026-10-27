@@ -66,21 +66,25 @@ class Result:
     outcome: Outcome
     response: Response
     record: dict | None = None
+    parsed: object | None = None
 
 
 class Engine:
     def __init__(self, province: Province, transport, check_session=None, *, instance=None,
-                 clock=time.time):
+                 clock=time.time, decode_response=None):
         self.province = province
         self.policy = province.policy
         self.transport = transport
         self.check_session = check_session
         self.clock = clock
+        self.decode_response = decode_response
         self.instance = instance or province.instance()
         self.state = StateStore(self.instance / "state")
         self.ledger = Ledger(self.instance / "ledger.sqlite3", clock)
         self.archive = Archive(self.instance / "original", province.id)
         self.samples = Archive(self.instance / "samples", province.id)
+        self.responses = Archive(self.instance / "responses", province.id)
+        self.quarantine = Archive(self.instance / "quarantine", province.id)
         self.serial = asyncio.Lock()
         self._lock_fd: int | None = None
         self._seeded_on = None
@@ -88,6 +92,8 @@ class Engine:
     # -- process ownership ------------------------------------------------
     def acquire(self) -> None:
         """One worker per province instance, across processes."""
+        if self._lock_fd is not None:
+            return
         descriptor = os.open(self.instance / "state" / ".worker.lock", os.O_CREAT | os.O_RDWR, 0o600)
         try:
             fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -112,10 +118,20 @@ class Engine:
                       dataset: str | None = None, period: str | None = None, scope: str = "") -> Result:
         """Send one request if spacing allows; the attempt is durable before sending."""
         async with self.serial:
+            block = self.state.blocked()
+            if block and (kind not in ("keepalive", "probe") or not block.get("keepalive_allowed")):
+                raise Fault("province_blocked", "local")
             if self.ledger.unsettled():
                 raise Fault("unsettled_attempt", "local")
+            if kind in BUDGET_KINDS and dataset is not None and period is not None:
+                if self.ledger.consumed(dataset, period, scope):
+                    raise Fault("consumed_identity_requires_review", "unknown")
             if self.spacing_wait(kind) > 0:
                 raise Fault("spacing_not_elapsed", "local")
+            if request.get("transport") == "fetch" and not self._ready(request):
+                # Proven local, before durable dispatch. Never create a fake
+                # sent attempt for the historical missing-template failure.
+                raise Fault("request_template_missing", "local")
             attempt = self.ledger.begin(kind, dataset, period, scope)
             try:
                 response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request})
@@ -127,13 +143,26 @@ class Engine:
                 raise Fault("transport_exception", "network") from None
             try:
                 outcome = evaluate(response_spec, response)
+                parsed = self.decode_response(response.body) if self.decode_response else None
             except Fault as fault:
+                if fault.category == "site_data" and response.body:
+                    self.quarantine.store(dataset or "response", period or "undated", response.body,
+                                          ".bin", scope=f"attempt_{attempt}", reason=fault.code)
                 self.ledger.finish(attempt, "failed", http_status=response.status,
                                    business_status=fault.business_status, reason=fault.code)
                 raise
+            if kind in BUDGET_KINDS and response.body:
+                # A crash before task confirmation can be reviewed offline.
+                self.responses.store(dataset or "response", period or "undated", response.body,
+                                     outcome.extension if outcome.extension != ".parts" else ".bin",
+                                     scope=f"attempt_{attempt}", outcome=outcome.result)
+            elif kind in BUDGET_KINDS and response.parts:
+                for number, (part, part_outcome) in enumerate(zip(response.parts, outcome.detail["parts"]), 1):
+                    self.responses.store(dataset or "response", period or "undated", part.body,
+                                         part_outcome.extension, scope=f"attempt_{attempt}.{number}")
             self.ledger.finish(attempt, "empty" if outcome.result == "empty" else "success",
                                http_status=response.status, business_status=outcome.business_status)
-            return Result(outcome, response)
+            return Result(outcome, response, parsed=parsed)
 
     # -- collection -------------------------------------------------------
     def seed(self) -> None:
@@ -233,7 +262,8 @@ class Engine:
         request = paging.apply(spec.build(period, values), pagination, cursor["page"])
         if not self._ready(request):
             raise Fault("request_template_missing", "local")
-        result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=scope)
+        attempt_scope = f"{scope}.p{cursor['page']:04d}" if scope else f"p{cursor['page']:04d}"
+        result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=attempt_scope)
         try:
             count, done = paging.page_result(result.response.body, pagination, cursor["page"])
         except paging.PagingError as exc:
@@ -429,7 +459,7 @@ class Engine:
         except Fault as fault:
             if fault.code == "spacing_not_elapsed":
                 return 1
-            decision = decide(fault, "collect")
+            decision = decide(fault, "collect", permission_scope=self.province.notices.get("permission_scope", "province"))
             dataset = task["dataset"] if "task" in locals() and task is not None else None
             if decision.scope == "dataset" and dataset:
                 self.hold_dataset(dataset, fault.code, decision.dataset_status or "paused")
@@ -464,7 +494,7 @@ class Engine:
             if decision.scope == "province":
                 self.block(fault, decision, command.get("dataset"))
         except Exception as exc:
-            results[command["id"]] = {"ok": False, "reason": type(exc).__name__, "detail": str(exc)[:200]}
+            results[command["id"]] = {"ok": False, "reason": type(exc).__name__}
         self.state.write("command_results", results)
         return True
 
@@ -472,6 +502,10 @@ class Engine:
         hold = self.state.read("hold", {})
         if hold.get("block_at") != block["at"]:
             hold = {"block_at": block["at"], "keepalive": bool(block.get("keepalive_allowed"))}
+            self.state.write("hold", hold)
+        # Unfinished sends outrank a previously allowed local hold.
+        if self.ledger.unsettled() and hold["keepalive"]:
+            hold.update(keepalive=False, stopped_by="unsettled_attempt")
             self.state.write("hold", hold)
         if hold["keepalive"]:
             try:

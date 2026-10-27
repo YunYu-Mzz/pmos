@@ -1,7 +1,7 @@
 {
   "id": "system_load",
   "name": "系统负荷预测（日）",
-  "status": "enabled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -22,10 +22,10 @@
   "response": {
     "kind": "json"
   },
-  "keepalive": true,
   "source": {
     "legacy": "browser_collector.js REPORTS",
-    "menu": "信息披露/综合查询/供需与约束/预测信息/系统负荷预测（日）"
+    "menu": "信息披露/综合查询/供需与约束/预测信息/系统负荷预测（日）",
+    "unified_live_acceptance": "pending; legacy status is not a unified-runtime proof"
   },
   "history": [
     {

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "province": "anhui",
+  "dataset": "province_system_load_forecast",
+  "shape": "wide_curve_object",
+  "success_statuses": [
+    0
+  ],
+  "unit": null,
+  "interval_reference_seconds": 20,
+  "status": "offline_sample_only",
+  "live_acceptance": "pending",
+  "source_code": "anhui/powercrawler/native_curve.py"
+}

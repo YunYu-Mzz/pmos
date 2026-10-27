@@ -9,6 +9,7 @@ import http.server
 import json
 import threading
 import unittest
+import os
 from pathlib import Path
 
 from pmos.browser import ui
@@ -25,6 +26,7 @@ class Quiet(http.server.SimpleHTTPRequestHandler):
         pass
 
 
+@unittest.skipUnless(os.environ.get("PMOS_LOCAL_UI_TEST") == "1", "local UI browser test is opt-in")
 class UiFixtureTests(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):

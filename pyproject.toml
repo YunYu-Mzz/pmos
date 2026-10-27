@@ -9,4 +9,4 @@ dependencies = ["playwright>=1.48", "olefile>=0.47"]
 pmos = "pmos.cli:main"
 
 [tool.setuptools]
-packages = ["pmos", "pmos.browser"]
+packages = ["pmos", "pmos.browser", "pmos.adapters"]

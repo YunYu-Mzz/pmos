@@ -2,6 +2,8 @@
 import io
 import json
 import unittest
+from datetime import timedelta
+from unittest.mock import patch
 import zipfile
 from pathlib import Path
 
@@ -151,8 +153,12 @@ class DocumentEngineTests(unittest.IsolatedAsyncioTestCase):
         self.addCleanup(engine.ledger.close)
         return engine
 
-    async def tick(self, engine):
-        await engine.tick()
+    async def tick(self, engine, on=None):
+        if on is None:
+            await engine.tick()
+        else:
+            with patch("pmos.engine.today", return_value=on):
+                await engine.tick()
         self.clock.advance(30)
 
     async def test_listing_queues_files_downloads_them_and_stops_at_known_records(self):
@@ -176,14 +182,14 @@ class DocumentEngineTests(unittest.IsolatedAsyncioTestCase):
         first = next(r for r in files if r["attachment_id"] == "a")
         self.assertEqual((first["period"], first["record_id"], first["path"][-4:]), ("2026-09", "g1", ".pdf"))
         # next day: page 1 holds one new record and known ones -> keep listing; page 2 all known -> stop
-        engine.ledger.reopen("notices", TODAY)
+        tomorrow = today() + timedelta(days=1)
         self.transport.queue += [listing([record("g9", "新公告", ["z"]), record("g1", "2026年9月报告", ["a", "b"])], 5),
                                  listing([record("g2", "通知", ["c"]), record("g3", "公告", ["d"])], 5)]
         sent = len(self.transport.sent)
-        await self.tick(engine)
-        await self.tick(engine)
-        self.assertEqual(engine.ledger.task("notices", TODAY)["status"], "saved")
-        self.assertIn("new_files=1", engine.ledger.task("notices", TODAY)["reason"])
+        await self.tick(engine, tomorrow)
+        await self.tick(engine, tomorrow)
+        self.assertEqual(engine.ledger.task("notices", tomorrow.isoformat())["status"], "saved")
+        self.assertIn("new_files=1", engine.ledger.task("notices", tomorrow.isoformat())["reason"])
         self.assertEqual(len(self.transport.sent) - sent, 2, "page 3 is never requested")
 
     async def test_records_without_files_still_stop_the_listing_and_old_listings_are_superseded(self):
@@ -197,11 +203,11 @@ class DocumentEngineTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(engine.ledger.task("notices", TODAY)["status"], "saved")
         self.assertEqual(engine.ledger.task("notices", "2026-10-01")["status"], "skipped")
         self.assertEqual(engine.ledger.task("notices", "2026-10-02")["reason"], "superseded_by_newer_listing")
-        engine.ledger.reopen("notices", TODAY)
+        tomorrow = today() + timedelta(days=1)
         self.transport.queue.append(listing([record("g1", "a", []), record("g2", "b", [])], 4))
         sent = len(self.transport.sent)
-        await self.tick(engine)
-        self.assertEqual(engine.ledger.task("notices", TODAY)["status"], "saved")
+        await self.tick(engine, tomorrow)
+        self.assertEqual(engine.ledger.task("notices", tomorrow.isoformat())["status"], "saved")
         self.assertEqual(len(self.transport.sent) - sent, 1, "a page of known records ends the listing")
 
     async def test_known_records_stop_a_listing_only_after_one_listing_reached_the_end(self):
@@ -213,14 +219,15 @@ class DocumentEngineTests(unittest.IsolatedAsyncioTestCase):
         await self.tick(engine)  # page 2 changed shape: dataset held mid-listing
         self.assertEqual(engine.dataset_holds()["notices"]["reason"], "pagination_records_missing")
         engine.state.remove("dataset_holds")
+        tomorrow = today() + timedelta(days=1)
         self.transport.queue += [listing([record("g1", "a", []), record("g2", "b", [])], 6),
                                  listing([record("g3", "c", []), record("g4", "d", [])], 6),
                                  listing([record("g5", "e", []), record("g6", "f", [])], 6)]
         for _ in range(3):
-            await self.tick(engine)
+            await self.tick(engine, tomorrow)
         self.assertEqual([r["set"]["queryParam.pageInfo.pageNum"] for r in self.transport.sent[2:]], [1, 2, 3],
                          "page 1 is known, but the list was never read to its end")
-        self.assertEqual(engine.state.read("listing_complete"), {"notices": TODAY})
+        self.assertEqual(engine.state.read("listing_complete"), {"notices": tomorrow.isoformat()})
 
     async def test_a_bad_file_or_changed_record_quarantines_only_this_dataset(self):
         engine = self.engine([documents_spec(), dataset("load", keepalive=True, start=TODAY)])
@@ -230,13 +237,12 @@ class DocumentEngineTests(unittest.IsolatedAsyncioTestCase):
         await self.tick(engine)
         self.assertEqual(engine.dataset_holds()["notices"]["reason"], "document_format_unreviewed")
         self.assertIsNone(engine.state.blocked())
+        # A separate fixture tests another failure; never retry bad attachment a.
+        self.tmp = TempDir()
+        self.addCleanup(self.tmp.cleanup)
         other = self.engine([documents_spec(), dataset("load", keepalive=True, start=TODAY)])
-        other.state.remove("dataset_holds")
-        other.ledger.reopen("notices", TODAY)
-        # the pending file "a" (period pub-...) sorts first and now succeeds
-        self.transport.queue += [Response(200, "application/pdf", PDF),
-                                 listing([{**record("g2", "t", ["b"]), "marketId": "PHBSX"}])]
-        await self.tick(other)
+        other.state.set_control(collect=True)
+        self.transport.queue += [listing([{**record("g2", "t", ["b"]), "marketId": "PHBSX"}])]
         await self.tick(other)
         self.assertEqual(other.dataset_holds()["notices"]["reason"], "record_expectation_failed")
 

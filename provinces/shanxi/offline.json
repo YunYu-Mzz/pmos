@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "province": "shanxi",
+  "dataset": "menu_af7397f1e57d",
+  "shape": "paged_records",
+  "success_statuses": [
+    0
+  ],
+  "unit": null,
+  "interval_reference_seconds": 15,
+  "status": "offline_sample_only",
+  "live_acceptance": "pending",
+  "source_code": "shanxi/adapters/native_menu_json.py"
+}

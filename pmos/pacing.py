@@ -9,7 +9,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field, fields
 
-MIN_RESPONSE_INTERVAL_SECONDS = 30
+# Validation lower bound, not authorization. Each province keeps its policy.
+MIN_RESPONSE_INTERVAL_SECONDS = 1
 HOUR = 3600
 DAY = 86400
 

@@ -8,22 +8,27 @@
     "note": "server override: <instance>/browser.json {\"profile_dir\": \"/home/ubuntu/sd_crawler/shanxi/state/server_browser_profile\"}"
   },
   "policy": {
-    "response_interval_seconds": 30,
+    "response_interval_seconds": 15,
     "max_per_hour": null,
     "max_per_day": null,
     "request_timeout_seconds": 45,
     "max_consecutive_empty": 2,
-    "renew_after_idle_seconds": 600,
+    "renew_after_idle_seconds": 300,
     "probe_after_idle_seconds": 300
   },
   "session": {
-    "keepalive_dataset": "queryRqxtfhyc",
+    "keepalive_dataset": null,
     "probe": {
       "path": "/px-trade-auction/auctionFeignAll/queryCurrentTime"
     },
     "collection_order": [
       "queryRqxtfhyc"
-    ]
+    ],
+    "legacy_keepalive_dataset": "queryRqxtfhyc"
   },
-  "notices": {}
+  "notices": {},
+  "release": {
+    "mode": "offline_only",
+    "policy_reference": "2026-10-27 retained authorization records; never applied to production"
+  }
 }

@@ -191,6 +191,17 @@ class Ledger:
     def unsettled(self) -> list[sqlite3.Row]:
         return list(self.db.execute("SELECT * FROM attempts WHERE outcome='pending' ORDER BY id"))
 
+    def consumed(self, dataset: str, period: str, scope: str = "") -> bool:
+        """Any dispatched collect/sample consumes the identity, even after ack.
+
+        A successful response before an archive/checkpoint crash must never be
+        sent again just because the task still says pending. Keepalive/probes
+        are separate explicitly approved operations.
+        """
+        return self.db.execute(
+            "SELECT 1 FROM attempts WHERE dataset=? AND period=? AND scope=?"
+            " AND kind IN ('collect','sample') LIMIT 1", (dataset, period, scope)).fetchone() is not None
+
     def settle_unknown(self, attempt: int) -> None:
         """Operator review: the outcome of an interrupted attempt stays unknown.
         Its start time still counts as a response end for spacing."""

@@ -2,3 +2,21 @@ var/
 .venv/
 __pycache__/
 *.pyc
+# Local evidence and historical live receipts are never release inputs.
+live_test_reports/
+private/
+runtime/
+offline-output/
+*.sqlite*
+*.db
+browser.json
+*.local.json
+*.har
+*.log
+*.zip
+*.xlsx
+*.xls
+*.pdf
+*.png
+.env*
+!.env.example

@@ -143,14 +143,15 @@ class ValidateTests(unittest.TestCase):
     def test_fault_decisions(self):
         self.assertEqual(decide(Fault("x", "permission"), "sample").dataset_status, "denied")
         self.assertEqual(decide(Fault("x", "permission"), "collect").scope, "province")
-        self.assertTrue(decide(Fault("x", "local"), "collect").keepalive)
+        self.assertTrue(decide(Fault("request_template_missing", "local"), "collect").keepalive)
+        self.assertFalse(decide(Fault("x", "local"), "collect").keepalive)
         for category in ("auth", "rate_limit", "network", "unknown"):
             self.assertFalse(decide(Fault("x", category), "collect").keepalive)
 
 
 class PacingTests(unittest.TestCase):
     def test_policy_bounds(self):
-        for change in ({"response_interval_seconds": 10}, {"max_per_hour": 0}, {"renew_after_idle_seconds": 2000}):
+        for change in ({"response_interval_seconds": 0}, {"max_per_hour": 0}, {"renew_after_idle_seconds": 2000}):
             with self.assertRaises(PolicyError):
                 Policy.from_dict(change)
         self.assertEqual(Policy.from_dict({"unknown_key": 1}).extra, {"unknown_key": 1})

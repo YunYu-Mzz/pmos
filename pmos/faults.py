@@ -45,12 +45,14 @@ class Decision:
     dataset_status: str | None = None   # new spec status for dataset-scoped faults
 
 
-def decide(fault: Fault, phase: str) -> Decision:
+def decide(fault: Fault, phase: str, *, permission_scope: str = "province") -> Decision:
     """``phase`` is "collect" (enabled datasets) or "sample" (adaptation)."""
     if fault.category == "site_data":
         return Decision("dataset", True, "quarantined")
-    if fault.category == "permission" and phase == "sample":
+    if fault.category == "permission" and (phase == "sample" or (
+            permission_scope == "dataset" and fault.http_status == 200 and fault.business_status == "40302")):
         return Decision("dataset", True, "denied")
-    if fault.category == "local":
+    if fault.category == "local" and fault.code in {
+            "request_template_missing", "request_template_stale", "report_frame_missing", "spacing_not_elapsed"}:
         return Decision("province", True)
     return Decision("province", False)

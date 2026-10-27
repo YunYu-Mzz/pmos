@@ -53,16 +53,8 @@ def cmd_datasets(province: Province, args) -> None:
 
 
 def cmd_status(province: Province, _args) -> None:
-    instance = province.instance()
-    state = StateStore(instance / "state")
-    ledger = Ledger(instance / "ledger.sqlite3")
-    try:
-        _print({"province": province.id, "instance": str(instance), "control": state.control(),
-                "block": state.blocked(), "hold": state.read("hold"), "dataset_holds": state.read("dataset_holds", {}),
-                "status": state.read("status"), "unsettled_attempts": [dict(r) for r in ledger.unsettled()],
-                "tasks": ledger.summary(), "requests_last_24h": ledger.counts(time.time() - 86400)})
-    finally:
-        ledger.close()
+    from .reporting import ledger_snapshot
+    _print({"province": province.id, "release": "offline_only", **ledger_snapshot(province.instance() / "ledger.sqlite3")})
 
 
 def cmd_control(province: Province, args) -> None:
@@ -187,6 +179,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pmos", description="Unified PMOS province collector")
     sub = parser.add_subparsers(dest="target", required=True)
     sub.add_parser("provinces", help="list provinces and dataset counts")
+    offline_demo = sub.add_parser("offline-demo", help="fixed sanitized fixtures through the shared engine; no browser")
+    offline_demo.add_argument("province", choices=["liaoning", "anhui", "shanxi", "all"])
+    replay_parser = sub.add_parser("replay", help="read one controlled original; print aggregates only")
+    replay_parser.add_argument("province", choices=["liaoning", "anhui", "shanxi"])
+    replay_parser.add_argument("input", type=lambda v: __import__("pathlib").Path(v))
+    replay_parser.add_argument("--sha256", required=True)
     new = sub.add_parser("new-province", help="scaffold provinces/<id>")
     new.add_argument("id")
     new.add_argument("--name", required=True)
@@ -227,7 +225,18 @@ def main(argv: list[str] | None = None) -> int:
         e.add_argument("--force-reason")
     args = parser.parse_args(argv)
     try:
-        if args.target == "provinces":
+        if args.target == "offline-demo":
+            from .offline import demo
+            ids = ["liaoning", "anhui", "shanxi"] if args.province == "all" else [args.province]
+            _print([asyncio.run(demo(pid)) for pid in ids])
+        elif args.target == "replay":
+            from .offline import replay
+            _print(replay(args.province, args.input, args.sha256))
+        elif args.target == "new-province" or getattr(args, "command", None) not in (None, "check", "datasets", "status"):
+            # This release cannot attach, clear a block, queue a sample or
+            # enable a dataset. No environment variable bypass is provided.
+            raise ValueError("offline_release_live_actions_disabled; see docs/ACCEPTANCE.md")
+        elif args.target == "provinces":
             cmd_provinces(args)
         elif args.target == "new-province":
             _print({"created": str(adapt.scaffold(args.id, args.name, args.origin))})

@@ -5,6 +5,8 @@ Description=PMOS collector (%i)
 After=pmos-browser@%i.service
 
 [Service]
+# Offline release: no service/browser launch until a separately reviewed release.
+ExecStartPre=/usr/bin/false
 User=pmos
 WorkingDirectory=/home/pmos/pmos
 Environment=PMOS_DATA=/home/pmos/pmos-data

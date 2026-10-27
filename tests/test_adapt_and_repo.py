@@ -39,7 +39,7 @@ class AdaptTests(unittest.TestCase):
 
 
 class RepositoryConfigTests(unittest.TestCase):
-    def test_three_provinces_load_with_valid_specs_and_keepalive(self):
+    def test_three_provinces_load_offline_with_no_enabled_datasets(self):
         self.assertTrue({"anhui", "liaoning", "shanxi"} <= set(province_ids()))
         for pid in ("anhui", "liaoning", "shanxi"):
             with self.subTest(province=pid):
@@ -47,8 +47,8 @@ class RepositoryConfigTests(unittest.TestCase):
                 specs = province.datasets()
                 self.assertGreater(len(specs), 10)
                 keepalive = province.keepalive_spec()
-                self.assertIsNotNone(keepalive)
-                self.assertIn(keepalive, province.enabled())
+                self.assertIsNone(keepalive)
+                self.assertEqual(province.enabled(), [])
                 for spec in specs.values():
                     due = spec.periods_to_collect()  # a complete-only year may have none yet
                     for _, values in spec.scope_items()[:1]:
