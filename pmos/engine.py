@@ -25,8 +25,9 @@ import time
 from dataclasses import dataclass
 
 from .archive import Archive
+from .contracts import TaskIdentity
 from .faults import Decision, Fault, decide
-from .ledger import BUDGET_KINDS, Ledger
+from .ledger import BUDGET_KINDS, Ledger, validate_ledger_path
 from .pacing import DAY, wait_seconds
 from .periods import today
 from .province import Province
@@ -71,14 +72,16 @@ class Result:
 
 class Engine:
     def __init__(self, province: Province, transport, check_session=None, *, instance=None,
-                 clock=time.time, decode_response=None):
+                 clock=time.time, decode_response=None, account_alias="offline-default"):
         self.province = province
         self.policy = province.policy
         self.transport = transport
         self.check_session = check_session
         self.clock = clock
         self.decode_response = decode_response
+        self.account_alias = account_alias
         self.instance = instance or province.instance()
+        validate_ledger_path(self.instance / "ledger.sqlite3")
         self.state = StateStore(self.instance / "state")
         self.ledger = Ledger(self.instance / "ledger.sqlite3", clock)
         self.archive = Archive(self.instance / "original", province.id)
@@ -115,9 +118,21 @@ class Engine:
         return wait_seconds(self.policy, self.clock(), self.ledger.last_response_end(), starts, charged=charged)
 
     async def request(self, kind: str, request: dict, response_spec: dict, *,
-                      dataset: str | None = None, period: str | None = None, scope: str = "") -> Result:
+                      dataset: str | None = None, period: str | None = None, scope: str = "", identity=None) -> Result:
         """Send one request if spacing allows; the attempt is durable before sending."""
         async with self.serial:
+            if self.ledger.has_legacy_shadow():
+                # Offline compatibility imports never authorize ownership or
+                # dispatch, including keepalive and a newly invented identity.
+                raise Fault("legacy_shadow_requires_owner_handoff", "unknown")
+            if identity is not None:
+                if (identity.province != self.province.id or identity.dataset != dataset
+                        or identity.account_alias != self.account_alias):
+                    raise Fault("business_identity_context_mismatch", "local")
+                if kind in BUDGET_KINDS and self.ledger.consumed_identity(identity.key):
+                    raise Fault("consumed_identity_requires_review", "unknown")
+                if kind in BUDGET_KINDS and identity.file_key and self.ledger.consumed_file(identity.file_key):
+                    raise Fault("consumed_file_requires_review", "unknown")
             block = self.state.blocked()
             if block and (kind not in ("keepalive", "probe") or not block.get("keepalive_allowed")):
                 raise Fault("province_blocked", "local")
@@ -132,7 +147,7 @@ class Engine:
                 # Proven local, before durable dispatch. Never create a fake
                 # sent attempt for the historical missing-template failure.
                 raise Fault("request_template_missing", "local")
-            attempt = self.ledger.begin(kind, dataset, period, scope)
+            attempt = self.ledger.begin(kind, dataset, period, scope, identity=identity)
             try:
                 response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request})
             except Fault as fault:
@@ -166,6 +181,8 @@ class Engine:
 
     # -- collection -------------------------------------------------------
     def seed(self) -> None:
+        if self.ledger.has_legacy_shadow():
+            raise Fault("legacy_shadow_requires_owner_handoff", "unknown")
         day = today()
         if self._seeded_on == day:
             return
@@ -224,7 +241,8 @@ class Engine:
         if request is None:
             raise Fault("request_template_missing", "local")
         try:
-            result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=scope)
+            result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=scope,
+                                        identity=self.task_identity(spec, period, scope))
         except Fault as fault:
             if request.get("bootstrapping") and fault.category == "local":
                 # The page could not be driven: that report waits, the others go on.
@@ -263,7 +281,8 @@ class Engine:
         if not self._ready(request):
             raise Fault("request_template_missing", "local")
         attempt_scope = f"{scope}.p{cursor['page']:04d}" if scope else f"p{cursor['page']:04d}"
-        result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=attempt_scope)
+        result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=attempt_scope,
+                                    identity=self.task_identity(spec, period, scope, page=cursor["page"]))
         try:
             count, done = paging.page_result(result.response.body, pagination, cursor["page"])
         except paging.PagingError as exc:
@@ -329,7 +348,8 @@ class Engine:
             raise Fault("document_item_missing", "local")
         response_spec = spec.documents.get("download_response", {"kind": "document"})
         result = await self.request("collect", spec.build_download(item), response_spec,
-                                    dataset=spec.id, period=period, scope=scope)
+                                    dataset=spec.id, period=period, scope=scope,
+                                    identity=self.document_identity(spec, item))
         if result.outcome.result != "saved":
             self.ledger.settle_task(spec.id, period, "empty", scope=scope, reason="verified_empty_response")
             return result
@@ -338,6 +358,40 @@ class Engine:
         self.ledger.settle_task(spec.id, period, "saved", scope=scope, sha256=records[0]["sha256"],
                                 reason=f"files={len(records)}" if len(records) > 1 else None)
         return result
+
+    def task_identity(self, spec: DatasetSpec, period: str, scope: str = "", *, page=None) -> TaskIdentity:
+        kind = spec.period["kind"]
+        operation = "listing" if spec.documents is not None else (
+            "export" if spec.response.get("kind") in {"xlsx", "xls", "excel", "pdf", "binary", "document"} else "query")
+        dimensions = spec.scope_values(scope)
+        rule = spec.source.get("identity_contract", {})
+        if rule:
+            request = spec.build(period, dimensions)
+            data = request
+            for key in rule.get("request_data_path", ["body"]):
+                data = data[key]
+            fields = rule.get("date_fields")
+            if not isinstance(fields, list) or any(data.get(field) != period for field in fields):
+                raise Fault("identity_period_binding_changed", "local")
+            dimensions = {k: v for k, v in data.items() if k not in fields}
+        if page is not None:
+            actual_size = spec.request.get("pagination", {}).get("page_size")
+            if rule.get("page_size") is not None and actual_size is not None and rule["page_size"] != actual_size:
+                raise Fault("identity_page_size_binding_changed", "local")
+            size = rule.get("page_size", actual_size)
+            if size is not None:
+                if type(size) is not int or size < 1:
+                    raise Fault("identity_page_size_binding_changed", "local")
+                dimensions = {**dimensions, "_page_size": size}
+        return TaskIdentity(self.province.id, self.account_alias, spec.id,
+                            {"kind": kind, "label": period}, dimensions, page, operation)
+
+    def document_identity(self, spec: DatasetSpec, item: dict) -> TaskIdentity:
+        record_only = spec.documents.get("record_only") is True
+        return TaskIdentity(self.province.id, self.account_alias, spec.id,
+            {"kind": "snapshot", "anchor": "undated"},
+            {"record_id": item["record_id"]} if record_only else {"file_id": item["attachment"]["id"]},
+            operation="article" if record_only else "attachment")
 
     # -- session keeping --------------------------------------------------
     async def keep_session(self) -> str | None:
@@ -416,6 +470,9 @@ class Engine:
 
     async def tick(self) -> float:
         """One decision; returns seconds to sleep before the next tick."""
+        if self.ledger.has_legacy_shadow():
+            self._status("offline_shadow_no_dispatch")
+            return 5
         if self.check_session is not None:
             fault = await self.check_session()
             if fault is not None:

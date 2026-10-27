@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 from decimal import Decimal
+from datetime import date, datetime, timezone
 
 
 def canonical(value) -> bytes:
@@ -19,6 +20,32 @@ def canonical(value) -> bytes:
         raise TypeError("unsupported_canonical_type")
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
                       allow_nan=False, default=encode_decimal).encode("utf-8")
+
+
+def unit_from_response(raw: bytes, contract: dict) -> str | None:
+    """Only an explicitly bound inline unit field is currently resolved.
+
+    A plausible path, boolean or 64-hex string is not source verification.
+    External UI/header unit proofs need a future reviewed evidence resolver.
+    """
+    proof, unit = contract.get("unit_evidence"), contract.get("unit")
+    if not isinstance(proof, dict) or not isinstance(unit, str) or not unit:
+        return None
+    path = proof.get("response_path")
+    if (not isinstance(path, list) or not 1 <= len(path) <= 12
+            or any(type(key) not in (str, int) for key in path)
+            or path[-1] not in {"unit", "单位", "计量单位", "measurementUnit"}
+            or proof.get("source_sha256") != hashlib.sha256(raw).hexdigest()):
+        return None
+    try:
+        value = json.loads(raw)
+        for key in path:
+            if type(key) not in (str, int):
+                return None
+            value = value[key]
+    except (ValueError, KeyError, IndexError, TypeError):
+        return None
+    return unit if value == unit else None
 
 
 def reject_secrets(value) -> None:
@@ -33,6 +60,49 @@ def reject_secrets(value) -> None:
     elif isinstance(value, list):
         for child in value:
             reject_secrets(child)
+
+
+def normalized_period(value: dict) -> dict:
+    """Canonical calendar keys; equivalent spellings cannot evade dedupe.
+
+    Snapshot anchors remain capture anchors, never statistical periods. Weeks
+    and true ranges keep explicit boundaries rather than guessing a calendar.
+    """
+    kind = value["kind"]
+    if set(value) - {"kind", "label", "start", "end", "anchor"}:
+        raise ValueError("period_fields_unreviewed")
+    label = value.get("label", value.get("start", value.get("anchor")))
+    if kind == "snapshot":
+        if not isinstance(label, str) or not label or value.get("end", label) != label:
+            raise ValueError("explicit_snapshot_anchor_required")
+        def anchor(text):
+            if re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)", text):
+                return datetime.fromisoformat(text.replace("Z", "+00:00")).astimezone(timezone.utc).isoformat(timespec="microseconds")
+            return text
+        label = anchor(label)
+        if any(not isinstance(v, str) or anchor(v) != label for k, v in value.items() if k != "kind"):
+            raise ValueError("snapshot_anchor_mismatch")
+        return {"kind": kind, "anchor": label}
+    if kind in {"day", "month", "year"}:
+        if not isinstance(label, str) or value.get("start", label) != label or value.get("end", label) != label:
+            raise ValueError("calendar_period_mismatch")
+        if kind == "day":
+            if date.fromisoformat(label).isoformat() != label:
+                raise ValueError("canonical_day_required")
+        elif kind == "month":
+            if not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", label):
+                raise ValueError("canonical_month_required")
+        elif not re.fullmatch(r"\d{4}", label):
+            raise ValueError("canonical_year_required")
+        return {"kind": kind, "label": label}
+    if kind in {"week", "range"}:
+        if "start" not in value or "end" not in value or "label" in value:
+            raise ValueError("explicit_period_boundaries_required")
+        start, end = value["start"], value["end"]
+        if any(date.fromisoformat(v).isoformat() != v for v in (start, end)) or start > end:
+            raise ValueError("invalid_period_boundaries")
+        return {"kind": kind, "start": start, "end": end}
+    raise ValueError("explicit_period_kind_required")
 
 
 @dataclass(frozen=True)
@@ -55,7 +125,10 @@ class TaskIdentity:
             raise ValueError("explicit_period_kind_required")
         if self.page is not None and (type(self.page) is not int or self.page < 1):
             raise ValueError("page_invalid")
+        if not isinstance(self.dimensions, dict):
+            raise ValueError("explicit_dimensions_object_required")
         reject_secrets(value)
+        value["period"] = normalized_period(self.period)
         def json_types(item):
             if isinstance(item, dict):
                 return all(isinstance(key, str) and json_types(child) for key, child in item.items())
@@ -69,6 +142,15 @@ class TaskIdentity:
     @property
     def key(self) -> str:
         return hashlib.sha256(canonical(self.document())).hexdigest()
+
+    @property
+    def file_key(self) -> str | None:
+        if self.operation != "attachment" or not self.dimensions.get("file_id"):
+            return None
+        if not isinstance(self.dimensions["file_id"], str) or not self.dimensions["file_id"].strip():
+            raise ValueError("stable_file_id_string_required")
+        return hashlib.sha256(canonical({"province": self.province, "account_alias": self.account_alias,
+            "operation": "attachment", "file_id": self.dimensions["file_id"]})).hexdigest()
 
 
 @dataclass(frozen=True)

@@ -4,7 +4,7 @@ from __future__ import annotations
 from decimal import Decimal, InvalidOperation
 import json
 
-from ..contracts import ParsedArtifact, reject_secrets
+from ..contracts import ParsedArtifact, reject_secrets, unit_from_response
 from ..faults import Fault
 from ..validate import Response, evaluate
 
@@ -43,7 +43,7 @@ def decode(raw: bytes, contract: dict, *, http_status: int = 200) -> ParsedArtif
                 raise Fault("curve_value_unproven", "site_data")
             rows.append({"time": clock, "value": str(value), "source_field": key})
         # Units need a reviewed contract; the field names alone prove no unit.
-        return ParsedArtifact(rows, False, unit=contract.get("unit"),
+        return ParsedArtifact(rows, False, unit=unit_from_response(raw, contract),
                               semantic_state="selected_curve_grid_only")
     if shape in ("paged_records", "dynamic_records"):
         if shape == "dynamic_records":

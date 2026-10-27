@@ -127,7 +127,9 @@ async def sample(engine, spec: DatasetSpec, period: str, scope: str | None = Non
         request = apply(request, spec.request["pagination"], first_page(spec.request["pagination"]))
     try:
         result = await engine.request("sample", request, spec.response,
-                                      dataset=spec.id, period=period, scope=key)
+                                      dataset=spec.id, period=period, scope=key,
+                                      identity=engine.task_identity(spec, period, key,
+                                          page=first_page(spec.request["pagination"]) if "pagination" in spec.request else None))
     except Fault as fault:
         decision = decide(fault, "sample")
         if decision.scope == "dataset":
@@ -187,7 +189,8 @@ async def _sample_document(engine, spec: DatasetSpec, period: str) -> dict:
     response_spec = spec.documents.get("download_response", {"kind": "document"})
     try:
         result = await engine.request("sample", spec.build_download(item), response_spec,
-                                      dataset=spec.id, period=item["period"], scope=item["scope"])
+                                      dataset=spec.id, period=item["period"], scope=item["scope"],
+                                      identity=engine.document_identity(spec, item))
     except Fault as fault:
         decision = decide(fault, "sample")
         if decision.scope == "dataset":

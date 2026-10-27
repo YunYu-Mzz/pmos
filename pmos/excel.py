@@ -11,6 +11,8 @@ from __future__ import annotations
 import io
 import struct
 import zipfile
+from pathlib import PurePosixPath
+import re
 
 XLS_SIGNATURE = bytes.fromhex("d0cf11e0a1b11ae1")
 
@@ -19,9 +21,28 @@ class ContainerError(ValueError):
     pass
 
 
+def zip_preflight(archive: zipfile.ZipFile) -> None:
+    """Inspect directory metadata before any CRC decompression or XML read."""
+    infos = archive.infolist()
+    if len(infos) > 10000 or sum(info.file_size for info in infos) > 64 * 1024 * 1024:
+        raise ContainerError("zip_size_limit")
+    if len({info.filename for info in infos}) != len(infos):
+        raise ContainerError("zip_duplicate_parts")
+    for info in infos:
+        name = info.filename
+        if (not name or name.startswith("/") or "\\" in name or re.match(r"^[A-Za-z]:", name)
+                or ".." in PurePosixPath(name).parts):
+            raise ContainerError("zip_part_path_invalid")
+        if info.flag_bits & 1:
+            raise ContainerError("zip_encrypted_unsupported")
+
+
 def check_xlsx(payload: bytes) -> dict:
+    if len(payload) > 64 * 1024 * 1024:
+        raise ContainerError("zip_size_limit")
     try:
         with zipfile.ZipFile(io.BytesIO(payload)) as book:
+            zip_preflight(book)
             names = set(book.namelist())
             if not {"[Content_Types].xml", "xl/workbook.xml"} <= names:
                 raise ContainerError("xlsx_parts_missing")
@@ -141,8 +162,11 @@ def check_document(payload: bytes) -> dict:
             raise ContainerError("jpeg_truncated")
         return {"format": ".jpg"}
     if payload.startswith(b"PK\x03\x04"):
+        if len(payload) > 64 * 1024 * 1024:
+            raise ContainerError("zip_size_limit")
         try:
             with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+                zip_preflight(archive)
                 names = set(archive.namelist())
                 if archive.testzip() is not None:
                     raise ContainerError("zip_crc_failed")

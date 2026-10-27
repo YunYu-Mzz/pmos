@@ -13,6 +13,7 @@ from .engine import Engine, enqueue
 from .faults import Fault
 from .ledger import Ledger
 from .province import Province, province_ids
+from .province import REPO
 from .spec import SpecError
 from .state import StateStore
 
@@ -185,6 +186,33 @@ def main(argv: list[str] | None = None) -> int:
     replay_parser.add_argument("province", choices=["liaoning", "anhui", "shanxi"])
     replay_parser.add_argument("input", type=lambda v: __import__("pathlib").Path(v))
     replay_parser.add_argument("--sha256", required=True)
+    replay_parser.add_argument("--contract", type=lambda v: __import__("pathlib").Path(v),
+                               help="explicit phase-two bound contract; never use a credential config")
+    replay_parser.add_argument("--contract-sha256")
+    audit = sub.add_parser("offline-audit", help="rebuild local retained-source inventory; no network or queue writes")
+    audit.add_argument("province", choices=["liaoning", "anhui", "shanxi"])
+    audit.add_argument("--legacy-root", type=lambda v: __import__("pathlib").Path(v))
+    audit.add_argument("--report", type=lambda v: __import__("pathlib").Path(v), help="optional output under pmos/var only")
+    legacy = sub.add_parser("legacy-review", help="read a declared old queue and optionally index a NEW offline shadow")
+    legacy.add_argument("province", choices=["liaoning", "anhui", "shanxi"])
+    legacy.add_argument("format", choices=["journal", "jobs", "liaoning", "frontier", "sqlite-requests", "sqlite-publication"])
+    legacy.add_argument("input", type=lambda v: __import__("pathlib").Path(v))
+    legacy.add_argument("--sha256", required=True)
+    legacy.add_argument("--account-alias", required=True)
+    legacy.add_argument("--dataset", default="")
+    legacy.add_argument("--period-kind", choices=["day", "week", "month", "year", "snapshot", "range"])
+    legacy.add_argument("--operation", choices=["query", "export", "listing", "attachment", "article"],
+                        help="reviewed operation; do not infer export/query from the queue filename")
+    legacy.add_argument("--snapshot-anchor")
+    legacy.add_argument("--attempts", type=lambda v: __import__("pathlib").Path(v))
+    legacy.add_argument("--attempts-sha256")
+    legacy.add_argument("--mapping", type=lambda v: __import__("pathlib").Path(v))
+    legacy.add_argument("--mapping-sha256")
+    legacy.add_argument("--shadow-dir", type=lambda v: __import__("pathlib").Path(v))
+    queue_audit = sub.add_parser("legacy-audit", help="audit declared local legacy journals into a temporary fenced index")
+    queue_audit.add_argument("province", choices=["liaoning", "anhui", "shanxi"])
+    queue_audit.add_argument("--legacy-root", type=lambda v: __import__("pathlib").Path(v))
+    queue_audit.add_argument("--report", type=lambda v: __import__("pathlib").Path(v))
     new = sub.add_parser("new-province", help="scaffold provinces/<id>")
     new.add_argument("id")
     new.add_argument("--name", required=True)
@@ -231,7 +259,37 @@ def main(argv: list[str] | None = None) -> int:
             _print([asyncio.run(demo(pid)) for pid in ids])
         elif args.target == "replay":
             from .offline import replay
-            _print(replay(args.province, args.input, args.sha256))
+            contract = None
+            if args.contract is not None:
+                from .queue_compat import read_json
+                if not args.contract_sha256:
+                    raise ValueError("contract_sha256_required")
+                contract, _ = read_json(args.contract, expected_sha256=args.contract_sha256)
+            _print(replay(args.province, args.input, args.sha256, contract=contract))
+        elif args.target == "offline-audit":
+            from .offline import audit_inventory
+            from .contracts import canonical
+            report = audit_inventory(args.province, args.legacy_root or REPO.parent / args.province)
+            if args.report:
+                path = offline_output(args.report)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with path.open("xb") as stream:
+                    stream.write(canonical(report) + b"\n")
+            _print({k: report[k] for k in report if k not in {
+                "entries", "units", "excluded_units", "sources", "indicator_rows", "input_refs", "source_references",
+                "catalog_references", "public_input_hashes"}})
+        elif args.target == "legacy-review":
+            cmd_legacy_review(args)
+        elif args.target == "legacy-audit":
+            from .queue_audit import audit_queues
+            from .contracts import canonical
+            report = audit_queues(args.province, args.legacy_root or REPO.parent / args.province)
+            if args.report:
+                path = offline_output(args.report)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with path.open("xb") as stream:
+                    stream.write(canonical(report) + b"\n")
+            _print({k: report[k] for k in report if k not in {"source_views", "source_refs"}})
         elif args.target == "new-province" or getattr(args, "command", None) not in (None, "check", "datasets", "status"):
             # This release cannot attach, clear a block, queue a sample or
             # enable a dataset. No environment variable bypass is provided.
@@ -253,6 +311,65 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 handlers[args.command](province, args)
         return 0
-    except (SpecError, ValueError) as exc:
+    except (SpecError, ValueError, Fault) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+
+
+def offline_output(path):
+    result = path.resolve()
+    if not result.is_relative_to((REPO / "var").resolve()):
+        raise ValueError("offline_output_must_be_under_pmos_var")
+    return result
+
+
+def cmd_legacy_review(args):
+    import hashlib
+    from .queue_compat import (QueueContext, read_json, decode_journal, decode_jobs, decode_liaoning,
+        decode_frontier, read_native_sqlite, summarize, import_shadow)
+    mapping = {}
+    if args.mapping:
+        if not args.mapping_sha256:
+            raise ValueError("mapping_sha256_required")
+        mapping, _ = read_json(args.mapping, expected_sha256=args.mapping_sha256)
+    context = QueueContext(args.province, args.account_alias, args.dataset, args.period_kind,
+        operation=args.operation or mapping.get("operation", "query"),
+        dataset_aliases=mapping.get("dataset_aliases", {}), snapshot_anchor=args.snapshot_anchor)
+    context.check()
+    if args.format.startswith("sqlite-"):
+        if args.input.is_symlink():
+            raise ValueError("regular_queue_snapshot_required")
+        before = hashlib.sha256(args.input.read_bytes()).hexdigest()
+        if before != args.sha256:
+            raise ValueError("queue_snapshot_sha256_changed")
+        rows = read_native_sqlite(args.input, context, table="work" if args.format.endswith("publication") else "requests")
+    else:
+        value, before = read_json(args.input, expected_sha256=args.sha256)
+        if args.format == "journal":
+            rows = decode_journal(value, context)
+        elif args.format == "jobs":
+            attempts = None
+            if args.attempts:
+                if not args.attempts_sha256:
+                    raise ValueError("attempts_sha256_required")
+                attempts, _ = read_json(args.attempts, expected_sha256=args.attempts_sha256)
+            rows = decode_jobs(value, context, attempts=attempts)
+        elif args.format == "liaoning":
+            rows = decode_liaoning(value, context, period_kinds=mapping.get("period_kinds"),
+                                    source_contracts=mapping.get("source_contracts"))
+        else:
+            rows = decode_frontier(value, context)
+    if hashlib.sha256(args.input.read_bytes()).hexdigest() != before:
+        raise ValueError("rolling_source_changed_requires_new_snapshot")
+    result = {"province": args.province, "source_sha256": before, **summarize(rows)}
+    if args.shadow_dir:
+        directory = offline_output(args.shadow_dir)
+        if directory.exists():
+            raise ValueError("new_offline_shadow_directory_required")
+        ledger = Ledger(directory / "ledger.sqlite3")
+        try:
+            result.update(import_shadow(ledger, rows, context, source_id=args.format, snapshot_sha256=before))
+            result["index"] = ledger.legacy_summary()
+        finally:
+            ledger.close()
+    _print(result)

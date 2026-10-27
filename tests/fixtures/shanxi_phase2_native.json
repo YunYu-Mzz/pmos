@@ -1,0 +1,15 @@
+{
+  "status": 0,
+  "message": "",
+  "data": {
+    "list": [
+      {"scope": "脱敏主体A", "record": 0, "day": "2026-10-18"},
+      {"scope": "脱敏主体B", "record": -2, "day": "2026-10-18"},
+      {"scope": "脱敏主体C", "record": null, "day": "2026-10-18"}
+    ],
+    "pageNum": 1,
+    "pageSize": 3,
+    "total": 3,
+    "pages": 0
+  }
+}

@@ -19,17 +19,42 @@ def load_contract(province: str) -> dict:
     return json.loads((PROVINCES / province / "offline.json").read_text())
 
 
-def replay(province: str, path: Path, expected_sha256: str) -> dict:
+def replay(province: str, path: Path, expected_sha256: str, *, contract: dict | None = None) -> dict:
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 16 * 1024 * 1024:
         raise ValueError("bounded_regular_original_required")
     raw = path.read_bytes()
     digest = hashlib.sha256(raw).hexdigest()
     if digest != expected_sha256:
         raise ValueError("source_sha256_mismatch")
-    parsed = decode(raw, load_contract(province))
+    decoder = decode if contract is None else province_decoder(province)
+    parsed = decoder(raw, load_contract(province) if contract is None else contract)
     return {"province": province, "source_sha256": digest, "size": len(raw),
             "parsed_sha256": hashlib.sha256(canonical(parsed.rows)).hexdigest(),
             **parsed.summary(), "website_requests": 0, "validation": "sample_only"}
+
+
+def province_decoder(province: str):
+    if province == "liaoning":
+        from .adapters.liaoning import decode as decoder
+    elif province == "anhui":
+        from .adapters.anhui import decode as decoder
+    elif province == "shanxi":
+        from .adapters.shanxi import decode as decoder
+    else:
+        raise ValueError("province_not_in_phase_two")
+    return decoder
+
+
+def audit_inventory(province: str, legacy_root: Path) -> dict:
+    if province == "liaoning":
+        from .adapters.liaoning import build_inventory
+    elif province == "anhui":
+        from .adapters.anhui import build_inventory
+    elif province == "shanxi":
+        from .adapters.shanxi import audit_inventory as build_inventory
+    else:
+        raise ValueError("province_not_in_phase_two")
+    return build_inventory(legacy_root)
 
 
 async def demo(province: str) -> dict:

@@ -5,6 +5,9 @@ description = "Unified collector for State Grid PMOS electricity-market sites"
 requires-python = ">=3.11"
 dependencies = ["playwright>=1.48", "olefile>=0.47"]
 
+[project.optional-dependencies]
+offline-workbooks = ["xlrd==2.0.2", "olefile==0.47"]
+
 [project.scripts]
 pmos = "pmos.cli:main"
 

@@ -42,12 +42,37 @@ CREATE TABLE IF NOT EXISTS records(
   PRIMARY KEY(dataset, record_id));
 CREATE INDEX IF NOT EXISTS attempts_finished ON attempts(finished_at);
 CREATE INDEX IF NOT EXISTS attempts_outcome ON attempts(outcome);
+CREATE TABLE IF NOT EXISTS attempt_identities(
+  attempt_id INTEGER PRIMARY KEY, identity_key TEXT NOT NULL, identity_json TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS attempt_identity_key ON attempt_identities(identity_key);
+CREATE TABLE IF NOT EXISTS migration_owner(
+  singleton INTEGER PRIMARY KEY CHECK(singleton=1),province TEXT NOT NULL,account_alias TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS migration_sources(
+  source_id TEXT NOT NULL,snapshot_sha256 TEXT NOT NULL,rows_sha256 TEXT NOT NULL,
+  PRIMARY KEY(source_id,snapshot_sha256));
+CREATE TABLE IF NOT EXISTS legacy_records(
+  source_id TEXT NOT NULL,snapshot_sha256 TEXT NOT NULL,legacy_key TEXT NOT NULL,
+  identity_key TEXT,identity_json TEXT,state TEXT NOT NULL,consumed INTEGER NOT NULL,
+  blockers_json TEXT NOT NULL,facts_sha256 TEXT NOT NULL,
+  PRIMARY KEY(source_id,snapshot_sha256,legacy_key));
+CREATE INDEX IF NOT EXISTS legacy_identity_key ON legacy_records(identity_key);
+CREATE TABLE IF NOT EXISTS file_tombstones(
+  file_key TEXT PRIMARY KEY,identity_key TEXT NOT NULL,source_ref TEXT NOT NULL);
 """
+
+
+def validate_ledger_path(path: Path | str) -> Path:
+    """Reject every legacy province target BEFORE mkdir/SQLite side effects."""
+    target = Path(path).resolve()
+    workspace = Path(__file__).resolve().parents[2]
+    if any(target.is_relative_to(workspace / province) for province in ("liaoning", "anhui", "shanxi")):
+        raise ValueError("legacy_directory_never_a_unified_ledger_target")
+    return target
 
 
 class Ledger:
     def __init__(self, path: Path | str, clock=time.time):
-        self.path = Path(path)
+        self.path = validate_ledger_path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.clock = clock
         self.db = sqlite3.connect(self.path, isolation_level=None, timeout=30)
@@ -171,12 +196,53 @@ class Ledger:
         return result
 
     # -- attempts ---------------------------------------------------------
-    def begin(self, kind: str, dataset: str | None = None, period: str | None = None, scope: str = "") -> int:
+    def begin(self, kind: str, dataset: str | None = None, period: str | None = None, scope: str = "", *, identity=None) -> int:
         if kind not in ATTEMPT_KINDS:
             raise ValueError("attempt_kind_invalid")
-        cursor = self._write("INSERT INTO attempts(kind, dataset, period, scope, started_at) VALUES(?, ?, ?, ?, ?)",
-                             (kind, dataset, period, scope, self.clock()))
-        return int(cursor.lastrowid)
+        from .contracts import canonical
+        document = canonical(identity.document()).decode() if identity else None
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            if self.has_legacy_shadow():
+                raise ValueError("legacy_shadow_requires_owner_handoff")
+            if identity:
+                owner = self.db.execute("SELECT province,account_alias FROM migration_owner WHERE singleton=1").fetchone()
+                if owner and tuple(owner) != (identity.province, identity.account_alias):
+                    raise ValueError("ledger_province_account_mismatch")
+                self.db.execute("INSERT OR IGNORE INTO migration_owner VALUES(1,?,?)", (identity.province, identity.account_alias))
+            if identity and kind in BUDGET_KINDS and self.consumed_identity(identity.key):
+                raise ValueError("business_identity_already_consumed")
+            if identity and kind in BUDGET_KINDS and identity.file_key and self.consumed_file(identity.file_key):
+                raise ValueError("business_file_already_consumed")
+            cursor = self.db.execute("INSERT INTO attempts(kind,dataset,period,scope,started_at) VALUES(?,?,?,?,?)",
+                                     (kind, dataset, period, scope, self.clock()))
+            attempt = int(cursor.lastrowid)
+            if identity:
+                self.db.execute("INSERT INTO attempt_identities VALUES(?,?,?)", (attempt, identity.key, document))
+                if kind in BUDGET_KINDS and identity.file_key:
+                    self.db.execute("INSERT INTO file_tombstones VALUES(?,?,?)", (identity.file_key, identity.key, f"attempt:{attempt}"))
+            self.db.execute("COMMIT")
+            return attempt
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def consumed_identity(self, identity_key: str) -> bool:
+        return bool(self.db.execute("SELECT 1 FROM attempt_identities i JOIN attempts a ON a.id=i.attempt_id"
+            " WHERE i.identity_key=? AND a.kind IN ('collect','sample') LIMIT 1", (identity_key,)).fetchone()
+            or self.db.execute("SELECT 1 FROM legacy_records WHERE identity_key=? AND consumed=1 LIMIT 1", (identity_key,)).fetchone())
+
+    def has_legacy_shadow(self) -> bool:
+        return self.db.execute("SELECT 1 FROM migration_sources LIMIT 1").fetchone() is not None
+
+    def consumed_file(self, file_key: str) -> bool:
+        return self.db.execute("SELECT 1 FROM file_tombstones WHERE file_key=?", (file_key,)).fetchone() is not None
+
+    def legacy_summary(self) -> dict:
+        return {"snapshots": self.db.execute("SELECT COUNT(*) FROM migration_sources").fetchone()[0],
+                "states": {r[0]: r[1] for r in self.db.execute("SELECT state,COUNT(*) FROM legacy_records GROUP BY state")},
+                "unmapped": self.db.execute("SELECT COUNT(*) FROM legacy_records WHERE identity_key IS NULL").fetchone()[0],
+                "dispatch_allowed": False}
 
     def finish(self, attempt: int, outcome: str, *, http_status: int | None = None,
                business_status: str | None = None, reason: str | None = None) -> None:
