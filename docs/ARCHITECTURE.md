@@ -1,3 +1,5 @@
+> 第二阶段已扩展三省decoder、共用workbooks和旧队列影子兼容；最新逐项资格见PHASE_TWO.md与QUEUE_COMPATIBILITY.md。下文生产目标仍未获准切换。
+
 # 五省统一架构、迁移与回滚
 
 本方案以现有PMOS为唯一公共引擎。第一阶段只有辽宁、安徽、山西的离线实现；陕西、冀北是后续适配目标，没有迁入配置或队列。共用代码不共用登录上下文、账号凭据、出口、队列、锁、原件或故障。
@@ -10,7 +12,10 @@ pmos/
     engine.py             共用顺序引擎；transport/decoder注入
     ledger.py             本实例任务/attempt；发送前提交；已消费保护
     contracts.py          版本化业务身份、ParsedArtifact、无凭据契约
-    adapters/native.py    三种明确的离线形态；不生成网站参数
+    adapters/             native基础形态及辽/皖/晋源绑定decoder；不生成网站参数
+    workbooks.py          共用XLSX源cells读取，结构和大小校验
+    queue_compat.py       六类旧队列只读规范化、身份映射、非派发shadow
+    queue_audit.py        真实本地旧快照的只读审计
     province.py/spec.py   省份历史目录及规格；不授予线上资格
     pacing.py/faults.py   响应后节流、预算、错误作用域
     archive.py/validate.py 容器/原件SHA、responses/quarantine与original
@@ -35,8 +40,8 @@ pmos/
 
 | 接口 | 输入/输出 | 不变量与本次边界 |
 |---|---|---|
-| TaskIdentity v1 | province/account_alias/dataset/period(kind及真实起止)/dimensions/page/operation → canonical SHA | 数字ID与字符串ID不同；页码独立；session/template修订放receipt，不能换身份绕过去重。本次已有类型，但旧435规格仍用(dataset,period,scope)台账键，完整v1绑定及旧ID对照是上线门槛 |
-| ProvinceAdapter | reviewed source contract + raw response → ParsedArtifact | 保留原字段、0/负值/缺值、源坐标或source_field；未知单位null；本次3形态，后续按省分模块亦可，不能强塞通用fetch |
+| TaskIdentity v1 | province/account_alias/dataset/period(kind及真实起止)/dimensions/page/operation → canonical SHA | 数字ID与字符串ID不同；页码独立；session/template修订放receipt，不能换身份绕过去重。Engine/attempt现已接入规范v1，旧(dataset,period,scope)键保留兼容；source identity_contract、页大小和附件墓碑有跨层测试；仍有明确unmapped旧记录，完整对照是上线门槛 |
+| ProvinceAdapter | reviewed source contract + raw response → ParsedArtifact | 保留原字段、0/负值/缺值、源坐标或source_field；未知单位null；本轮辽/皖/晋已分纯decoder，支持更多源绑定model、分页、源正文和cells，资格逐项分层；不能强塞通用fetch |
 | Transport | send(explicit request) → Response(status/content_type/body/parts) | 当前fake可运行；未来需ObservedOperation(真实请求集合、attempt、起止、sending knowledge)包住UI/native多步，所有旁路请求均先仲裁。本阶段不宣称UI点击=1次网站请求 |
 | Ledger | durable begin → receive/spool → finish → archive/confirm | pending优先阻断；任何已派发业务身份即使failed/unknown/成功未confirm也不可自动重发；分页scope含页；网络端不宣称exactly-once |
 | Archive | 原bytes + receipt → SHA/path/size | 文件fsync+目录fsync+manifestfsync；坏文件进quarantine；业务有效original与spool不重复计数；空响应原文也保存，0字节不当有效原件 |
@@ -71,7 +76,7 @@ pmos/
 1. 先固定省份、账号别名、源代码/运行代码SHA、原owner、当前策略与授权引用。只导出非敏感状态，禁止读取profile、Cookie或私密配置。
 2. 各省由原owner在已结算边界冻结**只读导出**：pending、leased/reserved、sent、unknown、denied、failed、saved、empty、已发未确认和完整分页frontier。此次没有冻结或导出生产队列。
 3. 建立旧ID→TaskIdentity v1逐项映射。真实范围缺失、旧cursor不可稳定标识、只有日期而无主体、状态歧义，全部pending_review。先导入所有已消耗/未知/拒绝墓碑，再考虑未尝试任务；manifest存在不能证明其他身份未发。
-4. `legacy.review_manifest`只按显式字段映射核对受控路径和SHA，不写旧文件，输出queue_import_ready=false。目前不提供一键迁移队列，避免省略第2/3步；需要新的经审核导出适配器后再接入。
+4. `legacy.review_manifest`只按显式字段映射核对受控路径和SHA，不写旧文件，输出queue_import_ready=false。第二阶段queue_compat已支持六类旧格式及非派发shadow，缺规则仍unmapped；没有绕过第2/3步的一键上线迁移。
 5. 原件保持旧路径/不可变内容；新目录先保存受控引用和source SHA，不大批复制。新解析写侧车，保留旧parsed及其schema版本。复用原件不计新增网站请求，不从空目录补发旧日期。
 6. 影子模式比较每省新旧身份数、唯一文件/来源、原件SHA、空/非空、业务周期、节点/成员/线路/分页覆盖。明确列表不等于附件、日期两端不等于连续、原件格式通过不等于字段语义通过。
 7. 取得单省具体切换授权，持原owner锁，排除keeper/协调器在途，在原Chrome上handoff；不得先启动新worker再停旧worker。不能以新root避开旧锁。
@@ -82,8 +87,8 @@ pmos/
 | 阶段 | 本次状态 | 放行条件 |
 |---|---|---|
 | A 文档/源码/故障审查、保留已有框架 | 完成，证据有SHA | 无生产改动，明确历史与现状 |
-| B 共用离线引擎和三省样本 | 完成，固定夹具及9份原件回放 | 所选形态通过，不称全站完成 |
-| C 完整身份映射/旧队列影子导出、资源与owner协议 | 待做 | 导出由原owner授权、逐项差异0/显式hold；完整操作计数 |
+| B 共用离线引擎和三省样本 | 第一阶段完成；第二阶段已扩展逐项目录和更多源形态 | 当前资格见PHASE_TWO，不称全站全语义完成 |
+| C 完整身份映射/旧队列影子导出、资源与owner协议 | 旧格式/临时shadow已实现；unmapped补证、冻结导出和owner仍待做 | 导出由原owner授权、逐项差异0/显式hold；完整操作计数 |
 | D 单省受控上线 | 未授权、未执行 | 满足ACCEPTANCE中的小预算、keepalive及回滚条件 |
 | E 第二/第三省，再加陕西/冀北 | 待稳定后逐省 | 不共享队列、账号和会话，新增scope独立验收 |
 

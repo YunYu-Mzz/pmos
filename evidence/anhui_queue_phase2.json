@@ -1,0 +1,3557 @@
+{
+ "province": "anhui",
+ "mode": "offline_queue_compatibility",
+ "source_views": [
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_querygensetinstall.json",
+   "sha256": "09053bc5c65121135fc238fc9a7dd0f8181c20d52419a8d857b9c135f19a5c49",
+   "records": 9,
+   "states": {
+    "saved": 9
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 9,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_querysocietyindustriesuse.json",
+   "sha256": "488a8788bc3268d4ef3129e3be0900a1614f3c03b7a61b313832f20b6779b4d2",
+   "records": 9,
+   "states": {
+    "saved": 7,
+    "pending": 2
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 7,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d1477e90d75054d9.json",
+   "sha256": "0670cb7edbd24f50c8b23e9d7232f48a80091b59494a6a1367b4d2b6083bc7aa",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_12765c7bd301cc9a.json",
+   "sha256": "20844f43bc60b787417d367ea725f3791699f58891665e6090b31e73a073438b",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_eda606edc1c9d156.json",
+   "sha256": "5dbbe740083dd876dfe2666b09fe0c08e695f0ec9b38eabeb7dd37d46c73473a",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_2fdf370813988841.json",
+   "sha256": "fce0516baa53b13ecf5ab625cf1d9b7b1c6e9490c784fbba1a38a650f548b880",
+   "records": 4,
+   "states": {
+    "saved": 4
+   },
+   "mapped": 0,
+   "unmapped": 4,
+   "consumed": 4,
+   "blocked": 4,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_fa1d58eecf0c8e9d.json",
+   "sha256": "d2fd605cedb6e6ec4f007c1a1d8f7e3693a01ea4e67cc08165b49043671b42e4",
+   "records": 61,
+   "states": {
+    "pending": 55,
+    "saved": 6
+   },
+   "mapped": 0,
+   "unmapped": 61,
+   "consumed": 6,
+   "blocked": 61,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_86e8adf7fd232a7d.json",
+   "sha256": "0b119659846bcf5c775e096f6cc5ed822e61bfd45d3a6ed427b946cd3a926725",
+   "records": 14,
+   "states": {
+    "saved": 7,
+    "pending": 7
+   },
+   "mapped": 0,
+   "unmapped": 14,
+   "consumed": 7,
+   "blocked": 14,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_6a2ff820ed916f3f.json",
+   "sha256": "ff53bde7754de7c0cbfe2879a5933c2e2b1bd8cd09ad3b7f5b811f47cafbcc82",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_e0693cbeead18de2.json",
+   "sha256": "9237126d0472d0de2437c9db0386d0420ecb05e2c56ae1c5d497fbc9947ad5ee",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 1,
+   "unmapped": 0,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_66d506c8a46471d9.json",
+   "sha256": "98c90636a84e54ee5ecdb8549c8282953c088a77bb74723e435e90318bfb0735",
+   "records": 10,
+   "states": {
+    "saved": 2,
+    "pending": 8
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 2,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c1add81ba5c2f3e5.json",
+   "sha256": "f6f0475f604afdaf7d65cd15aee7733e99b790edaee042d68e42c67942d3e23a",
+   "records": 10,
+   "states": {
+    "pending": 9,
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 1,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_293f4ec8334ff8d1.json",
+   "sha256": "a3958f0709a73bb24b0adea062bb8301c9eca0e11771ef968ae0f7fc4fe9a648",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_32101a70fcd45761.json",
+   "sha256": "994f9e73da9913808abd2edba95c9ce16ec0a1fa0ca9549a7037f899f0813dfc",
+   "records": 10,
+   "states": {
+    "pending": 9,
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 1,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_0f6490920755006c.json",
+   "sha256": "03169a660654890d22591fb465386d39efbab98be4e10f7d36d3c37e30d0d3ae",
+   "records": 340,
+   "states": {
+    "pending": 245,
+    "saved": 93,
+    "unknown": 2
+   },
+   "mapped": 340,
+   "unmapped": 0,
+   "consumed": 95,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_5396a250df24ff32.json",
+   "sha256": "442e6af246c0af59f96a000dd68aaea1294d5903176e9f5f69665e6ae2bfd9ef",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_interregional_exchange_monthly.json",
+   "sha256": "4ca344b8873c97383ca4933b4e9bd71250e227f019bcf5160669c92657b6ba48",
+   "records": 8,
+   "states": {
+    "saved": 4,
+    "pending": 4
+   },
+   "mapped": 0,
+   "unmapped": 8,
+   "consumed": 4,
+   "blocked": 8,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_c1811d02600ebdcf.json",
+   "sha256": "b53640e14a608161ff5ed8c0fd7f80b0d25bec71343eabd5e62bbde7ae9995ff",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_9880076c973b4062.json",
+   "sha256": "d4fb6c7f81df5a8f3505b9da9b0feaab4501dd049c39912dea6b8307329580d4",
+   "records": 5,
+   "states": {
+    "saved": 3,
+    "pending": 2
+   },
+   "mapped": 0,
+   "unmapped": 5,
+   "consumed": 3,
+   "blocked": 5,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_311d445f23bd011c.json",
+   "sha256": "795aa64ebe13d4fedc982e2baa70dba2c9645f5c11a5f0d1dda56520dd7670de",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_9bc32f76b0350470.json",
+   "sha256": "dadbc0dfa64461235cef91de900e4a35aed849b8157fe4ce086850d5d33897d0",
+   "records": 11,
+   "states": {
+    "saved": 11
+   },
+   "mapped": 0,
+   "unmapped": 11,
+   "consumed": 11,
+   "blocked": 11,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+   "sha256": "e31686c521195f752081690ab99ea50aca857f11de57d235fcc25696287a00b5",
+   "records": 40,
+   "states": {
+    "saved": 39,
+    "pending": 1
+   },
+   "mapped": 0,
+   "unmapped": 40,
+   "consumed": 39,
+   "blocked": 40,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_831d53381887aff8.json",
+   "sha256": "e830adc8523beebc732c174c26dc11df23ebfae854b653220a0d56d371c0aa17",
+   "records": 10,
+   "states": {
+    "saved": 10
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 10,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_3412916d4928c199.json",
+   "sha256": "dd64ce9a40170efb0ca94c54cca9c39dd499dd4518f1463ec00fbe8cf82946f4",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4913dc9fded9a59c.json",
+   "sha256": "05ef44ed50af94fd3453120bf17c25e28622c62ccbca5a52787b37dd3fed2c7c",
+   "records": 9,
+   "states": {
+    "saved": 8,
+    "pending": 1
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 8,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_forecast_anchor_queue_renewables_output_forecast_weekly.json",
+   "sha256": "38e1789fb3634bc8b5858552b31ac0a55c1c87df4d858cc2104ffad8f6498220",
+   "records": 295,
+   "states": {
+    "saved": 293,
+    "unknown": 1,
+    "pending": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d2d7e48c7b981a61.json",
+   "sha256": "a7f8870538b045f8a092d9e1a98b00545a9eb9c92dc40e994c1d08d16e1465f6",
+   "records": 10,
+   "states": {
+    "unknown": 1,
+    "saved": 7,
+    "pending": 2
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 8,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_4e56198d29ddfeb4.json",
+   "sha256": "6461aadab67522a10d618a78347b5823e7e8e3152fda38054a701eb39f64502b",
+   "records": 10,
+   "states": {
+    "saved": 8,
+    "unknown": 1,
+    "pending": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 9,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_ebb098e97e58cabd.json",
+   "sha256": "1de07918ba9f27ddab4c3c4aeeaf333472c51819f55bd6ca8aa7e76d4ea72a55",
+   "records": 10,
+   "states": {
+    "saved": 9,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 10,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a4759c448ef55e23.json",
+   "sha256": "d914136f1e7f573fab86aa92efdd7aeadc6bdba853c51093abbf49df37211f7d",
+   "records": 10,
+   "states": {
+    "saved": 9,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 10,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_bc21e8d6609e4183.json",
+   "sha256": "8786a31cd76fbf895a0fbe506ed5a3dc615e7ac4b9c319ec0ff29fab37e0b4b6",
+   "records": 10,
+   "states": {
+    "saved": 10
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 10,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_cabf8a7685a92fd4.json",
+   "sha256": "07aea2717a9cc7d52b7e95237826d3fbc9a319d7006c57386ed667cd0fc3afa9",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_39caee42e016ea0f.json",
+   "sha256": "272c87e99eae34b19e9ccf9b2d55e82d6171ca2c24216ad40b94c316e3597e9e",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b48543da139c9a47.json",
+   "sha256": "225378dfdf5f0ff2dc444607e60387cb08750b5e8609a2e5dc524ccf476a8f5d",
+   "records": 12,
+   "states": {
+    "saved": 12
+   },
+   "mapped": 0,
+   "unmapped": 12,
+   "consumed": 12,
+   "blocked": 12,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b38716acc611a249.json",
+   "sha256": "e6f6b6b3227e42d5911fefa1be14480eb819eeda61ad2d01b896803f44fba667",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_e6da473be59e8744.json",
+   "sha256": "1c7ec2787814270a2d18474349360be46dd87d5729d5f786ad9a8c8e00fd7261",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d26ddf6c487ad028.json",
+   "sha256": "4deecfde2fb81694261738929a5634160afc3bdf4a6f0f023f4c13323f548656",
+   "records": 9,
+   "states": {
+    "saved": 2,
+    "pending": 7
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 2,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_6f076a4ed960b33f.json",
+   "sha256": "7998f8e5ba8b75c86cf761676afc9bbf0c5d92f25940cebf8d1cb2de2bb3d2a5",
+   "records": 10,
+   "states": {
+    "saved": 10
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 10,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d12356772dff7c24.json",
+   "sha256": "8c70a4b48b299807d83b02416cf040a4e198467fe24c430ecefe48cb31f65035",
+   "records": 9,
+   "states": {
+    "saved": 8,
+    "pending": 1
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 8,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_37bddf5592f99115.json",
+   "sha256": "bf9fb573e88302dd4d16aebbc829711ded44d5af4bcd81bc59b3fdeba3885128",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d64c01f6f58bcd18.json",
+   "sha256": "4c12cd2b46e29ea1f1ed617d76bd94b1697fe9df253a9857a2f60e89446fe02d",
+   "records": 2,
+   "states": {
+    "saved": 2
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 2,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b8329caed82f1a94.json",
+   "sha256": "cbd401b00b54bc79a7cfc3ad3fbf9d5ea91e31e0c492292bf892dac4a443113c",
+   "records": 8,
+   "states": {
+    "saved": 2,
+    "pending": 6
+   },
+   "mapped": 0,
+   "unmapped": 8,
+   "consumed": 2,
+   "blocked": 8,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d911b23d47ee0020.json",
+   "sha256": "94b86a12365b8c5c43953d76a0fa86855d74bcb09206b692a559db615421c737",
+   "records": 9,
+   "states": {
+    "saved": 2,
+    "pending": 7
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 2,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d6fd27dee250c7cd.json",
+   "sha256": "5fcf6194a1d316a608ba1617c26ca434b043bf35ff43ce779f1e564af6f94318",
+   "records": 10,
+   "states": {
+    "saved": 9,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 10,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_f9d09d9d29d5a932.json",
+   "sha256": "d33bb862e27d44d1ce0ec5552fac9b486100c20255a260cbeb44f01f89206309",
+   "records": 11,
+   "states": {
+    "saved": 2,
+    "pending": 9
+   },
+   "mapped": 0,
+   "unmapped": 11,
+   "consumed": 2,
+   "blocked": 11,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_25bbebaf5f139458.json",
+   "sha256": "3e572839322ad504b808aec4fac0d9e094bae6ea5d099e0e49d02c40f7d72958",
+   "records": 10,
+   "states": {
+    "saved": 2,
+    "pending": 8
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 2,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_0fc4efcff1677d40.json",
+   "sha256": "137f45ae8ed939390f1d192b495707ce52b6bcb1154a00fea78dac30b5f18958",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b7a0824de1b6cf57.json",
+   "sha256": "0a95b92acc31d0ab8fc81a8c16b8dc69906d25d05f0f3dd92bc29b877eff4769",
+   "records": 9,
+   "states": {
+    "saved": 2,
+    "pending": 7
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 2,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a1f13f9d96f42c54.json",
+   "sha256": "afa4218e5d8df58a345b201a69f8e36a6403378e06044102157b23b562722de8",
+   "records": 10,
+   "states": {
+    "saved": 9,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 10,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_15f5ff5297d3add4.json",
+   "sha256": "e42f323d5756be7fe5e44049d8ed4886604287cd2be4e2c01057aa858ad0313c",
+   "records": 10,
+   "states": {
+    "pending": 2,
+    "saved": 7,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 8,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_fc829874e714ff2b.json",
+   "sha256": "1b690c80bc130592d2bfa508ebbd046454cb41ad9c185bfea78d7d83ef6a73f1",
+   "records": 10,
+   "states": {
+    "saved": 2,
+    "pending": 8
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 2,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_1e927cb76058ef1a.json",
+   "sha256": "94317e0c9800c23e87062a991e958dc16dd88b0c0d0cc82772e40d369046d9ee",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a354e18e4e271ea9.json",
+   "sha256": "6ab40293ae3a81a2ef8f66cfdf24f20bd46685393c4b4c3542388a1b2bc5c6b8",
+   "records": 10,
+   "states": {
+    "pending": 2,
+    "saved": 7,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 8,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_573fce1bdd8cff0e.json",
+   "sha256": "460cdea627ed96995348ec20c96cb1c4f28f7babc109b4496cdccc8b50c61309",
+   "records": 9,
+   "states": {
+    "saved": 9
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 9,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_f9bf68058b99c808.json",
+   "sha256": "5a560349af69024c941d9c9c2c8e155c72c52b3782377853a44d07530dce0917",
+   "records": 9,
+   "states": {
+    "saved": 9
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 9,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_e3db7e65e4854417.json",
+   "sha256": "e0b6923e97e4ad15953cd7482a4b11fa9cc9c72217ec69e016001459975d5f56",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d8e2441bb7cdbad9.json",
+   "sha256": "89864b759adffa3140f83600b19e432fcfb6c0e5694236a87bae13b938ea5051",
+   "records": 10,
+   "states": {
+    "pending": 4,
+    "saved": 5,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 6,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b46ca08a9cb461bf.json",
+   "sha256": "164e0cec65c2f4844c71cee0e2428797725a5b9efb3c56f08175716caa62ae6d",
+   "records": 2,
+   "states": {
+    "saved": 2
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 2,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_6605730b655b246c.json",
+   "sha256": "7e98aff13888b4ec1d7c5f3712a8bc75f3afc630fd218b53e3e102fcf02d859e",
+   "records": 2,
+   "states": {
+    "saved": 2
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 2,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_5000f8d15d49f777.json",
+   "sha256": "28ca38cb264f5fb6c31bab5d3d3d120204a98ca469502f1fe3844b43c2ebde08",
+   "records": 1,
+   "states": {
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 1,
+   "consumed": 1,
+   "blocked": 1,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_ee29bb5071715aba.json",
+   "sha256": "78f3f9ea687474b90f2b1c2a62d34b1a55ac7cfbd0a93840f491082d9bfbbed9",
+   "records": 2,
+   "states": {
+    "saved": 2
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 2,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_b3505afcae7ba681.json",
+   "sha256": "e44004dacd19f5b879684bf592f36f81edf4461b97fb5cfce883c7971b293e5f",
+   "records": 295,
+   "states": {
+    "saved": 294,
+    "unknown": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 295,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_9a421fe725cca6b0.json",
+   "sha256": "c94fe212212a1fec917156bd0c2926e7412d543764d50ff3a3064635edfd7d33",
+   "records": 295,
+   "states": {
+    "saved": 294,
+    "unknown": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 295,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_90a8629b20310ac2.json",
+   "sha256": "4d11ea7271bd944e73baf51ab3a73f6ba0e7d46088d3707e1052f575b4ba72ab",
+   "records": 295,
+   "states": {
+    "saved": 294,
+    "unknown": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 295,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d25c63c96933e7cf.json",
+   "sha256": "3a7ee61fa62905b37d418058afb6744637bf1687c8cbc6679bfbc74cfffb4c86",
+   "records": 295,
+   "states": {
+    "saved": 294,
+    "unknown": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 295,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_e75730d6b809fbc1.json",
+   "sha256": "f5012e5d65746d3170bb699385d687b926d2237bec12de1ebb3d7e4744d1c76f",
+   "records": 295,
+   "states": {
+    "saved": 42,
+    "unknown": 2,
+    "pending": 251
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 44,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_54367a8737ed44c9.json",
+   "sha256": "3d46798f6feef784bbb84702df6db41332d75f738420f476510f53db5dd3adba",
+   "records": 295,
+   "states": {
+    "saved": 109,
+    "unknown": 2,
+    "pending": 184
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 111,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_766faf647ce06167.json",
+   "sha256": "a5d1f976f09eff8f51ac6e0a1c6e94df17666493615ca4d6638f05ac1f565cb2",
+   "records": 590,
+   "states": {
+    "saved": 10,
+    "unknown": 2,
+    "pending": 578
+   },
+   "mapped": 590,
+   "unmapped": 0,
+   "consumed": 12,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:queryRqxtfhyc",
+   "sha256": "9ea2512a3106b6d1f8567d1c641ac99303e95d73eda6ccabe2c4f5304a71a8f5",
+   "records": 9,
+   "states": {
+    "pending": 1,
+    "saved": 8
+   },
+   "mapped": 7,
+   "unmapped": 2,
+   "consumed": 8,
+   "blocked": 8,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_b6fc477f135d322c.json",
+   "sha256": "369b8cae677e306eac0b33d8c798cf9f4d6701229f39e0f8f966292c5441bc30",
+   "records": 295,
+   "states": {
+    "saved": 67,
+    "unknown": 3,
+    "pending": 225
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 70,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_intertie_forecast_web_queue.json",
+   "sha256": "f8dd68e5160e689bcbd70aec9a48a1a3c5fe21c731d2fbc2a317aece4e751534",
+   "records": 295,
+   "states": {
+    "saved": 5,
+    "unknown": 3,
+    "pending": 287
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 8,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:day_ahead_interregional_plan",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 293,
+   "states": {
+    "saved": 293
+   },
+   "mapped": 293,
+   "unmapped": 0,
+   "consumed": 293,
+   "blocked": 293,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:generation_output_forecast",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:non_market_output_forecast",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:renewables_output_forecast",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 239,
+   "states": {
+    "saved": 239
+   },
+   "mapped": 239,
+   "unmapped": 0,
+   "consumed": 239,
+   "blocked": 239,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:wind_output_forecast",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 239,
+   "states": {
+    "saved": 239
+   },
+   "mapped": 239,
+   "unmapped": 0,
+   "consumed": 239,
+   "blocked": 239,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:solar_output_forecast",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 240,
+   "states": {
+    "saved": 240
+   },
+   "mapped": 240,
+   "unmapped": 0,
+   "consumed": 240,
+   "blocked": 240,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:hydro_storage_output_forecast",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:intertie_actual_huan_i",
+   "sha256": "e8b5b39588124c62863320cbc430ce16613522502c06deefee1a5e5342e5994a",
+   "records": 294,
+   "states": {
+    "unknown": 1,
+    "pending": 210,
+    "saved": 83
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 84,
+   "blocked": 83,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_1ade3e9512c04404.json",
+   "sha256": "7b2293be13084e94050c531642576e266c26a712b73af53f622eb2abe264c1a8",
+   "records": 295,
+   "states": {
+    "saved": 293,
+    "unknown": 1,
+    "pending": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_f4a61b9f9aa8886c.json",
+   "sha256": "5f9ab58643d75988fa3937abd3fff9e520255c4838f47e2ff8d2dd4f0a65cd98",
+   "records": 295,
+   "states": {
+    "unknown": 2,
+    "saved": 293
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 295,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_1369052c39559a1d.json",
+   "sha256": "5be15d5ddf5ff71fbf7ed7488b836f3eb5129cde695ef069ead67e526e2f9be8",
+   "records": 7,
+   "states": {
+    "saved": 7
+   },
+   "mapped": 0,
+   "unmapped": 7,
+   "consumed": 7,
+   "blocked": 7,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_f901f320d4ff8a96.json",
+   "sha256": "25a73d7cf2c3aa69d217bab1b15533c07fe9b054d0ebb04b11528cce0c4ea9e4",
+   "records": 52633,
+   "states": {
+    "saved": 294,
+    "unknown": 2,
+    "pending": 52337
+   },
+   "mapped": 52633,
+   "unmapped": 0,
+   "consumed": 296,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:generation_output_actual",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:non_market_output_actual",
+   "sha256": "99af217ae787409c972606f1ce24eecdc9330134dc9cb09cca288e78f04fd0fa",
+   "records": 294,
+   "states": {
+    "unknown": 1,
+    "pending": 62,
+    "saved": 231
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 232,
+   "blocked": 231,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:renewables_output_actual",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:wind_output_actual",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:solar_output_actual",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:hydro_storage_output_actual",
+   "sha256": "9ea2512a3106b6d1f8567d1c641ac99303e95d73eda6ccabe2c4f5304a71a8f5",
+   "records": 294,
+   "states": {
+    "pending": 1,
+    "saved": 293
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 293,
+   "blocked": 293,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:actual_load",
+   "sha256": "9ea2512a3106b6d1f8567d1c641ac99303e95d73eda6ccabe2c4f5304a71a8f5",
+   "records": 9,
+   "states": {
+    "pending": 1,
+    "saved": 8
+   },
+   "mapped": 9,
+   "unmapped": 0,
+   "consumed": 8,
+   "blocked": 8,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:system_reserve",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:important_channel_transmission_actual",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 293,
+   "states": {
+    "saved": 293
+   },
+   "mapped": 293,
+   "unmapped": 0,
+   "consumed": 293,
+   "blocked": 293,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_77a790459318559b.json",
+   "sha256": "a0801b390d5a16d7e679f5d511025c7bec0b96f709f05763bee92d4d2f11b812",
+   "records": 295,
+   "states": {
+    "saved": 294,
+    "unknown": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 295,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_9d35ad5e2d74c67c.json",
+   "sha256": "1d32e9c165477ebe8a2ada8041c3a8ff322ad53fd3af5f33ad971cd7177f43f5",
+   "records": 5729,
+   "states": {
+    "saved": 139,
+    "unknown": 2,
+    "pending": 5588
+   },
+   "mapped": 5729,
+   "unmapped": 0,
+   "consumed": 141,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_1404bce682303715.json",
+   "sha256": "53507c152738f564107c21743a5959f0993e01c8f08f038cd3f8673bb0e5f74c",
+   "records": 16320,
+   "states": {
+    "unknown": 3,
+    "pending": 16313,
+    "saved": 4
+   },
+   "mapped": 16320,
+   "unmapped": 0,
+   "consumed": 7,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_querymarketclearing.json",
+   "sha256": "890453a39f1bbe112dd0b5225f963b13c6d500e394f670b5d1cdaffeddf89b9f",
+   "records": 9,
+   "states": {
+    "saved": 2,
+    "pending": 7
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 2,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:daily_clearing_quantity_price",
+   "sha256": "9ea2512a3106b6d1f8567d1c641ac99303e95d73eda6ccabe2c4f5304a71a8f5",
+   "records": 294,
+   "states": {
+    "pending": 1,
+    "saved": 293
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 293,
+   "blocked": 293,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:generation_types_energy_count",
+   "sha256": "ab7ce04133d77939b390d828e63a301294c9004c58c0ae20a7c56340e088e9bb",
+   "records": 294,
+   "states": {
+    "pending": 1,
+    "unknown": 1,
+    "saved": 292
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 293,
+   "blocked": 292,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:day_ahead_uniform_settlement_price",
+   "sha256": "9ea2512a3106b6d1f8567d1c641ac99303e95d73eda6ccabe2c4f5304a71a8f5",
+   "records": 294,
+   "states": {
+    "pending": 1,
+    "saved": 293
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 293,
+   "blocked": 293,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:real_time_uniform_settlement_price",
+   "sha256": "9ea2512a3106b6d1f8567d1c641ac99303e95d73eda6ccabe2c4f5304a71a8f5",
+   "records": 294,
+   "states": {
+    "unknown": 1,
+    "saved": 293
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 293,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:day_ahead_average_offer_price",
+   "sha256": "9ea2512a3106b6d1f8567d1c641ac99303e95d73eda6ccabe2c4f5304a71a8f5",
+   "records": 293,
+   "states": {
+    "pending": 1,
+    "saved": 292
+   },
+   "mapped": 293,
+   "unmapped": 0,
+   "consumed": 292,
+   "blocked": 292,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:day_ahead_node_marginal_price",
+   "sha256": "9e121843fba40a68ec9ae0b90279275a107251671b7b925846d454d191235f32",
+   "records": 294,
+   "states": {
+    "pending": 274,
+    "unknown": 1,
+    "saved": 19
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 20,
+   "blocked": 19,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json#daily:real_time_node_marginal_price",
+   "sha256": "f9fe16f1b3b6ff0f45edb9334bb626ab80861686b5d9b52dc1ab94f802e3405f",
+   "records": 294,
+   "states": {
+    "saved": 294
+   },
+   "mapped": 294,
+   "unmapped": 0,
+   "consumed": 294,
+   "blocked": 294,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_queryrqscjjcqfslj.json",
+   "sha256": "53d6e91afb6b0e2213e6fb83ab6cf5047db340dcf1354cce1ef40c534a8b7714",
+   "records": 4022,
+   "states": {
+    "unknown": 3,
+    "pending": 4015,
+    "saved": 4
+   },
+   "mapped": 4022,
+   "unmapped": 0,
+   "consumed": 7,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_real_time_transmission_constraints.json",
+   "sha256": "59f08a015a688757a9d7457d9c068bba8c6cab0711e2dfcbb76af3ceda6ffd6b",
+   "records": 16320,
+   "states": {
+    "unknown": 3,
+    "pending": 16313,
+    "saved": 4
+   },
+   "mapped": 16320,
+   "unmapped": 0,
+   "consumed": 7,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_8f8ec23931c2b869.json",
+   "sha256": "b73fe69650cc9fedb9da55437be20a7d623243dc519926c9736e50506e38a710",
+   "records": 10,
+   "states": {
+    "pending": 2,
+    "saved": 7,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 8,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a3b57efa412695d5.json",
+   "sha256": "bee692e4c380f6ebae0a8ebd5ab64c53f73a4d133c88dce66e8bb9263c8c074f",
+   "records": 1725,
+   "states": {
+    "saved": 1719,
+    "unknown": 2,
+    "pending": 4
+   },
+   "mapped": 1725,
+   "unmapped": 0,
+   "consumed": 1721,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_transmission_maintenance_plan_queue.json",
+   "sha256": "1fbfba92a3a151993207cdc44d17c9f93530af10cfa427019f57a3072098697c",
+   "records": 295,
+   "states": {
+    "unknown": 10,
+    "saved": 8,
+    "pending": 277
+   },
+   "mapped": 3,
+   "unmapped": 292,
+   "consumed": 18,
+   "blocked": 292,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_province_system_load_forecast_queue.json",
+   "sha256": "570a2b9f156abb26c22d2da874e3c50f10611ea1a7d9c6332932041f47ab8673",
+   "records": 295,
+   "states": {
+    "saved": 23,
+    "unknown": 5,
+    "pending": 267
+   },
+   "mapped": 6,
+   "unmapped": 289,
+   "consumed": 28,
+   "blocked": 289,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_provincial_renewable_forecast_queue.json",
+   "sha256": "5d3c234728721b21a2d930f2bc7924a6683f1163d3a0bc6f28458fb4fe8c6dd5",
+   "records": 295,
+   "states": {
+    "saved": 291,
+    "unknown": 3,
+    "pending": 1
+   },
+   "mapped": 288,
+   "unmapped": 7,
+   "consumed": 294,
+   "blocked": 7,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_province_power_balance_queue.json",
+   "sha256": "8c3b574e16837050ba3c3f01cbede6a50a84edc2b621d8899c9665b6f96cdfa9",
+   "records": 295,
+   "states": {
+    "saved": 6,
+    "unknown": 2,
+    "pending": 287
+   },
+   "mapped": 4,
+   "unmapped": 291,
+   "consumed": 8,
+   "blocked": 291,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_renewable_surplus_queue.json",
+   "sha256": "70daa1b4a9c0d6988f565b8343c563283cc83bb7448f03981da70bae997f7936",
+   "records": 295,
+   "states": {
+    "saved": 6,
+    "unknown": 2,
+    "pending": 287
+   },
+   "mapped": 4,
+   "unmapped": 291,
+   "consumed": 8,
+   "blocked": 291,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_dual_date_capacity_web_queue.json",
+   "sha256": "42d05fef317a4a1d507083c8f45f43e7738d6beffb3228fbb1cca75410b856b5",
+   "records": 141,
+   "states": {
+    "saved": 140,
+    "unknown": 1
+   },
+   "mapped": 141,
+   "unmapped": 0,
+   "consumed": 141,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_intraday_capacity_web_queue.json",
+   "sha256": "692752331a908b1611961bfd9cfefbb85a02174bbf7e95613e7f78f340ba26a7",
+   "records": 5,
+   "states": {
+    "saved": 4,
+    "unknown": 1
+   },
+   "mapped": 5,
+   "unmapped": 0,
+   "consumed": 5,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_6c657dfae2282d8f.json",
+   "sha256": "03de19fee5e6ce8341da77cfa1146c68083fd739d87a20f3c36e4fb8677cef8d",
+   "records": 295,
+   "states": {
+    "saved": 106,
+    "unknown": 2,
+    "pending": 187
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 108,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_580fd9a3d283c12f.json",
+   "sha256": "6e3fcee015000d074abcdad8c3fa4fe71634a9e88ff14cd860d29e576eba27f3",
+   "records": 590,
+   "states": {
+    "saved": 570,
+    "unknown": 1,
+    "pending": 19
+   },
+   "mapped": 590,
+   "unmapped": 0,
+   "consumed": 571,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c7265437599d23af.json",
+   "sha256": "e22a54b035a6ad150dd84b70f78ed39c42190631fef90f10c908afa6f67e61ef",
+   "records": 581,
+   "states": {
+    "saved": 580,
+    "unknown": 1
+   },
+   "mapped": 581,
+   "unmapped": 0,
+   "consumed": 581,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_3a2eb65c16143cee.json",
+   "sha256": "3575cb0026d8ed238d8026b41c5b8f697be0df5951a190de99eca5caff15e042",
+   "records": 9,
+   "states": {
+    "saved": 2,
+    "pending": 7
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 2,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_0cc7b87f0b9298c0.json",
+   "sha256": "62b9fb6aedf32a81226c24628ef2c4bbaa1e59d7a9b55985f6e71f22a7f2f0f9",
+   "records": 38,
+   "states": {
+    "saved": 2,
+    "pending": 36
+   },
+   "mapped": 0,
+   "unmapped": 38,
+   "consumed": 2,
+   "blocked": 38,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_0d83214c28014d2a.json",
+   "sha256": "1525bc399d592128509bf906b35d2d295175ee47d26336f9d3d646f3a9abda29",
+   "records": 295,
+   "states": {
+    "saved": 23,
+    "unknown": 2,
+    "pending": 270
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 25,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c2cf44042b0fbce1.json",
+   "sha256": "b8e09d5bee17616d744fb02224e298b8723b69dc8565b6f600f4f4f52947e4fe",
+   "records": 295,
+   "states": {
+    "saved": 294,
+    "unknown": 1
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 295,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_15f615bfdf66bb82.json",
+   "sha256": "25565c6fb973c87231fc861b9c7fcab025e5e25b38d904963b59cc9c7970755f",
+   "records": 295,
+   "states": {
+    "saved": 25,
+    "unknown": 2,
+    "pending": 268
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 27,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c0d1532c38820e65.json",
+   "sha256": "8a13d4f9c1d22d6876c8b305da2c93d8ff86788a80448d02f6cac512847431da",
+   "records": 295,
+   "states": {
+    "saved": 25,
+    "unknown": 2,
+    "pending": 268
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 27,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_7fec0f57bba65667.json",
+   "sha256": "48a0c39598593777111e3d8ee3ba6f865f2233687b2299146e02cfd415710ce1",
+   "records": 295,
+   "states": {
+    "saved": 25,
+    "unknown": 2,
+    "pending": 268
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 27,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_b9960a26a576592a.json",
+   "sha256": "74ce84112c6b350db893817b07a09bfc6c8b74c917cc9343b6ba6416fcda0d67",
+   "records": 295,
+   "states": {
+    "saved": 37,
+    "unknown": 2,
+    "pending": 256
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 39,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_9dda25255779e435.json",
+   "sha256": "1403fea95bbe8af107a16715170164746f642bdd849b2fa47d7aa8814b3d9cd5",
+   "records": 295,
+   "states": {
+    "saved": 25,
+    "unknown": 2,
+    "pending": 268
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 27,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_auxiliary_temporary_unit_web_queue.json",
+   "sha256": "0e410c5069517fde58584c1b80a5d996b8ed484a596c6984c1f3bdbb66563f28",
+   "records": 4,
+   "states": {
+    "saved": 3,
+    "unknown": 1
+   },
+   "mapped": 4,
+   "unmapped": 0,
+   "consumed": 4,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4fbe65318504a8df.json",
+   "sha256": "97063b9ddada97a7100fc75c7d0234f97c7ca1c8e37c84cd747415677e9d96f6",
+   "records": 11,
+   "states": {
+    "saved": 2,
+    "pending": 9
+   },
+   "mapped": 0,
+   "unmapped": 11,
+   "consumed": 2,
+   "blocked": 11,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_ea9f1475a8de3c5c.json",
+   "sha256": "401c188702b75dee3c5fcaf95996fd2370cf3f40c2be64bf1a010190bcac195d",
+   "records": 12,
+   "states": {
+    "saved": 10,
+    "pending": 2
+   },
+   "mapped": 0,
+   "unmapped": 12,
+   "consumed": 10,
+   "blocked": 12,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_af8770061bb253cc.json",
+   "sha256": "f32f06d753b2d59018899c290e4d57eeb0715aed6c4a735705ad27ba166c7ff0",
+   "records": 10,
+   "states": {
+    "pending": 2,
+    "saved": 7,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 8,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_912b3a298612445b.json",
+   "sha256": "ccd214d625bef0cf8e188d983d91de46d61fc4555b3e8ad9aad551c62afe55f6",
+   "records": 10,
+   "states": {
+    "unknown": 2,
+    "saved": 8
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 10,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_2faabd96814695e9.json",
+   "sha256": "763dce18e00e4897d677c5fe61071eceaa55228eb75971fc5894cae9377f6ca0",
+   "records": 295,
+   "states": {
+    "saved": 292,
+    "unknown": 1,
+    "pending": 2
+   },
+   "mapped": 295,
+   "unmapped": 0,
+   "consumed": 293,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_22c779b5bdc2edc8.json",
+   "sha256": "bca1ab781b5a7c3c7497954e9452479c4f043e3a2b5d2f70113d5de66abbef5c",
+   "records": 581,
+   "states": {
+    "saved": 421,
+    "unknown": 2,
+    "pending": 158
+   },
+   "mapped": 581,
+   "unmapped": 0,
+   "consumed": 423,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_27458005cd8a3902.json",
+   "sha256": "e1c26b96c8a71936b54c16b35d2e5e6e652f58e66541ece8a4c139da9fbcddfc",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_7ae30da08f22c8c6.json",
+   "sha256": "e28df834880669bd6694a83c3fe4915e86192c7f806188cb56cb9aeffa0cb9bb",
+   "records": 2,
+   "states": {
+    "saved": 2
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 2,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_market_disclosure_monthly.json",
+   "sha256": "af1e3d0313ed763b977c669ad9cea8677c28272cda6973fc8cfbf709226ec598",
+   "records": 8,
+   "states": {
+    "saved": 7,
+    "pending": 1
+   },
+   "mapped": 0,
+   "unmapped": 8,
+   "consumed": 7,
+   "blocked": 8,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4e348bbd01c3f76c.json",
+   "sha256": "570573c9eaa0c9291a97e48ad80ac96c28eeec36570802f2db55288fb0296654",
+   "records": 9,
+   "states": {
+    "saved": 2,
+    "pending": 7
+   },
+   "mapped": 0,
+   "unmapped": 9,
+   "consumed": 2,
+   "blocked": 9,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_9a63f7b7ad7b1dc6.json",
+   "sha256": "ab7f7bb567f9a5379f6680692fa47eab1e9b267c5b04e052f5c02fbdc2ec5f35",
+   "records": 10,
+   "states": {
+    "saved": 2,
+    "pending": 8
+   },
+   "mapped": 0,
+   "unmapped": 10,
+   "consumed": 2,
+   "blocked": 10,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_1ea2049ccbd0014b.json",
+   "sha256": "a2d2e4052257428d6d90a4632068ad3c3a33c4494da4757e7f24223e71a8c0fa",
+   "records": 10,
+   "states": {
+    "pending": 6,
+    "saved": 3,
+    "unknown": 1
+   },
+   "mapped": 10,
+   "unmapped": 0,
+   "consumed": 4,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4e32a0422419854c.json",
+   "sha256": "90e660e5225cd806d3a9911716bfe642971125e361531a5bb160ebc592311833",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_2a213d7c51bd461a.json",
+   "sha256": "c97eeb12e022f27eb9f6306ef751736b27c79d291885938512878434a2055dfc",
+   "records": 2,
+   "states": {
+    "saved": 1,
+    "pending": 1
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 1,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_3b91e9c3520c0fbe.json",
+   "sha256": "bd29d3009fe8e4954d5f02b0ac910ad5dbd5d4bd6f2ef6e0b6344322db5bb055",
+   "records": 0,
+   "states": {},
+   "mapped": 0,
+   "unmapped": 0,
+   "consumed": 0,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_0d6bfe3bffbfa5ec.json",
+   "sha256": "814d25afe4f4ca5a38a5b9e9109e5bad04b481610143ebba8d49dac0530018bd",
+   "records": 2,
+   "states": {
+    "saved": 1,
+    "pending": 1
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 1,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_2889c331a4df6628.json",
+   "sha256": "98ba7d3621fddeda63aa822d67c4fd8fd736fcfde97d8df1246562a5112e91ad",
+   "records": 2,
+   "states": {
+    "pending": 1,
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 2,
+   "consumed": 1,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_current_contracts_queue.json",
+   "sha256": "26438f75cb0f5ab270c9a81b58651f25f8bea7489ccb01375a0c81d0088732fb",
+   "records": 47,
+   "states": {
+    "saved": 47
+   },
+   "mapped": 0,
+   "unmapped": 47,
+   "consumed": 47,
+   "blocked": 47,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_historical_contracts_queue.json",
+   "sha256": "ce3ac54502437a02e7fd78b8b0dbe8e16deba1801b0c492287879a080a014eb0",
+   "records": 3,
+   "states": {
+    "saved": 3
+   },
+   "mapped": 0,
+   "unmapped": 3,
+   "consumed": 3,
+   "blocked": 3,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_contract_summary_queue.json",
+   "sha256": "1b9721e15cca9393ff6a02b96236a239de76d847213c97d5c67b1c4a52f52ce9",
+   "records": 40,
+   "states": {
+    "unknown": 16,
+    "saved": 24
+   },
+   "mapped": 40,
+   "unmapped": 0,
+   "consumed": 40,
+   "blocked": 40,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_contract_curve_queue.json",
+   "sha256": "428298683952051df7209bdeaebab70a2f89c6116051031b1820de9eb202221d",
+   "records": 40,
+   "states": {
+    "pending": 3,
+    "saved": 24,
+    "unknown": 13
+   },
+   "mapped": 40,
+   "unmapped": 0,
+   "consumed": 37,
+   "blocked": 0,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  }
+ ],
+ "normalized_records": 114599,
+ "states": {
+  "saved": 14235,
+  "pending": 100233,
+  "unknown": 131
+ },
+ "consumed_facts": 14366,
+ "mapped_records": 112903,
+ "unmapped_records": 1696,
+ "missing_local_inputs": [
+  "crawlee_batch_journal_export_not_locally_available",
+  "state/server_native_attempts_interregional_exchange_monthly.json",
+  "state/server_native_attempts_market_disclosure_monthly.json",
+  "state/server_native_attempts_portal_contract_summary.json",
+  "state/server_native_attempts_portal_historical_contracts.json",
+  "state/server_native_attempts_publication_0cc7b87f0b9298c0.json",
+  "state/server_native_attempts_publication_0d6bfe3bffbfa5ec.json",
+  "state/server_native_attempts_publication_0fc4efcff1677d40.json",
+  "state/server_native_attempts_publication_12765c7bd301cc9a.json",
+  "state/server_native_attempts_publication_1369052c39559a1d.json",
+  "state/server_native_attempts_publication_1e927cb76058ef1a.json",
+  "state/server_native_attempts_publication_25bbebaf5f139458.json",
+  "state/server_native_attempts_publication_27458005cd8a3902.json",
+  "state/server_native_attempts_publication_2889c331a4df6628.json",
+  "state/server_native_attempts_publication_293f4ec8334ff8d1.json",
+  "state/server_native_attempts_publication_2a213d7c51bd461a.json",
+  "state/server_native_attempts_publication_2fdf370813988841.json",
+  "state/server_native_attempts_publication_311d445f23bd011c.json",
+  "state/server_native_attempts_publication_32101a70fcd45761.json",
+  "state/server_native_attempts_publication_3412916d4928c199.json",
+  "state/server_native_attempts_publication_37bddf5592f99115.json",
+  "state/server_native_attempts_publication_39caee42e016ea0f.json",
+  "state/server_native_attempts_publication_3a2eb65c16143cee.json",
+  "state/server_native_attempts_publication_3b91e9c3520c0fbe.json",
+  "state/server_native_attempts_publication_4913dc9fded9a59c.json",
+  "state/server_native_attempts_publication_4ab104c9f4b8bf37.json",
+  "state/server_native_attempts_publication_4e32a0422419854c.json",
+  "state/server_native_attempts_publication_4e348bbd01c3f76c.json",
+  "state/server_native_attempts_publication_4fbe65318504a8df.json",
+  "state/server_native_attempts_publication_5000f8d15d49f777.json",
+  "state/server_native_attempts_publication_5396a250df24ff32.json",
+  "state/server_native_attempts_publication_573fce1bdd8cff0e.json",
+  "state/server_native_attempts_publication_6605730b655b246c.json",
+  "state/server_native_attempts_publication_6a2ff820ed916f3f.json",
+  "state/server_native_attempts_publication_6f076a4ed960b33f.json",
+  "state/server_native_attempts_publication_7ae30da08f22c8c6.json",
+  "state/server_native_attempts_publication_831d53381887aff8.json",
+  "state/server_native_attempts_publication_86e8adf7fd232a7d.json",
+  "state/server_native_attempts_publication_9880076c973b4062.json",
+  "state/server_native_attempts_publication_9a63f7b7ad7b1dc6.json",
+  "state/server_native_attempts_publication_9bc32f76b0350470.json",
+  "state/server_native_attempts_publication_b38716acc611a249.json",
+  "state/server_native_attempts_publication_b46ca08a9cb461bf.json",
+  "state/server_native_attempts_publication_b48543da139c9a47.json",
+  "state/server_native_attempts_publication_b7a0824de1b6cf57.json",
+  "state/server_native_attempts_publication_b8329caed82f1a94.json",
+  "state/server_native_attempts_publication_bc21e8d6609e4183.json",
+  "state/server_native_attempts_publication_c1811d02600ebdcf.json",
+  "state/server_native_attempts_publication_c1add81ba5c2f3e5.json",
+  "state/server_native_attempts_publication_cabf8a7685a92fd4.json",
+  "state/server_native_attempts_publication_d12356772dff7c24.json",
+  "state/server_native_attempts_publication_d1477e90d75054d9.json",
+  "state/server_native_attempts_publication_d26ddf6c487ad028.json",
+  "state/server_native_attempts_publication_d64c01f6f58bcd18.json",
+  "state/server_native_attempts_publication_d911b23d47ee0020.json",
+  "state/server_native_attempts_publication_e0693cbeead18de2.json",
+  "state/server_native_attempts_publication_e3db7e65e4854417.json",
+  "state/server_native_attempts_publication_e6da473be59e8744.json",
+  "state/server_native_attempts_publication_ea9f1475a8de3c5c.json",
+  "state/server_native_attempts_publication_eda606edc1c9d156.json",
+  "state/server_native_attempts_publication_ee29bb5071715aba.json",
+  "state/server_native_attempts_publication_f9bf68058b99c808.json",
+  "state/server_native_attempts_publication_f9d09d9d29d5a932.json",
+  "state/server_native_attempts_publication_fa1d58eecf0c8e9d.json",
+  "state/server_native_attempts_publication_fc829874e714ff2b.json",
+  "state/server_native_attempts_querygensetinstall.json",
+  "state/server_native_attempts_querymarketclearing.json",
+  "state/server_native_attempts_querysocietyindustriesuse.json"
+ ],
+ "decode_failures": [],
+ "source_refs": [
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json",
+   "sha256": "38d4244864c8447ff9b3ea2000e54cd495f265352dd83c2c058d5827d75f32eb"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_querygensetinstall.json",
+   "sha256": "09053bc5c65121135fc238fc9a7dd0f8181c20d52419a8d857b9c135f19a5c49"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_querysocietyindustriesuse.json",
+   "sha256": "488a8788bc3268d4ef3129e3be0900a1614f3c03b7a61b313832f20b6779b4d2"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d1477e90d75054d9.json",
+   "sha256": "0670cb7edbd24f50c8b23e9d7232f48a80091b59494a6a1367b4d2b6083bc7aa"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_12765c7bd301cc9a.json",
+   "sha256": "20844f43bc60b787417d367ea725f3791699f58891665e6090b31e73a073438b"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_eda606edc1c9d156.json",
+   "sha256": "5dbbe740083dd876dfe2666b09fe0c08e695f0ec9b38eabeb7dd37d46c73473a"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_2fdf370813988841.json",
+   "sha256": "fce0516baa53b13ecf5ab625cf1d9b7b1c6e9490c784fbba1a38a650f548b880"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_fa1d58eecf0c8e9d.json",
+   "sha256": "d2fd605cedb6e6ec4f007c1a1d8f7e3693a01ea4e67cc08165b49043671b42e4"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_86e8adf7fd232a7d.json",
+   "sha256": "0b119659846bcf5c775e096f6cc5ed822e61bfd45d3a6ed427b946cd3a926725"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_6a2ff820ed916f3f.json",
+   "sha256": "ff53bde7754de7c0cbfe2879a5933c2e2b1bd8cd09ad3b7f5b811f47cafbcc82"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_e0693cbeead18de2.json",
+   "sha256": "9237126d0472d0de2437c9db0386d0420ecb05e2c56ae1c5d497fbc9947ad5ee"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_66d506c8a46471d9.json",
+   "sha256": "b85d2d334035594fc0f27dbc23005979f73b1f75c78bedcd1fd119d0a8ef3f30"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_66d506c8a46471d9.json",
+   "sha256": "98c90636a84e54ee5ecdb8549c8282953c088a77bb74723e435e90318bfb0735"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c1add81ba5c2f3e5.json",
+   "sha256": "f6f0475f604afdaf7d65cd15aee7733e99b790edaee042d68e42c67942d3e23a"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_293f4ec8334ff8d1.json",
+   "sha256": "a3958f0709a73bb24b0adea062bb8301c9eca0e11771ef968ae0f7fc4fe9a648"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_32101a70fcd45761.json",
+   "sha256": "994f9e73da9913808abd2edba95c9ce16ec0a1fa0ca9549a7037f899f0813dfc"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_0f6490920755006c.json",
+   "sha256": "1b371f39c26f45a8738afbd6f0578fbeed671e085fdc4c0dae17e82b7a408729"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_0f6490920755006c.json",
+   "sha256": "03169a660654890d22591fb465386d39efbab98be4e10f7d36d3c37e30d0d3ae"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_5396a250df24ff32.json",
+   "sha256": "442e6af246c0af59f96a000dd68aaea1294d5903176e9f5f69665e6ae2bfd9ef"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_interregional_exchange_monthly.json",
+   "sha256": "4ca344b8873c97383ca4933b4e9bd71250e227f019bcf5160669c92657b6ba48"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_c1811d02600ebdcf.json",
+   "sha256": "b53640e14a608161ff5ed8c0fd7f80b0d25bec71343eabd5e62bbde7ae9995ff"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_9880076c973b4062.json",
+   "sha256": "d4fb6c7f81df5a8f3505b9da9b0feaab4501dd049c39912dea6b8307329580d4"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_311d445f23bd011c.json",
+   "sha256": "795aa64ebe13d4fedc982e2baa70dba2c9645f5c11a5f0d1dda56520dd7670de"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_9bc32f76b0350470.json",
+   "sha256": "dadbc0dfa64461235cef91de900e4a35aed849b8157fe4ce086850d5d33897d0"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+   "sha256": "e31686c521195f752081690ab99ea50aca857f11de57d235fcc25696287a00b5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_831d53381887aff8.json",
+   "sha256": "e830adc8523beebc732c174c26dc11df23ebfae854b653220a0d56d371c0aa17"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_3412916d4928c199.json",
+   "sha256": "dd64ce9a40170efb0ca94c54cca9c39dd499dd4518f1463ec00fbe8cf82946f4"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4913dc9fded9a59c.json",
+   "sha256": "05ef44ed50af94fd3453120bf17c25e28622c62ccbca5a52787b37dd3fed2c7c"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_renewables_output_forecast_weekly.json",
+   "sha256": "39e78d60c4d315263bb3ad8c6a7bb278c4220ebd955d6d67deffc0648e353a6b"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_forecast_anchor_queue_renewables_output_forecast_weekly.json",
+   "sha256": "38e1789fb3634bc8b5858552b31ac0a55c1c87df4d858cc2104ffad8f6498220"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_d2d7e48c7b981a61.json",
+   "sha256": "9ef96c9e588b9939b9690e86f028a19ad215576a45e01469a8abce9977a88537"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d2d7e48c7b981a61.json",
+   "sha256": "a7f8870538b045f8a092d9e1a98b00545a9eb9c92dc40e994c1d08d16e1465f6"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_4e56198d29ddfeb4.json",
+   "sha256": "6fa3b86be12a1f9fa01b862e2bcffec66ef4786bdef28835a9e697575d722a3a"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_4e56198d29ddfeb4.json",
+   "sha256": "6461aadab67522a10d618a78347b5823e7e8e3152fda38054a701eb39f64502b"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_ebb098e97e58cabd.json",
+   "sha256": "5415a12a01cda0a27d581e11fc8924a8b9862d99cf0815887665c9e73fc2efb8"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_ebb098e97e58cabd.json",
+   "sha256": "1de07918ba9f27ddab4c3c4aeeaf333472c51819f55bd6ca8aa7e76d4ea72a55"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_a4759c448ef55e23.json",
+   "sha256": "c99329ac538a24bb62b06dacafdbf3c89337f6dc0b9bf745230140429bb9183f"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a4759c448ef55e23.json",
+   "sha256": "d914136f1e7f573fab86aa92efdd7aeadc6bdba853c51093abbf49df37211f7d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_bc21e8d6609e4183.json",
+   "sha256": "8786a31cd76fbf895a0fbe506ed5a3dc615e7ac4b9c319ec0ff29fab37e0b4b6"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_cabf8a7685a92fd4.json",
+   "sha256": "07aea2717a9cc7d52b7e95237826d3fbc9a319d7006c57386ed667cd0fc3afa9"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_39caee42e016ea0f.json",
+   "sha256": "272c87e99eae34b19e9ccf9b2d55e82d6171ca2c24216ad40b94c316e3597e9e"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b48543da139c9a47.json",
+   "sha256": "225378dfdf5f0ff2dc444607e60387cb08750b5e8609a2e5dc524ccf476a8f5d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b38716acc611a249.json",
+   "sha256": "e6f6b6b3227e42d5911fefa1be14480eb819eeda61ad2d01b896803f44fba667"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_e6da473be59e8744.json",
+   "sha256": "1c7ec2787814270a2d18474349360be46dd87d5729d5f786ad9a8c8e00fd7261"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d26ddf6c487ad028.json",
+   "sha256": "4deecfde2fb81694261738929a5634160afc3bdf4a6f0f023f4c13323f548656"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_6f076a4ed960b33f.json",
+   "sha256": "7998f8e5ba8b75c86cf761676afc9bbf0c5d92f25940cebf8d1cb2de2bb3d2a5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d12356772dff7c24.json",
+   "sha256": "8c70a4b48b299807d83b02416cf040a4e198467fe24c430ecefe48cb31f65035"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_37bddf5592f99115.json",
+   "sha256": "bf9fb573e88302dd4d16aebbc829711ded44d5af4bcd81bc59b3fdeba3885128"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d64c01f6f58bcd18.json",
+   "sha256": "4c12cd2b46e29ea1f1ed617d76bd94b1697fe9df253a9857a2f60e89446fe02d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b8329caed82f1a94.json",
+   "sha256": "cbd401b00b54bc79a7cfc3ad3fbf9d5ea91e31e0c492292bf892dac4a443113c"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_d911b23d47ee0020.json",
+   "sha256": "94b86a12365b8c5c43953d76a0fa86855d74bcb09206b692a559db615421c737"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_d6fd27dee250c7cd.json",
+   "sha256": "65e3225848511f56d11353926817a950004bae29b1ea417482220678d8e5587d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d6fd27dee250c7cd.json",
+   "sha256": "5fcf6194a1d316a608ba1617c26ca434b043bf35ff43ce779f1e564af6f94318"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_f9d09d9d29d5a932.json",
+   "sha256": "d33bb862e27d44d1ce0ec5552fac9b486100c20255a260cbeb44f01f89206309"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_25bbebaf5f139458.json",
+   "sha256": "3e572839322ad504b808aec4fac0d9e094bae6ea5d099e0e49d02c40f7d72958"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_0fc4efcff1677d40.json",
+   "sha256": "137f45ae8ed939390f1d192b495707ce52b6bcb1154a00fea78dac30b5f18958"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b7a0824de1b6cf57.json",
+   "sha256": "0a95b92acc31d0ab8fc81a8c16b8dc69906d25d05f0f3dd92bc29b877eff4769"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_a1f13f9d96f42c54.json",
+   "sha256": "0e6a8b45558f5a8df232938a0fa9c6719cc52ce2762412e3f4542acf5936db2a"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a1f13f9d96f42c54.json",
+   "sha256": "afa4218e5d8df58a345b201a69f8e36a6403378e06044102157b23b562722de8"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_15f5ff5297d3add4.json",
+   "sha256": "bb9e7d3f14298a432d51cc682c15e7127cc74f836c4f5114ba2a1fad82b4c440"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_15f5ff5297d3add4.json",
+   "sha256": "e42f323d5756be7fe5e44049d8ed4886604287cd2be4e2c01057aa858ad0313c"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_fc829874e714ff2b.json",
+   "sha256": "1b690c80bc130592d2bfa508ebbd046454cb41ad9c185bfea78d7d83ef6a73f1"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_1e927cb76058ef1a.json",
+   "sha256": "94317e0c9800c23e87062a991e958dc16dd88b0c0d0cc82772e40d369046d9ee"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_a354e18e4e271ea9.json",
+   "sha256": "eeb2d6f3fde25db8f5b76a97b3f8741d6ab16822908fc5ba8d45d583597b10f8"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a354e18e4e271ea9.json",
+   "sha256": "6ab40293ae3a81a2ef8f66cfdf24f20bd46685393c4b4c3542388a1b2bc5c6b8"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_573fce1bdd8cff0e.json",
+   "sha256": "460cdea627ed96995348ec20c96cb1c4f28f7babc109b4496cdccc8b50c61309"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_f9bf68058b99c808.json",
+   "sha256": "5a560349af69024c941d9c9c2c8e155c72c52b3782377853a44d07530dce0917"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_e3db7e65e4854417.json",
+   "sha256": "e0b6923e97e4ad15953cd7482a4b11fa9cc9c72217ec69e016001459975d5f56"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_d8e2441bb7cdbad9.json",
+   "sha256": "89823458565f2e4a7bec45dfe18f93e01cb06b5c0132e778262b63d6d48f89da"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d8e2441bb7cdbad9.json",
+   "sha256": "89864b759adffa3140f83600b19e432fcfb6c0e5694236a87bae13b938ea5051"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_b46ca08a9cb461bf.json",
+   "sha256": "164e0cec65c2f4844c71cee0e2428797725a5b9efb3c56f08175716caa62ae6d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_6605730b655b246c.json",
+   "sha256": "7e98aff13888b4ec1d7c5f3712a8bc75f3afc630fd218b53e3e102fcf02d859e"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_5000f8d15d49f777.json",
+   "sha256": "28ca38cb264f5fb6c31bab5d3d3d120204a98ca469502f1fe3844b43c2ebde08"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_ee29bb5071715aba.json",
+   "sha256": "78f3f9ea687474b90f2b1c2a62d34b1a55ac7cfbd0a93840f491082d9bfbbed9"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_b3505afcae7ba681.json",
+   "sha256": "0cad680930b9bbc38d6ae0eb1daa096d6e6c64d2082fcabb37baa0c59c3b1136"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_b3505afcae7ba681.json",
+   "sha256": "e44004dacd19f5b879684bf592f36f81edf4461b97fb5cfce883c7971b293e5f"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_9a421fe725cca6b0.json",
+   "sha256": "dbe2f6707ab339368d14ca93afb95e5e92962026008ffd8efc1bf46a6c287159"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_9a421fe725cca6b0.json",
+   "sha256": "c94fe212212a1fec917156bd0c2926e7412d543764d50ff3a3064635edfd7d33"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_90a8629b20310ac2.json",
+   "sha256": "de776e677f1d2d0ae39d16c23152c58540d14fbf15b03832b7cc584b58df0395"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_90a8629b20310ac2.json",
+   "sha256": "4d11ea7271bd944e73baf51ab3a73f6ba0e7d46088d3707e1052f575b4ba72ab"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_d25c63c96933e7cf.json",
+   "sha256": "bafa0f6b9df8b121ead902df088ef43078128f58c9cfb62a5239da9eed2104ff"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_d25c63c96933e7cf.json",
+   "sha256": "3a7ee61fa62905b37d418058afb6744637bf1687c8cbc6679bfbc74cfffb4c86"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_e75730d6b809fbc1.json",
+   "sha256": "88f8e172b4261f3802525f74a4e7b32fe7b092841809a9b3153b470558e2bcfc"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_e75730d6b809fbc1.json",
+   "sha256": "f5012e5d65746d3170bb699385d687b926d2237bec12de1ebb3d7e4744d1c76f"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_54367a8737ed44c9.json",
+   "sha256": "e55d50827ba0c718cc0ba3eee7caffaf5da016ae5cdfaba8755c55f0315e4ece"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_54367a8737ed44c9.json",
+   "sha256": "3d46798f6feef784bbb84702df6db41332d75f738420f476510f53db5dd3adba"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_766faf647ce06167.json",
+   "sha256": "f00c9663fe94617f881714eecc1b205247f7735d9b45e5be6e457c8c85a1bc96"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_766faf647ce06167.json",
+   "sha256": "a5d1f976f09eff8f51ac6e0a1c6e94df17666493615ca4d6638f05ac1f565cb2"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_queryrqxtfhyc.json",
+   "sha256": "8d60d1a9fe2f92fb90ac913c459a74e4ac280837908f41f7a4e7e991105eb155"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_b6fc477f135d322c.json",
+   "sha256": "5c88e085786424496a114b0322a78f6fc1f068da2e25f351bbda9484db0d2fc0"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_b6fc477f135d322c.json",
+   "sha256": "369b8cae677e306eac0b33d8c798cf9f4d6701229f39e0f8f966292c5441bc30"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_intertie_forecast_huan_i.json",
+   "sha256": "ecda7dd0da51e784fe79411563cbeda7d7f52e3d0d26a7a721a8824bbf449752"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_intertie_forecast_web_queue.json",
+   "sha256": "f8dd68e5160e689bcbd70aec9a48a1a3c5fe21c731d2fbc2a317aece4e751534"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_day_ahead_interregional_plan.json",
+   "sha256": "b096533829f5fc7d34c40704d6dfae14b0f0cf86f7b327e827fb98581ef1e1b5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_generation_output_forecast.json",
+   "sha256": "cc34f0796090ca68debf5d06c9b0ed9247e77a5f214dbc64368adbc76c4107dc"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_non_market_output_forecast.json",
+   "sha256": "65ac02f498122f28fe5d62da7e815ccb694c0f98af9c776f0be49563df24cfd9"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_renewables_output_forecast.json",
+   "sha256": "a7ee967f1893e960850932750086ad6229a2b44550cf33048c3597101326e507"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_wind_output_forecast.json",
+   "sha256": "36e4fc10b97192b10c3ffcb48a1a7d579a9a19e24f02dc13a1c097d53d4889a5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_solar_output_forecast.json",
+   "sha256": "5d19793cfd217e8f4c7a15c69003bcf0010a8da3af92bbbdd653184bc8f99f4b"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_hydro_storage_output_forecast.json",
+   "sha256": "c9df805dba06ef456c34f49e884bacdda2b4caabdcabc2adb30df13a68c52e16"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_intertie_actual_huan_i.json",
+   "sha256": "41269509db52e9cdd760355fd0fc31c6152a044c69efd081b72831861a3cea98"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_1ade3e9512c04404.json",
+   "sha256": "6d356f46a99607fa210a71d67656f330e1cf4f5c84fe38e5ab8c6746198829d2"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_1ade3e9512c04404.json",
+   "sha256": "7b2293be13084e94050c531642576e266c26a712b73af53f622eb2abe264c1a8"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_f4a61b9f9aa8886c.json",
+   "sha256": "f224a7e110c4fcffd8f9dfda6b18680bcae26ff4261849833ab1485a0a8a1865"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_f4a61b9f9aa8886c.json",
+   "sha256": "5f9ab58643d75988fa3937abd3fff9e520255c4838f47e2ff8d2dd4f0a65cd98"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_1369052c39559a1d.json",
+   "sha256": "5be15d5ddf5ff71fbf7ed7488b836f3eb5129cde695ef069ead67e526e2f9be8"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_f901f320d4ff8a96.json",
+   "sha256": "2f357aaea1fcf8366c2fc781d772e46d61e52deb0d4ad37a20f4ae7206f81058"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_f901f320d4ff8a96.json",
+   "sha256": "25a73d7cf2c3aa69d217bab1b15533c07fe9b054d0ebb04b11528cce0c4ea9e4"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_generation_output_actual.json",
+   "sha256": "0ff7c5458f449dc441c57f30fcb00e61bf02c5ef87f72df0315ffd361fa303cb"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_non_market_output_actual.json",
+   "sha256": "d546d417cdaed4a99e3d62a996945d3e9b6ed92f0d4a87d4bd1e435af8b986e6"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_renewables_output_actual.json",
+   "sha256": "18a15417539986d7938b1c707432917693b150ebd3a545074db7d2aeadaae037"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_wind_output_actual.json",
+   "sha256": "d83b4215775aad8f4b92c29aebeb61ee04c2b9e975a6fa82105b280d3c675722"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_solar_output_actual.json",
+   "sha256": "b13dbdb7a62271dad0a2c787a9a7281544196342b4c1d23c2709de7e0cfed749"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_hydro_storage_output_actual.json",
+   "sha256": "fad16e5b7f97e44a7e1c265ea502308852441b8fe5b774709797f243ca52e69e"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_actual_load.json",
+   "sha256": "b3dc7fb5ae8cde0a6ba017b3318a1e80db820ed277406153660a813fe04b8e7d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_system_reserve.json",
+   "sha256": "3e02aabeb762db6e58039b3bd0d6875453c390319f8f31071e6e1708c024763a"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_important_channel_transmission_actual.json",
+   "sha256": "179e71ed87b2633a7a8085ce36eda5bae0a7f7c5bc72dbdc9b0d0a3481eaa0c2"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_77a790459318559b.json",
+   "sha256": "2449c62abf135d49ecfc94fa347dd9b94b19c768b4e6161a161d8f2c257a7986"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_77a790459318559b.json",
+   "sha256": "a0801b390d5a16d7e679f5d511025c7bec0b96f709f05763bee92d4d2f11b812"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_9d35ad5e2d74c67c.json",
+   "sha256": "8e419e82d2e8ac738e8120827fb1bc7b54357ba8cda688a6f2df9ffba229c64c"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_9d35ad5e2d74c67c.json",
+   "sha256": "1d32e9c165477ebe8a2ada8041c3a8ff322ad53fd3af5f33ad971cd7177f43f5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_1404bce682303715.json",
+   "sha256": "e5cdc7daf53e5c26f531a150ffc8758d35465f60841ed43d30572e5e8772e953"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_1404bce682303715.json",
+   "sha256": "53507c152738f564107c21743a5959f0993e01c8f08f038cd3f8673bb0e5f74c"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_querymarketclearing.json",
+   "sha256": "890453a39f1bbe112dd0b5225f963b13c6d500e394f670b5d1cdaffeddf89b9f"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_daily_clearing_quantity_price.json",
+   "sha256": "0bbc1d18b8d120e616a5db5b7fb292529aa6353cdffc214109e0e1dde0ab91a2"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_generation_types_energy_count.json",
+   "sha256": "6a89a35869fb0a422268ecefd0b22087e38fe89e0da4b7b1a3d4a21a0d57b6e9"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_day_ahead_uniform_settlement_price.json",
+   "sha256": "58620941f6b89ba9f41e1bcb5eebf86b83fe7f7ad47148e391ff056cc399e9e3"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_real_time_uniform_settlement_price.json",
+   "sha256": "25d8085cf9d3b00de0846e73ea3b2ae6167e4f0e82f1b4a2ef83c6e87fd64468"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_day_ahead_average_offer_price.json",
+   "sha256": "c2d9e4e2aedf471c8671184334542867cee5c9b3edf888633ae2720b2d4c1fb5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_day_ahead_node_marginal_price.json",
+   "sha256": "633075004eb5ec6289d62555e1a228bada3a58b8934bddbcad760c78e632e020"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_real_time_node_marginal_price.json",
+   "sha256": "f14d85555462b6a2e00cdef37461f9c7c575a1773725d5b7ed36aa6a6d9679fb"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_queryrqscjjcqfslj.json",
+   "sha256": "7eae45ceaed41bd37b74e827fc8a076f315022da7fc3cd0a2b08d543174c97d5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_queryrqscjjcqfslj.json",
+   "sha256": "53d6e91afb6b0e2213e6fb83ab6cf5047db340dcf1354cce1ef40c534a8b7714"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_real_time_transmission_constraints.json",
+   "sha256": "3b864d17c850e3d037d1c6ec7d260d43b9a972f3a765254de00499e02772b2f6"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_real_time_transmission_constraints.json",
+   "sha256": "59f08a015a688757a9d7457d9c068bba8c6cab0711e2dfcbb76af3ceda6ffd6b"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_8f8ec23931c2b869.json",
+   "sha256": "3daecfab9ab275ad2f8a1ba02d1c1edd572461e18529800e42a8b692a608b5ca"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_8f8ec23931c2b869.json",
+   "sha256": "b73fe69650cc9fedb9da55437be20a7d623243dc519926c9736e50506e38a710"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_a3b57efa412695d5.json",
+   "sha256": "ddde84bb8d2b75dda1e62cdb1804cf2532b2e809c95664c9c2835bd6819856be"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_a3b57efa412695d5.json",
+   "sha256": "bee692e4c380f6ebae0a8ebd5ab64c53f73a4d133c88dce66e8bb9263c8c074f"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_transmission_maintenance_plan.json",
+   "sha256": "6bce97e7bc52ab0034b8dbd79f8c6930d9a79feda351485e6f999cc870beace8"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_transmission_maintenance_plan_queue.json",
+   "sha256": "1fbfba92a3a151993207cdc44d17c9f93530af10cfa427019f57a3072098697c"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_province_system_load_forecast.json",
+   "sha256": "17eadf523840848b4540ed8ca35548d5142287e47b2ea3887e38af33e58cb3c4"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_province_system_load_forecast_queue.json",
+   "sha256": "570a2b9f156abb26c22d2da874e3c50f10611ea1a7d9c6332932041f47ab8673"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_provincial_renewable_forecast.json",
+   "sha256": "5a5fe636dd513836fd9417e8cf335e7bdb497f54ba2ff39b8b124adef3ab79c6"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_provincial_renewable_forecast_queue.json",
+   "sha256": "5d3c234728721b21a2d930f2bc7924a6683f1163d3a0bc6f28458fb4fe8c6dd5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_province_power_balance.json",
+   "sha256": "81b840fc227a6c8c8582c87b9ad3531f3449b0c197de5fa75d23372504c74743"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_province_power_balance_queue.json",
+   "sha256": "8c3b574e16837050ba3c3f01cbede6a50a84edc2b621d8899c9665b6f96cdfa9"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_renewable_surplus.json",
+   "sha256": "99a96052bfa7583977183e96cee6d84d15bdc2853528f94509a5d2312bb4293d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_renewable_surplus_queue.json",
+   "sha256": "70daa1b4a9c0d6988f565b8343c563283cc83bb7448f03981da70bae997f7936"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_4b6d8abc7b87bf0e.json",
+   "sha256": "65aac7a3da19a909c6e59449a1672fb09777f2ca84c07135fe995d893e5889fa"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_dual_date_capacity_web_queue.json",
+   "sha256": "42d05fef317a4a1d507083c8f45f43e7738d6beffb3228fbb1cca75410b856b5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_16755ddfdcd3ca05.json",
+   "sha256": "899af43dc60e55c5608925b2b872ed34f8294edfab79390529b643ee4010bef3"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_intraday_capacity_web_queue.json",
+   "sha256": "692752331a908b1611961bfd9cfefbb85a02174bbf7e95613e7f78f340ba26a7"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_6c657dfae2282d8f.json",
+   "sha256": "d567a8b56ca416bc4c6592a7f2f04880b10a2eb6f4316a103bfbcf746047e13d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_6c657dfae2282d8f.json",
+   "sha256": "03de19fee5e6ce8341da77cfa1146c68083fd739d87a20f3c36e4fb8677cef8d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_580fd9a3d283c12f.json",
+   "sha256": "6e21f1075f82b048bb5ba98418d8410be69de66a02c18ac536748ea7bf4873d4"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_580fd9a3d283c12f.json",
+   "sha256": "6e3fcee015000d074abcdad8c3fa4fe71634a9e88ff14cd860d29e576eba27f3"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_c7265437599d23af.json",
+   "sha256": "92de420bba2db74ea2d6fde744d90d538a63a6f7c755b382279e3d7fd1e5c6a5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c7265437599d23af.json",
+   "sha256": "e22a54b035a6ad150dd84b70f78ed39c42190631fef90f10c908afa6f67e61ef"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_3a2eb65c16143cee.json",
+   "sha256": "3575cb0026d8ed238d8026b41c5b8f697be0df5951a190de99eca5caff15e042"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_0cc7b87f0b9298c0.json",
+   "sha256": "62b9fb6aedf32a81226c24628ef2c4bbaa1e59d7a9b55985f6e71f22a7f2f0f9"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_0d83214c28014d2a.json",
+   "sha256": "b6ed3dadf4d3777de10a48a997fd6e01c87fbb0ec286999bd901fc7bad2fe954"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_0d83214c28014d2a.json",
+   "sha256": "1525bc399d592128509bf906b35d2d295175ee47d26336f9d3d646f3a9abda29"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_c2cf44042b0fbce1.json",
+   "sha256": "234b63aebb37748cfdacc3fa5ef1e6ab92615672dc0a072bb4fd17b553ede43a"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c2cf44042b0fbce1.json",
+   "sha256": "b8e09d5bee17616d744fb02224e298b8723b69dc8565b6f600f4f4f52947e4fe"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_15f615bfdf66bb82.json",
+   "sha256": "7ed86ea239cdf67c9511a45af36cc01e609f7c0b78cfe5dcb9bada4ed9b557ed"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_15f615bfdf66bb82.json",
+   "sha256": "25565c6fb973c87231fc861b9c7fcab025e5e25b38d904963b59cc9c7970755f"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_c0d1532c38820e65.json",
+   "sha256": "562330dd3730a3ab8582f787da3c12db8c7a3ddabd768ce0411e6e37edb0b1bf"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_c0d1532c38820e65.json",
+   "sha256": "8a13d4f9c1d22d6876c8b305da2c93d8ff86788a80448d02f6cac512847431da"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_7fec0f57bba65667.json",
+   "sha256": "f12e99f79cf4e2f3b44f58d7ef2b24210d5cebe92e89f9454020b7dcccfe4426"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_7fec0f57bba65667.json",
+   "sha256": "48a0c39598593777111e3d8ee3ba6f865f2233687b2299146e02cfd415710ce1"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_b9960a26a576592a.json",
+   "sha256": "5d464b2bd334ee3689a66b95cee5b3343fabed4f20bcac80dbf69261546b1b3e"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_b9960a26a576592a.json",
+   "sha256": "74ce84112c6b350db893817b07a09bfc6c8b74c917cc9343b6ba6416fcda0d67"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_9dda25255779e435.json",
+   "sha256": "3e3938189642d05ca075c98370d147d6b8e90463479dc9c5e4fe23cb7b45c58d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_9dda25255779e435.json",
+   "sha256": "1403fea95bbe8af107a16715170164746f642bdd849b2fa47d7aa8814b3d9cd5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_6d80c3d4514ccfc2.json",
+   "sha256": "14b68f12dc413e483490506e647fcd6a82ab2d7ef00b8526d433fc7c06c52a59"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_auxiliary_temporary_unit_web_queue.json",
+   "sha256": "0e410c5069517fde58584c1b80a5d996b8ed484a596c6984c1f3bdbb66563f28"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4fbe65318504a8df.json",
+   "sha256": "97063b9ddada97a7100fc75c7d0234f97c7ca1c8e37c84cd747415677e9d96f6"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_ea9f1475a8de3c5c.json",
+   "sha256": "401c188702b75dee3c5fcaf95996fd2370cf3f40c2be64bf1a010190bcac195d"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_af8770061bb253cc.json",
+   "sha256": "b1fbb7d4f16e77e45209b0427d01a41f3352adcc777991db2355b5e35647f65e"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_af8770061bb253cc.json",
+   "sha256": "f32f06d753b2d59018899c290e4d57eeb0715aed6c4a735705ad27ba166c7ff0"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_912b3a298612445b.json",
+   "sha256": "508d9e6b12201fadc0123ce7339d6219f9e040ebb3485dad7f9386f417ddaa4f"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_912b3a298612445b.json",
+   "sha256": "ccd214d625bef0cf8e188d983d91de46d61fc4555b3e8ad9aad551c62afe55f6"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_2faabd96814695e9.json",
+   "sha256": "ed43975f5d8512a9611cfd3a0e60c8e94c6b548decf6877c1411d9e4449a3b44"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_2faabd96814695e9.json",
+   "sha256": "763dce18e00e4897d677c5fe61071eceaa55228eb75971fc5894cae9377f6ca0"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_22c779b5bdc2edc8.json",
+   "sha256": "d57874ab217d60384076ca22d56e09b880dcb520ac4f4e24f0f9cdf83a082283"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_22c779b5bdc2edc8.json",
+   "sha256": "bca1ab781b5a7c3c7497954e9452479c4f043e3a2b5d2f70113d5de66abbef5c"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_27458005cd8a3902.json",
+   "sha256": "e1c26b96c8a71936b54c16b35d2e5e6e652f58e66541ece8a4c139da9fbcddfc"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_7ae30da08f22c8c6.json",
+   "sha256": "e28df834880669bd6694a83c3fe4915e86192c7f806188cb56cb9aeffa0cb9bb"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_market_disclosure_monthly.json",
+   "sha256": "af1e3d0313ed763b977c669ad9cea8677c28272cda6973fc8cfbf709226ec598"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4e348bbd01c3f76c.json",
+   "sha256": "570573c9eaa0c9291a97e48ad80ac96c28eeec36570802f2db55288fb0296654"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_9a63f7b7ad7b1dc6.json",
+   "sha256": "ab7f7bb567f9a5379f6680692fa47eab1e9b267c5b04e052f5c02fbdc2ec5f35"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_publication_1ea2049ccbd0014b.json",
+   "sha256": "f7bd2f96923840678e640a10bd931ee5f3878a59eae4a9c292aec4d53951927a"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_period_report_queue_publication_1ea2049ccbd0014b.json",
+   "sha256": "a2d2e4052257428d6d90a4632068ad3c3a33c4494da4757e7f24223e71a8c0fa"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_4e32a0422419854c.json",
+   "sha256": "90e660e5225cd806d3a9911716bfe642971125e361531a5bb160ebc592311833"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_2a213d7c51bd461a.json",
+   "sha256": "c97eeb12e022f27eb9f6306ef751736b27c79d291885938512878434a2055dfc"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_3b91e9c3520c0fbe.json",
+   "sha256": "bd29d3009fe8e4954d5f02b0ac910ad5dbd5d4bd6f2ef6e0b6344322db5bb055"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_0d6bfe3bffbfa5ec.json",
+   "sha256": "814d25afe4f4ca5a38a5b9e9109e5bad04b481610143ebba8d49dac0530018bd"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_publication_queue_publication_2889c331a4df6628.json",
+   "sha256": "98ba7d3621fddeda63aa822d67c4fd8fd736fcfde97d8df1246562a5112e91ad"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_portal_current_contracts.json",
+   "sha256": "9a542126c6adbdcfe0ba77da5f91894f955377447d6cd69378e550c35cf42926"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_current_contracts_queue.json",
+   "sha256": "26438f75cb0f5ab270c9a81b58651f25f8bea7489ccb01375a0c81d0088732fb"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_historical_contracts_queue.json",
+   "sha256": "ce3ac54502437a02e7fd78b8b0dbe8e16deba1801b0c492287879a080a014eb0"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_contract_summary_queue.json",
+   "sha256": "1b9721e15cca9393ff6a02b96236a239de76d847213c97d5c67b1c4a52f52ce9"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_native_attempts_portal_contract_curve.json",
+   "sha256": "9a93c7e0cf9e49b063a7bb47141579e8158b0d39075919da64e4c377b52d17bd"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_portal_contract_curve_queue.json",
+   "sha256": "428298683952051df7209bdeaebab70a2f89c6116051031b1820de9eb202221d"
+  }
+ ],
+ "inputs_changed_during_scan": [
+  "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json"
+ ],
+ "rolling_read_not_frozen": true,
+ "overlapping_snapshots_are_not_unique_tasks": true,
+ "temporary_shadow_index": {
+  "snapshots": 148,
+  "states": {
+   "pending": 100233,
+   "saved": 14235,
+   "unknown": 131
+  },
+  "unmapped": 1696,
+  "dispatch_allowed": false
+ },
+ "production_writes": 0,
+ "website_requests": 0,
+ "live_handoff_completed": false
+}

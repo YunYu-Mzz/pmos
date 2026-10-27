@@ -1,0 +1,16 @@
+{
+  "operation": "query",
+  "dataset_aliases": {
+    "old_reviewed_dataset": "reviewed_dataset"
+  },
+  "period_kinds": {
+    "old_reviewed_dataset": "day"
+  },
+  "source_contracts": {
+    "old_reviewed_dataset": {
+      "period_field": "mdate",
+      "selection_field": "type",
+      "paginated": false
+    }
+  }
+}

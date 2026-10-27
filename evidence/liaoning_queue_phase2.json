@@ -1,0 +1,161 @@
+{
+ "province": "liaoning",
+ "mode": "offline_queue_compatibility",
+ "source_views": [
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_verified_expansion_20261023/queue.json",
+   "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5",
+   "records": 12251,
+   "states": {
+    "pending": 12221,
+    "empty": 5,
+    "saved": 25
+   },
+   "mapped": 11295,
+   "unmapped": 956,
+   "consumed": 30,
+   "blocked": 1555,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_verified_expansion_20261023/active_manifest.json#prior_outcomes",
+   "sha256": "d092c48ef75c9659c426289b5b7a476d4a3cfbfdb918deb64aa7ec8247339fc9",
+   "records": 45,
+   "states": {
+    "saved": 45
+   },
+   "mapped": 42,
+   "unmapped": 3,
+   "consumed": 45,
+   "blocked": 3,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_engine_collection_20261023/nonmarket_generation_forecast/queue.json",
+   "sha256": "3027719c8c5dbe9ba6a232d5b4761d48d169c89376da4faf81aad8a58521570b",
+   "records": 145,
+   "states": {
+    "pending": 143,
+    "saved": 2
+   },
+   "mapped": 143,
+   "unmapped": 2,
+   "consumed": 2,
+   "blocked": 2,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_engine_collection_20261023/sitewide_0353290a57044c3e/queue.json",
+   "sha256": "c2ffca80a79eb907277d6d2d117a85d59d0d693fd9cee590b69a5fcee879b832",
+   "records": 296,
+   "states": {
+    "pending": 295,
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 296,
+   "consumed": 1,
+   "blocked": 296,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  },
+  {
+   "source_ref": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_engine_collection_20261023/sitewide_e38351fe661a034a/queue.json",
+   "sha256": "97198f9eeb0107c7850764f4a4e6eb365f9f4cf2ed11a3117d3d9eba65227c1e",
+   "records": 295,
+   "states": {
+    "unknown": 1,
+    "pending": 292,
+    "empty": 1,
+    "saved": 1
+   },
+   "mapped": 0,
+   "unmapped": 295,
+   "consumed": 3,
+   "blocked": 295,
+   "dispatch_allowed": false,
+   "source_atomically_frozen": false,
+   "website_requests": 0,
+   "shadow_imported": true,
+   "live_handoff_completed": false
+  }
+ ],
+ "normalized_records": 13032,
+ "states": {
+  "pending": 12951,
+  "empty": 6,
+  "saved": 74,
+  "unknown": 1
+ },
+ "consumed_facts": 81,
+ "mapped_records": 11480,
+ "unmapped_records": 1552,
+ "missing_local_inputs": [
+  "crawlee_batch_journal_export_not_locally_available",
+  "state/server_advanced_tasks_20261016.json",
+  "state/server_sitewide_20261016_tasks.json"
+ ],
+ "decode_failures": [],
+ "source_refs": [
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_verified_expansion_20261023/active_manifest.json",
+   "sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/liaoning/lncrawler/expanded_adapters.py",
+   "sha256": "a6d4878631b921a348f2649732c2f73115582220e65b727e3274cdf8a646cd24"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/liaoning/lncrawler/sitewide_specs.py",
+   "sha256": "972bebbfed6c8b5e1a4a70099b9f63593f65039a246f2478b7bc596ca41df3a7"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_verified_expansion_20261023/queue.json",
+   "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_engine_collection_20261023/nonmarket_generation_forecast/queue.json",
+   "sha256": "3027719c8c5dbe9ba6a232d5b4761d48d169c89376da4faf81aad8a58521570b"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_engine_collection_20261023/sitewide_0353290a57044c3e/queue.json",
+   "sha256": "c2ffca80a79eb907277d6d2d117a85d59d0d693fd9cee590b69a5fcee879b832"
+  },
+  {
+   "path": "/Users/yunyu/Desktop/sd_crawler/liaoning/state/server_engine_collection_20261023/sitewide_e38351fe661a034a/queue.json",
+   "sha256": "97198f9eeb0107c7850764f4a4e6eb365f9f4cf2ed11a3117d3d9eba65227c1e"
+  }
+ ],
+ "inputs_changed_during_scan": [],
+ "rolling_read_not_frozen": true,
+ "overlapping_snapshots_are_not_unique_tasks": true,
+ "temporary_shadow_index": {
+  "snapshots": 5,
+  "states": {
+   "empty": 6,
+   "pending": 12951,
+   "saved": 74,
+   "unknown": 1
+  },
+  "unmapped": 1552,
+  "dispatch_allowed": false
+ },
+ "production_writes": 0,
+ "website_requests": 0,
+ "live_handoff_completed": false
+}

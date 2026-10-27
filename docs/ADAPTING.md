@@ -1,3 +1,5 @@
+> 第二阶段：省份纯decoder和真实目录清单已加入，离线命令新增offline-audit、legacy-audit、legacy-review、replay --contract。旧435规格仍是历史目录，缺证/线上资格不提升。
+
 # 新省份/新来源适配规范
 
 本版只允许离线动作。旧文档中的capture/sample/enable/start/ack命令现被CLI拒绝；保留历史函数和规格便于审阅，不代表可以上线使用。

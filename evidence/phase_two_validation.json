@@ -1,0 +1,369 @@
+{
+  "date": "2026-10-27",
+  "mode": "offline_only",
+  "implementation_commit": "04b3c87423863ed20499a7035ab12973c9223de7",
+  "tests": {
+    "command": "Python 3.12: tools/test_offline.py",
+    "discovered": 196,
+    "passed": 195,
+    "skipped": 1,
+    "reason": "local UI browser test opt-in; no browser started",
+    "network_connections_forbidden": true,
+    "log_sha256": "fdbb67a15e30d12778105655ecbe8c8ae258946b2c302b7808d3b2e73625f561"
+  },
+  "code_references": [
+    {
+      "path": "pmos/pmos/adapt.py",
+      "sha256": "443800bbec5727b78ef4628209e36fe613db91f953f7dd63a6072f8ba551e713"
+    },
+    {
+      "path": "pmos/pmos/adapters/anhui.py",
+      "sha256": "ee5dc00d16d6fb388a305fe49618ffd1da2f39c954be40ef448a0c814598caec"
+    },
+    {
+      "path": "pmos/pmos/adapters/liaoning.py",
+      "sha256": "ca2990721417f2f40073cd69f41086fc885b6a84baf36b8172f37f63466fae06"
+    },
+    {
+      "path": "pmos/pmos/adapters/native.py",
+      "sha256": "64d10037b583abf922ab5ab51d7e7e054ce24b93137966433666227c69d08f12"
+    },
+    {
+      "path": "pmos/pmos/adapters/shanxi.py",
+      "sha256": "4e7174a4e7ebc14a01c7f4e009bac802e8ca2a639c5bf99b23b0b2e8b037ca2d"
+    },
+    {
+      "path": "pmos/pmos/cli.py",
+      "sha256": "0fdf62d260b35c476a49d4df40c265cac85ae5cdf5a1152ba71643d6c68910c6"
+    },
+    {
+      "path": "pmos/pmos/contracts.py",
+      "sha256": "908d13aa935e9518bfb0aea3d3dbe986f443e96363ba74d0731acff3c9617635"
+    },
+    {
+      "path": "pmos/pmos/engine.py",
+      "sha256": "0d889ae4bd9a6cfb42fd74fe5a964a06468c4e4b2e2119037df6da7cf5f12448"
+    },
+    {
+      "path": "pmos/pmos/excel.py",
+      "sha256": "0b8986854c710ab1f768cfbc3c25f159f087f3869855632749ccc251699070a1"
+    },
+    {
+      "path": "pmos/pmos/ledger.py",
+      "sha256": "b559dd70156afe1556a7f0219987e0f860372dfce741e5ecdfb7e750256fee9e"
+    },
+    {
+      "path": "pmos/pmos/offline.py",
+      "sha256": "21f62e2bdd43ac61fdaed900a15d1e3cb9a6f9b302e6052996b4d6763915d8bd"
+    },
+    {
+      "path": "pmos/pmos/queue_audit.py",
+      "sha256": "83390e39fc78d4cf1a4eddad339a5fcd3434d3a642ac001843209f541789d2ac"
+    },
+    {
+      "path": "pmos/pmos/queue_compat.py",
+      "sha256": "144a0ad0e16f9e3267aa9cbdcb607c1cf74eefe96eec2e29e0dab7097910f32c"
+    },
+    {
+      "path": "pmos/pmos/workbooks.py",
+      "sha256": "8f6812d6d4667ba4e9975c277e721ede3de7e8f9a9145da3ddd5aca242caad31"
+    },
+    {
+      "path": "pmos/pyproject.toml",
+      "sha256": "fab8d3abab306767c196ed335af77ec63bd049d469f8e3cb3a6b63b98efb845c"
+    },
+    {
+      "path": "pmos/requirements-offline-workbooks.txt",
+      "sha256": "a3841818046b15fef12c19ff0f39f38ca46d8ff946c2bd02ed62609f43e4f267"
+    },
+    {
+      "path": "pmos/tests/fixtures/shanxi_phase2_native.json",
+      "sha256": "223d1e20705be0a2d3d1aea97364a20db89060f93868778c4e8eeefb24620d61"
+    },
+    {
+      "path": "pmos/tests/test_anhui_offline.py",
+      "sha256": "dad491782fc4e3ca85a4c2fe54f1eb390f4558f47fe3d9bfdf23920d230f441c"
+    },
+    {
+      "path": "pmos/tests/test_cross_province_review.py",
+      "sha256": "7da51d7830113bcf25998160ed1d107a7b126c5b3abd8196a969e4e2ce2277fd"
+    },
+    {
+      "path": "pmos/tests/test_liaoning_offline.py",
+      "sha256": "03f1b822fbb36234de4d2789b58459f1d9a15214e01e719624eedaf81422a5e6"
+    },
+    {
+      "path": "pmos/tests/test_phase2_pipeline.py",
+      "sha256": "8de3e4f6a66e5effd28d54c882e1c3d07b8704807e062fbbe95ffc044f55e6f2"
+    },
+    {
+      "path": "pmos/tests/test_province_contract_review.py",
+      "sha256": "6cd8335c0850022705880b5a745f96a8b4f4c44828a36bc5732c5942ec7c80c9"
+    },
+    {
+      "path": "pmos/tests/test_queue_compat.py",
+      "sha256": "ddf66e52d3f4807e305aa253734d96201b9680a3a8b1256715212c004c7d5248"
+    },
+    {
+      "path": "pmos/tests/test_queue_review.py",
+      "sha256": "58344d5bb4246bfd574f5e3f3a6fb03c99160b29d93c8692d23b0732f5788d71"
+    },
+    {
+      "path": "pmos/tests/test_shanxi_offline.py",
+      "sha256": "2db37c6239b4451865b4e9f41eba99c2f88d0830d78e27799fa7d3e251aaef54"
+    }
+  ],
+  "province_results": {
+    "liaoning": {
+      "catalog_rows": 170,
+      "technical_source_union": 185,
+      "counts": {
+        "sample_only_passed": 91,
+        "evidence_missing_or_shape_review": 94
+      },
+      "catalog_counts": {
+        "evidence_missing_or_shape_review": 92,
+        "sample_only_passed": 78
+      },
+      "samples_replayed": 120
+    },
+    "anhui": {
+      "selected_units": 148,
+      "excluded_candidates": 52,
+      "counts": {
+        "attempt_phase_captured": 13762,
+        "captured_sources_verified": 13762,
+        "legacy_mutable_state_binding": 43,
+        "immutable_binding": 13719,
+        "attempt_phase_pending_review": 87,
+        "dynamic_original_pages_verified": 14,
+        "attempt_phase_attempting": 1,
+        "listing_sources_verified": 103,
+        "legacy_artifacts_verified": 42
+      },
+      "failure_counts": {},
+      "unit_status_counts": {
+        "selected_listing_sources_verified": 60,
+        "source_cells_verified_domain_mapping_pending": 4,
+        "selected_bound_samples_verified": 81,
+        "retained_text_source_verified": 1,
+        "container_verified_content_mapping_pending": 1,
+        "derived_reference_verified_original_proof_pending": 1
+      },
+      "rolling_read_not_frozen_snapshot": true,
+      "public_inputs_changed_during_scan": [
+        "anhui/state/server_production_plan_20261023.json",
+        "anhui/state/server_native_rollout_registry.json",
+        "anhui/state/server_native_attempts_publication_22c779b5bdc2edc8.json"
+      ]
+    },
+    "shanxi": {
+      "source_count": 270,
+      "indicator_registry_rows": 214,
+      "source_qualification_counts": {
+        "sample_only_online_pending": 221,
+        "blocked_evidence_or_dependency": 49
+      },
+      "sample_result_counts": {
+        "offline_passed": 816,
+        "blocked": 4
+      },
+      "unique_original_paths_checked": 779,
+      "unique_original_paths_passed": 775,
+      "dependency_versions": {
+        "xlrd": "2.0.2",
+        "olefile": "0.47"
+      },
+      "standard_library_environment": {
+        "source_count": 270,
+        "indicator_registry_rows": 214,
+        "source_qualification_counts": {
+          "sample_only_online_pending": 211,
+          "blocked_evidence_or_dependency": 59
+        },
+        "sample_result_counts": {
+          "offline_passed": 806,
+          "blocked": 14
+        },
+        "unique_original_paths_checked": 779,
+        "unique_original_paths_passed": 765,
+        "dependency_versions": {
+          "xlrd": null,
+          "olefile": null
+        }
+      }
+    }
+  },
+  "queue_results": {
+    "liaoning": {
+      "normalized_records": 13032,
+      "states": {
+        "pending": 12951,
+        "empty": 6,
+        "saved": 74,
+        "unknown": 1
+      },
+      "mapped_records": 11480,
+      "unmapped_records": 1552,
+      "decode_failures": [],
+      "missing_local_inputs": [
+        "crawlee_batch_journal_export_not_locally_available",
+        "state/server_advanced_tasks_20261016.json",
+        "state/server_sitewide_20261016_tasks.json"
+      ],
+      "inputs_changed_during_scan": [],
+      "temporary_shadow_index": {
+        "snapshots": 5,
+        "states": {
+          "empty": 6,
+          "pending": 12951,
+          "saved": 74,
+          "unknown": 1
+        },
+        "unmapped": 1552,
+        "dispatch_allowed": false
+      }
+    },
+    "anhui": {
+      "normalized_records": 114599,
+      "states": {
+        "saved": 14235,
+        "pending": 100233,
+        "unknown": 131
+      },
+      "mapped_records": 112903,
+      "unmapped_records": 1696,
+      "decode_failures": [],
+      "missing_local_inputs": [
+        "crawlee_batch_journal_export_not_locally_available",
+        "state/server_native_attempts_interregional_exchange_monthly.json",
+        "state/server_native_attempts_market_disclosure_monthly.json",
+        "state/server_native_attempts_portal_contract_summary.json",
+        "state/server_native_attempts_portal_historical_contracts.json",
+        "state/server_native_attempts_publication_0cc7b87f0b9298c0.json",
+        "state/server_native_attempts_publication_0d6bfe3bffbfa5ec.json",
+        "state/server_native_attempts_publication_0fc4efcff1677d40.json",
+        "state/server_native_attempts_publication_12765c7bd301cc9a.json",
+        "state/server_native_attempts_publication_1369052c39559a1d.json",
+        "state/server_native_attempts_publication_1e927cb76058ef1a.json",
+        "state/server_native_attempts_publication_25bbebaf5f139458.json",
+        "state/server_native_attempts_publication_27458005cd8a3902.json",
+        "state/server_native_attempts_publication_2889c331a4df6628.json",
+        "state/server_native_attempts_publication_293f4ec8334ff8d1.json",
+        "state/server_native_attempts_publication_2a213d7c51bd461a.json",
+        "state/server_native_attempts_publication_2fdf370813988841.json",
+        "state/server_native_attempts_publication_311d445f23bd011c.json",
+        "state/server_native_attempts_publication_32101a70fcd45761.json",
+        "state/server_native_attempts_publication_3412916d4928c199.json",
+        "state/server_native_attempts_publication_37bddf5592f99115.json",
+        "state/server_native_attempts_publication_39caee42e016ea0f.json",
+        "state/server_native_attempts_publication_3a2eb65c16143cee.json",
+        "state/server_native_attempts_publication_3b91e9c3520c0fbe.json",
+        "state/server_native_attempts_publication_4913dc9fded9a59c.json",
+        "state/server_native_attempts_publication_4ab104c9f4b8bf37.json",
+        "state/server_native_attempts_publication_4e32a0422419854c.json",
+        "state/server_native_attempts_publication_4e348bbd01c3f76c.json",
+        "state/server_native_attempts_publication_4fbe65318504a8df.json",
+        "state/server_native_attempts_publication_5000f8d15d49f777.json",
+        "state/server_native_attempts_publication_5396a250df24ff32.json",
+        "state/server_native_attempts_publication_573fce1bdd8cff0e.json",
+        "state/server_native_attempts_publication_6605730b655b246c.json",
+        "state/server_native_attempts_publication_6a2ff820ed916f3f.json",
+        "state/server_native_attempts_publication_6f076a4ed960b33f.json",
+        "state/server_native_attempts_publication_7ae30da08f22c8c6.json",
+        "state/server_native_attempts_publication_831d53381887aff8.json",
+        "state/server_native_attempts_publication_86e8adf7fd232a7d.json",
+        "state/server_native_attempts_publication_9880076c973b4062.json",
+        "state/server_native_attempts_publication_9a63f7b7ad7b1dc6.json",
+        "state/server_native_attempts_publication_9bc32f76b0350470.json",
+        "state/server_native_attempts_publication_b38716acc611a249.json",
+        "state/server_native_attempts_publication_b46ca08a9cb461bf.json",
+        "state/server_native_attempts_publication_b48543da139c9a47.json",
+        "state/server_native_attempts_publication_b7a0824de1b6cf57.json",
+        "state/server_native_attempts_publication_b8329caed82f1a94.json",
+        "state/server_native_attempts_publication_bc21e8d6609e4183.json",
+        "state/server_native_attempts_publication_c1811d02600ebdcf.json",
+        "state/server_native_attempts_publication_c1add81ba5c2f3e5.json",
+        "state/server_native_attempts_publication_cabf8a7685a92fd4.json",
+        "state/server_native_attempts_publication_d12356772dff7c24.json",
+        "state/server_native_attempts_publication_d1477e90d75054d9.json",
+        "state/server_native_attempts_publication_d26ddf6c487ad028.json",
+        "state/server_native_attempts_publication_d64c01f6f58bcd18.json",
+        "state/server_native_attempts_publication_d911b23d47ee0020.json",
+        "state/server_native_attempts_publication_e0693cbeead18de2.json",
+        "state/server_native_attempts_publication_e3db7e65e4854417.json",
+        "state/server_native_attempts_publication_e6da473be59e8744.json",
+        "state/server_native_attempts_publication_ea9f1475a8de3c5c.json",
+        "state/server_native_attempts_publication_eda606edc1c9d156.json",
+        "state/server_native_attempts_publication_ee29bb5071715aba.json",
+        "state/server_native_attempts_publication_f9bf68058b99c808.json",
+        "state/server_native_attempts_publication_f9d09d9d29d5a932.json",
+        "state/server_native_attempts_publication_fa1d58eecf0c8e9d.json",
+        "state/server_native_attempts_publication_fc829874e714ff2b.json",
+        "state/server_native_attempts_querygensetinstall.json",
+        "state/server_native_attempts_querymarketclearing.json",
+        "state/server_native_attempts_querysocietyindustriesuse.json"
+      ],
+      "inputs_changed_during_scan": [
+        "/Users/yunyu/Desktop/sd_crawler/anhui/state/server_production_plan_20261023.json"
+      ],
+      "temporary_shadow_index": {
+        "snapshots": 148,
+        "states": {
+          "pending": 100233,
+          "saved": 14235,
+          "unknown": 131
+        },
+        "unmapped": 1696,
+        "dispatch_allowed": false
+      }
+    },
+    "shanxi": {
+      "normalized_records": 0,
+      "states": {},
+      "mapped_records": 0,
+      "unmapped_records": 0,
+      "decode_failures": [],
+      "missing_local_inputs": [
+        "crawlee_batch_journal_export_not_locally_available",
+        "state/native_json_collection/queue.sqlite3",
+        "state/native_publication_collection/queue.sqlite3"
+      ],
+      "inputs_changed_during_scan": [],
+      "temporary_shadow_index": {
+        "snapshots": 0,
+        "states": {},
+        "unmapped": 0,
+        "dispatch_allowed": false
+      }
+    }
+  },
+  "qualification": "Offline source-shape/sample acceptance only; full semantics, all scope/history and online acceptance remain separate",
+  "protection": {
+    "live_cli_and_services_disabled": true,
+    "new_site_requests": 0,
+    "browser_connections": 0,
+    "production_source_queue_or_service_writes": 0,
+    "credentials_read": 0,
+    "mail_or_feishu_writes": 0,
+    "old_gitrepo_worktree_entries_preserved": 216,
+    "remote_created_or_pushed": false
+  },
+  "security_review": {
+    "repository_files_reviewed": 532,
+    "files_over_1mb": 0,
+    "actual_secret_literals_found": 0,
+    "reviewed_synthetic_hits": [
+      {
+        "path": "pmos/tests/test_shanxi_offline.py",
+        "classification": "explicit_synthetic_credential_rejection_fixture"
+      }
+    ]
+  },
+  "remaining": {
+    "liaoning": "94 combined technical sources missing local originals/shape evidence; 1552 old state views unmapped",
+    "anhui": "52 excluded candidates; 7 legacy/derived/container qualifications; 43 mutable bindings; 1696 old state views unmapped",
+    "shanxi": "49 technical sources missing evidence or blocked; 4 historical40302; actual native DB exports absent",
+    "common": "No frozen owner handoff, all raw operation accounting, UI child-file IDs or production driver/long-running acceptance"
+  }
+}

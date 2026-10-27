@@ -1,0 +1,29 @@
+{
+ "province": "shanxi",
+ "mode": "offline_queue_compatibility",
+ "source_views": [],
+ "normalized_records": 0,
+ "states": {},
+ "consumed_facts": 0,
+ "mapped_records": 0,
+ "unmapped_records": 0,
+ "missing_local_inputs": [
+  "crawlee_batch_journal_export_not_locally_available",
+  "state/native_json_collection/queue.sqlite3",
+  "state/native_publication_collection/queue.sqlite3"
+ ],
+ "decode_failures": [],
+ "source_refs": [],
+ "inputs_changed_during_scan": [],
+ "rolling_read_not_frozen": true,
+ "overlapping_snapshots_are_not_unique_tasks": true,
+ "temporary_shadow_index": {
+  "snapshots": 0,
+  "states": {},
+  "unmapped": 0,
+  "dispatch_allowed": false
+ },
+ "production_writes": 0,
+ "website_requests": 0,
+ "live_handoff_completed": false
+}

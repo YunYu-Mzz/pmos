@@ -1,44 +1,56 @@
-# PMOS 统一采集代码：第一阶段离线交付
+# PMOS：三省离线适配与旧队列兼容
 
-2026-10-27。沿用本目录既有框架，修复共用引擎并增加三省离线适配；没有建立第二套框架。**本版本只支持离线验收，不可替代生产采集器。** 山西曾在缺模板时实测失败；本次没有重新上线，也没有清除该次阻断。
+2026-10-27第二阶段交付。继续使用现有PMOS共同引擎，补辽宁、安徽、山西的来源形态、原件回放和旧队列兼容；陕西、冀北未迁移。**线上入口仍禁用，现有采集、保活、浏览器和旧队列未改。**
 
-| 省份 | 本次离线实现 | 留存原件回放 | 线上资格 |
-|---|---|---|---|
-| 辽宁 | 96 点列表曲线、嵌套业务码、原件/任务流程 | 系统负荷 3 份通过 | 仅所选样本通过，待线上验收 |
-| 安徽 | 96 点对象曲线、零/负数和完整时点校验 | 省级负荷预测 3 份通过 | 仅所选样本通过，待线上验收 |
-| 山西 | 原生分页表、页码/行数/总数检查 | `menu_af7397f1e57d` 3 份通过 | 仅所选样本通过，待线上验收 |
-| 陕西、冀北 | 预留适配接口 | 未迁移、未读取其生产目录 | 不在第一阶段范围 |
+## 当前交付
 
-**“离线通过”是共同引擎和明确样本形态通过，不是三省全站适配完成。** 原有 435 份规格保留作历史迁移目录，其 candidate/sampled/verified 代表旧环境资格，不能当统一运行时验收。当前 enabled=0；已撤销三个默认启用项，移除山西负荷缺源码佐证的推断 bootstrap。所有线上/控制 CLI 动作均被本发行版硬性拒绝，无环境变量绕过；部署模板也有失败前置门禁。
+| 省份 | 本轮离线覆盖 | 仍保留的边界 |
+|---|---|---|
+| 辽宁 | 普通/嵌套记录、宽表、动态表、分页、FineReport 96点HTML、附件容器；120份留存回放 | 170行原目录中78有样本、92待证；技术来源联合185个中91有样本、94缺证/待审。两种口径不可混为指标总数 |
+| 安徽 | 148任务组逐项具备读取路径：81原生模型、60列表、4XLSX、1正文、1PDF容器、1派生参考；全量重建约1.37万captured原件 | 后7组不冒充原生语义验收；43份早期可变binding保留资格限制；另外52候选逐项缺证；列表不等于附件 |
+| 山西 | 270技术来源中221有形态样本、49缺证/阻断；820次留存评估816通过 | 使用已有可选xlrd/olefile的离线环境；标准库为211/59。4历史40302仍拒绝，源单元格/附件容器不等于业务字段语义通过 |
 
-需要 Python 3.11+。离线核心只用标准库，不需要安装 Playwright，也不会打开浏览器。
+三省统一状态均为**离线形态/样本通过，线上pending**，不是全站全年全部范围完成。原435份datasets规格继续作为历史来源目录，enabled=0，不继承旧环境上线资格。旧山西PMOS缺模板实测失败记录也未清除或重跑。
+
+旧队列已实现6种格式兼容、day/month/year journal、精确身份映射、未知/拒绝/失败保留、附件fileId防重放及新Ledger影子索引。实际本地只读规范化辽宁13,032条和安徽114,599条记录视图；未完成映射的分别1,552/1,696条保留为unmapped。**这是非派发影子索引，不是生产迁移完成。** 山西native SQLite和三省缺失Crawlee导出没有伪造，详见缺证清单。
+
+## 运行
+
+需要Python3.11+，源码checkout离线核心只用标准库，不启动浏览器、不连接网站。macOS系统Python若为3.9，可使用本机已安装的 `/Users/yunyu/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3`（本轮3.12）。
 
 ```sh
 cd /Users/yunyu/Desktop/sd_crawler/pmos
 python3 tools/test_offline.py
 python3 -m pmos offline-demo all
-python3 -m pmos provinces
-python3 -m pmos shanxi check
+python3 -m pmos offline-audit liaoning
+python3 -m pmos offline-audit anhui
+python3 -m pmos offline-audit shanxi
+python3 -m pmos legacy-audit liaoning
 ```
 
-若系统 `python3` 是 macOS 3.9，请改用本机已安装的 3.11+。本次验证使用 `/Users/yunyu/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3`（3.12）。网络禁用测试入口同时禁用可选本地浏览器测试；运行时只写临时目录，结束即清理。
+`offline-audit`会对指定省份全部本地留存材料只读重建，默认只输出摘要。可加 `--report var/new-review.json` 保存新报告，仅允许写本项目var。当前仍在运行的旧队列/尝试日志可能变化，报告明确记录滚动视图及读取期间漂移，不冻结旧进程。
 
-回放某个明确授权的本地原件，须提供已登记 SHA256：
+原件精确回放：
 
 ```sh
-python3 -m pmos replay liaoning /controlled/original/response.json --sha256 EXPECTED_SHA256
+python3 -m pmos replay liaoning /controlled/response.json --sha256 EXPECTED_SHA256
+python3 -m pmos replay anhui /controlled/source.json --sha256 EXPECTED_SHA256 \
+  --contract /controlled/reviewed-contract.json --contract-sha256 CONTRACT_SHA256
 ```
 
-只输出哈希、行数、分页和资格摘要，不输出业务行或认证；不修改输入文件，不连接网站。契约只接受本阶段选定形态，其他来源应补契约，不能套用参数或猜字段。
+不带contract使用第一阶段固定形态；带contract使用本轮省份decoder。真实binding/model与selector只在RAM，不复制进Git。单位仅接受与本次原文SHA绑定的明确响应单位字段；布尔值、路径或格式正确的hash本身不构成单位证据。
 
-交付入口：
+XLS/旧DOC可选离线依赖见 `requirements-offline-workbooks.txt`（xlrd2.0.2、olefile0.47）。本任务没有安装依赖，而在单独审计子进程复用本机已有纯Python库，证据含版本、来源和SHA。缺库会明确阻断，不把容器识别当全值读取。
 
-- [差异、证据和保留/修复/替换决定](docs/REVIEW.md)
-- [五省统一架构与迁移回滚方案](docs/ARCHITECTURE.md)
-- [适配与扩展流程](docs/ADAPTING.md)
-- [下一阶段上线预算与验收清单](docs/ACCEPTANCE.md)
-- [Git、配置、开发和测试](docs/DEVELOPMENT.md)
-- [可核验的只读样本摘要](evidence/phase_one_review.json)
-- [测试及交付核验摘要](evidence/validation.json)
+## 组织与审阅入口
 
-没有复制原始生产数据、profile、真实凭据或私密配置。旧三省目录、状态、队列、原件、运行服务和现有邮件/飞书链路均未由本任务修改。
+`pmos/engine.py`、`ledger.py`、`contracts.py`共用；省份decoder放 `pmos/adapters/{liaoning,anhui,shanxi}.py`；工作簿通用代码只有 `workbooks.py` 一份；旧队列兼容在 `queue_compat.py`，不会导入旧worker。
+
+- [第二阶段汇总与缺项](docs/PHASE_TWO.md)
+- [辽宁逐项范围](docs/LIAONING_OFFLINE.md) · [安徽逐项范围](docs/ANHUI_OFFLINE.md) · [山西逐项范围](docs/SHANXI_OFFLINE.md)
+- [旧队列格式、身份、防重放与命令](docs/QUEUE_COMPATIBILITY.md)
+- [五省架构和回滚](docs/ARCHITECTURE.md) · [适配规范](docs/ADAPTING.md)
+- [Git/开发测试](docs/DEVELOPMENT.md) · [线上预算及验收门槛](docs/ACCEPTANCE.md)
+- [本轮验证摘要](evidence/phase_two_validation.json)
+
+所有run/capture/启用/控制/解除保护CLI仍被发行版拒绝；service模板失败门禁保持。没有创建远端、发邮件、写飞书或启用任何定时任务。

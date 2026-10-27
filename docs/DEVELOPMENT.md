@@ -1,3 +1,5 @@
+> 第二阶段开发/测试入口仍相同；新增省份decoder、queue_compat、queue_audit、共享workbooks及独立交叉审查回归。实际最新测试数与指纹以evidence/phase_two_validation.json为准。
+
 # 本地Git、配置和开发验证
 
 ## 仓库选择与提交
@@ -40,3 +42,11 @@ python3 -m pmos shanxi check
 回归包括：三个decoder和同一Engine；响应后间隔；分页重启；同实例单worker；HTTP200内层错误/二进制MIME错误；缺模板0派发；超时unknown；归档checkpoint崩溃后的已消费保护；坏bytes隔离；待结请求优先于local hold保活；显式40302 scope；有界模板引用；SQLite DELETE journal长游标阻写复现与短读释放；原件路径逃逸；schema2指标计数；旧manifest只读校验。新增测试不访问网站、不读凭据，不写旧队列。
 
 `evidence/validation.json`登记本轮实际运行的版本、测试数、跳过原因、演示摘要及源原件未变核验；无原始业务值。测试通过只表示所测分支，不表示真实浏览器SDK回收、模板、全目录或线上长期运行通过。
+
+## 第二阶段离线兼容与依赖
+
+旧队列命令见QUEUE_COMPATIBILITY.md。所有持久报告和shadow只允许新建于pmos/var；代码库evidence只提交受控路径/SHA/资格摘要，不提交真实原文、binding/model或selector值。
+
+XLS/旧DOC增列可选xlrd==2.0.2/olefile==0.47，与本机实际离线核验版本一致；本任务没有pip安装或修改旧venv。标准库/可选库两种核验资格分别保存。若以后安装依赖，应在单独离线环境评审，不把已有生产环境当试验场。
+
+原第一阶段3次提交保留；第二阶段按实现/测试与证据/说明继续有意义提交，仍不涉及远端。
