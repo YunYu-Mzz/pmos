@@ -1,0 +1,3215 @@
+{
+  "mode": "read_only_cross_catalog_discovery",
+  "catalog_ref": "/Users/yunyu/Desktop/sd_crawler/artifacts/three_province_fields_20261026/catalog.json",
+  "catalog_sha256": "09e8ac1a4ce90d14b8ee2687c5375418faa024e6be7ff2b74c89418499d17d39",
+  "catalog_unchanged_during_read": true,
+  "datasets_matched": {
+    "shanxi": 45,
+    "liaoning": 86
+  },
+  "unique_referenced_files": 36,
+  "files": [
+    {
+      "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+      "size": 162608,
+      "sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "shanxi/dataset_catalog.json",
+      "size": 931731,
+      "sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "shanxi/verification/20261020/field_audit/field_quality_review.json",
+      "size": 2014511,
+      "sha256": "4e0561174d239d5abfdfac59942a76d81e7aa934d56741f12d182790eef4c837",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "shanxi/state/review_remaining_scoped_after_wait_20261021/menu_7ce44d6beda3_f7c184d79375e7bd1a8bca662aff7cc2a8b2c3390854225d28b40ee48673eeaa.json",
+      "size": 1471,
+      "sha256": "f7c184d79375e7bd1a8bca662aff7cc2a8b2c3390854225d28b40ee48673eeaa",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+      "size": 140940,
+      "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+      "size": 125093,
+      "sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_80ece90b472eddab.json",
+      "size": 8929,
+      "sha256": "5a4bc98899707f561a9d5863fc8bcc27bb48452f9fecec5efc4b830f6f41e0b9",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_851f058f04a3db60.json",
+      "size": 24099,
+      "sha256": "26799839382ed09ba4caec44e4248640da833008feb2ece1e22e3423cd11041a",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_d86eb498e4cf0eca.json",
+      "size": 13222,
+      "sha256": "58c636d4791d0573a0a2626c4b1e26a93be061485e2c80693346af03058561ba",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_4e62502d62d39890.json",
+      "size": 1775,
+      "sha256": "628a3069a6cbfee090f8eb9dbd8098423cf677a73f310c01d0cf62bc455ac932",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_2d3392baad7f8cfa.json",
+      "size": 2435,
+      "sha256": "0b739bb381df08bc5ded4e3aed7f3db688692afde606188c4911e99c9658f532",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_951994e0125db0cc.json",
+      "size": 6038,
+      "sha256": "5567463cb7f52a2da01372c67b6df0a291bb02d1e9fa075a7da1e891a2466237",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_dd357ca9cc15dc23.json",
+      "size": 26079,
+      "sha256": "2f350466a196925063322dc3f5f5c6afee3b0839aa8e8be5353efa3313555635",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_90426958a40aec46.json",
+      "size": 6160,
+      "sha256": "06139cf71fc3487ce551452ba623360aca770ee8906eb6ea31fe16251ef48bba",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_c1a062960820eff8.json",
+      "size": 5734,
+      "sha256": "473334c7a049c908d227a1a83f97e0a6c9ad9741cdbcdc16ffa025caf38d542d",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_2010f5bbae811586.json",
+      "size": 5728,
+      "sha256": "ec2c7099acf6151b8fb6fcd106754b26ac0dd4cbaac5502e06a7ce85ec4be30d",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_e814f8cf448bfafb.json",
+      "size": 5451,
+      "sha256": "c876514736e2791151745c2adb479ecd26115a1d654485409f53eee699321acb",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_931ac1f25ce9e62a.json",
+      "size": 5986,
+      "sha256": "e2bc6d4a6b42b827f6ee4366a1ddc088adbc92fdf34db018eb694afa5351fc60",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_ed33d7fdbe74dd37.json",
+      "size": 39027,
+      "sha256": "100afb1117a9b169f7ca1afc88f43230143aa37bd22def95989214b1bd3bbfd6",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_a549351c3c234685.json",
+      "size": 8927,
+      "sha256": "66fec176e0ef91a457338046c5c2d106a319da24c28ed9b03994d17e45f074c3",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_bd7ccb40ebc935bd.json",
+      "size": 1717,
+      "sha256": "52049c99f5c1cb91637590553b3b9392a13def28acf72bdb7d6c7bdc7294e435",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_4bd8b2582f9ccd13.json",
+      "size": 3819,
+      "sha256": "474dc8a12da8d2fc56d6325b7c33a0a08ba9a803c5ae4aa51f6020656f166ed3",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_23a8faf1946dd5e6.json",
+      "size": 1956,
+      "sha256": "2d6df28dd075a96b4756525dd2203b2b94881d412b9eddfb21d8db94a16f37a3",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_99dfca96a79197a9.json",
+      "size": 1717,
+      "sha256": "4babd6cfbf949c4b7d4d06a6dc458fdf243a97599fce2eae66739d8a8223c3c1",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_0fd64918a3163888.json",
+      "size": 1939,
+      "sha256": "14c2bfda09dbfb79a59ed5b91bbad47976808769aeb0214c6da07eaef444cb24",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_b53ef40170c84faa.json",
+      "size": 5450,
+      "sha256": "86a4ec77097ab044ed306268cd4dc449e78f6a8be46c839b5b2b1ab1a7bef6e0",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_ce02fbef54d4b5ef.json",
+      "size": 5264,
+      "sha256": "2f30219f22fc3af0fce39fdbdd1f2bdcc646f930761f18ef433103c71d8320ee",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_ac6f5a80cbb1d61b.json",
+      "size": 122900,
+      "sha256": "459b19eeaf32cf028499bd6494e1fdb9f39f1d255c6ee35b7f1048acc8aa823e",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_009a162ed62ae8d0.json",
+      "size": 1825,
+      "sha256": "eafbf32602dbdb9ed5a4a4a49d262ba03256e719cdf72faeea22ef045b498772",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_f024d4dce371ebf5.json",
+      "size": 5572,
+      "sha256": "025abe3d6ff4239d5bf8ee03dc17329f6745b399abf07cd5d774db45ba73b090",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_dcc3d245a655063f.json",
+      "size": 2824,
+      "sha256": "1f1bcfd07028f220fbc1ed69cab5199d040daa87b781dbc351918b0182adf4c7",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_36e8f0efc4279a18.json",
+      "size": 10462,
+      "sha256": "2e52cf643127a5538cfdc5efb5d9f0a9d4336d2122b7ad53be54ed359033d3b1",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_f5b9a83d8ef237a2.json",
+      "size": 2870,
+      "sha256": "18449caf4c16da1b1ba8e50ea4c6bbe57a1c433b691f0e88513b0a908113ce94",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_02e81a0741367e53.json",
+      "size": 3040,
+      "sha256": "27a767d1a3187bc5a0ac4413e4a3fa0b68ec6dd1b1e028da18e26073bc40f756",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/realtime_node_price.json",
+      "size": 24037,
+      "sha256": "0a4df61524462b39ff918edebf494471000abd68a7abb204c900ea81b541ccaa",
+      "unchanged_during_read": true
+    },
+    {
+      "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/dayahead_power_and_average_price.json",
+      "size": 5302,
+      "sha256": "d8ab4737802ecb0ae8025298db084e787f0f59afc40e5b9d6f2246725cdabb05",
+      "unchanged_during_read": true
+    }
+  ],
+  "entries": [
+    {
+      "province": "shanxi",
+      "dataset": "candidate_76eab00603c1",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/56",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_76eab00603c1",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_0fb628cbe7fc",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/57",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_0fb628cbe7fc",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_d4883f1a28bf",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/58",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_d4883f1a28bf",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "menu_7ce44d6beda3",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/73",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/verification/20261020/field_audit/field_quality_review.json",
+          "kind": "核验记录",
+          "pointer": "/json_query_reviews/13",
+          "catalog_sha256": "4e0561174d239d5abfdfac59942a76d81e7aa934d56741f12d182790eef4c837",
+          "actual_sha256": "4e0561174d239d5abfdfac59942a76d81e7aa934d56741f12d182790eef4c837",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/state/review_remaining_scoped_after_wait_20261021/menu_7ce44d6beda3_f7c184d79375e7bd1a8bca662aff7cc2a8b2c3390854225d28b40ee48673eeaa.json",
+          "kind": "查询原件",
+          "pointer": "",
+          "catalog_sha256": "f7c184d79375e7bd1a8bca662aff7cc2a8b2c3390854225d28b40ee48673eeaa",
+          "actual_sha256": "f7c184d79375e7bd1a8bca662aff7cc2a8b2c3390854225d28b40ee48673eeaa",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryDaySystemLoadPredictionFinish",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/172",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryDaySystemLoadPredictionFinish",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryRqscjjcqfslj",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/173",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryRqscjjcqfslj",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryRetailTimePrice",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/174",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryRetailTimePrice",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryMarketClearing",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/175",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryMarketClearing",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryMediumLongTermTrade",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/176",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryMediumLongTermTrade",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryRetailMarketTrade",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/177",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryRetailMarketTrade",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryGreenPowerTrade",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/178",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryGreenPowerTrade",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryMarketSettlement",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/179",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryMarketSettlement",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryRetailMealSign",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/180",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryRetailMealSign",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryGensetInstall",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/181",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryGensetInstall",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "querySocietyIndustriesUse",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/182",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=querySocietyIndustriesUse",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryCurrentGensetInstall",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/183",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryCurrentGensetInstall",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryCurrentSocietyIndustriesUse",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/184",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryCurrentSocietyIndustriesUse",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryMarketQuotation",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/185",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryMarketQuotation",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryShareReturnStandard",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/186",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryShareReturnStandard",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryMonthlySystemLoadForecast",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/187",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryMonthlySystemLoadForecast",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryRealtimeUnitOutputPrice",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/188",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryRealtimeUnitOutputPrice",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "queryImportantChannelActualTransfer",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/189",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=queryImportantChannelActualTransfer",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_a5b4a6a66b12",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/190",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_a5b4a6a66b12",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_ab7ecc31386a",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/191",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_ab7ecc31386a",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_937a8ad2c2ab",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/192",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_937a8ad2c2ab",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_e72d897df6f0",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/193",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_e72d897df6f0",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_434babd21d13",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/194",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_434babd21d13",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_53fac98e8404",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/195",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_53fac98e8404",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_ca60cd9288e0",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/196",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_ca60cd9288e0",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_5e94215c1dbd",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/197",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_5e94215c1dbd",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_ad6e1c39a1c0",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/198",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_ad6e1c39a1c0",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_2176e2ac2f18",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/199",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_2176e2ac2f18",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_bf9facbb8fbf",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/200",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_bf9facbb8fbf",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_1776ea3a8096",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/201",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_1776ea3a8096",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_02b740ef90f6",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/202",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_02b740ef90f6",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_7a4995c94955",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/203",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_7a4995c94955",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_85f91d363576",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/204",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_85f91d363576",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_76e9311a1c2f",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/205",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_76e9311a1c2f",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_01fb2579a9db",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/206",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_01fb2579a9db",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_6cc009fe38c1",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/207",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_6cc009fe38c1",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_1af50fb3899b",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/208",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_1af50fb3899b",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_b3ca46081e33",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/209",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_b3ca46081e33",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_3b346e6f33ea",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/210",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_3b346e6f33ea",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_0f5a5b87e4ea",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/211",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_0f5a5b87e4ea",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "shanxi",
+      "dataset": "candidate_eee315dab049",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "shanxi/verification/20261023/coverage/complete_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/rows/212",
+          "catalog_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "actual_sha256": "e6aedd12d1c90eecb64f056bf12a5c8ead8eda7180c8ed7b8b7484d1255e8d0e",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "kind": "核验记录",
+          "pointer": "/targets/id=candidate_eee315dab049",
+          "catalog_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "actual_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_80ece90b472eddab",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/25",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/31",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_80ece90b472eddab.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "5a4bc98899707f561a9d5863fc8bcc27bb48452f9fecec5efc4b830f6f41e0b9",
+          "actual_sha256": "5a4bc98899707f561a9d5863fc8bcc27bb48452f9fecec5efc4b830f6f41e0b9",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_deb417edc0244802",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/26",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_851f058f04a3db60",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/27",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/45",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_851f058f04a3db60.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "26799839382ed09ba4caec44e4248640da833008feb2ece1e22e3423cd11041a",
+          "actual_sha256": "26799839382ed09ba4caec44e4248640da833008feb2ece1e22e3423cd11041a",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_d86eb498e4cf0eca",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/28",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/58",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_d86eb498e4cf0eca.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "58c636d4791d0573a0a2626c4b1e26a93be061485e2c80693346af03058561ba",
+          "actual_sha256": "58c636d4791d0573a0a2626c4b1e26a93be061485e2c80693346af03058561ba",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_fca714454cbc8832",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/29",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_4e62502d62d39890",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/30",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/38",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_4e62502d62d39890.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "628a3069a6cbfee090f8eb9dbd8098423cf677a73f310c01d0cf62bc455ac932",
+          "actual_sha256": "628a3069a6cbfee090f8eb9dbd8098423cf677a73f310c01d0cf62bc455ac932",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_49aa17d82da46bfb",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/31",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_6c6bd17628fc29f7",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/32",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_6108804d03af448c",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/33",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_2c25420ab856210f",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/34",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_2d3392baad7f8cfa",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/35",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/39",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_2d3392baad7f8cfa.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "0b739bb381df08bc5ded4e3aed7f3db688692afde606188c4911e99c9658f532",
+          "actual_sha256": "0b739bb381df08bc5ded4e3aed7f3db688692afde606188c4911e99c9658f532",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_c3732fb1b489640e",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/36",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_c969dbc8a715ec76",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/37",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_9f8ba0770ab8f53e",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/41",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/51",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_9ccb0cab4a717571",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/45",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/50",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_951994e0125db0cc",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/49",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/52",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_951994e0125db0cc.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "5567463cb7f52a2da01372c67b6df0a291bb02d1e9fa075a7da1e891a2466237",
+          "actual_sha256": "5567463cb7f52a2da01372c67b6df0a291bb02d1e9fa075a7da1e891a2466237",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_29c2411e94c469d0",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/50",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_e87a7708ade1e187",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/51",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_15eb4fa6873fb948",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/52",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_3356cf7fb2c14651",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/53",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_e5bb6a2d0462e97d",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/54",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_f064d41323e86df1",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/56",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_da32804173198088",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/57",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_b422b2f3c09fbc93",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/58",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_5878dbf34cf4177a",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/59",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_3b8e6b1c672f10d0",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/60",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_150e628bb9f9b03a",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/61",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_daf0739f06cba7ca",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/62",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_3ebbdf40ca6ec2b1",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/64",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_bd2561ac7f825385",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/65",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_546644ece23fec6a",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/66",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_72b7a2340c3d2fde",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/67",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_7089cafdcefe3c45",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/68",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_5160397d5d7e23c5",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/69",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_b2cee9801bac0f53",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/70",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_dd357ca9cc15dc23",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/71",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/32",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_dd357ca9cc15dc23.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "2f350466a196925063322dc3f5f5c6afee3b0839aa8e8be5353efa3313555635",
+          "actual_sha256": "2f350466a196925063322dc3f5f5c6afee3b0839aa8e8be5353efa3313555635",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_90426958a40aec46",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/72",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/22",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_90426958a40aec46.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "06139cf71fc3487ce551452ba623360aca770ee8906eb6ea31fe16251ef48bba",
+          "actual_sha256": "06139cf71fc3487ce551452ba623360aca770ee8906eb6ea31fe16251ef48bba",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_46fa5856d5315e4e",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/74",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/59",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_c1a062960820eff8",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/75",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/24",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_c1a062960820eff8.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "473334c7a049c908d227a1a83f97e0a6c9ad9741cdbcdc16ffa025caf38d542d",
+          "actual_sha256": "473334c7a049c908d227a1a83f97e0a6c9ad9741cdbcdc16ffa025caf38d542d",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_2010f5bbae811586",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/76",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/21",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_2010f5bbae811586.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "ec2c7099acf6151b8fb6fcd106754b26ac0dd4cbaac5502e06a7ce85ec4be30d",
+          "actual_sha256": "ec2c7099acf6151b8fb6fcd106754b26ac0dd4cbaac5502e06a7ce85ec4be30d",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_e814f8cf448bfafb",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/77",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/25",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_e814f8cf448bfafb.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "c876514736e2791151745c2adb479ecd26115a1d654485409f53eee699321acb",
+          "actual_sha256": "c876514736e2791151745c2adb479ecd26115a1d654485409f53eee699321acb",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_931ac1f25ce9e62a",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/78",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/57",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_931ac1f25ce9e62a.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "e2bc6d4a6b42b827f6ee4366a1ddc088adbc92fdf34db018eb694afa5351fc60",
+          "actual_sha256": "e2bc6d4a6b42b827f6ee4366a1ddc088adbc92fdf34db018eb694afa5351fc60",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_ed33d7fdbe74dd37",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/79",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/33",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_ed33d7fdbe74dd37.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "100afb1117a9b169f7ca1afc88f43230143aa37bd22def95989214b1bd3bbfd6",
+          "actual_sha256": "100afb1117a9b169f7ca1afc88f43230143aa37bd22def95989214b1bd3bbfd6",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_32ebc2b7e4357982",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/80",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/48",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_a549351c3c234685",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/81",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/37",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_a549351c3c234685.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "66fec176e0ef91a457338046c5c2d106a319da24c28ed9b03994d17e45f074c3",
+          "actual_sha256": "66fec176e0ef91a457338046c5c2d106a319da24c28ed9b03994d17e45f074c3",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_bd7ccb40ebc935bd",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/83",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/43",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_bd7ccb40ebc935bd.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "52049c99f5c1cb91637590553b3b9392a13def28acf72bdb7d6c7bdc7294e435",
+          "actual_sha256": "52049c99f5c1cb91637590553b3b9392a13def28acf72bdb7d6c7bdc7294e435",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_4bd8b2582f9ccd13",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/84",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/29",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_4bd8b2582f9ccd13.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "474dc8a12da8d2fc56d6325b7c33a0a08ba9a803c5ae4aa51f6020656f166ed3",
+          "actual_sha256": "474dc8a12da8d2fc56d6325b7c33a0a08ba9a803c5ae4aa51f6020656f166ed3",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_a64ef9a87d10919c",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/85",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_23a8faf1946dd5e6",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/86",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/40",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_23a8faf1946dd5e6.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "2d6df28dd075a96b4756525dd2203b2b94881d412b9eddfb21d8db94a16f37a3",
+          "actual_sha256": "2d6df28dd075a96b4756525dd2203b2b94881d412b9eddfb21d8db94a16f37a3",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_99dfca96a79197a9",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/87",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/42",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_99dfca96a79197a9.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "4babd6cfbf949c4b7d4d06a6dc458fdf243a97599fce2eae66739d8a8223c3c1",
+          "actual_sha256": "4babd6cfbf949c4b7d4d06a6dc458fdf243a97599fce2eae66739d8a8223c3c1",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_0fd64918a3163888",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/88",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/53",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_0fd64918a3163888.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "14c2bfda09dbfb79a59ed5b91bbad47976808769aeb0214c6da07eaef444cb24",
+          "actual_sha256": "14c2bfda09dbfb79a59ed5b91bbad47976808769aeb0214c6da07eaef444cb24",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_f95e530cd8bf1d85",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/89",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_b53ef40170c84faa",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/90",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/26",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_b53ef40170c84faa.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "86a4ec77097ab044ed306268cd4dc449e78f6a8be46c839b5b2b1ab1a7bef6e0",
+          "actual_sha256": "86a4ec77097ab044ed306268cd4dc449e78f6a8be46c839b5b2b1ab1a7bef6e0",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_ce02fbef54d4b5ef",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/91",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/27",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_ce02fbef54d4b5ef.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "2f30219f22fc3af0fce39fdbdd1f2bdcc646f930761f18ef433103c71d8320ee",
+          "actual_sha256": "2f30219f22fc3af0fce39fdbdd1f2bdcc646f930761f18ef433103c71d8320ee",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_ac6f5a80cbb1d61b",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/102",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/46",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_ac6f5a80cbb1d61b.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "459b19eeaf32cf028499bd6494e1fdb9f39f1d255c6ee35b7f1048acc8aa823e",
+          "actual_sha256": "459b19eeaf32cf028499bd6494e1fdb9f39f1d255c6ee35b7f1048acc8aa823e",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_4c35e252e0770c53",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/106",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_1c01651cb1051d47",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/107",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/56",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_39c86b17616d219e",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/108",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/55",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_7d2f4e6e4598aba8",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/109",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/54",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/61",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_009a162ed62ae8d0",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/110",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/34",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_009a162ed62ae8d0.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "eafbf32602dbdb9ed5a4a4a49d262ba03256e719cdf72faeea22ef045b498772",
+          "actual_sha256": "eafbf32602dbdb9ed5a4a4a49d262ba03256e719cdf72faeea22ef045b498772",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_7a300d985f7a8cfc",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/111",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_bf835d54e880daf6",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/112",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_0400f0e45de22dcd",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/113",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/60",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_676f39b53210a68b",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/114",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_bb3ebe897b7667ff",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/115",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_f024d4dce371ebf5",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/116",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/28",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_f024d4dce371ebf5.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "025abe3d6ff4239d5bf8ee03dc17329f6745b399abf07cd5d774db45ba73b090",
+          "actual_sha256": "025abe3d6ff4239d5bf8ee03dc17329f6745b399abf07cd5d774db45ba73b090",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_7bcb1dac6ce9bb94",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/117",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_31308b59070354ef",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/118",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_ad24fad6f62dba6f",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/119",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/49",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_481d223eb622ae1f",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/120",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_dcc3d245a655063f",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/121",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/44",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_dcc3d245a655063f.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "1f1bcfd07028f220fbc1ed69cab5199d040daa87b781dbc351918b0182adf4c7",
+          "actual_sha256": "1f1bcfd07028f220fbc1ed69cab5199d040daa87b781dbc351918b0182adf4c7",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_36e8f0efc4279a18",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/122",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/41",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_36e8f0efc4279a18.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "2e52cf643127a5538cfdc5efb5d9f0a9d4336d2122b7ad53be54ed359033d3b1",
+          "actual_sha256": "2e52cf643127a5538cfdc5efb5d9f0a9d4336d2122b7ad53be54ed359033d3b1",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_f5b9a83d8ef237a2",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/123",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/36",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_f5b9a83d8ef237a2.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "18449caf4c16da1b1ba8e50ea4c6bbe57a1c433b691f0e88513b0a908113ce94",
+          "actual_sha256": "18449caf4c16da1b1ba8e50ea4c6bbe57a1c433b691f0e88513b0a908113ce94",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_02e81a0741367e53",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/124",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/35",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/sitewide_02e81a0741367e53.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "27a767d1a3187bc5a0ac4413e4a3fa0b68ec6dd1b1e028da18e26073bc40f756",
+          "actual_sha256": "27a767d1a3187bc5a0ac4413e4a3fa0b68ec6dd1b1e028da18e26073bc40f756",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_c351e2bf9c6027aa",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/125",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_04b5500fb8e7813c",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/126",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_cba19932160b7c7b",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/128",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_6e1903cdeda8d7d0",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/139",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/47",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_9283ddfd847d1f6e",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "kind": "核验记录",
+          "pointer": "/sources/147",
+          "catalog_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "actual_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "realtime_node_price",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/18",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/realtime_node_price.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "0a4df61524462b39ff918edebf494471000abd68a7abb204c900ea81b541ccaa",
+          "actual_sha256": "0a4df61524462b39ff918edebf494471000abd68a7abb204c900ea81b541ccaa",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "dayahead_power_and_average_price",
+      "exact_id_match": true,
+      "evidence_refs": [
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/19",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/liaoning_field_review.json",
+          "kind": "核验记录",
+          "pointer": "/records/20",
+          "catalog_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "actual_sha256": "71a578e116248d0f8f06e145b09dc09be8e9998616e7078ed4052bdd6635d5da",
+          "status": "catalog_sha_verified"
+        },
+        {
+          "path": "liaoning/exports/field_audit_20261020/data_repair_20261021/derived/dayahead_power_and_average_price.json",
+          "kind": "修正后样本解析",
+          "pointer": "",
+          "catalog_sha256": "d8ab4737802ecb0ae8025298db084e787f0f59afc40e5b9d6f2246725cdabb05",
+          "actual_sha256": "d8ab4737802ecb0ae8025298db084e787f0f59afc40e5b9d6f2246725cdabb05",
+          "status": "catalog_sha_verified"
+        }
+      ],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_f09e45e44534ce37",
+      "exact_id_match": true,
+      "evidence_refs": [],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_055496fd163e494f",
+      "exact_id_match": true,
+      "evidence_refs": [],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_c23050b85c48fa15",
+      "exact_id_match": true,
+      "evidence_refs": [],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_99347e93036938b3",
+      "exact_id_match": true,
+      "evidence_refs": [],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    },
+    {
+      "province": "liaoning",
+      "dataset": "sitewide_ef55aac41330d1cc",
+      "exact_id_match": true,
+      "evidence_refs": [],
+      "qualification": "discovery_only_requires_identity_and_original_chain"
+    }
+  ],
+  "acceptance_upgrades": 0,
+  "production_writes": 0,
+  "website_requests": 0,
+  "note": "Exact IDs only. A matching SHA in a derived/report artifact is not proof of original sample or consumed request.",
+  "anhui_excluded_candidates_without_direct_dataset_key": 52
+}

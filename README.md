@@ -1,8 +1,10 @@
 # PMOS：三省离线适配与旧队列兼容
 
-2026-10-27第二阶段交付。继续使用现有PMOS共同引擎，补辽宁、安徽、山西的来源形态、原件回放和旧队列兼容；陕西、冀北未迁移。**线上入口仍禁用，现有采集、保活、浏览器和旧队列未改。**
+2026-10-27第三轮只读补证。继续使用现有PMOS共同引擎，补辽宁、安徽、山西的已有原件链和旧队列身份；陕西、冀北未迁移。**网站请求为0，线上入口仍禁用，现有采集、保活、浏览器和旧队列未改。**
 
-## 当前交付
+本轮结果及具体剩余项见[第三轮汇总](docs/PHASE_THREE.md)：辽宁原94个缺证来源补到43个原件链，1,552条未映射视图补回1,499条，余53条；安徽1,696条补回1,676条，余20条，40/43份旧binding找到精确不可变副本；山西49项按非空/空/拒绝/缺原件分层，并补到历史SQLite和journal快照。证据、协议映射和线上资格分别保留，不改变原消费或保护状态。
+
+## 第二阶段基线（保留历史口径）
 
 | 省份 | 本轮离线覆盖 | 仍保留的边界 |
 |---|---|---|
@@ -12,7 +14,7 @@
 
 三省统一状态均为**离线形态/样本通过，线上pending**，不是全站全年全部范围完成。原435份datasets规格继续作为历史来源目录，enabled=0，不继承旧环境上线资格。旧山西PMOS缺模板实测失败记录也未清除或重跑。
 
-旧队列已实现6种格式兼容、day/month/year journal、精确身份映射、未知/拒绝/失败保留、附件fileId防重放及新Ledger影子索引。实际本地只读规范化辽宁13,032条和安徽114,599条记录视图；未完成映射的分别1,552/1,696条保留为unmapped。**这是非派发影子索引，不是生产迁移完成。** 山西native SQLite和三省缺失Crawlee导出没有伪造，详见缺证清单。
+旧队列已实现6种格式兼容、day/month/year journal、精确身份映射、未知/拒绝/失败保留、附件fileId防重放及新Ledger影子索引。第二阶段只读规范化辽宁13,032条和安徽114,599条记录视图，当时未映射分别1,552/1,696条；第三轮在同一旧cohort补证。**这是非派发离线对照，不是生产迁移完成。** 山西历史SQLite及journal现已从verification等路径找到；完整Crawlee storage导出仍未证明，详见第三轮汇总。
 
 ## 运行
 
@@ -26,6 +28,7 @@ python3 -m pmos offline-audit liaoning
 python3 -m pmos offline-audit anhui
 python3 -m pmos offline-audit shanxi
 python3 -m pmos legacy-audit liaoning
+python3 tools/recover_existing_evidence.py all
 ```
 
 `offline-audit`会对指定省份全部本地留存材料只读重建，默认只输出摘要。可加 `--report var/new-review.json` 保存新报告，仅允许写本项目var。当前仍在运行的旧队列/尝试日志可能变化，报告明确记录滚动视图及读取期间漂移，不冻结旧进程。
@@ -44,13 +47,14 @@ XLS/旧DOC可选离线依赖见 `requirements-offline-workbooks.txt`（xlrd2.0.2
 
 ## 组织与审阅入口
 
-`pmos/engine.py`、`ledger.py`、`contracts.py`共用；省份decoder放 `pmos/adapters/{liaoning,anhui,shanxi}.py`；工作簿通用代码只有 `workbooks.py` 一份；旧队列兼容在 `queue_compat.py`，不会导入旧worker。
+`pmos/engine.py`、`ledger.py`、`contracts.py`共用；省份decoder放 `pmos/adapters/{liaoning,anhui,shanxi}.py`；工作簿通用代码只有 `workbooks.py` 一份；旧队列兼容在 `queue_compat.py`，本轮只读补链在 `pmos/recovery/`，不会导入旧worker。
 
+- [第三轮只读补证、历史快照与剩余项](docs/PHASE_THREE.md)
 - [第二阶段汇总与缺项](docs/PHASE_TWO.md)
 - [辽宁逐项范围](docs/LIAONING_OFFLINE.md) · [安徽逐项范围](docs/ANHUI_OFFLINE.md) · [山西逐项范围](docs/SHANXI_OFFLINE.md)
 - [旧队列格式、身份、防重放与命令](docs/QUEUE_COMPATIBILITY.md)
 - [五省架构和回滚](docs/ARCHITECTURE.md) · [适配规范](docs/ADAPTING.md)
 - [Git/开发测试](docs/DEVELOPMENT.md) · [线上预算及验收门槛](docs/ACCEPTANCE.md)
-- [本轮验证摘要](evidence/phase_two_validation.json)
+- [第三轮验证摘要](evidence/phase_three_validation.json) · [第二阶段验证](evidence/phase_two_validation.json)
 
 所有run/capture/启用/控制/解除保护CLI仍被发行版拒绝；service模板失败门禁保持。没有创建远端、发邮件、写飞书或启用任何定时任务。
