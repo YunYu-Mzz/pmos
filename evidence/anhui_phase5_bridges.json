@@ -1,0 +1,615 @@
+{
+  "schema_version": 1,
+  "province": "anhui",
+  "mode": "fixed_phase4_remaining_article_bridges_readonly",
+  "summary": {
+    "fixed_article_cohort": 10,
+    "cohort_records_reconstructed": 10,
+    "article_identities_recovered": 10,
+    "article_identities_remaining": 0,
+    "old_consumed_facts": 5,
+    "new_sample_qualifications": 0,
+    "new_semantic_qualifications": 0
+  },
+  "baseline_refs": [
+    {
+      "path": "pmos/evidence/anhui_phase4_remaining.json",
+      "sha256": "4c77082676f5e69300229f9918a83ed81125428133ecca3c8a430191aedd3b2f"
+    },
+    {
+      "path": "pmos/evidence/anhui_phase3_recovery.json",
+      "sha256": "a39390f063c6b31d8479d370ccf63c3157a016d49cf407c794c410107e4a8814"
+    }
+  ],
+  "cohort_conservation": {
+    "source_views": 3,
+    "record_views": 10,
+    "unmapped_before": 10,
+    "identities_recovered": 10,
+    "unmapped_after": 0,
+    "states": {
+      "pending": 5,
+      "saved": 5
+    },
+    "consumed": 5,
+    "state_facts_protection_sha256": "dfada8b5dac82f460c6ef9f8ecb461474cfba6aaae71cd50c233ba17d77fc72e",
+    "states_and_facts_unchanged": true,
+    "dispatch_allowed": false
+  },
+  "old_scope_commitments": [
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "dataset": "interregional_exchange_monthly",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "evidence_refs": [
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ]
+    },
+    {
+      "source_view_id": "q18",
+      "source_ref_sha256": "2f1ecd1de48f96358da6c6d53ec32b84ad7048403e7441bb92bd25d31e94486f",
+      "dataset": "publication_4ab104c9f4b8bf37",
+      "menu_scope_sha256": "d09a0ead25dcb12a7c60a3c70627243290b8de866167e2bc74fcb84fdf67db84",
+      "evidence_refs": [
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_publication_4ab104c9f4b8bf37.json"
+      ]
+    },
+    {
+      "source_view_id": "q54",
+      "source_ref_sha256": "44f3f23407b834ab7598043b6fb054e26bfdb168fdac242aa0fe66c984c27816",
+      "dataset": "market_disclosure_monthly",
+      "menu_scope_sha256": "cae4ae6ce24ece76ec37449e8170a075443b9eaf8e4f165afd6fcd9fbe3ffd5f",
+      "evidence_refs": [
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_market_disclosure_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_market_disclosure_monthly.json"
+      ]
+    }
+  ],
+  "queue_identity_bridges": [
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "legacy_key_sha256": "77ef28b0f3fcb10429b761bb529f6372131b18f3a168d58c2de58bfe20c197bd",
+      "dataset": "interregional_exchange_monthly",
+      "legacy_state": "captured",
+      "state": "saved",
+      "consumed": true,
+      "facts_sha256": "569de18aae8022724f9dac483cb7290322c365f218241e6db43dea25a82c458b",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "606415bcac37b48877cdc0298b95594d72a510524a24a24218beb9345d23118f",
+      "record_id_sha256": "c26b908b42cbfc8374869206f701cf11b795a047ce3bac0ae62bec940187546e",
+      "information_id_sha256": "3f7ec5bd6b89c41b1906a9d8f7341fe922fd7380c4824f1929eb1fbd59b02481",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "legacy_key_sha256": "f40f30ac3e70b02d8d7dfbc7c5f6cab1b6163c30637bea66d7b69288e3f4231d",
+      "dataset": "interregional_exchange_monthly",
+      "legacy_state": "captured",
+      "state": "saved",
+      "consumed": true,
+      "facts_sha256": "d50c65b44062fefbe98bdaf0a11e74ed55ecb85407f6041dad41754beba5d3b6",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "3acc8d23a1a9ac404f86e44fd9c16a124c0f9321a140aa35534c596a18874bdb",
+      "record_id_sha256": "8d6440ce089e9b0a6f59d850942bee5506261c87ec4cfc5039921d5b113de7b8",
+      "information_id_sha256": "3f7ec5bd6b89c41b1906a9d8f7341fe922fd7380c4824f1929eb1fbd59b02481",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "legacy_key_sha256": "57905fec8082c7dc13f7814354a104216ef067d8b4214a513b50ce9e1c42476d",
+      "dataset": "interregional_exchange_monthly",
+      "legacy_state": "captured",
+      "state": "saved",
+      "consumed": true,
+      "facts_sha256": "2084735f2c0a5372179940c6346518ca25f500a9b2837dbd64e7cb2987552d41",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "3a008b381822d89edaac87047e6b49319ca1d1adcd817276b29efb64f63f8a42",
+      "record_id_sha256": "52790d05da4e1b5b71457c535ea28f2ef773a833f9f08f744df8b90235344ce6",
+      "information_id_sha256": "3f7ec5bd6b89c41b1906a9d8f7341fe922fd7380c4824f1929eb1fbd59b02481",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "legacy_key_sha256": "fa34586ea4dc977baa19ea5e7f9dc0c5ec213dd9a382b68d93f380ec81f68341",
+      "dataset": "interregional_exchange_monthly",
+      "legacy_state": "pending",
+      "state": "pending",
+      "consumed": false,
+      "facts_sha256": "19a95be041dc5b6049223967e0bac5fa2010cd95fee3c38674dadc8e9c56138e",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "53ab1ac3b4d096dd4c1a94952f9ec7ada3b5a210ccafc1c14d4551db134655a2",
+      "record_id_sha256": "669afe73b744c6aacaf6292aa3a6cf43869e47031d22124e490ae2956b67d118",
+      "information_id_sha256": "3f7ec5bd6b89c41b1906a9d8f7341fe922fd7380c4824f1929eb1fbd59b02481",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "legacy_key_sha256": "5408a61d70cbc1db11759293a980616bbdf6e5be7656b6391a6bb6b0a095a944",
+      "dataset": "interregional_exchange_monthly",
+      "legacy_state": "pending",
+      "state": "pending",
+      "consumed": false,
+      "facts_sha256": "629b0557a09b7be5b771b9781b6a53184b802870655ecaa75047c8a0a0791529",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "9fde02914d66acda78c23f3158d8dc7412e745e933e23f792a64a7dd28756175",
+      "record_id_sha256": "b7c8f4faa27a68de9372b182483cd11cb5acae7581d468620f1970fb67e03ae2",
+      "information_id_sha256": "3f7ec5bd6b89c41b1906a9d8f7341fe922fd7380c4824f1929eb1fbd59b02481",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "legacy_key_sha256": "31db8b7d76acbca125d1c96854def4e9c4cb7f71f6f22d133523a5c37b77d874",
+      "dataset": "interregional_exchange_monthly",
+      "legacy_state": "pending",
+      "state": "pending",
+      "consumed": false,
+      "facts_sha256": "1a7077c8e170c795b2ec8183b08a011fc5ac2771a08ac95ede65fe2ae8ee9d3c",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "03984d9e360addce081e37a38086699d5d54a3a8c3078a1fc397f9e729c6618a",
+      "record_id_sha256": "0c3707f7821d0393cd7361ffce63c071d71bd333894aa3fa4868ff09f4fffb86",
+      "information_id_sha256": "3f7ec5bd6b89c41b1906a9d8f7341fe922fd7380c4824f1929eb1fbd59b02481",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q13",
+      "source_ref_sha256": "b7b26748c245874c12f355483320cb7d40e139115d03e3a96ec0faebcde88d09",
+      "legacy_key_sha256": "393b0cb14126b4ebefb2427d449e965e33182e263084d159e2de1bc44ea2ad3e",
+      "dataset": "interregional_exchange_monthly",
+      "legacy_state": "pending",
+      "state": "pending",
+      "consumed": false,
+      "facts_sha256": "fbb948303f1ea00d5093bb29e08d0f08383e3d535986ccb04ed6bb069dfa243b",
+      "menu_scope_sha256": "ab035159de7a2ba3dff079e85ed884eb0b8acd8fbeb6c1f6877b770a11bfaddd",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "d2aae2597205975b4db6585e5057c40e7a22a1fedea28a60d1e9b6b079085a20",
+      "record_id_sha256": "ce43f90f068ba237192c99fed67776d77aa9b2507b720876a936b658e382292f",
+      "information_id_sha256": "3f7ec5bd6b89c41b1906a9d8f7341fe922fd7380c4824f1929eb1fbd59b02481",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+        "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+        "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q18",
+      "source_ref_sha256": "2f1ecd1de48f96358da6c6d53ec32b84ad7048403e7441bb92bd25d31e94486f",
+      "legacy_key_sha256": "3e9910957d911d556890aaedcd3502a6eb4845c06cbd65399f3e709809d386d7",
+      "dataset": "publication_4ab104c9f4b8bf37",
+      "legacy_state": "pending",
+      "state": "pending",
+      "consumed": false,
+      "facts_sha256": "1b1d28ae8dc4e31f3223854e675a313408a71d7a154ea425bc300278222a1d9c",
+      "menu_scope_sha256": "d09a0ead25dcb12a7c60a3c70627243290b8de866167e2bc74fcb84fdf67db84",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "e80dd180dbefce8f3adf43466dd1582493d899c2b55da5acf3735565c91ba550",
+      "record_id_sha256": "571801a1371fc8f20d9003acc0dbbeb0c1c539624922ff24bd13edda22a96443",
+      "information_id_sha256": "52901099c80327e1c83a0837371d8b0bfd0ee687fa299343848efb6043b2b34c",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-3/520ee27820f8924b8760cf40d96df627b2ba4d0c473cdca85c1c8c177b5f5dc0.json",
+        "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-3/f3cb360a117d49970c2d74362e5597e77c85f926d06ea548c768b1de05a854f9.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+        "anhui/state/server_native_listing_sources_publication_4ab104c9f4b8bf37.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_publication_4ab104c9f4b8bf37.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q54",
+      "source_ref_sha256": "44f3f23407b834ab7598043b6fb054e26bfdb168fdac242aa0fe66c984c27816",
+      "legacy_key_sha256": "2811950e237f48a03ab83934c280c97db4616b96933b4a9626d53fe62e2f33a4",
+      "dataset": "market_disclosure_monthly",
+      "legacy_state": "saved",
+      "state": "saved",
+      "consumed": true,
+      "facts_sha256": "152ed55cb581eb36d5f4f972c2e6f6dcd34ef1b8a8c0548f21e979f210c05c1d",
+      "menu_scope_sha256": "cae4ae6ce24ece76ec37449e8170a075443b9eaf8e4f165afd6fcd9fbe3ffd5f",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "phase4_committed_snapshot_exact_record",
+      "dispatch_allowed": false,
+      "identity_sha256": "7d6ac68ab7a3976fc0913677a770abf3e26d5edad90b09f48679232d8199f976",
+      "record_id_sha256": "04217fd7fe3446c50a269bb97f1c452f400479d78e0c82be26373c227eac0a6b",
+      "information_id_sha256": "651790f90029236cdab540ccd11512806b6c5e411a246091991f847a793ad247",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-1/82597d709dcc9a07076892c433a2f97cf169537ab5710e692d532adbf842cb35.json",
+        "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-1/a2e271f53903abc48f53476705f95b3ebaa03182f0415e005bbbe3f89fc8791a.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_market_disclosure_monthly.json",
+        "anhui/state/server_native_listing_sources_market_disclosure_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_market_disclosure_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    },
+    {
+      "source_view_id": "q54",
+      "source_ref_sha256": "44f3f23407b834ab7598043b6fb054e26bfdb168fdac242aa0fe66c984c27816",
+      "legacy_key_sha256": "99f51f1d9eb5c33e0da1b73bcdf74764f471ccc578c83a857b48313ed971f62b",
+      "dataset": "market_disclosure_monthly",
+      "legacy_state": "saved",
+      "state": "saved",
+      "consumed": true,
+      "facts_sha256": "d184e009ac6ed5af645e98a32ac4ed16351cf110f676aa9d9c7b82903b6df337",
+      "menu_scope_sha256": "cae4ae6ce24ece76ec37449e8170a075443b9eaf8e4f165afd6fcd9fbe3ffd5f",
+      "protective_blockers": [
+        "attempt_index_required"
+      ],
+      "cohort_proof": "exact_phase4_record_in_changed_queue",
+      "dispatch_allowed": false,
+      "identity_sha256": "2dbc4305d1e7df715fa80f72664472491ccc7923b1c0f261bb113b16d840438f",
+      "record_id_sha256": "16c2aa141b9a4d9e3c13139731e7c5e491e753e497fa467285cc700d6eba0921",
+      "information_id_sha256": "651790f90029236cdab540ccd11512806b6c5e411a246091991f847a793ad247",
+      "identity_kind": "snapshot",
+      "operation": "article",
+      "publication_date_is_not_statistical_period": true,
+      "new_sample_acceptance": false,
+      "qualification": "same_menu_native_listing_record_identity_verified",
+      "evidence_refs": [
+        "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-1/82597d709dcc9a07076892c433a2f97cf169537ab5710e692d532adbf842cb35.json",
+        "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-1/a2e271f53903abc48f53476705f95b3ebaa03182f0415e005bbbe3f89fc8791a.json",
+        "anhui/powercrawler/native_publications.py",
+        "anhui/powercrawler/publications.py",
+        "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_market_disclosure_monthly.json",
+        "anhui/state/server_native_listing_sources_market_disclosure_monthly.json",
+        "anhui/state/server_publication_queue_market_disclosure_monthly.json",
+        "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_market_disclosure_monthly.json"
+      ],
+      "title_forms": [
+        "exact"
+      ]
+    }
+  ],
+  "remaining_article_records": [],
+  "drift_groups": {
+    "queue_documents_vs_phase4": [
+      {
+        "path": "anhui/state/server_publication_queue_interregional_exchange_monthly.json",
+        "baseline_sha256": "4ca344b8873c97383ca4933b4e9bd71250e227f019bcf5160669c92657b6ba48",
+        "observed_sha256": "3b204d0f1cf71e42ea2bed9c4cc359124d6e7a35d03775bc8b43d7fe9482c2e4"
+      },
+      {
+        "path": "anhui/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+        "baseline_sha256": "e31686c521195f752081690ab99ea50aca857f11de57d235fcc25696287a00b5",
+        "observed_sha256": "8cc0128628fb24d48da026e5f56a39aa0948239534d6f104a69f770e070956d0"
+      },
+      {
+        "path": "anhui/state/server_publication_queue_market_disclosure_monthly.json",
+        "baseline_sha256": "af1e3d0313ed763b977c669ad9cea8677c28272cda6973fc8cfbf709226ec598",
+        "observed_sha256": "f88be3632b7db4dbafcd203c64adb0e8499fefad11bc96c3a1c52caea0b8669f"
+      }
+    ],
+    "listing_indexes_vs_phase4": [
+      {
+        "path": "anhui/state/server_native_listing_sources_publication_4ab104c9f4b8bf37.json",
+        "baseline_sha256": "ae33c02fe8c992176debd4d867134cc5571c9adde877d7a25e1be178b3d79f9b",
+        "observed_sha256": "0ed555ccd9bca401725d1e3243d23c28355a5906b708a77bfd36a246b4dcd8ff"
+      }
+    ],
+    "reviewed_code_vs_phase4": [],
+    "other_declared_refs_vs_phase4": []
+  },
+  "reference_origin_counts": {
+    "not_registered_in_phase4": 16,
+    "phase4_sha_changed": 4,
+    "phase4_sha_unchanged": 12
+  },
+  "references": [
+    {
+      "path": "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc.json",
+      "sha256": "0ce07a6a3fee2834fba1373e655d1d7d6c618d87d56530457feedef5a6f88edc"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-1/af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0.json",
+      "sha256": "af40634717bb2f04e2ed0623ee10bb613582aee86f97a0d2b4a891417e1112f0"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-2/0d7961eb891eca1d5324526f7d404b4cd4b3be1c9bef00e9f0c507a396603c8a.json",
+      "sha256": "0d7961eb891eca1d5324526f7d404b4cd4b3be1c9bef00e9f0c507a396603c8a"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-2/199d0ddf3a18f83077844e6d81f99a86cbbd4933030ebcba8d6b70c120b4c5f4.json",
+      "sha256": "199d0ddf3a18f83077844e6d81f99a86cbbd4933030ebcba8d6b70c120b4c5f4"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-3/accea8e0c2f80171f149f52ddd424fb5a3d2c74a61ab84f10ebdb7604428f7b6.json",
+      "sha256": "accea8e0c2f80171f149f52ddd424fb5a3d2c74a61ab84f10ebdb7604428f7b6"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/interregional_exchange_monthly/page-3/b8d1e96a3d9cb38eed382fd24d9c9683092b53fff9a9175767aa2234f9f1ae01.json",
+      "sha256": "b8d1e96a3d9cb38eed382fd24d9c9683092b53fff9a9175767aa2234f9f1ae01"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-1/82597d709dcc9a07076892c433a2f97cf169537ab5710e692d532adbf842cb35.json",
+      "sha256": "82597d709dcc9a07076892c433a2f97cf169537ab5710e692d532adbf842cb35"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-1/a2e271f53903abc48f53476705f95b3ebaa03182f0415e005bbbe3f89fc8791a.json",
+      "sha256": "a2e271f53903abc48f53476705f95b3ebaa03182f0415e005bbbe3f89fc8791a"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-2/96ecc23bbf7fba4cf643f45a2c54a8401b2d5d8512f4659ca0e8765d5029d129.json",
+      "sha256": "96ecc23bbf7fba4cf643f45a2c54a8401b2d5d8512f4659ca0e8765d5029d129"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-2/b8a448f465b5cde9910dc8df2a32ce9ae96312140be5e7a77b09c42a2138e270.json",
+      "sha256": "b8a448f465b5cde9910dc8df2a32ce9ae96312140be5e7a77b09c42a2138e270"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-3/67ffb02a6817b2bb9373b40225b5fdfeef3d64f44c174be0799bcf04c66a8a53.json",
+      "sha256": "67ffb02a6817b2bb9373b40225b5fdfeef3d64f44c174be0799bcf04c66a8a53"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/market_disclosure_monthly/page-3/82b0064af941556dd5cbe3428eb05281942fbce7649f0fe4436e1a69667243fa.json",
+      "sha256": "82b0064af941556dd5cbe3428eb05281942fbce7649f0fe4436e1a69667243fa"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-1/d9051cbfef070ba266445ba87c0e9354c120c101461339245ac80d4c575bc188.json",
+      "sha256": "d9051cbfef070ba266445ba87c0e9354c120c101461339245ac80d4c575bc188"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-1/f9837a891e9b835f7e5a2fb0d42599b93a80c36831fd2304d73024793b356ea5.json",
+      "sha256": "f9837a891e9b835f7e5a2fb0d42599b93a80c36831fd2304d73024793b356ea5"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-2/7f7986c78f355facf1de06815f1ecfbf10bf82e4feb5d8ae80e84a75c5f55bda.json",
+      "sha256": "7f7986c78f355facf1de06815f1ecfbf10bf82e4feb5d8ae80e84a75c5f55bda"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-2/c045015a0c54a0e15799aee9a1ee8866ad186db049d32957f071cef4678c9682.json",
+      "sha256": "c045015a0c54a0e15799aee9a1ee8866ad186db049d32957f071cef4678c9682"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-3/520ee27820f8924b8760cf40d96df627b2ba4d0c473cdca85c1c8c177b5f5dc0.json",
+      "sha256": "520ee27820f8924b8760cf40d96df627b2ba4d0c473cdca85c1c8c177b5f5dc0"
+    },
+    {
+      "path": "anhui/data/2026/native_listing_sources/publication_4ab104c9f4b8bf37/page-3/f3cb360a117d49970c2d74362e5597e77c85f926d06ea548c768b1de05a854f9.json",
+      "sha256": "f3cb360a117d49970c2d74362e5597e77c85f926d06ea548c768b1de05a854f9"
+    },
+    {
+      "path": "anhui/powercrawler/native_publications.py",
+      "sha256": "80b2792c78432f9bc92672be379edf88fe18ca917e676557709acd410533fe54"
+    },
+    {
+      "path": "anhui/powercrawler/publications.py",
+      "sha256": "8dfd9c51054b72d2d02020b08878fd6ddb267e26c0fd2cc76c245557be96e420"
+    },
+    {
+      "path": "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_interregional_exchange_monthly.json",
+      "sha256": "334986a32f7c138778496df3cdbf67fbbad5f4a7e3371bfb2a0f80e3de93e191"
+    },
+    {
+      "path": "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_market_disclosure_monthly.json",
+      "sha256": "1199818f56bbbbe0fefad55218621bef1d1dff662ae0d25c8b4f7d4410b3646b"
+    },
+    {
+      "path": "anhui/state/mz_migration_20261022_093815/remote_snapshot/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+      "sha256": "fd844396a2bfe98b0f0884d17620cd60f92ce8dd1d319d198b49b1e5732661de"
+    },
+    {
+      "path": "anhui/state/server_native_listing_sources_interregional_exchange_monthly.json",
+      "sha256": "895ac4dd381e9dc41a2f966de7259ee59a07f7913c61964e0cd4488094213f1a"
+    },
+    {
+      "path": "anhui/state/server_native_listing_sources_market_disclosure_monthly.json",
+      "sha256": "f974a67761e5921324a392fd73f29d9cac15818ffd99db564ebb162dc914bb4c"
+    },
+    {
+      "path": "anhui/state/server_native_listing_sources_publication_4ab104c9f4b8bf37.json",
+      "sha256": "0ed555ccd9bca401725d1e3243d23c28355a5906b708a77bfd36a246b4dcd8ff"
+    },
+    {
+      "path": "anhui/state/server_publication_queue_interregional_exchange_monthly.json",
+      "sha256": "3b204d0f1cf71e42ea2bed9c4cc359124d6e7a35d03775bc8b43d7fe9482c2e4"
+    },
+    {
+      "path": "anhui/state/server_publication_queue_market_disclosure_monthly.json",
+      "sha256": "f88be3632b7db4dbafcd203c64adb0e8499fefad11bc96c3a1c52caea0b8669f"
+    },
+    {
+      "path": "anhui/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+      "sha256": "8cc0128628fb24d48da026e5f56a39aa0948239534d6f104a69f770e070956d0"
+    },
+    {
+      "path": "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_interregional_exchange_monthly.json",
+      "sha256": "334986a32f7c138778496df3cdbf67fbbad5f4a7e3371bfb2a0f80e3de93e191"
+    },
+    {
+      "path": "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_market_disclosure_monthly.json",
+      "sha256": "1199818f56bbbbe0fefad55218621bef1d1dff662ae0d25c8b4f7d4410b3646b"
+    },
+    {
+      "path": "anhui/state/word_alignment_20261022/audit_workspace/state/server_publication_queue_publication_4ab104c9f4b8bf37.json",
+      "sha256": "fd844396a2bfe98b0f0884d17620cd60f92ce8dd1d319d198b49b1e5732661de"
+    }
+  ],
+  "inputs_changed_during_scan": [],
+  "production_writes": 0,
+  "website_requests": 0,
+  "dispatch_allowed": false,
+  "queue_import_ready": false,
+  "live_handoff_completed": false,
+  "remaining_evidence_followup": {
+    "binding_captures": 3,
+    "candidate_entries": 52,
+    "qualification": "carried_forward_pending_separate_readonly_followup"
+  },
+  "limitations": [
+    "Fixed old namespaces/keys/facts only; new collector successes never replace old states.",
+    "An identity bridge is neither a newly accepted sample nor semantic or online acceptance.",
+    "Article snapshots remain undated; publication dates only verify old article identity.",
+    "Native IDs/titles/selectors remain in RAM; output is metadata, hashes and controlled references only."
+  ]
+}

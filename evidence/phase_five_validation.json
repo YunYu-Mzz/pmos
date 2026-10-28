@@ -1,0 +1,455 @@
+{
+  "phase": 5,
+  "date": "2026-10-28",
+  "mode": "exact_old_identity_bridges_and_index_led_read_only_followup",
+  "source_code_commit": "1e835f3ff0bb41cec1a3ccd894fcd17929bd14f9",
+  "test_suite": {
+    "command": "python3 pmos/tools/test_offline.py",
+    "python": "3.12.14",
+    "discovered": 355,
+    "passed": 354,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "skip_reason": "optional local browser test disabled",
+    "ipv4_ipv6_connections_forbidden": true,
+    "log_sha256": "2af1131a557b357736b4e7113e80ee9be656f7a450e32f9953c14f81f9983cc4"
+  },
+  "guarded_validation": {
+    "runner_status": 0,
+    "runner_result": {
+      "mode": "read_only_existing_evidence",
+      "stage": "bridges",
+      "summaries": {
+        "liaoning_monday": {
+          "phase_three_mappings_preserved": 1499,
+          "native_monday_identity_views_recovered": 42,
+          "native_monday_states_preserved": {
+            "pending": 41,
+            "saved": 1
+          },
+          "native_monday_consumed_preserved": 1,
+          "remaining_unmapped_record_views": 11
+        },
+        "liaoning": {
+          "old_record_cohort": 11,
+          "unique_identity_preimages_recovered": 11,
+          "remaining_identity_bridges": 0,
+          "dataset_domains": 6,
+          "candidate_identity_upper_bound": 2072,
+          "candidate_identities_checked": 2072,
+          "old_states": {
+            "empty": 5,
+            "saved": 6
+          },
+          "old_consumed_facts": 11,
+          "new_originals_recovered": 0
+        },
+        "anhui": {
+          "fixed_article_cohort": 10,
+          "cohort_records_reconstructed": 10,
+          "article_identities_recovered": 10,
+          "article_identities_remaining": 0,
+          "old_consumed_facts": 5,
+          "new_sample_qualifications": 0,
+          "new_semantic_qualifications": 0
+        },
+        "evidence_followup": {
+          "provinces_checked": 3,
+          "new_business_qualifications": 0,
+          "new_consumed_tasks": 0,
+          "production_writes": 0,
+          "website_requests": 0,
+          "liaoning_own_missing_cohort": 51,
+          "liaoning_without_own_or_alias_chain_cohort": 34,
+          "anhui_binding_capture_cohort": 3,
+          "anhui_exact_binding_copies_newly_proven": 0,
+          "anhui_unadmitted_candidate_cohort": 52,
+          "shanxi_missing_business_original_cohort": 19,
+          "shanxi_boundary_sources_checked": 26
+        }
+      }
+    },
+    "guards": {
+      "network_attempts": 0,
+      "subprocess_attempts": 0,
+      "filesystem_mutation_attempts": 0,
+      "sqlite_connections": 0,
+      "legacy_producer_imports": 0
+    },
+    "queue_conservation": {
+      "liaoning": {
+        "source_views": 1,
+        "record_views": 11,
+        "unmapped_before": 11,
+        "identities_recovered": 11,
+        "unmapped_after": 0,
+        "states": {
+          "empty": 5,
+          "saved": 6
+        },
+        "consumed": 11,
+        "state_facts_protection_sha256": "55b040a03e7c25ace6330309e8c26345baed4240530b5439f3b90cac2dda4520",
+        "states_and_facts_unchanged": true,
+        "dispatch_allowed": false
+      },
+      "anhui": {
+        "source_views": 3,
+        "record_views": 10,
+        "unmapped_before": 10,
+        "identities_recovered": 10,
+        "unmapped_after": 0,
+        "states": {
+          "pending": 5,
+          "saved": 5
+        },
+        "consumed": 5,
+        "state_facts_protection_sha256": "dfada8b5dac82f460c6ef9f8ecb461474cfba6aaae71cd50c233ba17d77fc72e",
+        "states_and_facts_unchanged": true,
+        "dispatch_allowed": false
+      },
+      "liaoning_full_phase2_views": {
+        "source_views": 5,
+        "record_views": 13032,
+        "unmapped_before": 1552,
+        "identities_recovered": 1552,
+        "unmapped_after": 0,
+        "states": {
+          "empty": 6,
+          "pending": 12951,
+          "saved": 74,
+          "unknown": 1
+        },
+        "consumed": 81,
+        "state_facts_protection_sha256": "994e8dbb2edcb70d1dd039f0b8a46cbbe8780aff7010598e1f8a00cb8a06d68c",
+        "states_and_facts_unchanged": true,
+        "dispatch_allowed": false
+      },
+      "anhui_last_twenty_from_phase3": {
+        "source_views": 5,
+        "record_views": 20,
+        "unmapped_before": 20,
+        "identities_recovered": 20,
+        "unmapped_after": 0,
+        "states": {
+          "pending": 8,
+          "saved": 12
+        },
+        "consumed": 12,
+        "state_facts_protection_sha256": "12a8d40b48d260368e34a57c64bc25f963f6b66b8011e1d20f79c8fbcbe874c5",
+        "states_and_facts_unchanged": true,
+        "dispatch_allowed": false,
+        "phase4_existing_mappings_preserved": 10
+      }
+    },
+    "reports": {
+      "liaoning": {
+        "summary": {
+          "old_record_cohort": 11,
+          "unique_identity_preimages_recovered": 11,
+          "remaining_identity_bridges": 0,
+          "dataset_domains": 6,
+          "candidate_identity_upper_bound": 2072,
+          "candidate_identities_checked": 2072,
+          "old_states": {
+            "empty": 5,
+            "saved": 6
+          },
+          "old_consumed_facts": 11,
+          "new_originals_recovered": 0
+        },
+        "matches_saved_report": true
+      },
+      "anhui": {
+        "summary": {
+          "fixed_article_cohort": 10,
+          "cohort_records_reconstructed": 10,
+          "article_identities_recovered": 10,
+          "article_identities_remaining": 0,
+          "old_consumed_facts": 5,
+          "new_sample_qualifications": 0,
+          "new_semantic_qualifications": 0
+        },
+        "matches_saved_report": true
+      },
+      "evidence_followup": {
+        "summary": {
+          "provinces_checked": 3,
+          "new_business_qualifications": 0,
+          "new_consumed_tasks": 0,
+          "production_writes": 0,
+          "website_requests": 0,
+          "liaoning_own_missing_cohort": 51,
+          "liaoning_without_own_or_alias_chain_cohort": 34,
+          "anhui_binding_capture_cohort": 3,
+          "anhui_exact_binding_copies_newly_proven": 0,
+          "anhui_unadmitted_candidate_cohort": 52,
+          "shanxi_missing_business_original_cohort": 19,
+          "shanxi_boundary_sources_checked": 26
+        },
+        "matches_saved_report": true
+      }
+    }
+  },
+  "validation_harness_sha256": "ccf444d7d7b8983589320371819b528c9739471914defa4c6142861c6096500a",
+  "scope_of_complete_checks": {
+    "liaoning": "All 13,032 phase-two record views; existing mapped identities plus phase-three/phase-four identities preserved before overlaying eleven new bridges.",
+    "anhui": "Twenty phase-three unresolved records reconstructed from phase-four committed full-file and menu/facts commitments; ten phase-four identity hashes preserved while the final ten were mapped.",
+    "excludes": "No claims about current production totals, unique business indicators, ownership handoff or live migration."
+  },
+  "identity_findings": {
+    "liaoning": {
+      "old_record_cohort": 11,
+      "unique_identity_preimages_recovered": 11,
+      "remaining_identity_bridges": 0,
+      "dataset_domains": 6,
+      "candidate_identity_upper_bound": 2072,
+      "candidate_identities_checked": 2072,
+      "old_states": {
+        "empty": 5,
+        "saved": 6
+      },
+      "old_consumed_facts": 11,
+      "new_originals_recovered": 0
+    },
+    "anhui": {
+      "fixed_article_cohort": 10,
+      "cohort_records_reconstructed": 10,
+      "article_identities_recovered": 10,
+      "article_identities_remaining": 0,
+      "old_consumed_facts": 5,
+      "new_sample_qualifications": 0,
+      "new_semantic_qualifications": 0
+    }
+  },
+  "liaoning_domain_counts": {
+    "candidate_identities": 2072,
+    "retained_pending": 2054,
+    "prior_outcomes": 7,
+    "target_old_outcomes": 11
+  },
+  "remaining_evidence_summary": {
+    "provinces_checked": 3,
+    "new_business_qualifications": 0,
+    "new_consumed_tasks": 0,
+    "production_writes": 0,
+    "website_requests": 0,
+    "liaoning_own_missing_cohort": 51,
+    "liaoning_without_own_or_alias_chain_cohort": 34,
+    "anhui_binding_capture_cohort": 3,
+    "anhui_exact_binding_copies_newly_proven": 0,
+    "anhui_unadmitted_candidate_cohort": 52,
+    "shanxi_missing_business_original_cohort": 19,
+    "shanxi_boundary_sources_checked": 26
+  },
+  "reports": [
+    {
+      "path": "pmos/evidence/liaoning_phase5_bridges.json",
+      "bytes": 40890,
+      "sha256": "afd29d0c12e2ff41172490c7133f977c24709dcb141554b2a43fdb3aa44ae575"
+    },
+    {
+      "path": "pmos/evidence/anhui_phase5_bridges.json",
+      "bytes": 33653,
+      "sha256": "e6a8b1bd5d898f108d605933a7dcef247bfcef41a6df91f1077a804262e5a32d"
+    },
+    {
+      "path": "pmos/evidence/three_province_phase5_followup.json",
+      "bytes": 78284,
+      "sha256": "ff26503e8e8466918f5815ffaeca7a12502b1816e324e06272f4233f89d4c37a"
+    }
+  ],
+  "code_and_test_refs": [
+    {
+      "path": "pmos/pmos/recovery/anhui_bridges.py",
+      "sha256": "5edbfefc945ae45ebfb432f768bd57a8f2e5be93a12aa05a34f5ccef998496d5"
+    },
+    {
+      "path": "pmos/pmos/recovery/evidence_followup.py",
+      "sha256": "5ec85bc4888edfe78ab73a84cfff437fb7ea86aa1863a1b96de7f07d1aa9f58e"
+    },
+    {
+      "path": "pmos/pmos/recovery/liaoning_bridges.py",
+      "sha256": "688c971123cd42af08a0587f9c91668324036196d71ea024e78b9671e9bc6ed8"
+    },
+    {
+      "path": "pmos/tests/test_anhui_bridges.py",
+      "sha256": "b9bc0e28909a6eebba8eee98b21a3ef470f708f245804ae89f2cc5ef1b6511ed"
+    },
+    {
+      "path": "pmos/tests/test_evidence_followup.py",
+      "sha256": "39713ef6165c014aa8e6a830cb0768757e675928fcece05da701ecf1481dbdd7"
+    },
+    {
+      "path": "pmos/tests/test_liaoning_bridges.py",
+      "sha256": "08045eefa6bebba72e5d7f70b3783d32e575f5d220a2b0e088c0e3175b3b1cd0"
+    },
+    {
+      "path": "pmos/tests/test_recovery_tool.py",
+      "sha256": "a314e02074959fcc354080e4f366961df454c970c1c9349c92f24016711b1718"
+    },
+    {
+      "path": "pmos/tools/recover_existing_evidence.py",
+      "sha256": "c5836ba3517bf024e169a63e6da9898c23c467d778328d84ba44e9ae03fe02a9"
+    }
+  ],
+  "previous_core_modules_unchanged": [
+    {
+      "path": "pmos/pmos/contracts.py",
+      "sha256": "b1422ecede64d28de481636eaf477b9393a17c1b6c00280275ad64468472da75"
+    },
+    {
+      "path": "pmos/pmos/engine.py",
+      "sha256": "0d889ae4bd9a6cfb42fd74fe5a964a06468c4e4b2e2119037df6da7cf5f12448"
+    },
+    {
+      "path": "pmos/pmos/ledger.py",
+      "sha256": "b559dd70156afe1556a7f0219987e0f860372dfce741e5ecdfb7e750256fee9e"
+    },
+    {
+      "path": "pmos/pmos/queue_compat.py",
+      "sha256": "2887cee7c734539349599b568797eb77c805380c0f8b00003df985e272fd68c9"
+    },
+    {
+      "path": "pmos/pmos/queue_audit.py",
+      "sha256": "83390e39fc78d4cf1a4eddad339a5fcd3434d3a642ac001843209f541789d2ac"
+    },
+    {
+      "path": "pmos/pmos/pacing.py",
+      "sha256": "f45e2895172ed404621234f23fcab146b5a09d002894dc5c8381c6597a269e18"
+    },
+    {
+      "path": "pmos/pmos/spec.py",
+      "sha256": "c43feadc3bd81f77af34c7f956b06250e624a1f809a2663ab1f9ba3a9846045f"
+    },
+    {
+      "path": "pmos/pmos/province.py",
+      "sha256": "bf9512b43f923bbc4e497ef5b4e86f472a14bcdde0e9000d369be62b712e1123"
+    },
+    {
+      "path": "pmos/pmos/recovery/monday.py",
+      "sha256": "f60bb2370381abf237fea7e35727a4614215470a842b1bb322da8204f83ab36c"
+    },
+    {
+      "path": "pmos/pmos/recovery/liaoning.py",
+      "sha256": "4239951508df697418b74e12c5349f38a6e9fdf3a5c996069f17f07199c7f83f"
+    },
+    {
+      "path": "pmos/pmos/recovery/anhui.py",
+      "sha256": "16941a169b4ee00a1d5bf4518609a902f621edbf11243972158b6bb7649c5817"
+    },
+    {
+      "path": "pmos/pmos/recovery/liaoning_remaining.py",
+      "sha256": "c270d409b7d0fd79701f170f093323f19a694375b94013cd0de942e3a9fdc3be"
+    },
+    {
+      "path": "pmos/pmos/recovery/anhui_remaining.py",
+      "sha256": "23144f7d28e8b56e2a9d7cd921bceaf3709a9eadef0fc56401d3ebc2e6b985ca"
+    },
+    {
+      "path": "pmos/pmos/recovery/shanxi_remaining.py",
+      "sha256": "e9784ba081db3b22b09d3f35cacf6efda12d901ad551bcd8221577094715d0ba"
+    }
+  ],
+  "previous_evidence_files_unchanged": [
+    {
+      "path": "pmos/evidence/anhui_phase2.json",
+      "sha256": "a44c22defabd680d615217260e372a2664a66f422f9dbcde682f5c99fec47fcc"
+    },
+    {
+      "path": "pmos/evidence/anhui_phase3_recovery.json",
+      "sha256": "a39390f063c6b31d8479d370ccf63c3157a016d49cf407c794c410107e4a8814"
+    },
+    {
+      "path": "pmos/evidence/anhui_phase4_remaining.json",
+      "sha256": "4c77082676f5e69300229f9918a83ed81125428133ecca3c8a430191aedd3b2f"
+    },
+    {
+      "path": "pmos/evidence/anhui_queue_phase2.json",
+      "sha256": "4bc35e038d8e3a4c96108119a660f768c87864fa323fc2cc97ef3b21c1876da8"
+    },
+    {
+      "path": "pmos/evidence/cross_catalog_phase3_discovery.json",
+      "sha256": "be15d85a4bd877c26a433df036c5b09cd073ae32e1fa89036083199e81a3f2a8"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase2.json",
+      "sha256": "22527289d06489221bdaa74ed765c791bb2652b85bfc3777433e549c0f12e849"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase3_recovery.json",
+      "sha256": "433ec2090a1741bda88534b12212db0f89d79f065831b1485aa0c61bef0c5eaf"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase4_monday.json",
+      "sha256": "e3673da90280d1d4ac2309664fc62576ed2e0761be168189cbf114063872c3cc"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase4_remaining.json",
+      "sha256": "61473f8a198eba8fc87bf54268a3688c657ce97983ec8bac73680196bea61983"
+    },
+    {
+      "path": "pmos/evidence/liaoning_queue_phase2.json",
+      "sha256": "046d4d3aef69ac52ebec00f765e303d2feee3ef21edb41d2f556600f867c2ee5"
+    },
+    {
+      "path": "pmos/evidence/phase_four_validation.json",
+      "sha256": "8a0f610739d9f58d76088d901f03c08465194dd85e86ecc0b45df39eacb4eb3e"
+    },
+    {
+      "path": "pmos/evidence/phase_one_review.json",
+      "sha256": "14bee3f79085b3ab33c3bb2e174d146f00805f680c40c9186611aa7515d68957"
+    },
+    {
+      "path": "pmos/evidence/phase_three_validation.json",
+      "sha256": "45b3122d02447fbcbe88c925edceac100c09f8ef68d64667aa2602c17d6bfd20"
+    },
+    {
+      "path": "pmos/evidence/phase_two_validation.json",
+      "sha256": "ca9bb23f42142302dc49201b9e1138847f31364f69996f9d07199a166841902b"
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase2.json",
+      "sha256": "24b8c7d8736f473b7bf517325885cc883f9f753a7bdba1cbd01aa21047bbf64d"
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase3_recovery.json",
+      "sha256": "a601421876b796f6fc96b21dd14f547bc5d50c1101095dbd47ef2c69ad032e84"
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase4_remaining.json",
+      "sha256": "58fc52552b4f54027331f977a10d397f3dad2e9f3fcdd513b84568d13b77d350"
+    },
+    {
+      "path": "pmos/evidence/shanxi_queue_phase2.json",
+      "sha256": "02d28a5cc65e5296a6b344c26310d0285c1b833104a6f98c68e52d7633ec337f"
+    },
+    {
+      "path": "pmos/evidence/validation.json",
+      "sha256": "f0e0cefdc4f494a65fa42fdcfcc5066cc13a6b5e6e27319ede238a805d8faa85"
+    }
+  ],
+  "outside_pmos_worktree": {
+    "git_status_mode": "porcelain=v1 -z (default untracked mode)",
+    "entries_before": 222,
+    "entries_after": 222,
+    "tracked_status_entries": 34,
+    "tracked_status_entries_unchanged": true,
+    "new_untracked_entries_seen": 0,
+    "removed_entries_seen": 0,
+    "handling": "All non-PMOS work was left unstaged; only explicit PMOS paths were committed."
+  },
+  "website_requests": 0,
+  "production_writes": 0,
+  "database_connections": 0,
+  "live_services_touched": false,
+  "dispatch_allowed": false,
+  "limitations": [
+    "Liaoning identity preimages are unique within the pinned complete legacy writer domain, assuming SHA256 collision resistance; original native payload/response bytes remain unrecovered.",
+    "Anhui retains the old five pending records even where newer queues are saved; old audit facts do not grant replay permission.",
+    "Identity completion does not create independent originals, business sample acceptance, permissions, complete scope or semantic acceptance.",
+    "Liaoning 51 own-original and 34 own-or-alias gaps, Anhui three exact binding copies and fifty-two unadmitted candidates, Shanxi nineteen business originals remain evidence gaps.",
+    "Old denied, failed, unknown, consumed and owner/scope/stage holds are preserved; no current collector was frozen or controlled.",
+    "Historical-stage audits may reject references changed by ongoing collection; no historical gate was relaxed to admit newer states."
+  ]
+}

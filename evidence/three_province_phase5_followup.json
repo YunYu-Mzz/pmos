@@ -1,0 +1,1818 @@
+{
+  "mode": "phase5_index_led_read_only_evidence_followup",
+  "provinces": [
+    "liaoning",
+    "anhui",
+    "shanxi"
+  ],
+  "baseline_refs": [
+    {
+      "path": "pmos/evidence/liaoning_phase4_remaining.json",
+      "sha256": "61473f8a198eba8fc87bf54268a3688c657ce97983ec8bac73680196bea61983",
+      "bytes": 126975
+    },
+    {
+      "path": "pmos/evidence/anhui_phase4_remaining.json",
+      "sha256": "4c77082676f5e69300229f9918a83ed81125428133ecca3c8a430191aedd3b2f",
+      "bytes": 156119
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase4_remaining.json",
+      "sha256": "58fc52552b4f54027331f977a10d397f3dad2e9f3fcdd513b84568d13b77d350",
+      "bytes": 82403
+    }
+  ],
+  "summary": {
+    "provinces_checked": 3,
+    "new_business_qualifications": 0,
+    "new_consumed_tasks": 0,
+    "production_writes": 0,
+    "website_requests": 0,
+    "liaoning_own_missing_cohort": 51,
+    "liaoning_without_own_or_alias_chain_cohort": 34,
+    "anhui_binding_capture_cohort": 3,
+    "anhui_exact_binding_copies_newly_proven": 0,
+    "anhui_unadmitted_candidate_cohort": 52,
+    "shanxi_missing_business_original_cohort": 19,
+    "shanxi_boundary_sources_checked": 26
+  },
+  "results": {
+    "liaoning": {
+      "fixed_own_missing_sources": 51,
+      "fixed_without_own_or_typed_alias_chain": 34,
+      "index_observations": [
+        {
+          "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+          "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574",
+          "bytes": 112662,
+          "expected_sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574",
+          "status": "unchanged_from_phase4"
+        },
+        {
+          "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+          "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "bytes": 140940,
+          "expected_sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+          "status": "unchanged_from_phase4"
+        }
+      ],
+      "typed_alias_metadata_declarations": [
+        {
+          "dataset": "sitewide_fca714454cbc8832",
+          "target_technical_id": "must_run_stop_units",
+          "binding_sha256": "fbe71eab8bfddbab447ad740d6bbe6247bc8f3872019b9edde22580a26fe5d5f",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_6108804d03af448c",
+          "target_technical_id": "generator_maintenance_capacity",
+          "binding_sha256": "671e47712760e0d39abed8472a066f47f5e5f5f8d50c14776fa40ff81fe5dc24",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_2c25420ab856210f",
+          "target_technical_id": "sitewide_80ece90b472eddab",
+          "binding_sha256": "66fc7f15a3845ded07e27f14f310e7066be11386576ad757d29adcb609824d7d",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_29c2411e94c469d0",
+          "target_technical_id": "tie_line_dayahead",
+          "binding_sha256": "b030dff356d87cbde964aae0b9e31f381c3ed74150d72ab53d629c0c6cfb0af3",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_15eb4fa6873fb948",
+          "target_technical_id": "tie_line_schedule",
+          "binding_sha256": "f16a9dfbb40376b269120e71b3f98b873e8a6b6e2608b269dcd646c77ec3cbed",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_3356cf7fb2c14651",
+          "target_technical_id": "generation_total_forecast",
+          "binding_sha256": "33415dceb4b938f1fcdedb392c2c97c38f9f946b9fbf19995b652fa69055be4f",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_da32804173198088",
+          "target_technical_id": "distributed_wind",
+          "binding_sha256": "97a6bec824a65188780c605627df3ca98a5569ec65e272def7823ed2836c308c",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_b422b2f3c09fbc93",
+          "target_technical_id": "distributed_solar",
+          "binding_sha256": "10f532b8d93857114ee2835fb87aaab359e2b5e670221e6343cac4d4aa0c42c7",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_3b8e6b1c672f10d0",
+          "target_technical_id": "hydro_daily",
+          "binding_sha256": "96f3f82fd6295c577f3abd73c2ece0a3d66e02fb593300ce7a17bc27215e61b6",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_150e628bb9f9b03a",
+          "target_technical_id": "nuclear_total",
+          "binding_sha256": "3871bded5594654d27ff16f94821e9cc597cf693700b1be580374fe5f65dc887",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_daf0739f06cba7ca",
+          "target_technical_id": "local_coal_forecast",
+          "binding_sha256": "e90f5bba3bee2c47a2f5fed18ce56b88472c23b2a973ab815edc70b5d0ce5c9b",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_72b7a2340c3d2fde",
+          "target_technical_id": "local_hydro_plan",
+          "binding_sha256": "5a4f8e398722af1e579c955f686c69562c284b9622d17c99856f9f93e1c19d07",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_7089cafdcefe3c45",
+          "target_technical_id": "distributed_wind_actual",
+          "binding_sha256": "86dec3208d2479729b4a9cfd821449321811838080e568b2158242ba22861ede",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_5160397d5d7e23c5",
+          "target_technical_id": "distributed_solar_actual",
+          "binding_sha256": "f589a9b1ace4ce484a7ca1c2f2fc5d82dc41b0343fd64821ac8755b43a0dbf93",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_b2cee9801bac0f53",
+          "target_technical_id": "local_hydro_actual",
+          "binding_sha256": "b58571ef5327afe4a7241c67b6f092db7b7ba31fae321abdc07b5d45f7345370",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_4c35e252e0770c53",
+          "target_technical_id": "dayahead_power_and_average_price",
+          "binding_sha256": "71a19b456cc8bcead4c3bdd5849c474f549c8877bea838a586dbe391253d50de",
+          "new_original_or_consumption_proven": false
+        },
+        {
+          "dataset": "sitewide_bf835d54e880daf6",
+          "target_technical_id": "realtime_node_price",
+          "binding_sha256": "b34f7368dbaf4e2b5f3cf98cf5f2a7083e5272d5d0df444832d408e102f9f6ea",
+          "new_original_or_consumption_proven": false
+        }
+      ],
+      "typed_alias_declarations_do_not_add_independent_sources": true,
+      "original_roots_inventoried": [
+        "liaoning/data/2026/original",
+        "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original",
+        "liaoning/state/quality_repair_20261021/recovered_originals",
+        "liaoning/exports/local_adaptation_20261020",
+        "liaoning/exports/field_audit_20261020"
+      ],
+      "target_metadata_files": 0,
+      "new_own_observations": [],
+      "new_business_qualifications": 0,
+      "new_consumed_tasks": 0,
+      "qualification_changes": 0,
+      "phase4_own_missing_qualifications_preserved": true
+    },
+    "anhui": {
+      "fixed_binding_captures": 3,
+      "binding_named_metadata_checked": 98,
+      "exact_binding_copies_newly_proven": 0,
+      "bindings": [
+        {
+          "dataset": "publication_66d506c8a46471d9",
+          "capture_sha256": "4a4d69bde1dbdf35f6b85fceff78c4b04d8e02666746861eb3c71480f0a56179",
+          "precommitted_binding_sha256": "03b8cf4df54134cdbc8d60a4d7a73e00227b179a7c89fdc4106d2d067a1f9d9a",
+          "exact_copy_proofs": [],
+          "qualification": "exact_precommitted_copy_still_missing",
+          "original_capture_history_rewritten": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "day_ahead_average_offer_price",
+          "capture_sha256": "e696ecc7ae8e8a85227684de6179f00b5f04d2e8929a0eb08b4aba0b03fd38d3",
+          "precommitted_binding_sha256": "c59bab83929941b8428ec11ec5d4f3b9d7922eaf7d3b2a9bbc3f19564c186b47",
+          "exact_copy_proofs": [],
+          "qualification": "exact_precommitted_copy_still_missing",
+          "original_capture_history_rewritten": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "day_ahead_average_offer_price",
+          "capture_sha256": "781caee372b79ed6d5d14eef5974e64e120507f541d73d198694c0d41c3968be",
+          "precommitted_binding_sha256": "c59bab83929941b8428ec11ec5d4f3b9d7922eaf7d3b2a9bbc3f19564c186b47",
+          "exact_copy_proofs": [],
+          "qualification": "exact_precommitted_copy_still_missing",
+          "original_capture_history_rewritten": false,
+          "dispatch_allowed": false
+        }
+      ],
+      "target_dataset_mutable_binding_metadata": [
+        {
+          "dataset": "day_ahead_average_offer_price",
+          "reference": {
+            "path": "anhui/state/server_native_table_binding_b09a9411524644878c4c5e13.json",
+            "sha256": "674cd6102d4660047ebda44b949370740e2a7d44062d9f43064c3c5dfb6be731",
+            "bytes": 1358
+          },
+          "canonical_sha256": "7945e8fcf84f167efc6ee03647fce76ba06ca1f8b5d93cfceae172546ab1d47e",
+          "matches_any_precommitment": false
+        },
+        {
+          "dataset": "publication_66d506c8a46471d9",
+          "reference": {
+            "path": "anhui/state/server_native_table_binding_ca372d45404fbfd9deea6aee.json",
+            "sha256": "c806207db64eb1cfe0145e71e33db2ce91218edfc236de79cc5fbcc29414f7cc",
+            "bytes": 1666
+          },
+          "canonical_sha256": "d1d7288e429631a96b7c14973d59bd262e812a6b8d49edf919a3091190919b08",
+          "matches_any_precommitment": false
+        }
+      ],
+      "fixed_candidates": 52,
+      "candidate_index_observations": [
+        {
+          "path": "anhui/state/server_metric_coverage_inventory.json",
+          "sha256": "ef728af6926601cd3b21e2e93154dd7bb5af21c5c4a8a1a1a9dc6767cd4f4dc6",
+          "bytes": 145098,
+          "expected_sha256": "ef728af6926601cd3b21e2e93154dd7bb5af21c5c4a8a1a1a9dc6767cd4f4dc6",
+          "status": "unchanged_from_phase4"
+        },
+        {
+          "path": "anhui/state/server_all_site_metric_worklist.json",
+          "sha256": "2f42d43a2a1d256909af854e44ebdb5243b010da34c76760d4fb3144217fed94",
+          "bytes": 234635,
+          "expected_sha256": "2f42d43a2a1d256909af854e44ebdb5243b010da34c76760d4fb3144217fed94",
+          "status": "unchanged_from_phase4"
+        },
+        {
+          "path": "anhui/state/server_portal_metric_worklist.json",
+          "sha256": "a97ea58b2663a3afa5db419a314064fb60ebecf4a41af376cdbc63f24547387b",
+          "bytes": 26726,
+          "expected_sha256": "a97ea58b2663a3afa5db419a314064fb60ebecf4a41af376cdbc63f24547387b",
+          "status": "unchanged_from_phase4"
+        }
+      ],
+      "candidate_metadata": [
+        {
+          "cohort_entry_sha256": "63848f66d43cccef75527dfe5b6283f8d7f4e9c08f8ae7c5312dfa633fabd2bb",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": [
+            "publication_238143e14e491826"
+          ]
+        },
+        {
+          "cohort_entry_sha256": "245b4bc72dae5cabc2f6866b7f0ced7f72f1f1903f6e1349b2af1118ddffe679",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "c83e3c1408316afde99b75a95237f351f471c0f54bd95723acbe5d26682516db",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "6017e0a21f38055fc2fcd57cb40c59283fcdfa126cd3a474f7518e3413022725",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "f84bfcb4692fbb369c6913a5a6bf39874275294379fc9a2ff940c81609378d0d",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "f52030b7a4a459f1f328276818c0cb600e121899b9199f45638d40316467a2f6",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "9cf7e921c98ac486c1158e0c0f34c2ade028289dff94fd0de596c3d141c1b3da",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "8964b2f19fde9cd71a15508f896a1dbff9aca0149709a48a75600ff82c317964",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "b73fe8a4b66f7032f5803438cbafcee25c5e06fda1ba0de7a114b22951d606d9",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "65f0ff8ea44087086a3626606a5d1f75e2a0b025835d7b4aed77c4884d1c4ad0",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "f7b0619bb13166a32972828bf446df34d00e58509e8046a04f568a072d0bcd58",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "0a1098513f3d4337e75f2c0d7c601ad8d829c98589e489ef58f837e44ae897cd",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "39a5e6e2fcdbe8e110a6eafb271ff556ba32b6d4035e0eab66540314f0591bbb",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "5bb0480cae6060276c06080a0ef0f6b427d8ca0e76bbbcb5543985e1fbc86bfd",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "a556143b6f2c0370905dfd602c976eef684037d402236ed1a781bd898066f0a7",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "5d424e5fc75bc6db18ff9b6abf6bc2e52a39e5d84aaba97bcb12bf22125c85bc",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "dcf46b83c8cb2d56ac362864359fe3641a273556155691c3d1e12b5fb9375ee1",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "6917aad23d894202748deee77346808c6dcdb219fd0bff9e19fb872eb2a59225",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "6725ffdafebf3726f77e662a884b1003c5dd6095053d3e7706c5dd4979601781",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "716888225c57a0be814fa4d1f33d40a88aaa96c430455f73638813621e2ac240",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "0fa808cacb8be36a86c52d9afa714d5a4dddf6f9d27b2e42cb7200f502e475cf",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "7eb6adecbeca881659029ddfa5923b3c7195505a69ae8d421a777410536215fa",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "935fe374ab44322360305168ed405de4e20f16ebd50406ce71cd1e1250f21dc7",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "ff82d2e0699c1039c31b6ee8f77a8bf302b3d9e78970d2bb24189be0984acf22",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "e383ee90d91f9830cb279c7c90e2bd848ec7f6dcd2cf1943b190be63fb13b643",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "48d84933e359fda623e516a97b4419833f49e29e17157b522913f43c05c0a919",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "20f0ec52ebd8db79715d2223097fb6a1d932143b8fbf23796a86a02ace983f07",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "b5d0f9dc498aa895ebe284a75ea2bf33ab14d59d36f216b133430f07196e84fa",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "bcb57e66213695142b8bd4c472fb89937bd452cbd76f9210090becec0a1ac7ad",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "55d2188b5213be7ae0c9cd6266b2493e4e5979dd042ba2e7ad3a9bb658c6993e",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "64bd21cff2d5b49b5467cfd1241999ad40b341e82cf17205d887f56c7a83e96d",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "24df02fd6ddddbc5cdda6c0a35b72c8bac9d12d8cfbd8efdfd8ef524cdb4e0e1",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "523ca380e422a75de10253d4216c6f82f509ae8a1f472d581dfb5f36a74c302e",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "10fc484cb20a61b84532768b88c5ace73ec593e616bd7ebdbf056d6f8e7f4e54",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "2256f4de44681afe84af2d0af843dcd92878f15166f2c503fe03a2ce4beea9d9",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "dae2cc55ed8b4230d24078adf48812c8aeb85dee5df461a65e8f0b0b5d70cbc9",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": [
+            "publication_6b75b768f40a5ee0"
+          ]
+        },
+        {
+          "cohort_entry_sha256": "385f5bd1019b12a87f82f66e1cb52fe94dab927942bc1d6a420f350330115711",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "fe4285c511dd02e2680419e428ec898720dbb476c22842d95108eb8c7bc8d6e2",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": [
+            "publication_c434870ffdd5cfc3"
+          ]
+        },
+        {
+          "cohort_entry_sha256": "ac79fa3fc8b6c192040a7a034e6ee7791b05992cd2616ee6fd67564039d3078d",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "edb7fdfeb627c5c776e8399eef05858ce27dbc9545c13316302083005bdbd334",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "5df488d2fd0112c0c7f75830630453f4785a893195b414124d2345a05eb067a7",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "cdd813e63ab32d9b8baa312f90e66afdc02f65db8d5e13af310405fb36c2ddef",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "4acf9735a639ed15df13b607d500d38414c61c60e23b9313ff24527c350ef882",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "e8578d5e36274fe30826ac35df2c066a92b41300ab92eccd8c89fd9aafd6eedf",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "bdea1d236aff095bc1f042ea5cc5f92856215ca69505af0ca33ea61138fbb624",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "5f30ac99d23b2454b53bbca1b6e16042211f33651dddd16e230c26f09358b81d",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "a27f279bd89a284c4f56dc28cfb7afe4eff069bdf068d0eddb92d8e34c1bc545",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "74c59c15b95c25543112838dcc8c819b368818551a559d0a94802283c2b21201",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "0c9bab4c91e23ca034e6d73da0efe3e3ccc5b3339cf0ab8dac73935f7e93bfca",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "6807ffe0bb7105e4a2f157958033f999babc4d08045488cdaf758a851bfcba8f",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "b857b8d46ab5d7bc709c77c109eb22124f95c87de977dc5d5854606164223569",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        },
+        {
+          "cohort_entry_sha256": "7a831aa44b65704b5095e5649f341e729325aa14ccab58053ab010cf6301b0cc",
+          "status": "metadata_link_only_candidate_still_not_admitted",
+          "technical_ids": []
+        }
+      ],
+      "candidates_with_explicit_technical_id": 3,
+      "new_existing_pending_indexes": [
+        {
+          "reference": {
+            "path": "anhui/verification/20261028/pending33_initial_inventory.json",
+            "sha256": "283d63a6d062ff11b963ca5c489cf45735275fcdb047a6bf2a1b4620b0b7a666",
+            "bytes": 68104
+          },
+          "rows": 33,
+          "exact_candidate_technical_ids_matched": [],
+          "new_qualifications": 0
+        },
+        {
+          "reference": {
+            "path": "anhui/verification/20261028/pending33_binding_audit.json",
+            "sha256": "3a66e78e34f6794454e9f0a4a8579418e67693efc93428310b08779d6aef8b37",
+            "bytes": 13148
+          },
+          "rows": 33,
+          "exact_candidate_technical_ids_matched": [],
+          "new_qualifications": 0
+        },
+        {
+          "reference": {
+            "path": "anhui/verification/20261028/pending33_failed_source_audit.json",
+            "sha256": "db97043b64732e1cd783fa9a5e8fff863f915219a6c6887eac77dec77410d29a",
+            "bytes": 95418
+          },
+          "rows": 33,
+          "exact_candidate_technical_ids_matched": [],
+          "new_qualifications": 0
+        }
+      ],
+      "candidate_admission_changes": 0,
+      "new_business_qualifications": 0,
+      "new_consumed_tasks": 0
+    },
+    "shanxi": {
+      "fixed_missing_business_originals": 19,
+      "remaining_sources": [
+        {
+          "dataset": "candidate_0f5a5b87e4ea",
+          "phase4_group": "same_form_relation_with_related_selector_denial",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_3b346e6f33ea",
+          "phase4_group": "embedded_empty_selector_original_path_still_missing",
+          "receipt_observations": [
+            {
+              "path": "shanxi/state/inspection/scope_candidate_3b346e6f33ea_scope_options_channel_20261019/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755.json",
+              "expected_sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755",
+              "status": "bound_original_path_still_missing"
+            }
+          ],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_eee315dab049",
+          "phase4_group": "static_month_range_query_only_no_business_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryCurrentGensetInstall",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryCurrentSocietyIndustriesUse",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryDaySystemLoadPredictionFinish",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryGensetInstall",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryGreenPowerTrade",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryImportantChannelActualTransfer",
+          "phase4_group": "catalog_pending_verification_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryMarketQuotation",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryMarketSettlement",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryMediumLongTermTrade",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryRealtimeUnitOutputPrice",
+          "phase4_group": "catalog_permission_denied_no_raw_receipt",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryRetailMarketTrade",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryRetailMealSign",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryRetailTimePrice",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryRqscjjcqfslj",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryShareReturnStandard",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "querySocietyIndustriesUse",
+          "phase4_group": "catalog_placeholder_no_bound_original",
+          "receipt_observations": [],
+          "phase4_qualification_changed": false,
+          "dispatch_allowed": false
+        }
+      ],
+      "index_observations": [
+        {
+          "path": "shanxi/dataset_catalog.json",
+          "sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "bytes": 931731,
+          "expected_sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+          "status": "unchanged_from_phase4"
+        },
+        {
+          "path": "shanxi/verification/20261027/disclosure_timing/findings.json",
+          "sha256": "96e3a6a832eaa1049ef6497e4705bec99b4e3ae40524e2fbad52d34cdf9b80ee",
+          "bytes": 1275255,
+          "expected_sha256": "96e3a6a832eaa1049ef6497e4705bec99b4e3ae40524e2fbad52d34cdf9b80ee",
+          "status": "unchanged_from_phase4"
+        },
+        {
+          "path": "shanxi/verification/20261019/channel_forecast_empty_selector_evidence.json",
+          "sha256": "25b0d514df3825eb758dc543d274d1d5fb4874757b1c26c13f9452a1b4f2a7f8",
+          "bytes": 1145,
+          "expected_sha256": "25b0d514df3825eb758dc543d274d1d5fb4874757b1c26c13f9452a1b4f2a7f8",
+          "status": "unchanged_from_phase4"
+        },
+        {
+          "path": "shanxi/verification/20261019/discovered_special_form_review.json",
+          "sha256": "34fa43b1a08a67b2743066d8be554f3f8346cee6b12f3b07f1426f9957d74a92",
+          "bytes": 3419,
+          "expected_sha256": "34fa43b1a08a67b2743066d8be554f3f8346cee6b12f3b07f1426f9957d74a92",
+          "status": "unchanged_from_phase4"
+        }
+      ],
+      "boundary_sources": [
+        {
+          "dataset": "candidate_01fb2579a9db",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "33deba905f4c4dab4df53ec7d593749139b9af54005068ce1cfd6baef4833a2d",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_02b740ef90f6",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "3f3701c389637a3cf72c867c6e724ad44ad475b86e91d146d9e6e03ab6e7e200",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_1776ea3a8096",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "7270c878a238e667fb3ded362f9de2e8c1302e68ad3279406897d1715197e8a4",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_1af50fb3899b",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "ea30475927260e72909ffd29728c40d9f0b17e0e5ae3850356aa58e487450d2f",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_2176e2ac2f18",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "62b87441411640c9411ed4d0d68b7c76d6f601e8d5be264a11688cbbb4f1ce62",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_434babd21d13",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "de3e3ef02b8cffa4a1b4625c88b93014ee8cd603d3da7448dcd5ebf672b89eb2",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_53fac98e8404",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "fad2d1c2d2b0001167629a7ab1aa69ac365efe0d9b7243e84cd92ebe0f5f67b8",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_5e94215c1dbd",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "92eab24095ef78aaee0d7ca150b601cae23236093e9335edefb4ee75b0503d98",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_6cc009fe38c1",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "50d1ecab5aa41123313a1d2b3fe9f5552bafb315672617d5adbc7d4ef5b7bce1",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_76e9311a1c2f",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "f78afa1faee3a8951092b5c1d3de52fbf24637433f6166f3c88d8da19cb8656c",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_7a4995c94955",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "3b9181862c24010f367548699f6c8306e58014714a4f57a401b5b6d390f69699",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_85f91d363576",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "37dcca16c586ce2982f69271534fec83a7b0dadbcf90495366ab69a99fb03afb",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_937a8ad2c2ab",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "2224618bf6af2491d51f65e4a8af87c338508d2723d8f38b9af8577d0483252b",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_a5b4a6a66b12",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "c3a260e0db3b1672afd434d6b062eefcb946860987db8967bfe962d7340367cc",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_ab7ecc31386a",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "12d7503ca16eb4b8da625be314af575d869c5d10a7f823788b898ccd4f21f8d1",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_ad6e1c39a1c0",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "955b79953afabb69488bd75619df42e511d3802903317451666f6ae75222ae69",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_b3ca46081e33",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "71a1e59c1a788c8b0dd18fd8816b589e56884b48428dd502de13943078976dab",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_bf9facbb8fbf",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "c3894b0d3fc177f33f00075231f40f69cf80af888444ebf8c20e7f9f05677f59",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_ca60cd9288e0",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "5e10a6013a841422688e7db89a80195ccff7a185d7e8cda981ef491419d08c8f",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "candidate_e72d897df6f0",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "ccec082783f817029bd3475a23c4db03ea3d88e9a55583e8c4283abc4c021026",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "menu_1cfe26d70b23",
+          "phase4_class": "empty_selector_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "671ef98d80093f8b517c6833ad68c86f22c6bab663dd6f76ae1df6e473ca0fc2",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "menu_209c57ddc1ed",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "324c2b3546d2175ae42b7f06415a3af2774d647f8401020943abdeb3816ee708",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "menu_a1ded91f41c8",
+          "phase4_class": "empty_selector_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "6c80ac6205d7be9b3af20548fba2f5420b955d28c297225e1ce643d189d13943",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "menu_bf184857aa12",
+          "phase4_class": "refusal_evidence_recovered_hold",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "9111bfa96591d89f8d37258342f06b79c847d13ecf3d3c910555d9a415ea7599",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryMarketClearing",
+          "phase4_class": "explicit_alias_to_existing_samples",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "d2b09ca64eb4c7ddce5f21b189b902911c23a0d2596ce56f04d6f4999b9eea20",
+          "dispatch_allowed": false
+        },
+        {
+          "dataset": "queryMonthlySystemLoadForecast",
+          "phase4_class": "empty_query_evidence_only",
+          "all_receipt_original_links_unchanged": true,
+          "link_check": "checked_references",
+          "link_set_sha256": "d0b0fa866c64f9f5c414660ccb53a6aec20ba5ce2929fab794ff98730e133e81",
+          "dispatch_allowed": false
+        }
+      ],
+      "boundary_count": 26,
+      "refusal_sources_preserved": 14,
+      "historical_refusals_preserved": 4,
+      "unknown_set_preserved": {
+        "count": 7,
+        "canonical_set_sha256": "e52b31d5c3c9a9b2f521ab6544df2a2b3f3cf1ebf280c7d98a044be1acf6532d",
+        "hashed_examples": [
+          {
+            "legacy_task_key_sha256": "27c03f86d3f72f6f3df710bf2d56e302aa86dd54702ca1298ad0f53579f6a0cb",
+            "states": [
+              "unknown"
+            ],
+            "journal_sha256": [
+              "9704534c15a355fd3705da64361fa72e89e3a42a0786f16da920b8e574320b5d"
+            ],
+            "dispatch_allowed": false
+          },
+          {
+            "legacy_task_key_sha256": "325d1a671892d6ea9445e8b559368a42c02350f83306a876f47a5827e58fde61",
+            "states": [
+              "unknown"
+            ],
+            "journal_sha256": [
+              "9704534c15a355fd3705da64361fa72e89e3a42a0786f16da920b8e574320b5d"
+            ],
+            "dispatch_allowed": false
+          },
+          {
+            "legacy_task_key_sha256": "7fc052697a1220732e20de9c7da3366b0fe0db4c9dea9c3f57e862d19256a723",
+            "states": [
+              "unknown"
+            ],
+            "journal_sha256": [
+              "20566830ae78195f5917758e040bc4940b2e0633c857f00cb152afe43624afce"
+            ],
+            "dispatch_allowed": false
+          },
+          {
+            "legacy_task_key_sha256": "80739674d786b8683a7a621cf0758cc31816949354c4b6136c797a99555f5967",
+            "states": [
+              "unknown"
+            ],
+            "journal_sha256": [
+              "20566830ae78195f5917758e040bc4940b2e0633c857f00cb152afe43624afce"
+            ],
+            "dispatch_allowed": false
+          },
+          {
+            "legacy_task_key_sha256": "a43286cad25d537358f2bce97778e5d1308a1d0078397e258431e3a494f2a1ac",
+            "states": [
+              "unknown"
+            ],
+            "journal_sha256": [
+              "9704534c15a355fd3705da64361fa72e89e3a42a0786f16da920b8e574320b5d"
+            ],
+            "dispatch_allowed": false
+          },
+          {
+            "legacy_task_key_sha256": "cb90c516502db9f4542fba32bbab4123be31874ed8c490bfa33d2e4a93d80fb1",
+            "states": [
+              "unknown"
+            ],
+            "journal_sha256": [
+              "9704534c15a355fd3705da64361fa72e89e3a42a0786f16da920b8e574320b5d"
+            ],
+            "dispatch_allowed": false
+          },
+          {
+            "legacy_task_key_sha256": "d8cadb75507ebe31243e6f46baa455a95b2d8bc6c9aa61d76373917e30fad08f",
+            "states": [
+              "unknown"
+            ],
+            "journal_sha256": [
+              "20566830ae78195f5917758e040bc4940b2e0633c857f00cb152afe43624afce"
+            ],
+            "dispatch_allowed": false
+          }
+        ]
+      },
+      "embedded_empty_selector_does_not_restore_missing_path": true,
+      "new_business_qualifications": 0,
+      "new_consumed_tasks": 0,
+      "qualification_changes": 0
+    }
+  },
+  "input_refs": [
+    {
+      "path": "pmos/evidence/liaoning_phase4_remaining.json",
+      "sha256": "61473f8a198eba8fc87bf54268a3688c657ce97983ec8bac73680196bea61983",
+      "bytes": 126975
+    },
+    {
+      "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+      "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574",
+      "bytes": 112662
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+      "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b",
+      "bytes": 140940
+    },
+    {
+      "path": "pmos/evidence/anhui_phase4_remaining.json",
+      "sha256": "4c77082676f5e69300229f9918a83ed81125428133ecca3c8a430191aedd3b2f",
+      "bytes": 156119
+    },
+    {
+      "path": "anhui/state/server_metric_coverage_inventory.json",
+      "sha256": "ef728af6926601cd3b21e2e93154dd7bb5af21c5c4a8a1a1a9dc6767cd4f4dc6",
+      "bytes": 145098
+    },
+    {
+      "path": "anhui/state/server_all_site_metric_worklist.json",
+      "sha256": "2f42d43a2a1d256909af854e44ebdb5243b010da34c76760d4fb3144217fed94",
+      "bytes": 234635
+    },
+    {
+      "path": "anhui/state/server_portal_metric_worklist.json",
+      "sha256": "a97ea58b2663a3afa5db419a314064fb60ebecf4a41af376cdbc63f24547387b",
+      "bytes": 26726
+    },
+    {
+      "path": "anhui/verification/20261028/pending33_initial_inventory.json",
+      "sha256": "283d63a6d062ff11b963ca5c489cf45735275fcdb047a6bf2a1b4620b0b7a666",
+      "bytes": 68104
+    },
+    {
+      "path": "anhui/verification/20261028/pending33_binding_audit.json",
+      "sha256": "3a66e78e34f6794454e9f0a4a8579418e67693efc93428310b08779d6aef8b37",
+      "bytes": 13148
+    },
+    {
+      "path": "anhui/verification/20261028/pending33_failed_source_audit.json",
+      "sha256": "db97043b64732e1cd783fa9a5e8fff863f915219a6c6887eac77dec77410d29a",
+      "bytes": 95418
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_00e95bccd6caf3b6e175da10.json",
+      "sha256": "0d68a54a34be4c659b5477528a42c60c8547696b7b10a196b6f60923007f8d37",
+      "bytes": 16509
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_01a5559d526622b36cf68e70.json",
+      "sha256": "ecbe3f1433b6a838d125bcedcfdda47baca29d5416e9e69300f3b5e8c479ab10",
+      "bytes": 11419
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_068d17429dac7c6902a1a844.json",
+      "sha256": "f6d9421ba35e90d8f45e66f68762a301ffea13c8261c75175e250335ed04fefa",
+      "bytes": 1933
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_078b3740f9b6e2437fa0e968.json",
+      "sha256": "7feddb1fa48d34b20ac2fffaed0ed2bc4880a2e75b54629b6f83b1937c8e0fee",
+      "bytes": 11854
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_09167360759ddd48ee4b7ae2.json",
+      "sha256": "e1117aeab1e6dc2580e8c784917210d567661ff02abf15ad3a6a278af03dbabe",
+      "bytes": 3677
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_0e2b2adfe8072a6047c2a23b.json",
+      "sha256": "a06e3a6d8b2a472cfe6e6bdeab87ed61ef25fee216e3a18ab186e38c026534ad",
+      "bytes": 3524
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_0f10c2df1a83cec8c73b6526.json",
+      "sha256": "43135b0d9b62e9d04db181d961b37ba69133e40aeac5992c36be62da7947720e",
+      "bytes": 15140
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_1328fc6da41ade15cb7b877b.json",
+      "sha256": "7f8c3fa4e3f53479383cbe13c90587e20a932be1e8bdf13e71b1284947107cba",
+      "bytes": 1452
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_1ae8a696749b93c83487c2b2.json",
+      "sha256": "5301fe2f6aa52c61c27370f5ea922d24457e8d6b50c86176137c734e5b8c1f93",
+      "bytes": 2393
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_201d96949e2df50fd7c6f5e5.json",
+      "sha256": "50dad85d39d787de62d0a928a6b25897c0286fee6dd6019b394ae56b336c7e1a",
+      "bytes": 5414
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_2453a732c6e4c6103fffa8a9.json",
+      "sha256": "7de3f3c449d8e25abcb01a3bdb29f055ead6d17124127270b5d6986529cd121c",
+      "bytes": 16766
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_26d3e5bd2a223f65c3e48e80.json",
+      "sha256": "c97c3895c286c3d725be3028f1f94032ee78d76fc024771a83aa7a418ecf097c",
+      "bytes": 4161
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_29b1d5170313dfd8859018d3.json",
+      "sha256": "90f77c2577c0562efc01d151c654c28fdfea35745738f9932251ba6a932c4d1e",
+      "bytes": 12494
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_29d58754c80c02385001f5d2.json",
+      "sha256": "d2d3f943336ea265699d659610c9ca46a761b7594ec47a8982eb7b05af43baed",
+      "bytes": 11844
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_2bdb4ddf017367437dc3566f.json",
+      "sha256": "e1b97a6da0bbdbe91c04286e797ad10330ad5167868fb56af237b9096ff047b2",
+      "bytes": 1616
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_2e22a2073f31c2f05d1ac79d.json",
+      "sha256": "205b381deb447747237febe36dbb9142370ad081a7e69496c4c536c8d7f0d21d",
+      "bytes": 16773
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_2e8f5c2c7b88836fb0ac7326.json",
+      "sha256": "8c242d92a94412e3c97f3fcd5f91be4dda377bba9634f4d3fe1b7361df292c57",
+      "bytes": 1372
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_3518c117bd55d5bce2a9cfd6.json",
+      "sha256": "73972144dfd32eb4cf87bafc890cab1ee0daa421f0a28254e7be9a302c355da6",
+      "bytes": 4104
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_3568f76bdabd58425a08ef76.json",
+      "sha256": "0a3af0ee89229b559a914c16ceac99b0623bb61e31affb4145b1e7b19214a25f",
+      "bytes": 5507
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_3644f574f5ec8e167abe2ef7.json",
+      "sha256": "f8d9d5daf4863e10e912b818288bc9fb5562961d8af1202027fa457890ff7b1e",
+      "bytes": 16933
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_369d791d3283aa6e4bf6c08f.json",
+      "sha256": "58376195010ecce6bab2d1fded3e710c5a6da035f884f1a7f7529d3e70aa6bd5",
+      "bytes": 4133
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_3a2220db22b5bd1e9d2ab622.json",
+      "sha256": "8c4f00d0438e037bdbaf360dcb88a79a5e8808a04808e444c9125044663400f3",
+      "bytes": 3029
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_3b829e9bdba0a3605c263247.json",
+      "sha256": "70308ae0dd61afda539de8f34dbf6df49aabea070f348bd66e26f6b9388c6d71",
+      "bytes": 1449
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_3e25e72e8118b94a51c7c98d.json",
+      "sha256": "f91a525473ddefec780a0f3a792f019ee2c93e1d81cd10a38613e4d8b1403d46",
+      "bytes": 17358
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_41248ee90a366fa57673ee56.json",
+      "sha256": "c985f6d6292114c60c31ca53c8afee8acdd9dc09e63b4966f3d67302ed304acf",
+      "bytes": 16607
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_49bfa03404dae1c19193a81b.json",
+      "sha256": "53d59a1a658f5f4b2ed8b4d0655117bb8c1cbd8f4bafb6f55449c8f4a542c2a7",
+      "bytes": 11643
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_49e14ddf76334b258b1e0a56.json",
+      "sha256": "a6eb96abaa859ca81155a23dc9106f1531ea7c83b7c0c4d12873c5da40b4b500",
+      "bytes": 5015
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_49e2e1bff5a10321466ee1fb.json",
+      "sha256": "f782ff18da482328f255c26ad2d16cf535fa589bfd3a5375e474b0cef78ec900",
+      "bytes": 1383
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_4bdc14d5eb1f86f2acffb038.json",
+      "sha256": "c7ab6f127a1770474fb22c3a7002d12af6ac33ebe76156ecda8b382dec1318b3",
+      "bytes": 1926
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_4e4cdd77a12901329e9f9c12.json",
+      "sha256": "4a5a5ce3e8fbcc9e4e5f826fd870da9f26c74531cefa7b3daba2e3a7ad953eaa",
+      "bytes": 16781
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_59c54c947e29ae9d24361357.json",
+      "sha256": "abc5275a23e5abac62b5f6053934d33f847399647b4f4e55e4d14e1fbae0d819",
+      "bytes": 15507
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_5fe975d7fe8b83cb86752ee1.json",
+      "sha256": "0b3f09070485925c8b1ab87b57a5735d7f213eca8e943d1d6a0c4eb7905e3166",
+      "bytes": 12223
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_67afa754a9c5231baee2a35c.json",
+      "sha256": "8df5ccc56666c1323a8e6c0f08da307b8bee2833f2635d4522c2876de310a7f4",
+      "bytes": 11829
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_67b068a854f2dc615dc00a63.json",
+      "sha256": "cda75ec9c80278e14cae32bc8f1d580e06dd42b984c3ca79e790d1171fb4f21a",
+      "bytes": 1928
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_6c2c991ebd305527a0728d00.json",
+      "sha256": "21c99b424792cba291a8fe1fc3e7fd7d8695667c393a5b607f8a1933e328e1c2",
+      "bytes": 23377
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_6cbe398bced11e4b4d92d1eb.json",
+      "sha256": "a4d903a834481c481063b4a9ccbe9b8bd9615ec1e794f1f8d684b4ca9333fb39",
+      "bytes": 1572
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_71fd9e5a495082ed45d17cf5.json",
+      "sha256": "65cc35f552385772997da1f3bf4d1c7828a1004ff0811f8f2893ac2b67481583",
+      "bytes": 1929
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_72e5b3afdccac426f9c58423.json",
+      "sha256": "3804d44e83f8a20f03f03aa2f566253ec315e283e2d5ded0adf61ef16d2af68c",
+      "bytes": 1929
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_78f932e4c217327be147be52.json",
+      "sha256": "446036200d6af0949a94a7ee9af3fdb1dfecb52cc27f3dad719aa05924f2c1e8",
+      "bytes": 16449
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_792bbe5a8e0b18d285343a5a.json",
+      "sha256": "b687beafc1d156dfd53cf3f565b7458de2616c228987342e9f1ea6775f7a20df",
+      "bytes": 1452
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_7994831212ae6de7c62296d3.json",
+      "sha256": "78062457717f98ea33c741ab2bf6d58a9a5a88cea395c7a012b33d53e43a169c",
+      "bytes": 15917
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_7c1c50c070268e2ee8b04724.json",
+      "sha256": "9b66357f3f1f8dd72afd80c33b4cec6d8a7f81a5a04dd40688cbf79ca48ab99c",
+      "bytes": 12485
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_7d807688d416f127777162df.json",
+      "sha256": "1ca47890bfc96149d52bc0a4cfd9725215ea93f8e3c37ebbaf461445721f194e",
+      "bytes": 3056
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_840726cb439d8c13bad38b34.json",
+      "sha256": "fbe2f68900fbf493831a441fcfe3722ac3cc8686c60f76f9f8ae096eb05a47c5",
+      "bytes": 1435
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_85e9586684a26770118a8928.json",
+      "sha256": "cd7bc61cd3a7735daf303c207f311d098c017263ee4c948d4bd245805f7fd0c2",
+      "bytes": 2066
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_8a4473f26b8e311dd5568a45.json",
+      "sha256": "c1b24cf36dc0fd703a0915e86c54772250479d5e7a27377bf6b5ab6b6074eb11",
+      "bytes": 1888
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_8a636c00bad216a2f12f1874.json",
+      "sha256": "35db245085fa940d061c028d4472414d59594fb73bd5026c3e3e1f81c28e4908",
+      "bytes": 1290
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_8b41a1c1e886d90a386e9a46.json",
+      "sha256": "8f8407caeb54b38f1b3e04032936175d3047a776d7a54c0dd7b2d8a38771a14c",
+      "bytes": 16880
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_8be537673bb188948a6457bd.json",
+      "sha256": "03f7c3175b7eebcb97045a12a8cac37b1503f7e76ba1cfa770b6e425fd5a960b",
+      "bytes": 16852
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_9203b6f54dc8a786d3c1d595.json",
+      "sha256": "afde33e6397e382f68dccfe41b00e59d8f096b6c073e448850a3afb9f808fd77",
+      "bytes": 2378
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_92b2363dcfe7624445478699.json",
+      "sha256": "f017066e5f599f94851c6ba723e7f95b68c479543d437d54b6a01321d4562fd5",
+      "bytes": 16811
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_92cb61df994dced49aab11ff.json",
+      "sha256": "a7109f69a9e58955c6f4405d29938cf6b4a21516903c6f1f107e77a2795ac08c",
+      "bytes": 11491
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_92e9b6392a3acde2f207a195.json",
+      "sha256": "2ab3c0da615b13dcef1dc12589d715d5eeb94cc5b4e3fdfa602096cfe3c4da89",
+      "bytes": 4131
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_95cea51302326befe4964a6a.json",
+      "sha256": "fee646ecae09dcea0afa97f0c5d4ba5daec972ffa089db39e7f40bcd3bc2c6fa",
+      "bytes": 5065
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_96551df50481bf2e9cfd528e.json",
+      "sha256": "733c4c8b5a9d4ccf9482e2cd75ae9715950dc8d67689100afe152ae390bd51dc",
+      "bytes": 5374
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_977480c4b999eb7d32f513cc.json",
+      "sha256": "26cff670e69f285cc3f3b5adaacc74bc9415ad4487e4b1a13146b26924e4a3e9",
+      "bytes": 16879
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_9d4e06c9e2cbc35a0a394f6e.json",
+      "sha256": "58b4b47c713fcfbccb521c9c3aa866361a3e535fc95eb43a8fd199b4dc454fcb",
+      "bytes": 1930
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_9f994e2fc22e06a1e23f0d89.json",
+      "sha256": "454bf6b96a6573682bfd4fdaea9d5212eadfdcaeeb012513be9c24215e0cd38d",
+      "bytes": 16970
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_9fbd9994acf49876907c602b.json",
+      "sha256": "136f80ac3338bd435e659070b1b7bb167a1413d68f8e2253ee8739457077564b",
+      "bytes": 1619
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_a1abb04e54e3ea63a4ffbba6.json",
+      "sha256": "d9d0720920900376daa9fda2755185ace3f094b676e69a5b6e0921c4eff36b0c",
+      "bytes": 1450
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_a4b49d10b1983ac437467e60.json",
+      "sha256": "2033e1d182befcd6738e460b113d5cf0445264114b4a0a51782d3915ac9e7a3b",
+      "bytes": 12247
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_a99f385c7e5895be9e9fc66c.json",
+      "sha256": "871efc7fac1b1f5b24e3d110f0f731528ccff6fbceba3c331618a81f889aa031",
+      "bytes": 3652
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_aaf9975d165358d1686eaf51.json",
+      "sha256": "7329769e0917adb9e2cc452afe7bc2a7227b0c73cd4628c4c09a50b9a9e9ee75",
+      "bytes": 16729
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_ada0edf0ea6812816657f16d.json",
+      "sha256": "036befb0399c4c2186b696e665e850ab5f75cd3568569e6f05949f50e5be9641",
+      "bytes": 1921
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_afcc56ce7f44d547983979f0.json",
+      "sha256": "c23f85f0cde576f250f3c1404bf457c7a87a6b886a95e22ef0d4df4694d4460f",
+      "bytes": 5420
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_b09a9411524644878c4c5e13.json",
+      "sha256": "674cd6102d4660047ebda44b949370740e2a7d44062d9f43064c3c5dfb6be731",
+      "bytes": 1358
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_b0c760788839714aa1777ce6.json",
+      "sha256": "ef5d12b709c3e3f4fe61902429d59a881b4aac5f8092ea1bd922d1ca3a611ce7",
+      "bytes": 14811
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_b2c9beab0ef8da7108161e6c.json",
+      "sha256": "3d5cf1ab44e0d63ebfedecdd0e85f75882d28c3cf0c70f213eac6c0fae6d774a",
+      "bytes": 3030
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_b71d19675339a5c4056b89b4.json",
+      "sha256": "1710191bba3247bfb934f3b4cdb6791852d22aeb8218781ecd66b0dd279d8266",
+      "bytes": 16874
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_b78eef59463edd0bf8f2a86b.json",
+      "sha256": "0d3db902b3ff4052abe470fcfdc92f16872c9a8cfd39e8292c2e4239af40bed9",
+      "bytes": 15892
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_b96ef3530f257d6e61446394.json",
+      "sha256": "6db4b883496893fc22d412a5e084953e4b7bbf937937a31113d2d35581996719",
+      "bytes": 1969
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_ba07f3b8fec8dd126ce40b24.json",
+      "sha256": "18f00224463d69c38a233b817094559b7ada8855c656c900565da58a43aeafeb",
+      "bytes": 17018
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_ba856a0e17094fe17c729ed6.json",
+      "sha256": "df096b79608ef40baa6a147f89c9d2d80e17532876a544cb8cf5cc4d1fcf88f1",
+      "bytes": 1553
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_c53403b7a01ccf3f28991abb.json",
+      "sha256": "6022f0b1002c0110fff01c82f793b2cf960dbfda3a451affd8077ad543626e28",
+      "bytes": 1451
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_c5a8490644d4b8f74d2d502e.json",
+      "sha256": "4912237b542866bff063450bd66684fdad0334bfd10441864812e932b799c25e",
+      "bytes": 2030
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_ca372d45404fbfd9deea6aee.json",
+      "sha256": "c806207db64eb1cfe0145e71e33db2ce91218edfc236de79cc5fbcc29414f7cc",
+      "bytes": 1666
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_ca655be314722f8d7f2abbe1.json",
+      "sha256": "32921e1aae97f20c40fecd7c2d26318317a27b40549d2867430174b608d400a9",
+      "bytes": 1929
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_cbcd298d12b219984d39a94d.json",
+      "sha256": "bef1b4538badbf95bb9223585a86aaf76116026c8c0b0b9533f916e04066fe29",
+      "bytes": 1929
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_d16f44afbc35e5055b5a7665.json",
+      "sha256": "106795abfa37c3aac6860fe3d919cb8ae40399a6b0da6d32d84e5f682ba93a30",
+      "bytes": 1984
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_d2b99b0c357f452136a3c3bc.json",
+      "sha256": "d2f1f696ca75a01d3b2dfd021a061009df3851ebe193ab2e7e53a46ebd107afb",
+      "bytes": 14790
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_d37b8b961d22737413e9b2af.json",
+      "sha256": "6fb27ae05e3997f99ef7324d630d742320cf5c49fbf2ea6afb5393f36a5804c7",
+      "bytes": 5217
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_d380d21b05d35e829b735e7d.json",
+      "sha256": "27ca75776f77faf4f61c0755291c3b6eeb8b2e37ce7b925207d9908946aa6752",
+      "bytes": 5451
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_d808474453f648ea7a011457.json",
+      "sha256": "516864d5143a7bfa2d8eff509a2b5b25e6abe1c6a065d212107f77a29cc7afd7",
+      "bytes": 11864
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_dba626b978f9b2710b77af0e.json",
+      "sha256": "c80adf2ccd8eb4f8aff75377127eda836a80b03f9b212f8d9d2d344e31fdfb7b",
+      "bytes": 16790
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_e060c4221ac2e9404d788a6a.json",
+      "sha256": "f4a10dd87b9919957f9298580f303ce171a224291ffeb08e43a7e86f24b37b65",
+      "bytes": 16885
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_e4a8462b2976c8d201f09f03.json",
+      "sha256": "230a2e595eabc35308c7718bad06684e1488e83b2676fec442a943a522723e98",
+      "bytes": 1930
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_e4e8b8b5083feb0b191d9e7b.json",
+      "sha256": "fb178ae28870cd4f5ac7a94a46552d044851ee75a441f29ea3ccfa79ed65c180",
+      "bytes": 11714
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_e6df624f1e21adeb41742122.json",
+      "sha256": "2f2d25c9cf969de0f3fc600d138302858ce929aefa981ea3e4842ba5a42997cd",
+      "bytes": 1847
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_edcaf9ab61b2502036363aec.json",
+      "sha256": "2f299ba850d546032a20033d5d213398afc838daef610c5f3b538619df729bf3",
+      "bytes": 2145
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_ee644577dfe97ad91425fa3d.json",
+      "sha256": "4d553003af0c53147dacfa81ce3eeed24a322fd3b9c325a8294675225dcc2f77",
+      "bytes": 17241
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_f117d6037cf79f5ae8f25985.json",
+      "sha256": "f2322d1665485b49045b0027c019b7c366b47746f49006d8a1886b21d08f7490",
+      "bytes": 23199
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_f23530ee30900252e3fac72f.json",
+      "sha256": "975204fda299352ca46c839918582471ca4e138254fd2ec8e81bce94319b6930",
+      "bytes": 1784
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_f3752ab1479541343cd72e40.json",
+      "sha256": "c93b3fea665498eee12725a68cd15bae1a7916dfe25f3d6c1f361e6d3c63cc09",
+      "bytes": 11852
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_f3fc5090dcdbecf6fdaf4ba2.json",
+      "sha256": "b45446a00d8edf17e5ce596128feaea3a80a05321d9eb828ce7bb21bd8eb278b",
+      "bytes": 4100
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_f637363d35a594cd09d4759c.json",
+      "sha256": "272ea6eb29870a25e110d0e74e768f6d01e6a0202f9c09cb6784de2a7cc9827d",
+      "bytes": 1779
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_f6b0929064a5614b65a7b263.json",
+      "sha256": "3688e9f6dd184147d4811624c128856898b1fb94e0c4469130b9d800dbccc613",
+      "bytes": 1929
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_f9c48c0b3e1b4605b36ce6b1.json",
+      "sha256": "a1b3cda0819dd2845edc447257657801f86b4662b6d180d9da47f91e7df3795a",
+      "bytes": 1909
+    },
+    {
+      "path": "anhui/state/server_native_table_binding_fa5ed52f772238ed8844c6f2.json",
+      "sha256": "53efece500f9ea877430a0de51dccf63e3e2225992bac0c8538aa0bc68271a08",
+      "bytes": 16835
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase4_remaining.json",
+      "sha256": "58fc52552b4f54027331f977a10d397f3dad2e9f3fcdd513b84568d13b77d350",
+      "bytes": 82403
+    },
+    {
+      "path": "shanxi/dataset_catalog.json",
+      "sha256": "be0bbf444c1fc9e59f4c2eac436df0650a14d6abc64b67d0c73ff05ebd359077",
+      "bytes": 931731
+    },
+    {
+      "path": "shanxi/verification/20261027/disclosure_timing/findings.json",
+      "sha256": "96e3a6a832eaa1049ef6497e4705bec99b4e3ae40524e2fbad52d34cdf9b80ee",
+      "bytes": 1275255
+    },
+    {
+      "path": "shanxi/verification/20261019/channel_forecast_empty_selector_evidence.json",
+      "sha256": "25b0d514df3825eb758dc543d274d1d5fb4874757b1c26c13f9452a1b4f2a7f8",
+      "bytes": 1145
+    },
+    {
+      "path": "shanxi/verification/20261019/discovered_special_form_review.json",
+      "sha256": "34fa43b1a08a67b2743066d8be554f3f8346cee6b12f3b07f1426f9957d74a92",
+      "bytes": 3419
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_01fb2579a9db_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/verification/20261021/plain_empty_refresh/runtime_latest.json",
+      "sha256": "fce115cf954468104502750ec983960a3db77c3104765814a617828a9aa0a513",
+      "bytes": 35876
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_01fb2579a9db_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_02b740ef90f6_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_1776ea3a8096_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_1776ea3a8096_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_1af50fb3899b_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_2176e2ac2f18_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_2176e2ac2f18_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_434babd21d13_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_434babd21d13_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_53fac98e8404_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_53fac98e8404_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_5e94215c1dbd_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_5e94215c1dbd_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_6cc009fe38c1_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_6cc009fe38c1_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_76e9311a1c2f_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_76e9311a1c2f_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_7a4995c94955_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_85f91d363576_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_937a8ad2c2ab_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_a5b4a6a66b12_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_ab7ecc31386a_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_ad6e1c39a1c0_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_ad6e1c39a1c0_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_b3ca46081e33_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_bf9facbb8fbf_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_bf9facbb8fbf_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_ca60cd9288e0_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_ca60cd9288e0_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/inspection/alt_candidate_e72d897df6f0_query_20261020/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/review_empty_current_role_20261021/candidate_e72d897df6f0_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/verification/20261021/native_section_scope/runtime_latest.json",
+      "sha256": "92c78402ece62405aeeeeb1f5af23fc58636b0b5cb50396f1d7a37948dee043b",
+      "bytes": 6851
+    },
+    {
+      "path": "shanxi/state/review_native_section_scope_20261021/menu_1cfe26d70b23_ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755.json",
+      "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755",
+      "bytes": 42
+    },
+    {
+      "path": "shanxi/verification/20261021/menu_native_scope_refresh/evidence_sync_review.json",
+      "sha256": "15d6ee8404ef00e63ebf8e4557a0d4a549b1fb3987dc462dbe4c4ba0bbbdfe3f",
+      "bytes": 6509
+    },
+    {
+      "path": "shanxi/state/review_menu_native_scope_20261021/menu_209c57ddc1ed_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/state/review_native_section_scope_20261021/menu_a1ded91f41c8_ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755.json",
+      "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755",
+      "bytes": 42
+    },
+    {
+      "path": "shanxi/state/review_menu_native_scope_20261021/menu_bf184857aa12_f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786",
+      "bytes": 101
+    },
+    {
+      "path": "shanxi/verification/20261013/additional_three_samples_snapshot.json",
+      "sha256": "e947c150c4e05fe180e00be78b59c5e0fe6228c67a548fdfe908bfb138512b7b",
+      "bytes": 10725
+    },
+    {
+      "path": "shanxi/state/inspection/extra_month_query_1438/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    },
+    {
+      "path": "shanxi/state/inspection/extra_month_oct_query_1446/2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f.json",
+      "sha256": "2bb9384428190efed5ca22bdc224528ce1fc5384c6f586706857407b09039f5f",
+      "bytes": 319
+    }
+  ],
+  "active_sqlite_connections": 0,
+  "production_writes": 0,
+  "website_requests": 0,
+  "dispatch_allowed": false,
+  "limitations": [
+    "Fixed phase-four cohorts are comparison units, not current production totals.",
+    "Original, typed alias, empty response, refusal, metadata and missing-path evidence remain separate.",
+    "Newly retained local evidence never establishes historical consumption or clears any refusal/unknown.",
+    "Same titles or same empty bytes never establish source identity.",
+    "No full sample replay, archive extraction, database connection, browser or network operation is performed."
+  ]
+}
