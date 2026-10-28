@@ -60,6 +60,30 @@ class RecoveryToolTests(unittest.TestCase):
         self.assertEqual(list(report["summaries"]), ["liaoning_monday", "liaoning", "anhui", "shanxi"])
         self.assertEqual(report["stage"], "remaining")
 
+    def test_bridges_stage_checks_fixed_cohorts_then_one_followup(self):
+        received = []
+        def module(name):
+            def recover(root, **options):
+                received.append((name, options))
+                return {"summary": {"module": name}, "website_requests": 0}
+            return SimpleNamespace(recover=recover)
+        with patch.object(TOOL.importlib, "import_module", side_effect=module), patch.object(TOOL.sys, "stdout", io.StringIO()):
+            self.assertEqual(TOOL.main(["all", "--stage", "bridges"]), 0)
+        self.assertEqual([name for name, _ in received], ["pmos.recovery.monday", "pmos.recovery.liaoning_bridges",
+            "pmos.recovery.anhui_bridges", "pmos.recovery.evidence_followup"])
+        self.assertEqual(received[-1][1], {"provinces": ["liaoning", "anhui", "shanxi"]})
+
+    def test_single_province_followup_does_not_expand_selection(self):
+        received = []
+        def module(name):
+            def recover(root, **options):
+                received.append((name, options))
+                return {"summary": {"scope": "fixture"}}
+            return SimpleNamespace(recover=recover)
+        with patch.object(TOOL.importlib, "import_module", side_effect=module), patch.object(TOOL.sys, "stdout", io.StringIO()):
+            TOOL.main(["shanxi", "--stage", "bridges"])
+        self.assertEqual(received, [("pmos.recovery.evidence_followup", {"provinces": ["shanxi"]})])
+
 
 if __name__ == "__main__":
     unittest.main()

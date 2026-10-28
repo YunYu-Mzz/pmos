@@ -48,8 +48,8 @@ def output_directory(project, requested):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Only read existing province evidence; no browser/network/worker")
     parser.add_argument("province", choices=["liaoning", "anhui", "shanxi", "all"])
-    parser.add_argument("--stage", choices=["retained", "remaining"], default="retained",
-                        help="remaining checks the saved unresolved cohort; Liaoning verifies Monday identities first")
+    parser.add_argument("--stage", choices=["retained", "remaining", "bridges"], default="retained",
+                        help="bridges checks the phase-four unresolved cohort, then follows existing evidence; no requests")
     parser.add_argument("--workspace", type=Path, default=PROJECT.parent)
     parser.add_argument("--output-dir", type=Path)
     args = parser.parse_args(argv)
@@ -59,14 +59,21 @@ def main(argv=None):
     provinces = ["liaoning", "anhui", "shanxi"] if args.province == "all" else [args.province]
     reports = {}
     for province in provinces:
-        if args.stage == "remaining" and province == "liaoning":
+        if args.stage == "bridges" and province == "shanxi":
+            continue  # Covered once by the selected-province evidence follow-up.
+        if args.stage in {"remaining", "bridges"} and province == "liaoning":
             monday = importlib.import_module("pmos.recovery.monday").recover(args.workspace / province)
             validate_report(monday)
             reports["liaoning_monday"] = monday
-        module = importlib.import_module("pmos.recovery." + province + ("_remaining" if args.stage == "remaining" else ""))
+        suffix = {"retained": "", "remaining": "_remaining", "bridges": "_bridges"}[args.stage]
+        module = importlib.import_module("pmos.recovery." + province + suffix)
         result = module.recover(args.workspace / province)
         validate_report(result)
         reports[province] = result
+    if args.stage == "bridges":
+        result = importlib.import_module("pmos.recovery.evidence_followup").recover(args.workspace, provinces=provinces)
+        validate_report(result)
+        reports["evidence_followup"] = result
     if directory:
         directory.mkdir(parents=True)
         for province, report in reports.items():
