@@ -1,0 +1,2503 @@
+{
+  "schema": "pmos-liaoning-phase4-remaining-v1",
+  "province": "liaoning",
+  "mode": "read_only_frozen_phase3_remainder",
+  "phase3_ref": {
+    "path": "pmos/evidence/liaoning_phase3_recovery.json",
+    "sha256": "433ec2090a1741bda88534b12212db0f89d79f065831b1485aa0c61bef0c5eaf"
+  },
+  "website_requests": 0,
+  "production_writes": 0,
+  "active_sqlite_connections": 0,
+  "archive_members_extracted": 0,
+  "dispatch_allowed": false,
+  "source_evidence": {
+    "phase3_remaining_cohort": 51,
+    "source_own_originals_recovered": 0,
+    "exact_same_request_alias_target_chains": 17,
+    "still_without_exact_own_or_alias_chain": 34,
+    "source_directories_still_without_own_originals": 51,
+    "not_new_independent_originals_or_metrics": true,
+    "records": [
+      {
+        "dataset": "sitewide_04b5500fb8e7813c",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "known_empty_no_retry",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_055496fd163e494f",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_0d403bf7ad7c6ce9",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_106d02ecece07f2f",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_150e628bb9f9b03a",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/nuclear_total/2026-10-27/9dc0e5e4d73d1fa7049460a614a16f5856ab3573c97dff9a1dc11013d9e4daca/metadata.json",
+              "sha256": "1ac0f240bf6581291c199eeaaedc26875461eb8fa7eb38c6f18cbbf85a8734ba"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/nuclear_total/2026-10-27/9dc0e5e4d73d1fa7049460a614a16f5856ab3573c97dff9a1dc11013d9e4daca/response.json",
+              "sha256": "9dc0e5e4d73d1fa7049460a614a16f5856ab3573c97dff9a1dc11013d9e4daca"
+            },
+            "query_identity_sha256": "c42ec67b26003d990efafaef76ebf546876690baa7f89a63a9e15d86f3108f64",
+            "contract_sha256": "44b98f2584b7477ea58fcd768dfbf4a7ec4904b0a11f07b3a5baf018c4dad2e8",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_150e628bb9f9b03a",
+          "target_dataset": "nuclear_total",
+          "native_report_number": "021",
+          "native_endpoint_sha256": "ff517eef0b521c7702f6200dac2b5c285d0976bc2c669af2448aefa6bc7a1e0e",
+          "native_binding_sha256": "3871bded5594654d27ff16f94821e9cc597cf693700b1be580374fe5f65dc887"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_15eb4fa6873fb948",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_schedule/2026-10-27/92e3eb8400fcda12975d2eab09124036c4c20a0c4d1ce4eff5e7a597c3b94736/metadata.json",
+              "sha256": "e952818917c1c526f20320dff0a541a4d9e9d582fe294831bffb3d772576c9b5"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_schedule/2026-10-27/92e3eb8400fcda12975d2eab09124036c4c20a0c4d1ce4eff5e7a597c3b94736/response.json",
+              "sha256": "92e3eb8400fcda12975d2eab09124036c4c20a0c4d1ce4eff5e7a597c3b94736"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "1f2cf9141308c66e7ed8d146d096772fc888f9eb943d3f6b5af07dbd4628ccb7",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_15eb4fa6873fb948",
+          "target_dataset": "tie_line_schedule",
+          "native_report_number": "062",
+          "native_endpoint_sha256": "156d471b71cc7f6a7711d39386e9e5bb4b778bcc0236f34d62429efdc5bbcb44",
+          "native_binding_sha256": "f16a9dfbb40376b269120e71b3f98b873e8a6b6e2608b269dcd646c77ec3cbed"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_26331a9ba8bea737",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_29c2411e94c469d0",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_dayahead/2026-10-27/c2ae14e8f0f4c996ee862b0cd99c83dea820158cd8de5d8008e7ece9404135ef/metadata.json",
+              "sha256": "dd6ec80912f5a75b73fcd94338e44f6d7b19f70a8c585a6a2b0bcee573414059"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_dayahead/2026-10-27/c2ae14e8f0f4c996ee862b0cd99c83dea820158cd8de5d8008e7ece9404135ef/response.json",
+              "sha256": "c2ae14e8f0f4c996ee862b0cd99c83dea820158cd8de5d8008e7ece9404135ef"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "e8ec3d59324a03f3e0f74d298a5b5e342d1da4f91cf98f138153afa0970dbdef",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_29c2411e94c469d0",
+          "target_dataset": "tie_line_dayahead",
+          "native_report_number": "008",
+          "native_endpoint_sha256": "d52b671571446a0d9ffef620334b39dce92e66c1237d89d066ef35bce343fbec",
+          "native_binding_sha256": "b030dff356d87cbde964aae0b9e31f381c3ed74150d72ab53d629c0c6cfb0af3"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_2c25420ab856210f",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_request_alias",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_80ece90b472eddab/2026-08-15/4a7242b495f81d368966550d9116908dd48b300e968f1b6587fcdd8cd061a7d2/ba376d6cfdb4882212044ec8821d6fc4147b6d9c7892c898acf808a26c82b670/metadata.json",
+              "sha256": "be3f709dc0b815dc0b812ef58b05621106cf21ca049a9b931d8d9928d2360f99"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_80ece90b472eddab/2026-08-15/4a7242b495f81d368966550d9116908dd48b300e968f1b6587fcdd8cd061a7d2/ba376d6cfdb4882212044ec8821d6fc4147b6d9c7892c898acf808a26c82b670/response.json",
+              "sha256": "ba376d6cfdb4882212044ec8821d6fc4147b6d9c7892c898acf808a26c82b670"
+            },
+            "query_identity_sha256": "4a7242b495f81d368966550d9116908dd48b300e968f1b6587fcdd8cd061a7d2",
+            "contract_sha256": "5083860972b0801b5583c8f50535fcf64847057ba208a3208f9cbf3456462fd0",
+            "replay_status": "sample_only_passed",
+            "row_count": 2,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_2c25420ab856210f",
+          "target_dataset": "sitewide_80ece90b472eddab",
+          "native_report_number": "031",
+          "native_endpoint_sha256": "ef4221c0bdf3339c0573b46db36037792c8338acad45e3b3aa2252c795da2349",
+          "native_binding_sha256": "66fc7f15a3845ded07e27f14f310e7066be11386576ad757d29adcb609824d7d"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_31308b59070354ef",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_3356cf7fb2c14651",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generation_total_forecast/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+              "sha256": "c3183e13f2d5af96eaaade6cea4dbd7f9571423a1e12a23cfe24ef4c679136f8"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generation_total_forecast/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+              "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "27735296112c1888cdaa6473de79ab916f6ed0d756baf94385d458ef67fd86b9",
+            "replay_status": "sample_only_passed",
+            "row_count": 0,
+            "empty": true,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_3356cf7fb2c14651",
+          "target_dataset": "generation_total_forecast",
+          "native_report_number": "034",
+          "native_endpoint_sha256": "4e2650e23d1db3aa670a9eaa252286bdf91d496fb2b15f33f80b6da29d7ea565",
+          "native_binding_sha256": "33415dceb4b938f1fcdedb392c2c97c38f9f946b9fbf19995b652fa69055be4f"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_3b8e6b1c672f10d0",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/hydro_daily/2026-10-27/1f1263dee069ac4935c813316bcaa28a8546a69480e4c1736c9ebb7a096657d8/metadata.json",
+              "sha256": "23f2dcdfbe49310cb8281b514a649c511331b164ea1791292a47aca866f5e43c"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/hydro_daily/2026-10-27/1f1263dee069ac4935c813316bcaa28a8546a69480e4c1736c9ebb7a096657d8/response.json",
+              "sha256": "1f1263dee069ac4935c813316bcaa28a8546a69480e4c1736c9ebb7a096657d8"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "1f2cf9141308c66e7ed8d146d096772fc888f9eb943d3f6b5af07dbd4628ccb7",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_3b8e6b1c672f10d0",
+          "target_dataset": "hydro_daily",
+          "native_report_number": "070",
+          "native_endpoint_sha256": "1d72022e0c7093869d8803345d50221720224833a799f4d16743cc5a290a1720",
+          "native_binding_sha256": "96f3f82fd6295c577f3abd73c2ece0a3d66e02fb593300ce7a17bc27215e61b6"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_3ebbdf40ca6ec2b1",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "excluded_prior_decision",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_481d223eb622ae1f",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_49aa17d82da46bfb",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "excluded_prior_decision",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_4c35e252e0770c53",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/dayahead_power_and_average_price/2026-09-17/f962b37d4510ccef291da8a960eaf7a98eb0410be2a3c3015400768f5a5b5ef8/e93debb82740dbe299ca1b9630d72ddd4498b6b38c79d7c72a85572fddedb0fc/metadata.json",
+              "sha256": "5cc5a061182af770df32385e5a60174a4db291968d6cb15b2cc82557b718f0dc"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/dayahead_power_and_average_price/2026-09-17/f962b37d4510ccef291da8a960eaf7a98eb0410be2a3c3015400768f5a5b5ef8/e93debb82740dbe299ca1b9630d72ddd4498b6b38c79d7c72a85572fddedb0fc/response.json",
+              "sha256": "e93debb82740dbe299ca1b9630d72ddd4498b6b38c79d7c72a85572fddedb0fc"
+            },
+            "query_identity_sha256": "f962b37d4510ccef291da8a960eaf7a98eb0410be2a3c3015400768f5a5b5ef8",
+            "contract_sha256": "44b98f2584b7477ea58fcd768dfbf4a7ec4904b0a11f07b3a5baf018c4dad2e8",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_4c35e252e0770c53",
+          "target_dataset": "dayahead_power_and_average_price",
+          "native_report_number": "012",
+          "native_endpoint_sha256": "a3ec8c26c3744773f37efb4569dac453862d0036f880574fa062c199a2e28e5a",
+          "native_binding_sha256": "71a19b456cc8bcead4c3bdd5849c474f549c8877bea838a586dbe391253d50de"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_5160397d5d7e23c5",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+              "sha256": "58df47b5765cf6c42a871c8084f0458545e9cf005fe92270207e03862074455d"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+              "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "27735296112c1888cdaa6473de79ab916f6ed0d756baf94385d458ef67fd86b9",
+            "replay_status": "sample_only_passed",
+            "row_count": 0,
+            "empty": true,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_5160397d5d7e23c5",
+          "target_dataset": "distributed_solar_actual",
+          "native_report_number": "037",
+          "native_endpoint_sha256": "bb980e1eeea10e2ec042393abd8f174a6fa5120bb6824a648a3eeecc47003095",
+          "native_binding_sha256": "f589a9b1ace4ce484a7ca1c2f2fc5d82dc41b0343fd64821ac8755b43a0dbf93"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_546644ece23fec6a",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "excluded_prior_decision",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_5878dbf34cf4177a",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "excluded_prior_decision",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_6108804d03af448c",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generator_maintenance_capacity/2026-10-27/33ef0f9625070596e949317eaeeec64bde396504b3c607aca15a7e3e2784001f/metadata.json",
+              "sha256": "fb2882f58a74c034c8be802cf3264dbb5e4a95a5cf02d26fd90c3925de778b05"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generator_maintenance_capacity/2026-10-27/33ef0f9625070596e949317eaeeec64bde396504b3c607aca15a7e3e2784001f/response.json",
+              "sha256": "33ef0f9625070596e949317eaeeec64bde396504b3c607aca15a7e3e2784001f"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "1f2cf9141308c66e7ed8d146d096772fc888f9eb943d3f6b5af07dbd4628ccb7",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_6108804d03af448c",
+          "target_dataset": "generator_maintenance_capacity",
+          "native_report_number": "040",
+          "native_endpoint_sha256": "3296d85241fae5b8989199ff7a2a12c9ef1f22542ce94fc75c0c00a64e9053e5",
+          "native_binding_sha256": "671e47712760e0d39abed8472a066f47f5e5f5f8d50c14776fa40ff81fe5dc24"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_676f39b53210a68b",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_6c6bd17628fc29f7",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "denied_no_retry",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [
+          {
+            "receipt_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_6c6bd17628fc29f7_engine_mapping/result.json",
+              "sha256": "7ab3034c3d15bc419bbb72d94010db9b7c86b526b19c4c3346f88bb16ca2022b"
+            },
+            "response_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_6c6bd17628fc29f7_engine_mapping/mapping_proof.json",
+              "sha256": "7f11fc9f10dddd5130bf075458c405afbea824b5929fd27fa256d54e90aee729"
+            },
+            "response_sha_matches_declared_body": false,
+            "declared_raw_body_persisted": false,
+            "finding": "data_denied",
+            "qualifies_as_business_original": false
+          }
+        ],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_7089cafdcefe3c45",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind_actual/2026-10-24/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+              "sha256": "b46808a510ede052f4b7848214fe177f6ee2afeae252afc66dd1af628d62d710"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind_actual/2026-10-24/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+              "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+            },
+            "query_identity_sha256": "e54a8f846a1e5d4da93c1c7ea1deae874b9bf044e53b84d9e4df41660d7464bc",
+            "contract_sha256": "27735296112c1888cdaa6473de79ab916f6ed0d756baf94385d458ef67fd86b9",
+            "replay_status": "sample_only_passed",
+            "row_count": 0,
+            "empty": true,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_7089cafdcefe3c45",
+          "target_dataset": "distributed_wind_actual",
+          "native_report_number": "035",
+          "native_endpoint_sha256": "afd2e50d2055e831dffb43f463ab0bef831a8c6833b66ad6e9512937a41fae6a",
+          "native_binding_sha256": "86dec3208d2479729b4a9cfd821449321811838080e568b2158242ba22861ede"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_72b7a2340c3d2fde",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_plan/2026-10-27/06c538865109819128ed191e9b76b1d625cf5d8790f7b852e5ab47fb279fa7ea/metadata.json",
+              "sha256": "fd8e9bae0b10a924daaaf4efd296c6347e8f70dde60d97a4e64e68eb1e154c53"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_plan/2026-10-27/06c538865109819128ed191e9b76b1d625cf5d8790f7b852e5ab47fb279fa7ea/response.json",
+              "sha256": "06c538865109819128ed191e9b76b1d625cf5d8790f7b852e5ab47fb279fa7ea"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "1f2cf9141308c66e7ed8d146d096772fc888f9eb943d3f6b5af07dbd4628ccb7",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_72b7a2340c3d2fde",
+          "target_dataset": "local_hydro_plan",
+          "native_report_number": "047",
+          "native_endpoint_sha256": "791c1013cf1f60b2c4154c9be3e05a1562e09265d663a2ad8e9d2ba860aa8f1c",
+          "native_binding_sha256": "5a4f8e398722af1e579c955f686c69562c284b9622d17c99856f9f93e1c19d07"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_77a0b597b0beb519",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_7a300d985f7a8cfc",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "known_empty_no_retry",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [
+          {
+            "receipt_ref": {
+              "path": "liaoning/state/continuous_expansion_20261019/samples/sitewide_7a300d985f7a8cfc/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/observation.json",
+              "sha256": "20c6fd887046ead9fc3443cdf0fc380f393c385812ffc8da8076381447a86149"
+            },
+            "response_ref": {
+              "path": "liaoning/state/continuous_expansion_20261019/samples/sitewide_7a300d985f7a8cfc/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+              "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+            },
+            "finding": "dictionary_only_data_permission_explicitly_unverified",
+            "qualifies_as_business_original": false
+          }
+        ],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_7bcb1dac6ce9bb94",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "excluded_prior_decision",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_7e90be25dfe69669",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_897883abedd6189b",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_9283ddfd847d1f6e",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_99347e93036938b3",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_9984e148d04bb693",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_a64ef9a87d10919c",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "denied_no_retry",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [
+          {
+            "receipt_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_data/result.json",
+              "sha256": "70e14a9c92f4152efd7d2c87ea7d6f2d5bf18bf5ec6309d77f416af37a73c930"
+            },
+            "response_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_data/response.json",
+              "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786"
+            },
+            "response_sha_matches_declared_body": true,
+            "declared_raw_body_persisted": null,
+            "finding": "data_denied",
+            "qualifies_as_business_original": false
+          },
+          {
+            "receipt_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_filters/result.json",
+              "sha256": "2c970f4f3089db0ad199ed269363e74a62218ebeaa511e1df503584ea08f1c1a"
+            },
+            "response_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_filters/response.json",
+              "sha256": "129472c450ad4e99637bf0e5510db8d25061c3d165b32337ed825dabb689fb44"
+            },
+            "response_sha_matches_declared_body": true,
+            "declared_raw_body_persisted": null,
+            "finding": "non_data_filter_or_period_stage_only",
+            "qualifies_as_business_original": false
+          },
+          {
+            "receipt_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_period/result.json",
+              "sha256": "30cef1fc07bcfb522ed67c63465d442711e6c2e652d7947a66b25f25e2ab25a6"
+            },
+            "response_ref": {
+              "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_period/response.json",
+              "sha256": "ff9ecbd56306843890d2cb6ac263c7a7bbf71e1a309458b5ab0138fc44ec3ca1"
+            },
+            "response_sha_matches_declared_body": true,
+            "declared_raw_body_persisted": null,
+            "finding": "non_data_filter_or_period_stage_only",
+            "qualifies_as_business_original": false
+          }
+        ],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_b2cee9801bac0f53",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+              "sha256": "22939ea8a9df0fdb60ed0c393399de8cd7920b1c55f370ffd2e7486248c1a3db"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+              "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "27735296112c1888cdaa6473de79ab916f6ed0d756baf94385d458ef67fd86b9",
+            "replay_status": "sample_only_passed",
+            "row_count": 0,
+            "empty": true,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_b2cee9801bac0f53",
+          "target_dataset": "local_hydro_actual",
+          "native_report_number": "057",
+          "native_endpoint_sha256": "6217ec925ac8a224b2e0aa54fe94a06e3378f20818accfb3f81043278b19421c",
+          "native_binding_sha256": "b58571ef5327afe4a7241c67b6f092db7b7ba31fae321abdc07b5d45f7345370"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_b422b2f3c09fbc93",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar/2026-10-27/217cd1045a485e1e82c3c8a42562bef6a0c2ea1416abe38dbd85025d55214331/metadata.json",
+              "sha256": "e55b5f1b0f6462a76132f11f618de3451223c363f7c4411ea604946e2643755c"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar/2026-10-27/217cd1045a485e1e82c3c8a42562bef6a0c2ea1416abe38dbd85025d55214331/response.json",
+              "sha256": "217cd1045a485e1e82c3c8a42562bef6a0c2ea1416abe38dbd85025d55214331"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "1f2cf9141308c66e7ed8d146d096772fc888f9eb943d3f6b5af07dbd4628ccb7",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_b422b2f3c09fbc93",
+          "target_dataset": "distributed_solar",
+          "native_report_number": "027",
+          "native_endpoint_sha256": "8aabe07f7afaba81b36bdce77b78f2841c119e59fe269b52a47089d18c2ae455",
+          "native_binding_sha256": "10f532b8d93857114ee2835fb87aaab359e2b5e670221e6343cac4d4aa0c42c7"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_bb3ebe897b7667ff",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_bd2561ac7f825385",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "excluded_prior_decision",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_bf835d54e880daf6",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/realtime_node_price/2026-10-22/87a795720bfa9ccd1688b58b6e424301c52b9c2e97eecaa921b257708893f495/574d50e894c78ebd133b4a25b400c28fee3b6972442e71a8d76568bae098d757/metadata.json",
+              "sha256": "29275c0458e59e624e5c97943201038d55f94d4eb32be9f8b60331611280611e"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/realtime_node_price/2026-10-22/87a795720bfa9ccd1688b58b6e424301c52b9c2e97eecaa921b257708893f495/574d50e894c78ebd133b4a25b400c28fee3b6972442e71a8d76568bae098d757/response.json",
+              "sha256": "574d50e894c78ebd133b4a25b400c28fee3b6972442e71a8d76568bae098d757"
+            },
+            "query_identity_sha256": "87a795720bfa9ccd1688b58b6e424301c52b9c2e97eecaa921b257708893f495",
+            "contract_sha256": "dd86ab64e590cbcfc0d4d555de898ca02bc7df39afec1ddbfffea9dc4864871a",
+            "replay_status": "sample_only_passed",
+            "row_count": 4,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_bf835d54e880daf6",
+          "target_dataset": "realtime_node_price",
+          "native_report_number": "005",
+          "native_endpoint_sha256": "0a3c586d5d8d9ce53f8ea00245ff719fe3f08c78c602e735c41802cd0ab43779",
+          "native_binding_sha256": "b34f7368dbaf4e2b5f3cf98cf5f2a7083e5272d5d0df444832d408e102f9f6ea"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_c23050b85c48fa15",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_c3732fb1b489640e",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "known_failed_no_retry",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_c969dbc8a715ec76",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_cba19932160b7c7b",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_da32804173198088",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind/2026-10-27/e29d508a3f808ce4242c8feed0f9f5914b73bc5e9bbc25d1a46c5bd02847e2b3/metadata.json",
+              "sha256": "bab988cdca2ff7b39d44787e6c477b197b4e8ea3003cd7b468320f19e8ed3abc"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind/2026-10-27/e29d508a3f808ce4242c8feed0f9f5914b73bc5e9bbc25d1a46c5bd02847e2b3/response.json",
+              "sha256": "e29d508a3f808ce4242c8feed0f9f5914b73bc5e9bbc25d1a46c5bd02847e2b3"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "1f2cf9141308c66e7ed8d146d096772fc888f9eb943d3f6b5af07dbd4628ccb7",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_da32804173198088",
+          "target_dataset": "distributed_wind",
+          "native_report_number": "036",
+          "native_endpoint_sha256": "f3e5a99c757438d7d9dc3c6055c350d74a0b8b7ece4af0d7b2b12881b12d8898",
+          "native_binding_sha256": "97a6bec824a65188780c605627df3ca98a5569ec65e272def7823ed2836c308c"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_daf0739f06cba7ca",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_coal_forecast/2026-10-27/e37a14f9a23984ea65c2c0cb5127b12e061f8a39dd1b320b8dcab3d777579af5/metadata.json",
+              "sha256": "50d6e91561d701a637423756a793e9bf9a30bced5264457d2a7cdd646e604e46"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_coal_forecast/2026-10-27/e37a14f9a23984ea65c2c0cb5127b12e061f8a39dd1b320b8dcab3d777579af5/response.json",
+              "sha256": "e37a14f9a23984ea65c2c0cb5127b12e061f8a39dd1b320b8dcab3d777579af5"
+            },
+            "query_identity_sha256": "c42ec67b26003d990efafaef76ebf546876690baa7f89a63a9e15d86f3108f64",
+            "contract_sha256": "44b98f2584b7477ea58fcd768dfbf4a7ec4904b0a11f07b3a5baf018c4dad2e8",
+            "replay_status": "sample_only_passed",
+            "row_count": 1,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_daf0739f06cba7ca",
+          "target_dataset": "local_coal_forecast",
+          "native_report_number": "020",
+          "native_endpoint_sha256": "9008784048ed9bad3b79ed44830e0f51790f86e411e96e573e2aed9551d87d28",
+          "native_binding_sha256": "e90f5bba3bee2c47a2f5fed18ce56b88472c23b2a973ab815edc70b5d0ce5c9b"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      },
+      {
+        "dataset": "sitewide_e5bb6a2d0462e97d",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "held_after_shared_endpoint_denial",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_e87a7708ade1e187",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "known_empty_no_retry",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_ef55aac41330d1cc",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_f064d41323e86df1",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "excluded_prior_decision",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_f09e45e44534ce37",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_f522cd9945a17cdd",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": false,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "not_in_native_coverage_snapshot",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [],
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "exact_original_chain_still_missing"
+      },
+      {
+        "dataset": "sitewide_fca714454cbc8832",
+        "source_own_business_original_found": false,
+        "exact_same_request_target_chain_found": true,
+        "business_acceptance": "pending",
+        "full_scope_acceptance": "pending",
+        "online_eligibility_inherited": false,
+        "source_terminal_state_changed": false,
+        "recorded_state": "prior_verified_report_sample",
+        "source_binding_refs": [
+          {
+            "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+            "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+          },
+          {
+            "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+            "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+          }
+        ],
+        "negative_evidence": [],
+        "own_original_evidence": [],
+        "alias_target_evidence": [
+          {
+            "metadata_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/must_run_stop_units/2026-10-27/bd119edc1160de0f437cace92ac92c11818249f03a57258f1a2b03be7771f621/metadata.json",
+              "sha256": "c38a7c685a733fddda53322dfcf3113dd5a44728f7033d2ee4d5494aaeaadc87"
+            },
+            "response_ref": {
+              "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/must_run_stop_units/2026-10-27/bd119edc1160de0f437cace92ac92c11818249f03a57258f1a2b03be7771f621/response.json",
+              "sha256": "bd119edc1160de0f437cace92ac92c11818249f03a57258f1a2b03be7771f621"
+            },
+            "query_identity_sha256": "a466480dd8013874e9195a08236c5f00df145c9765408c6a283fc6564c39582e",
+            "contract_sha256": "be6ca12314e56fed5ce2ebb14f86791f93ce0206aa5d7d0c16d2dd570c71c54f",
+            "replay_status": "sample_only_passed",
+            "row_count": 2,
+            "empty": false,
+            "semantic_acceptance": "pending",
+            "full_scope_acceptance": "pending"
+          }
+        ],
+        "same_request_binding": {
+          "dataset": "sitewide_fca714454cbc8832",
+          "target_dataset": "must_run_stop_units",
+          "native_report_number": "056",
+          "native_endpoint_sha256": "251ac2c53887e0e1d7e50e81e2d1ad01515b6637ec30268bb6ef1f7e332b9af5",
+          "native_binding_sha256": "fbe71eab8bfddbab447ad740d6bbe6247bc8f3872019b9edde22580a26fe5d5f"
+        },
+        "remaining_reason": "source_directory_has_no_own_sha_bound_business_original",
+        "qualification": "same_native_request_alias_with_target_original_only"
+      }
+    ]
+  },
+  "queue_evidence": {
+    "phase3_remaining_cohort": 11,
+    "cohort_old_key_protocols": {
+      "expanded": 11
+    },
+    "original_metadata_jobs_for_cohort_datasets_by_protocol": {
+      "expanded": 6
+    },
+    "supported_bridge_protocols": [
+      "expanded",
+      "native_list_snapshot"
+    ],
+    "exact_bridges_recovered": 0,
+    "exact_bridges_still_missing": 11,
+    "records": [
+      {
+        "legacy_key_sha256": "a3c6a95a234f9bd84efe429352c77391a14e33b2332cfab0df9e27a2afa068d9",
+        "dataset": "realtime_node_price",
+        "state": "empty",
+        "consumed": true,
+        "facts_sha256": "274cd0772ec16dac0011ea892937e487ba64da05c8532d12e3ec26f2a962985f",
+        "old_outcome_body_sha256": "6a93f95dd93070ceab8c75bd893d1fa5578794a12cbf8977d344679827b08c8a",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "64d07b28ce89b702e8757e5f4ba2a4ccd78e48a4c24ed054b65cadd78b19f845",
+        "dataset": "dayahead_power_and_average_price",
+        "state": "saved",
+        "consumed": true,
+        "facts_sha256": "ff4d8712b5b03d8eb1cfbb8453ead4105c0acbd92445ff38462c196f084c9147",
+        "old_outcome_body_sha256": "1a8b95763cfebe949971044829347aa2a3ca748125cb875c474d9a2af6b0f4af",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "42a13b720b17c37828f28cb20e86de5bee5112b5136b8efe182f1846d7094fb0",
+        "dataset": "dayahead_power_and_average_price",
+        "state": "saved",
+        "consumed": true,
+        "facts_sha256": "bfda837e8a05cd6dbf731bdfffff446db7c792c51a716eb8498b0fdc9dd2d1d1",
+        "old_outcome_body_sha256": "59aeb8416fb498825fdd517f8f8e36270cb869918af37454ffa4415307191eff",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "e0528b0153f8c544a5775f409bd1e9dc1c830989cea2f39ab7b87a41545c7c5f",
+        "dataset": "sitewide_2010f5bbae811586",
+        "state": "empty",
+        "consumed": true,
+        "facts_sha256": "635014380c7e65c03ffa9e94676afc9cc740a27653e5fe16b72f26da0234bce6",
+        "old_outcome_body_sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "5d1cb4fce7eed619910c75a8b629b4a64e20abbbeb1dde9ba7de6aae3b62d8b3",
+        "dataset": "sitewide_2010f5bbae811586",
+        "state": "saved",
+        "consumed": true,
+        "facts_sha256": "4b132034a5a7b062ad891f75129469f0109609083d897b7604cd9f8eb4f0fa63",
+        "old_outcome_body_sha256": "924b82027d5031c54d0828a538198061cea8c0dc1ab2badce7064286bb550cb0",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "84c3db2014d5d9121de7b92f551b6c201564a37e9e522c1755a684fa576a2676",
+        "dataset": "sitewide_90426958a40aec46",
+        "state": "empty",
+        "consumed": true,
+        "facts_sha256": "cee20822bd0479d9e755a4aebd134bed2507ad0ec2d018aa69c56af7e8e30f58",
+        "old_outcome_body_sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "6851db24036334f3d99ae06113c28d701217aa30d504f815724161984e8b6c33",
+        "dataset": "sitewide_90426958a40aec46",
+        "state": "saved",
+        "consumed": true,
+        "facts_sha256": "60164ce0ff614f5a65a7263ccd31b18e89e8b10be95b00425786c21adf9ff0ae",
+        "old_outcome_body_sha256": "d6b0af8439a458809a06f28531986d37313d8931a762f6494f55a22b2aad8753",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "b47b7a7562d8bc5fe48cf26bace8ae82f6cf50fea295eca5109c756b8b4943ca",
+        "dataset": "sitewide_90426958a40aec46",
+        "state": "saved",
+        "consumed": true,
+        "facts_sha256": "57b65539a01a0419bb13419b7ddcb9367784f567aae8cc18e2bd98d09547cf61",
+        "old_outcome_body_sha256": "13b7ada406c92db2ed66b900a54957d9fcd438336786bda3f30dfdb344d016c5",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "0dca7de946c345b32f18078de87fe91c1d60df0a8ad391528f08c8acf614564d",
+        "dataset": "sitewide_c1a062960820eff8",
+        "state": "empty",
+        "consumed": true,
+        "facts_sha256": "f25661b342ecd7eb6c73483e81515eb19623345707d0ab4aea9babe925459d8b",
+        "old_outcome_body_sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "c89c3c0d4ea160e177d3a9ac3896f9477faee7878bf1e27701174145ca8900ec",
+        "dataset": "sitewide_c1a062960820eff8",
+        "state": "saved",
+        "consumed": true,
+        "facts_sha256": "fbb5e10c4a6811b511a025335237542ce63979e198f62351d80d97b39af3b1c9",
+        "old_outcome_body_sha256": "a2af00d9aba4e2fa772fb305953a194aa3a604cd67c980b7c5341715e55c3484",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      },
+      {
+        "legacy_key_sha256": "91806d4fdb9b961ab864fbcddbe5e2ec0b19c27cda2a29258d8dbfff53ddd629",
+        "dataset": "sitewide_e814f8cf448bfafb",
+        "state": "empty",
+        "consumed": true,
+        "facts_sha256": "cda358b094c0e7faf786f7ec2b6c12387e5b2b1c303961731120d511edb3eef7",
+        "old_outcome_body_sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755",
+        "identity_key_sha256": null,
+        "status": "exact_bridge_still_missing",
+        "reason": "no_retained_exact_old_key_query_and_body_sha256_bridge",
+        "source_snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+        },
+        "evidence_refs": [],
+        "remaining_blockers": [
+          "identity_mapping_required"
+        ],
+        "dispatch_allowed": false
+      }
+    ],
+    "snapshots_examined": [
+      {
+        "snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/server_advanced_tasks_20261016.json",
+          "sha256": "9c88d7b820352447702c4135ae5b6338c7303db24e056de1eb49b8578ede4621"
+        },
+        "locally_retained": true,
+        "dataset_groups": 3,
+        "counts": {
+          "exact_old_key_outcomes_only": 0
+        },
+        "new_snapshot_records_added_to_cohort": 0
+      },
+      {
+        "snapshot_ref": {
+          "path": "liaoning/state/server_verified_expansion_20261023/server_sitewide_20261016_tasks.json",
+          "sha256": "df9af37fba0de82651fe55c1bcf73762b7aeff6bc320b0e7cadcc7f77680174f"
+        },
+        "locally_retained": true,
+        "dataset_groups": 49,
+        "counts": {
+          "exact_old_key_outcomes_only": 0
+        },
+        "new_snapshot_records_added_to_cohort": 0
+      },
+      {
+        "snapshot_ref": {
+          "path": "liaoning/state/dimension_coverage_20261024/advanced_before.json",
+          "sha256": "9c88d7b820352447702c4135ae5b6338c7303db24e056de1eb49b8578ede4621"
+        },
+        "locally_retained": true,
+        "dataset_groups": 3,
+        "counts": {
+          "exact_old_key_outcomes_only": 0
+        },
+        "new_snapshot_records_added_to_cohort": 0
+      },
+      {
+        "snapshot_ref": {
+          "path": "liaoning/state/dimension_coverage_20261024/sitewide_before.json",
+          "sha256": "df9af37fba0de82651fe55c1bcf73762b7aeff6bc320b0e7cadcc7f77680174f"
+        },
+        "locally_retained": true,
+        "dataset_groups": 49,
+        "counts": {
+          "exact_old_key_outcomes_only": 0
+        },
+        "new_snapshot_records_added_to_cohort": 0
+      },
+      {
+        "snapshot_ref": {
+          "path": "liaoning/reporting/diagnostics_20261024/retained_for_attachment/ordinary_queue.json",
+          "sha256": "cb3f2211b70c03a1a4833e4d700f0cba503b11e52508c4a49c02b403b9dae687"
+        },
+        "locally_retained": true,
+        "dataset_groups": 121,
+        "counts": {
+          "exact_old_key_outcomes_only": 11
+        },
+        "new_snapshot_records_added_to_cohort": 0
+      },
+      {
+        "snapshot_ref": {
+          "path": "liaoning/reporting/diagnostics_20261028/resource_wait/checkpoints_before/state/server_verified_expansion_20261023/queue.json",
+          "sha256": "6ff1deb6275c08b9ccc461a65d35af395a39d8d933946191291cfc0bfeae281b"
+        },
+        "locally_retained": true,
+        "dataset_groups": 121,
+        "counts": {
+          "exact_old_key_outcomes_only": 11
+        },
+        "new_snapshot_records_added_to_cohort": 0
+      }
+    ],
+    "receipts_examined": [
+      {
+        "receipt_ref": {
+          "path": "liaoning/state/quality_supplement_20261021/queue.json",
+          "sha256": "ad7d69ab28a50d2fcc1ef50830d4d62761d47720a0de74aa23d10288b0484904"
+        },
+        "business_records_examined": 1324,
+        "counts": {}
+      },
+      {
+        "receipt_ref": {
+          "path": "liaoning/state/dimension_coverage_20261024/reused_sample_outcomes.json",
+          "sha256": "f437afd22107b7fa393cf02b5599ba2b81424d5d248e5a916601687b39bb5c3a"
+        },
+        "business_records_examined": 107,
+        "counts": {}
+      }
+    ],
+    "source_aliases_do_not_upgrade_old_queue_records": true
+  },
+  "original_metadata_inventory": [
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports",
+      "metadata_files_listed": 45,
+      "target_metadata_files_read": 7
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports",
+      "metadata_files_listed": 17,
+      "target_metadata_files_read": 14
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/native_lists",
+      "metadata_files_listed": 376,
+      "target_metadata_files_read": 0
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/report_engine",
+      "metadata_files_listed": 3,
+      "target_metadata_files_read": 0
+    },
+    {
+      "path": "liaoning/data/2026/original/advanced_reports",
+      "metadata_files_listed": 0,
+      "target_metadata_files_read": 0
+    },
+    {
+      "path": "liaoning/data/2026/original/power_reports",
+      "metadata_files_listed": 0,
+      "target_metadata_files_read": 0
+    },
+    {
+      "path": "liaoning/data/2026/original/native_lists",
+      "metadata_files_listed": 0,
+      "target_metadata_files_read": 0
+    },
+    {
+      "path": "liaoning/data/2026/original/report_engine",
+      "metadata_files_listed": 7,
+      "target_metadata_files_read": 0
+    }
+  ],
+  "archive_inventory": [
+    {
+      "archive_ref": {
+        "path": "liaoning/exports/local_adaptation_20261020/verified_adapters.tar.gz",
+        "sha256": "4c7d4846a97c934f1ea59a866f51f307112fd05f5a2a01f0ed97e1d51f68373a"
+      },
+      "member_count": 175,
+      "excluded_unsafe_or_private_members": 1,
+      "target_member_matches": [],
+      "archive_members_extracted": 0,
+      "archive_member_payloads_read": 0
+    },
+    {
+      "archive_ref": {
+        "path": "liaoning/state/aliyun_deployment_20261023/release.tar.gz",
+        "sha256": "363e77e4682617f30f82a6ac7379570a0a42a048ed38a578434ad63cf0452fcf"
+      },
+      "member_count": 325,
+      "excluded_unsafe_or_private_members": 8,
+      "target_member_matches": [],
+      "archive_members_extracted": 0,
+      "archive_member_payloads_read": 0
+    },
+    {
+      "archive_ref": {
+        "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_export.tar.gz",
+        "sha256": "a161840ab4b5fe26aec17de0e0400f6ed2db604dc1af168329fe2fac9df098e1"
+      },
+      "member_count": 882,
+      "excluded_unsafe_or_private_members": 0,
+      "target_member_matches": [],
+      "archive_members_extracted": 0,
+      "archive_member_payloads_read": 0
+    }
+  ],
+  "rejected_original_chains": [],
+  "input_refs": [
+    {
+      "path": "liaoning/exports/local_adaptation_20261020/verified_adapters.tar.gz",
+      "sha256": "4c7d4846a97c934f1ea59a866f51f307112fd05f5a2a01f0ed97e1d51f68373a"
+    },
+    {
+      "path": "liaoning/lncrawler/expanded_adapters.py",
+      "sha256": "a6d4878631b921a348f2649732c2f73115582220e65b727e3274cdf8a646cd24"
+    },
+    {
+      "path": "liaoning/lncrawler/goal92_candidate_specs.py",
+      "sha256": "1fa0f7f647176d5877b37777f94acafa90eb56c849859e11d3e3857dc11b42db"
+    },
+    {
+      "path": "liaoning/lncrawler/sitewide_specs.py",
+      "sha256": "972bebbfed6c8b5e1a4a70099b9f63593f65039a246f2478b7bc596ca41df3a7"
+    },
+    {
+      "path": "liaoning/reporting/diagnostics_20261024/retained_for_attachment/ordinary_queue.json",
+      "sha256": "cb3f2211b70c03a1a4833e4d700f0cba503b11e52508c4a49c02b403b9dae687"
+    },
+    {
+      "path": "liaoning/reporting/diagnostics_20261028/resource_wait/checkpoints_before/state/server_verified_expansion_20261023/queue.json",
+      "sha256": "6ff1deb6275c08b9ccc461a65d35af395a39d8d933946191291cfc0bfeae281b"
+    },
+    {
+      "path": "liaoning/state/aliyun_deployment_20261023/release.tar.gz",
+      "sha256": "363e77e4682617f30f82a6ac7379570a0a42a048ed38a578434ad63cf0452fcf"
+    },
+    {
+      "path": "liaoning/state/continuous_expansion_20261019/samples/sitewide_7a300d985f7a8cfc/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/observation.json",
+      "sha256": "20c6fd887046ead9fc3443cdf0fc380f393c385812ffc8da8076381447a86149"
+    },
+    {
+      "path": "liaoning/state/continuous_expansion_20261019/samples/sitewide_7a300d985f7a8cfc/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+      "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+    },
+    {
+      "path": "liaoning/state/dimension_coverage_20261024/advanced_before.json",
+      "sha256": "9c88d7b820352447702c4135ae5b6338c7303db24e056de1eb49b8578ede4621"
+    },
+    {
+      "path": "liaoning/state/dimension_coverage_20261024/reused_sample_outcomes.json",
+      "sha256": "f437afd22107b7fa393cf02b5599ba2b81424d5d248e5a916601687b39bb5c3a"
+    },
+    {
+      "path": "liaoning/state/dimension_coverage_20261024/sitewide_before.json",
+      "sha256": "df9af37fba0de82651fe55c1bcf73762b7aeff6bc320b0e7cadcc7f77680174f"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/native_coverage.json",
+      "sha256": "c9412eb18c38c6b52f04e1ec09964bd9dc7f3b1f4bd686afc31118eed6a8b68b"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_6c6bd17628fc29f7_engine_mapping/mapping_proof.json",
+      "sha256": "7f11fc9f10dddd5130bf075458c405afbea824b5929fd27fa256d54e90aee729"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_6c6bd17628fc29f7_engine_mapping/result.json",
+      "sha256": "7ab3034c3d15bc419bbb72d94010db9b7c86b526b19c4c3346f88bb16ca2022b"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_data/response.json",
+      "sha256": "f4a780c5a1bbc3e3849bceff915c80b510cb1767526b2c68648abe482c0ca786"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_data/result.json",
+      "sha256": "70e14a9c92f4152efd7d2c87ea7d6f2d5bf18bf5ec6309d77f416af37a73c930"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_filters/response.json",
+      "sha256": "129472c450ad4e99637bf0e5510db8d25061c3d165b32337ed825dabb689fb44"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_filters/result.json",
+      "sha256": "2c970f4f3089db0ad199ed269363e74a62218ebeaa511e1df503584ea08f1c1a"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_period/response.json",
+      "sha256": "ff9ecbd56306843890d2cb6ac263c7a7bbf71e1a309458b5ab0138fc44ec3ca1"
+    },
+    {
+      "path": "liaoning/state/local_adaptation_20261020/responses/sitewide_a64ef9a87d10919c_table_period/result.json",
+      "sha256": "30cef1fc07bcfb522ed67c63465d442711e6c2e652d7947a66b25f25e2ab25a6"
+    },
+    {
+      "path": "liaoning/state/quality_supplement_20261021/queue.json",
+      "sha256": "ad7d69ab28a50d2fcc1ef50830d4d62761d47720a0de74aa23d10288b0484904"
+    },
+    {
+      "path": "liaoning/state/server_verified_expansion_20261023/queue.json",
+      "sha256": "ac9068e804cde58165ecb3b8e8eb8cba510a0881f09da04be9f5e97002a601b5"
+    },
+    {
+      "path": "liaoning/state/server_verified_expansion_20261023/server_advanced_tasks_20261016.json",
+      "sha256": "9c88d7b820352447702c4135ae5b6338c7303db24e056de1eb49b8578ede4621"
+    },
+    {
+      "path": "liaoning/state/server_verified_expansion_20261023/server_sitewide_20261016_tasks.json",
+      "sha256": "df9af37fba0de82651fe55c1bcf73762b7aeff6bc320b0e7cadcc7f77680174f"
+    },
+    {
+      "path": "liaoning/state/sitewide_expansion_20261016/catalog_current.json",
+      "sha256": "c9150f097c3275dda9777f78717fc2f260029115f8a86b0b13fd8f5009f4f574"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_export.tar.gz",
+      "sha256": "a161840ab4b5fe26aec17de0e0400f6ed2db604dc1af168329fe2fac9df098e1"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/dayahead_power_and_average_price/2026-09-17/f962b37d4510ccef291da8a960eaf7a98eb0410be2a3c3015400768f5a5b5ef8/e93debb82740dbe299ca1b9630d72ddd4498b6b38c79d7c72a85572fddedb0fc/metadata.json",
+      "sha256": "5cc5a061182af770df32385e5a60174a4db291968d6cb15b2cc82557b718f0dc"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/dayahead_power_and_average_price/2026-09-17/f962b37d4510ccef291da8a960eaf7a98eb0410be2a3c3015400768f5a5b5ef8/e93debb82740dbe299ca1b9630d72ddd4498b6b38c79d7c72a85572fddedb0fc/response.json",
+      "sha256": "e93debb82740dbe299ca1b9630d72ddd4498b6b38c79d7c72a85572fddedb0fc"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/realtime_node_price/2026-10-22/87a795720bfa9ccd1688b58b6e424301c52b9c2e97eecaa921b257708893f495/574d50e894c78ebd133b4a25b400c28fee3b6972442e71a8d76568bae098d757/metadata.json",
+      "sha256": "29275c0458e59e624e5c97943201038d55f94d4eb32be9f8b60331611280611e"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/realtime_node_price/2026-10-22/87a795720bfa9ccd1688b58b6e424301c52b9c2e97eecaa921b257708893f495/574d50e894c78ebd133b4a25b400c28fee3b6972442e71a8d76568bae098d757/response.json",
+      "sha256": "574d50e894c78ebd133b4a25b400c28fee3b6972442e71a8d76568bae098d757"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_2010f5bbae811586/2026-08-13/f3540889c1b33cc9c8694abac53a27d80a6db2be82e9105d93db11469617049f/c65d3503527f65327d6b7c581a177a09b8d567140aa7b0b1d4c9eaf2a40d719e/metadata.json",
+      "sha256": "cf3b992e0a705ff5960c1acf374f980d08c7256ac050aa23814bf69ee4bc2ab9"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_2010f5bbae811586/2026-08-13/f3540889c1b33cc9c8694abac53a27d80a6db2be82e9105d93db11469617049f/c65d3503527f65327d6b7c581a177a09b8d567140aa7b0b1d4c9eaf2a40d719e/response.json",
+      "sha256": "c65d3503527f65327d6b7c581a177a09b8d567140aa7b0b1d4c9eaf2a40d719e"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_80ece90b472eddab/2026-08-15/4a7242b495f81d368966550d9116908dd48b300e968f1b6587fcdd8cd061a7d2/ba376d6cfdb4882212044ec8821d6fc4147b6d9c7892c898acf808a26c82b670/metadata.json",
+      "sha256": "be3f709dc0b815dc0b812ef58b05621106cf21ca049a9b931d8d9928d2360f99"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_80ece90b472eddab/2026-08-15/4a7242b495f81d368966550d9116908dd48b300e968f1b6587fcdd8cd061a7d2/ba376d6cfdb4882212044ec8821d6fc4147b6d9c7892c898acf808a26c82b670/response.json",
+      "sha256": "ba376d6cfdb4882212044ec8821d6fc4147b6d9c7892c898acf808a26c82b670"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_90426958a40aec46/2026-08-12/1e75dd65e8a96cb92396e686368a7c7061316830d7b8b9da9643a70a23dc200e/5bb2136f6a91f159f2990b01ee133417bc2f0763a09cf1da1d00aa790dd890c1/metadata.json",
+      "sha256": "4c25e720441816098b3eb15857d5217fd1b2fd6c9c0ee55e55656bfe00cf5f9a"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_90426958a40aec46/2026-08-12/1e75dd65e8a96cb92396e686368a7c7061316830d7b8b9da9643a70a23dc200e/5bb2136f6a91f159f2990b01ee133417bc2f0763a09cf1da1d00aa790dd890c1/response.json",
+      "sha256": "5bb2136f6a91f159f2990b01ee133417bc2f0763a09cf1da1d00aa790dd890c1"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_c1a062960820eff8/2026-08-12/1e75dd65e8a96cb92396e686368a7c7061316830d7b8b9da9643a70a23dc200e/1595ff50b504c715c416bf748517bd2ebf295f4b371fe1592e895f15807e42a4/metadata.json",
+      "sha256": "b2c8a9f1e4d4044df43d3cf1a0b8a7318a8d8cd805036fd576bf61462abe3893"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_c1a062960820eff8/2026-08-12/1e75dd65e8a96cb92396e686368a7c7061316830d7b8b9da9643a70a23dc200e/1595ff50b504c715c416bf748517bd2ebf295f4b371fe1592e895f15807e42a4/response.json",
+      "sha256": "1595ff50b504c715c416bf748517bd2ebf295f4b371fe1592e895f15807e42a4"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_e814f8cf448bfafb/2026-08-13/f3540889c1b33cc9c8694abac53a27d80a6db2be82e9105d93db11469617049f/2a8822af04f068855e3ea57cb78fd5c54dc054d6e58199817b89c1585ac8c1d7/metadata.json",
+      "sha256": "dc1efe3757812c7b33c509fbc2659e4132dd7779752f15f7e954d38b88c9a149"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/advanced_reports/sitewide_e814f8cf448bfafb/2026-08-13/f3540889c1b33cc9c8694abac53a27d80a6db2be82e9105d93db11469617049f/2a8822af04f068855e3ea57cb78fd5c54dc054d6e58199817b89c1585ac8c1d7/response.json",
+      "sha256": "2a8822af04f068855e3ea57cb78fd5c54dc054d6e58199817b89c1585ac8c1d7"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar/2026-10-27/217cd1045a485e1e82c3c8a42562bef6a0c2ea1416abe38dbd85025d55214331/metadata.json",
+      "sha256": "e55b5f1b0f6462a76132f11f618de3451223c363f7c4411ea604946e2643755c"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar/2026-10-27/217cd1045a485e1e82c3c8a42562bef6a0c2ea1416abe38dbd85025d55214331/response.json",
+      "sha256": "217cd1045a485e1e82c3c8a42562bef6a0c2ea1416abe38dbd85025d55214331"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+      "sha256": "58df47b5765cf6c42a871c8084f0458545e9cf005fe92270207e03862074455d"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_solar_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+      "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind/2026-10-27/e29d508a3f808ce4242c8feed0f9f5914b73bc5e9bbc25d1a46c5bd02847e2b3/metadata.json",
+      "sha256": "bab988cdca2ff7b39d44787e6c477b197b4e8ea3003cd7b468320f19e8ed3abc"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind/2026-10-27/e29d508a3f808ce4242c8feed0f9f5914b73bc5e9bbc25d1a46c5bd02847e2b3/response.json",
+      "sha256": "e29d508a3f808ce4242c8feed0f9f5914b73bc5e9bbc25d1a46c5bd02847e2b3"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind_actual/2026-10-24/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+      "sha256": "b46808a510ede052f4b7848214fe177f6ee2afeae252afc66dd1af628d62d710"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/distributed_wind_actual/2026-10-24/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+      "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generation_total_forecast/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+      "sha256": "c3183e13f2d5af96eaaade6cea4dbd7f9571423a1e12a23cfe24ef4c679136f8"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generation_total_forecast/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+      "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generator_maintenance_capacity/2026-10-27/33ef0f9625070596e949317eaeeec64bde396504b3c607aca15a7e3e2784001f/metadata.json",
+      "sha256": "fb2882f58a74c034c8be802cf3264dbb5e4a95a5cf02d26fd90c3925de778b05"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/generator_maintenance_capacity/2026-10-27/33ef0f9625070596e949317eaeeec64bde396504b3c607aca15a7e3e2784001f/response.json",
+      "sha256": "33ef0f9625070596e949317eaeeec64bde396504b3c607aca15a7e3e2784001f"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/hydro_daily/2026-10-27/1f1263dee069ac4935c813316bcaa28a8546a69480e4c1736c9ebb7a096657d8/metadata.json",
+      "sha256": "23f2dcdfbe49310cb8281b514a649c511331b164ea1791292a47aca866f5e43c"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/hydro_daily/2026-10-27/1f1263dee069ac4935c813316bcaa28a8546a69480e4c1736c9ebb7a096657d8/response.json",
+      "sha256": "1f1263dee069ac4935c813316bcaa28a8546a69480e4c1736c9ebb7a096657d8"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_coal_forecast/2026-10-27/e37a14f9a23984ea65c2c0cb5127b12e061f8a39dd1b320b8dcab3d777579af5/metadata.json",
+      "sha256": "50d6e91561d701a637423756a793e9bf9a30bced5264457d2a7cdd646e604e46"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_coal_forecast/2026-10-27/e37a14f9a23984ea65c2c0cb5127b12e061f8a39dd1b320b8dcab3d777579af5/response.json",
+      "sha256": "e37a14f9a23984ea65c2c0cb5127b12e061f8a39dd1b320b8dcab3d777579af5"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/metadata.json",
+      "sha256": "22939ea8a9df0fdb60ed0c393399de8cd7920b1c55f370ffd2e7486248c1a3db"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_actual/2026-10-27/ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755/response.json",
+      "sha256": "ea24e6b71120c0e66f25bd3bd6645a3383ed089a8a198e26a8d4d99517ab0755"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_plan/2026-10-27/06c538865109819128ed191e9b76b1d625cf5d8790f7b852e5ab47fb279fa7ea/metadata.json",
+      "sha256": "fd8e9bae0b10a924daaaf4efd296c6347e8f70dde60d97a4e64e68eb1e154c53"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/local_hydro_plan/2026-10-27/06c538865109819128ed191e9b76b1d625cf5d8790f7b852e5ab47fb279fa7ea/response.json",
+      "sha256": "06c538865109819128ed191e9b76b1d625cf5d8790f7b852e5ab47fb279fa7ea"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/must_run_stop_units/2026-10-27/bd119edc1160de0f437cace92ac92c11818249f03a57258f1a2b03be7771f621/metadata.json",
+      "sha256": "c38a7c685a733fddda53322dfcf3113dd5a44728f7033d2ee4d5494aaeaadc87"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/must_run_stop_units/2026-10-27/bd119edc1160de0f437cace92ac92c11818249f03a57258f1a2b03be7771f621/response.json",
+      "sha256": "bd119edc1160de0f437cace92ac92c11818249f03a57258f1a2b03be7771f621"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/nuclear_total/2026-10-27/9dc0e5e4d73d1fa7049460a614a16f5856ab3573c97dff9a1dc11013d9e4daca/metadata.json",
+      "sha256": "1ac0f240bf6581291c199eeaaedc26875461eb8fa7eb38c6f18cbbf85a8734ba"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/nuclear_total/2026-10-27/9dc0e5e4d73d1fa7049460a614a16f5856ab3573c97dff9a1dc11013d9e4daca/response.json",
+      "sha256": "9dc0e5e4d73d1fa7049460a614a16f5856ab3573c97dff9a1dc11013d9e4daca"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_dayahead/2026-10-27/c2ae14e8f0f4c996ee862b0cd99c83dea820158cd8de5d8008e7ece9404135ef/metadata.json",
+      "sha256": "dd6ec80912f5a75b73fcd94338e44f6d7b19f70a8c585a6a2b0bcee573414059"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_dayahead/2026-10-27/c2ae14e8f0f4c996ee862b0cd99c83dea820158cd8de5d8008e7ece9404135ef/response.json",
+      "sha256": "c2ae14e8f0f4c996ee862b0cd99c83dea820158cd8de5d8008e7ece9404135ef"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_schedule/2026-10-27/92e3eb8400fcda12975d2eab09124036c4c20a0c4d1ce4eff5e7a597c3b94736/metadata.json",
+      "sha256": "e952818917c1c526f20320dff0a541a4d9e9d582fe294831bffb3d772576c9b5"
+    },
+    {
+      "path": "liaoning/verification/20261027/disclosure_timing_full_rows/retained_remote/data/2026/original/power_reports/tie_line_schedule/2026-10-27/92e3eb8400fcda12975d2eab09124036c4c20a0c4d1ce4eff5e7a597c3b94736/response.json",
+      "sha256": "92e3eb8400fcda12975d2eab09124036c4c20a0c4d1ce4eff5e7a597c3b94736"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase3_recovery.json",
+      "sha256": "433ec2090a1741bda88534b12212db0f89d79f065831b1485aa0c61bef0c5eaf"
+    }
+  ],
+  "inputs_changed_during_scan": [],
+  "rolling_read_not_frozen": true,
+  "limitations": [
+    "same-request aliases reuse an existing target original and do not grant source permission or acceptance",
+    "dictionary/filter/period responses and refused data endpoints remain negative evidence",
+    "new checkpoints and original captures cannot replace an old key/query/body-SHA bridge",
+    "old states, consumed facts, holds and source files are unchanged"
+  ],
+  "summary": {
+    "source_cohort": 51,
+    "source_own_originals_recovered": 0,
+    "same_request_alias_target_chains": 17,
+    "still_without_own_or_alias_chain": 34,
+    "source_own_originals_still_missing": 51,
+    "queue_cohort": 11,
+    "queue_bridges_recovered": 0,
+    "queue_bridges_still_missing": 11
+  }
+}

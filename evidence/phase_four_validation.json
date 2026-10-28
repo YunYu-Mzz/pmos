@@ -1,0 +1,360 @@
+{
+  "phase": 4,
+  "date": "2026-10-28",
+  "mode": "offline_identity_extension_and_read_only_remaining_evidence",
+  "source_code_commit": "efd01e57ea50704078db3b2e77d1b021950b07b4",
+  "test_suite": {
+    "command": "python3 pmos/tools/test_offline.py",
+    "python": "3.12",
+    "discovered": 302,
+    "passed": 301,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "skip_reason": "optional local browser test disabled",
+    "ipv4_ipv6_connections_forbidden": true,
+    "log_sha256": "bf992fefed00d68509eccc4db18eb527ecc2a5ac8211fc855acb3fa8e77f9107"
+  },
+  "guarded_remaining_runner": {
+    "runner_status": 0,
+    "guarded_result": {
+      "mode": "read_only_existing_evidence",
+      "stage": "remaining",
+      "summaries": {
+        "liaoning_monday": {
+          "phase_three_mappings_preserved": 1499,
+          "native_monday_identity_views_recovered": 42,
+          "native_monday_states_preserved": {
+            "pending": 41,
+            "saved": 1
+          },
+          "native_monday_consumed_preserved": 1,
+          "remaining_unmapped_record_views": 11
+        },
+        "liaoning": {
+          "source_cohort": 51,
+          "source_own_originals_recovered": 0,
+          "same_request_alias_target_chains": 17,
+          "still_without_own_or_alias_chain": 34,
+          "source_own_originals_still_missing": 51,
+          "queue_cohort": 11,
+          "queue_bridges_recovered": 0,
+          "queue_bridges_still_missing": 11
+        },
+        "anhui": {
+          "fixed_article_cohort": 20,
+          "cohort_records_reconstructed": 20,
+          "article_identities_recovered": 10,
+          "article_identities_remaining": 10,
+          "binding_copies_recovered": 0,
+          "binding_captures_remaining": 3,
+          "candidates_remaining": 52,
+          "new_semantic_qualifications": 0
+        },
+        "shanxi": {
+          "phase3_missing_bound_business_originals": 19,
+          "new_business_originals": 0,
+          "business_originals_still_missing": 19,
+          "newly_mapped_old_tasks": 0,
+          "embedded_empty_selector_receipt_sha_verified": 1,
+          "exact_static_form_relation_found": 1,
+          "month_range_query_only_static_form_verified": 1,
+          "boundary_sources_rechecked": 26
+        }
+      }
+    },
+    "guards": {
+      "network_attempts": 0,
+      "subprocess_attempts": 0,
+      "filesystem_mutation_attempts": 0,
+      "historical_sqlite_readonly_connections": 7
+    }
+  },
+  "independent_readonly_module_checks": {
+    "guards": {
+      "network_attempts": 0,
+      "subprocess_attempts": 0,
+      "filesystem_mutation_attempts": 0,
+      "historical_sqlite_readonly_connections": 7
+    },
+    "all_summaries_match_saved_reports": true,
+    "anhui_identity_and_state_rows_match_saved_report": true,
+    "anhui_report_reference_metadata_varies_between_stable_runs": true,
+    "rolling_change_detail": "Only listing-index observed SHA and reference-list length differed; fixed cohort, identities, old menu scope, states, facts and blockers matched."
+  },
+  "liaoning_full_queue_conservation": {
+    "source_views": 5,
+    "record_views": 13032,
+    "unmapped_before": 1552,
+    "identities_recovered": 1541,
+    "unmapped_after": 11,
+    "states": {
+      "empty": 6,
+      "pending": 12951,
+      "saved": 74,
+      "unknown": 1
+    },
+    "consumed": 81,
+    "state_facts_protection_sha256": "994e8dbb2edcb70d1dd039f0b8a46cbbe8780aff7010598e1f8a00cb8a06d68c",
+    "states_and_facts_unchanged": true,
+    "dispatch_allowed": false
+  },
+  "liaoning_monday_transition": {
+    "phase_three_mappings_preserved": 1499,
+    "native_monday_identity_views_recovered": 42,
+    "native_monday_states_preserved": {
+      "pending": 41,
+      "saved": 1
+    },
+    "native_monday_consumed_preserved": 1,
+    "remaining_unmapped_record_views": 11
+  },
+  "monday_identity_contract": {
+    "version": 1,
+    "period_kind": "week_start_monday",
+    "canonical_field": "anchor",
+    "requires_canonical_monday": true,
+    "week_boundaries_inferred": false,
+    "old_identity_hashes_rewritten": false
+  },
+  "monday_unique_identity_sha256": 42,
+  "anhui_remaining_queue_conservation": {
+    "source_views": 5,
+    "record_views": 20,
+    "unmapped_before": 20,
+    "identities_recovered": 10,
+    "unmapped_after": 10,
+    "states": {
+      "pending": 8,
+      "saved": 12
+    },
+    "consumed": 12,
+    "state_facts_protection_sha256": "12a8d40b48d260368e34a57c64bc25f963f6b66b8011e1d20f79c8fbcbe874c5",
+    "states_and_facts_unchanged": true,
+    "dispatch_allowed": false
+  },
+  "remaining_summaries": {
+    "liaoning": {
+      "source_cohort": 51,
+      "source_own_originals_recovered": 0,
+      "same_request_alias_target_chains": 17,
+      "still_without_own_or_alias_chain": 34,
+      "source_own_originals_still_missing": 51,
+      "queue_cohort": 11,
+      "queue_bridges_recovered": 0,
+      "queue_bridges_still_missing": 11
+    },
+    "anhui": {
+      "fixed_article_cohort": 20,
+      "cohort_records_reconstructed": 20,
+      "article_identities_recovered": 10,
+      "article_identities_remaining": 10,
+      "binding_copies_recovered": 0,
+      "binding_captures_remaining": 3,
+      "candidates_remaining": 52,
+      "new_semantic_qualifications": 0
+    },
+    "shanxi": {
+      "phase3_missing_bound_business_originals": 19,
+      "new_business_originals": 0,
+      "business_originals_still_missing": 19,
+      "newly_mapped_old_tasks": 0,
+      "embedded_empty_selector_receipt_sha_verified": 1,
+      "exact_static_form_relation_found": 1,
+      "month_range_query_only_static_form_verified": 1,
+      "boundary_sources_rechecked": 26
+    }
+  },
+  "liaoning_remaining_states": {
+    "empty": 5,
+    "saved": 6
+  },
+  "anhui_candidate_receipt_or_image_chains_without_admission": 35,
+  "anhui_source_linked_sidecars": 24,
+  "anhui_ui_export_crosschecks_proven": 0,
+  "reports": [
+    {
+      "path": "pmos/evidence/anhui_phase4_remaining.json",
+      "bytes": 156119,
+      "sha256": "4c77082676f5e69300229f9918a83ed81125428133ecca3c8a430191aedd3b2f"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase4_monday.json",
+      "bytes": 38042,
+      "sha256": "e3673da90280d1d4ac2309664fc62576ed2e0761be168189cbf114063872c3cc"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase4_remaining.json",
+      "bytes": 126975,
+      "sha256": "61473f8a198eba8fc87bf54268a3688c657ce97983ec8bac73680196bea61983"
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase4_remaining.json",
+      "bytes": 82403,
+      "sha256": "58fc52552b4f54027331f977a10d397f3dad2e9f3fcdd513b84568d13b77d350"
+    }
+  ],
+  "code_and_test_refs": [
+    {
+      "path": "pmos/pmos/cli.py",
+      "sha256": "4c86351d9e21045281c2b2905e7abe3f692b33b5178d4844c58ae7b5b0ebd7d0"
+    },
+    {
+      "path": "pmos/pmos/contracts.py",
+      "sha256": "b1422ecede64d28de481636eaf477b9393a17c1b6c00280275ad64468472da75"
+    },
+    {
+      "path": "pmos/pmos/queue_compat.py",
+      "sha256": "2887cee7c734539349599b568797eb77c805380c0f8b00003df985e272fd68c9"
+    },
+    {
+      "path": "pmos/pmos/recovery/anhui_remaining.py",
+      "sha256": "23144f7d28e8b56e2a9d7cd921bceaf3709a9eadef0fc56401d3ebc2e6b985ca"
+    },
+    {
+      "path": "pmos/pmos/recovery/liaoning.py",
+      "sha256": "4239951508df697418b74e12c5349f38a6e9fdf3a5c996069f17f07199c7f83f"
+    },
+    {
+      "path": "pmos/pmos/recovery/liaoning_remaining.py",
+      "sha256": "c270d409b7d0fd79701f170f093323f19a694375b94013cd0de942e3a9fdc3be"
+    },
+    {
+      "path": "pmos/pmos/recovery/monday.py",
+      "sha256": "f60bb2370381abf237fea7e35727a4614215470a842b1bb322da8204f83ab36c"
+    },
+    {
+      "path": "pmos/pmos/recovery/shanxi_remaining.py",
+      "sha256": "e9784ba081db3b22b09d3f35cacf6efda12d901ad551bcd8221577094715d0ba"
+    },
+    {
+      "path": "pmos/tests/test_anhui_remaining.py",
+      "sha256": "2c132e97eca6f91fcbb7af7e2f42178a6a66c0a1a419a3983abcb50dfc767823"
+    },
+    {
+      "path": "pmos/tests/test_liaoning_recovery.py",
+      "sha256": "558e059752241b074cd27185d8ebb4293393aa051c95f92ae82cd1f4ef47501c"
+    },
+    {
+      "path": "pmos/tests/test_liaoning_remaining.py",
+      "sha256": "88a00e0dba4aee41b9864f0b60fa74507ae407a096dbe4d7504067f9b5980d62"
+    },
+    {
+      "path": "pmos/tests/test_monday_identity.py",
+      "sha256": "ba9314082c8da2fe2ac9e5e18ad4cf2e4ad8e070368fc629a5ea792796e8ca0e"
+    },
+    {
+      "path": "pmos/tests/test_monday_recovery.py",
+      "sha256": "15da7ea504957fcc244f41851a957e8c407b0cb02088f73a05b55119321b648e"
+    },
+    {
+      "path": "pmos/tests/test_recovery_tool.py",
+      "sha256": "ae110e2c1201783e06e7e69eec2873858285a6e12ade6424791739edd0a2f941"
+    },
+    {
+      "path": "pmos/tests/test_shanxi_remaining.py",
+      "sha256": "8e252d859e8a283ad867e9dae5f31e38739d4892f6168dee6c6de6d370d4a80f"
+    },
+    {
+      "path": "pmos/tools/recover_existing_evidence.py",
+      "sha256": "0b5b88775b601e4669a7762bfbe8472640e2c5c32a5efe0c3f0070a488915d58"
+    }
+  ],
+  "core_unchanged_from_phase_three": [
+    {
+      "path": "pmos/pmos/engine.py",
+      "sha256": "0d889ae4bd9a6cfb42fd74fe5a964a06468c4e4b2e2119037df6da7cf5f12448"
+    },
+    {
+      "path": "pmos/pmos/ledger.py",
+      "sha256": "b559dd70156afe1556a7f0219987e0f860372dfce741e5ecdfb7e750256fee9e"
+    },
+    {
+      "path": "pmos/pmos/pacing.py",
+      "sha256": "f45e2895172ed404621234f23fcab146b5a09d002894dc5c8381c6597a269e18"
+    },
+    {
+      "path": "pmos/pmos/spec.py",
+      "sha256": "c43feadc3bd81f77af34c7f956b06250e624a1f809a2663ab1f9ba3a9846045f"
+    },
+    {
+      "path": "pmos/pmos/province.py",
+      "sha256": "bf9512b43f923bbc4e497ef5b4e86f472a14bcdde0e9000d369be62b712e1123"
+    },
+    {
+      "path": "pmos/pmos/queue_audit.py",
+      "sha256": "83390e39fc78d4cf1a4eddad339a5fcd3434d3a642ac001843209f541789d2ac"
+    },
+    {
+      "path": "pmos/pmos/recovery/anhui.py",
+      "sha256": "16941a169b4ee00a1d5bf4518609a902f621edbf11243972158b6bb7649c5817"
+    },
+    {
+      "path": "pmos/pmos/recovery/shanxi.py",
+      "sha256": "74599fa61c9722bf11524a0a9fc31bc93e05ff09e728f10852b665a76a4e7b94"
+    }
+  ],
+  "phase_two_and_three_reports_unchanged": [
+    {
+      "path": "pmos/evidence/liaoning_phase2.json",
+      "sha256": "22527289d06489221bdaa74ed765c791bb2652b85bfc3777433e549c0f12e849"
+    },
+    {
+      "path": "pmos/evidence/liaoning_queue_phase2.json",
+      "sha256": "046d4d3aef69ac52ebec00f765e303d2feee3ef21edb41d2f556600f867c2ee5"
+    },
+    {
+      "path": "pmos/evidence/liaoning_phase3_recovery.json",
+      "sha256": "433ec2090a1741bda88534b12212db0f89d79f065831b1485aa0c61bef0c5eaf"
+    },
+    {
+      "path": "pmos/evidence/anhui_phase2.json",
+      "sha256": "a44c22defabd680d615217260e372a2664a66f422f9dbcde682f5c99fec47fcc"
+    },
+    {
+      "path": "pmos/evidence/anhui_queue_phase2.json",
+      "sha256": "4bc35e038d8e3a4c96108119a660f768c87864fa323fc2cc97ef3b21c1876da8"
+    },
+    {
+      "path": "pmos/evidence/anhui_phase3_recovery.json",
+      "sha256": "a39390f063c6b31d8479d370ccf63c3157a016d49cf407c794c410107e4a8814"
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase2.json",
+      "sha256": "24b8c7d8736f473b7bf517325885cc883f9f753a7bdba1cbd01aa21047bbf64d"
+    },
+    {
+      "path": "pmos/evidence/shanxi_queue_phase2.json",
+      "sha256": "02d28a5cc65e5296a6b344c26310d0285c1b833104a6f98c68e52d7633ec337f"
+    },
+    {
+      "path": "pmos/evidence/shanxi_phase3_recovery.json",
+      "sha256": "a601421876b796f6fc96b21dd14f547bc5d50c1101095dbd47ef2c69ad032e84"
+    }
+  ],
+  "outside_pmos_worktree": {
+    "git_status_mode": "porcelain=v1 -z (default untracked mode)",
+    "entries_before": 220,
+    "entries_after": 222,
+    "tracked_status_entries_unchanged": true,
+    "tracked_status_entries": 34,
+    "new_untracked_entries_seen": [
+      "?? liaoning/lncrawler/asyncio_wait_prevention.py",
+      "?? liaoning/tests/test_asyncio_wait_prevention.py"
+    ],
+    "removed_entries": [],
+    "handling": "Concurrent external files were left untouched and unstaged; only explicit PMOS paths were committed."
+  },
+  "website_requests": 0,
+  "production_writes": 0,
+  "live_services_touched": false,
+  "dispatch_allowed": false,
+  "limitations": [
+    "Native Monday query anchors have no inferred statistical week or scheduling expansion.",
+    "Seventeen Liaoning technical aliases reuse existing target originals; no independent original or permission is created.",
+    "Old snapshots preserve original pending even when newer current queues have saved; no production handoff or task eligibility follows.",
+    "Three Anhui exact binding copies and fifty-two independent candidate qualifications remain missing.",
+    "Nineteen Shanxi business originals remain missing; embedded empty selector and static forms are metadata evidence only.",
+    "All old denied, failed, unknown, consumed, scope and owner protections remain; current collection is not frozen."
+  ]
+}

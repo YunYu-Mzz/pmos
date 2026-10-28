@@ -1,5 +1,7 @@
 # 第二阶段旧队列兼容：只读规范化与离线影子索引
 
+2026-10-28增补：原生Monday锚点已有独立离线身份表达，见[Monday契约](MONDAY_IDENTITY.md)；历史快照的新发现见[第三轮](PHASE_THREE.md)，最新剩余核查见[第四轮](PHASE_FOUR.md)。下文真实快照计数保留第二阶段历史口径。
+
 本阶段实现真实旧格式的兼容读取、身份关联、防重放及新库影子索引。没有运行旧队列的open/reserve/reclaim/confirm/acknowledge，没有冻结或导入生产库，没有改变旧pending、unknown、denied或任何保活状态。
 
 ## 支持格式和证据来源
@@ -20,6 +22,7 @@
 
 TaskIdentity统一包含省份、账号别名、dataset、规范周期、类型保真的维度、页码和operation。等价的日/月/年表示规范成同一key；快照时间可用有时区ISO瞬间规范成UTC，或保留明确的opaque锚点；混合冲突字段拒绝。
 
+- 原生`week_start_monday`使用实际周一查询anchor，拒绝start/end和非周一；不自动改为day、snapshot或ISO周。旧类型身份SHA保持，映射后的消费/保护不变。
 - 辽宁选择项的name/type/mtype等只按实际源码中声明的period_field/selection_field映射，不把字段标签猜成相同含义。缺source rule时保持unmapped。真实类型1与字符串"1"始终不同。
 - Engine支持经过审阅的 `spec.source.identity_contract`，从实际request_data_path/date_fields构造同样的业务维度，分页包含_page_size；规则与实际pagination大小冲突即拒绝。测试验证旧decoder与同一Engine key一致。
 - 已派发业务请求的identity在发送前与attempt同事务落盘。即使归档/确认崩溃、人工将attempt结为unknown或改scope别名，都不能把它当新任务重发。

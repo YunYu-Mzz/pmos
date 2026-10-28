@@ -1,8 +1,10 @@
 # PMOS：三省离线适配与旧队列兼容
 
-2026-10-27第三轮只读补证。继续使用现有PMOS共同引擎，补辽宁、安徽、山西的已有原件链和旧队列身份；陕西、冀北未迁移。**网站请求为0，线上入口仍禁用，现有采集、保活、浏览器和旧队列未改。**
+2026-10-28第四轮离线身份与只读补证。继续使用现有PMOS共同引擎；陕西、冀北未迁移。**网站请求为0，线上入口仍禁用，现有采集、保活、浏览器和旧队列未改。**
 
-本轮结果及具体剩余项见[第三轮汇总](docs/PHASE_THREE.md)：辽宁原94个缺证来源补到43个原件链，1,552条未映射视图补回1,499条，余53条；安徽1,696条补回1,676条，余20条，40/43份旧binding找到精确不可变副本；山西49项按非空/空/拒绝/缺原件分层，并补到历史SQLite和journal快照。证据、协议映射和线上资格分别保留，不改变原消费或保护状态。
+本轮结果及具体剩余项见[第四轮汇总](docs/PHASE_FOUR.md)：辽宁42条Monday查询锚点全部可表达，原1,552条未映射累计补回1,541条，余11条；51个缺证技术来源另有17条同请求别名链，新增独立原件0。安徽原余20条再补10条，余10条，3份binding及52候选仍缺证。山西19项仍缺业务原件，另补强3条元数据链。旧消费事实和保护项均保持。
+
+[第三轮](docs/PHASE_THREE.md)的43个辽宁原件链、安徽40/43份精确binding副本、三省历史快照及分层资格保留；所有线上验收仍pending。
 
 ## 第二阶段基线（保留历史口径）
 
@@ -28,7 +30,7 @@ python3 -m pmos offline-audit liaoning
 python3 -m pmos offline-audit anhui
 python3 -m pmos offline-audit shanxi
 python3 -m pmos legacy-audit liaoning
-python3 tools/recover_existing_evidence.py all
+python3 tools/recover_existing_evidence.py all --stage remaining
 ```
 
 `offline-audit`会对指定省份全部本地留存材料只读重建，默认只输出摘要。可加 `--report var/new-review.json` 保存新报告，仅允许写本项目var。当前仍在运行的旧队列/尝试日志可能变化，报告明确记录滚动视图及读取期间漂移，不冻结旧进程。
@@ -50,11 +52,12 @@ XLS/旧DOC可选离线依赖见 `requirements-offline-workbooks.txt`（xlrd2.0.2
 `pmos/engine.py`、`ledger.py`、`contracts.py`共用；省份decoder放 `pmos/adapters/{liaoning,anhui,shanxi}.py`；工作簿通用代码只有 `workbooks.py` 一份；旧队列兼容在 `queue_compat.py`，本轮只读补链在 `pmos/recovery/`，不会导入旧worker。
 
 - [第三轮只读补证、历史快照与剩余项](docs/PHASE_THREE.md)
+- [第四轮Monday身份与剩余证据](docs/PHASE_FOUR.md)
 - [第二阶段汇总与缺项](docs/PHASE_TWO.md)
 - [辽宁逐项范围](docs/LIAONING_OFFLINE.md) · [安徽逐项范围](docs/ANHUI_OFFLINE.md) · [山西逐项范围](docs/SHANXI_OFFLINE.md)
 - [旧队列格式、身份、防重放与命令](docs/QUEUE_COMPATIBILITY.md)
 - [五省架构和回滚](docs/ARCHITECTURE.md) · [适配规范](docs/ADAPTING.md)
 - [Git/开发测试](docs/DEVELOPMENT.md) · [线上预算及验收门槛](docs/ACCEPTANCE.md)
-- [第三轮验证摘要](evidence/phase_three_validation.json) · [第二阶段验证](evidence/phase_two_validation.json)
+- [第四轮验证摘要](evidence/phase_four_validation.json) · [第三轮验证](evidence/phase_three_validation.json) · [第二阶段验证](evidence/phase_two_validation.json)
 
 所有run/capture/启用/控制/解除保护CLI仍被发行版拒绝；service模板失败门禁保持。没有创建远端、发邮件、写飞书或启用任何定时任务。
