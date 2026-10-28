@@ -54,7 +54,7 @@ class QueueContext:
     def check(self):
         if self.province not in PROVINCES or not self.account_alias:
             raise ValueError("explicit_province_account_required")
-        if self.period_kind not in (None, "day", "week", "month", "year", "snapshot", "range"):
+        if self.period_kind not in (None, "day", "week", "month", "year", "snapshot", "range", "week_start_monday"):
             raise ValueError("explicit_period_kind_required")
 
 

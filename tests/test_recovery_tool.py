@@ -1,7 +1,11 @@
 import importlib.util
+import io
+import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 
 SPEC = importlib.util.spec_from_file_location("recovery_tool", Path(__file__).resolve().parents[1] / "tools/recover_existing_evidence.py")
@@ -43,6 +47,18 @@ class RecoveryToolTests(unittest.TestCase):
         for key in ("password", "cookie", "token", "raw", "selectors", "params", "model"):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 TOOL.validate_report({"nested": [{key: "unwanted"}]})
+
+    def test_remaining_stage_checks_monday_before_province_remainders(self):
+        def module(name):
+            return SimpleNamespace(recover=lambda root: {"summary": {"module": name}, "website_requests": 0})
+        stream = io.StringIO()
+        with patch.object(TOOL.importlib, "import_module", side_effect=module) as imported, patch.object(TOOL.sys, "stdout", stream):
+            self.assertEqual(TOOL.main(["all", "--stage", "remaining"]), 0)
+        self.assertEqual([call.args[0] for call in imported.call_args_list], [
+            "pmos.recovery.monday", "pmos.recovery.liaoning_remaining", "pmos.recovery.anhui_remaining", "pmos.recovery.shanxi_remaining"])
+        report = json.loads(stream.getvalue())
+        self.assertEqual(list(report["summaries"]), ["liaoning_monday", "liaoning", "anhui", "shanxi"])
+        self.assertEqual(report["stage"], "remaining")
 
 
 if __name__ == "__main__":

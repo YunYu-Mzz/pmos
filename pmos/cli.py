@@ -200,7 +200,7 @@ def main(argv: list[str] | None = None) -> int:
     legacy.add_argument("--sha256", required=True)
     legacy.add_argument("--account-alias", required=True)
     legacy.add_argument("--dataset", default="")
-    legacy.add_argument("--period-kind", choices=["day", "week", "month", "year", "snapshot", "range"])
+    legacy.add_argument("--period-kind", choices=["day", "week", "month", "year", "snapshot", "range", "week_start_monday"])
     legacy.add_argument("--operation", choices=["query", "export", "listing", "attachment", "article"],
                         help="reviewed operation; do not infer export/query from the queue filename")
     legacy.add_argument("--snapshot-anchor")

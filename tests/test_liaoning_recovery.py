@@ -99,12 +99,12 @@ class RecoveryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "baseline_decoder_count_or_state_changed"):
             recovery._baseline_views(recovery._Reader(self.root))
 
-    def test_monday_anchor_keeps_protocol_gap(self):
-        rule = self.rule()
+    def test_monday_anchor_keeps_native_query_semantics(self):
+        rule = {**self.rule(), "period_kind": "week_start_monday"}
         identity, reason = recovery._identity("weekly", {
             "period": "2026-10-05", "params": {"mdate": "2026-10-05"}}, rule, "week_start_monday")
-        self.assertIsNone(identity)
-        self.assertIn("not_expressible", reason)
+        self.assertIsNone(reason)
+        self.assertEqual(identity.document()["period"], {"kind": "week_start_monday", "anchor": "2026-10-05"})
         _, reason = recovery._identity("weekly", {"period": "2026-10-06"}, rule, "week_start_monday")
         self.assertEqual(reason, "native_monday_query_invalid")
         identity, _ = recovery._identity("ordinary_date", {

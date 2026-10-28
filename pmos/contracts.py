@@ -65,13 +65,25 @@ def reject_secrets(value) -> None:
 def normalized_period(value: dict) -> dict:
     """Canonical calendar keys; equivalent spellings cannot evade dedupe.
 
-    Snapshot anchors remain capture anchors, never statistical periods. Weeks
-    and true ranges keep explicit boundaries rather than guessing a calendar.
+    Snapshot anchors remain capture anchors, never statistical periods. Native
+    Monday queries retain one query anchor, without inferred week boundaries.
+    Weeks and true ranges require their actual explicit boundaries.
     """
     kind = value["kind"]
     if set(value) - {"kind", "label", "start", "end", "anchor"}:
         raise ValueError("period_fields_unreviewed")
     label = value.get("label", value.get("start", value.get("anchor")))
+    if kind == "week_start_monday":
+        if (set(value) - {"kind", "label", "anchor"} or not isinstance(label, str)
+                or any(v != label for k, v in value.items() if k != "kind")):
+            raise ValueError("explicit_monday_query_anchor_required")
+        try:
+            observed = date.fromisoformat(label)
+            if observed.isoformat() != label or observed.weekday() != 0:
+                raise ValueError()
+        except ValueError:
+            raise ValueError("canonical_monday_anchor_required") from None
+        return {"kind": kind, "anchor": label}
     if kind == "snapshot":
         if not isinstance(label, str) or not label or value.get("end", label) != label:
             raise ValueError("explicit_snapshot_anchor_required")
@@ -121,7 +133,7 @@ class TaskIdentity:
                ("province", "account_alias", "dataset", "operation")):
             raise ValueError("identity_fields_required")
         if not isinstance(self.period, dict) or self.period.get("kind") not in {
-                "day", "week", "month", "year", "snapshot", "range"}:
+                "day", "week", "month", "year", "snapshot", "range", "week_start_monday"}:
             raise ValueError("explicit_period_kind_required")
         if self.page is not None and (type(self.page) is not int or self.page < 1):
             raise ValueError("page_invalid")

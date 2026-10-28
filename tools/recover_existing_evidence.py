@@ -48,6 +48,8 @@ def output_directory(project, requested):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Only read existing province evidence; no browser/network/worker")
     parser.add_argument("province", choices=["liaoning", "anhui", "shanxi", "all"])
+    parser.add_argument("--stage", choices=["retained", "remaining"], default="retained",
+                        help="remaining checks the saved unresolved cohort; Liaoning verifies Monday identities first")
     parser.add_argument("--workspace", type=Path, default=PROJECT.parent)
     parser.add_argument("--output-dir", type=Path)
     args = parser.parse_args(argv)
@@ -57,7 +59,11 @@ def main(argv=None):
     provinces = ["liaoning", "anhui", "shanxi"] if args.province == "all" else [args.province]
     reports = {}
     for province in provinces:
-        module = importlib.import_module("pmos.recovery." + province)
+        if args.stage == "remaining" and province == "liaoning":
+            monday = importlib.import_module("pmos.recovery.monday").recover(args.workspace / province)
+            validate_report(monday)
+            reports["liaoning_monday"] = monday
+        module = importlib.import_module("pmos.recovery." + province + ("_remaining" if args.stage == "remaining" else ""))
         result = module.recover(args.workspace / province)
         validate_report(result)
         reports[province] = result
@@ -69,7 +75,7 @@ def main(argv=None):
                 stream.write("\n")
     summaries = {province: report.get("summary", report.get("counts", {"report_ready": True}))
                  for province, report in reports.items()}
-    print(json.dumps({"mode": "read_only_existing_evidence", "summaries": summaries}, ensure_ascii=False, indent=2))
+    print(json.dumps({"mode": "read_only_existing_evidence", "stage": args.stage, "summaries": summaries}, ensure_ascii=False, indent=2))
     return 0
 
 

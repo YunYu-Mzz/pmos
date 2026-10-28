@@ -302,6 +302,10 @@ def _baseline_views(reader):
     baseline, _ = reader.json(reader.workspace / "pmos/evidence/liaoning_queue_phase2.json")
     manifest, manifest_sha = reader.json(MANIFEST)
     kinds = {dataset: spec.get("period", "snapshot") for dataset, spec in manifest.get("sources", {}).items()}
+    # Preserve the phase-two decoder's unsupported-period result. Adding an
+    # identity kind must not silently change the historical comparison cohort.
+    baseline_kinds = {dataset: None if kind == "week_start_monday" else kind
+                      for dataset, kind in kinds.items()}
     for relative in RULE_FILES[:2]:
         if (reader.root / relative).is_file():
             reader.raw(relative)
@@ -321,10 +325,10 @@ def _baseline_views(reader):
             value = {"sources": {dataset: {"tasks": {}, "outcomes": spec.get("prior_outcomes", {})}
                                   for dataset, spec in manifest.get("sources", {}).items()}}
             digest = _sha(canonical(value))
-            tasks = decode_liaoning(value, context, period_kinds=kinds, source_contracts=old_rules)
+            tasks = decode_liaoning(value, context, period_kinds=baseline_kinds, source_contracts=old_rules)
         elif relative == QUEUE:
             value, digest = reader.json(relative)
-            tasks = decode_liaoning(value, context, period_kinds=kinds, source_contracts=old_rules)
+            tasks = decode_liaoning(value, context, period_kinds=baseline_kinds, source_contracts=old_rules)
         elif re.fullmatch(ENGINE + r"/[A-Za-z0-9_]+/queue\.json", relative):
             value, digest = reader.json(relative)
             tasks = decode_frontier(value, QueueContext("liaoning", context.account_alias, value["dataset"], "day"))
@@ -371,14 +375,26 @@ def _job_and_outcome(view, task):
 
 def _identity(dataset, job, rule, kind):
     if kind == "week_start_monday":
+        if not rule or rule.get("period_kind") != kind:
+            return None, "native_monday_source_rule_required"
         try:
-            if date.fromisoformat(job.get("period")).weekday() != 0:
+            native = job.get("period")
+            observed = date.fromisoformat(native)
+            if observed.isoformat() != native or observed.weekday() != 0:
                 return None, "native_monday_query_invalid"
         except (ValueError, TypeError):
             return None, "native_monday_query_invalid"
-        return None, "native_monday_anchor_not_expressible_by_current_protocol"
+        if "snapshot_date" in job or job.get("_explicit_engine_outcome_date"):
+            return None, "native_monday_parameters_required"
+        # ReportAdapter.params explicitly permits only its page=1 default and
+        # does not send a page parameter for these reports. Other pages need a
+        # separately reviewed pagination contract; never silently discard one.
+        if job.get("page") is not None and (type(job["page"]) is not int or job["page"] != 1):
+            return None, "native_monday_pagination_unreviewed"
     period = job.get("snapshot_date", job.get("period"))
     params, page = job.get("params", {}), job.get("page")
+    if not isinstance(params, dict):
+        return None, "native_parameters_object_required"
     if "snapshot_date" in job:
         if params != {"page": page, "snapshot_date": period}:
             return None, "snapshot_parameters_do_not_match"
@@ -567,7 +583,7 @@ def recover(root):
             extra.append({**reader.ref(relative), "dataset_groups": len(groups),
                           "phase2_cohort_member": False, "added_to_baseline_recovery_count": False})
     drift = reader.changed()
-    report = {"schema": "pmos-liaoning-retained-recovery-v1", "province": "liaoning",
+    report = {"schema": "pmos-liaoning-retained-recovery-v2", "province": "liaoning",
             "mode": "read_only_retained_originals_and_queue_snapshots", "website_requests": 0,
             "production_writes": 0, "dispatch_allowed": False, "live_handoff_completed": False,
             "source_evidence": {"baseline_missing_or_review": len(sources), **dict(source_counts),
@@ -581,7 +597,7 @@ def recover(root):
             "inputs_changed_during_scan": drift, "rolling_read_not_frozen": True,
             "limitations": ["found originals are technical-source evidence, not full history or semantic acceptance",
                 "newer captures never establish an old queue identity without an exact old-key/query/body-SHA bridge",
-                "week_start_monday remains unmapped until the identity protocol can preserve its native semantics",
+                "week_start_monday is a native query anchor, not an inferred statistical week or dispatch permission",
                 "existing unknown/failed/denied, stages and holds remain consumed and non-dispatchable",
                 "unretained remote originals and credentials were not accessed"]}
     # Intern public path/SHA references once. Large pending cohorts share the
