@@ -4,16 +4,47 @@
   "origin": "https://pmos.ah.sgcc.com.cn",
   "browser": {
     "profile_dir": "~/pmos-browser/anhui",
-    "page_url_contains": "/pxf-settlement-outnetpub/"
+    "page_url_contains": "/pxf-settlement-outnetpub/",
+    "note": "local override: <instance>/browser.json {\"profile_dir\": \"/Users/yunyu/Desktop/sd_crawler/anhui/state/server_browser_profile\"} (the dedicated Edge; its DevToolsActivePort gives the CDP port after a relaunch); only the one 综合查询 page matches",
+    "request_gate": true,
+    "work_page": {
+      "name": "pmos-anhui-work",
+      "open_from": "/#/dashboard",
+      "menu": [
+        "信息披露",
+        "综合查询"
+      ],
+      "url_contains": "columnHomeLeftMenuNew",
+      "adopt_url_contains": "columnHomeLeftMenuNew",
+      "note": "the one 综合查询 page the legacy worker left is adopted (one tab only); after a renderer crash a fresh one opens by the portal's own menu click (the site's script adds a dynamic verified parameter; a bare window.open is unproven) — Anhui open_disclosure, proven 2026-10-31 16:01"
+    },
+    "page_recycle": {
+      "max_age_seconds": 3600,
+      "max_js_heap_mb": 768,
+      "note": "Anhui legacy page_recycle_control (2026-11-01 00:20): one 综合查询 page grew to 2.4 GB / 650% CPU and crashed about every 2.5 h"
+    },
+    "renderer_alert": {
+      "rss_mb": 1536,
+      "cpu_percent": 300,
+      "note": "an event (renderer_heavy) for the province session; the page itself is recycled by page_recycle"
+    },
+    "template_frame_fallback": "main_frame",
+    "template_ttl_seconds": 14400,
+    "template_note": "Anhui legacy keeps a page request template (URL, session headers, body shape) until restart and sends it from the current page's main frame after a recycle (2026-11-01 00:37: four whole-day requests succeeded on the pre-recycle templates); PMOS keeps it 4 h and falls back to the main frame"
   },
   "policy": {
-    "response_interval_seconds": 20,
+    "response_interval_seconds": 1,
     "max_per_hour": null,
     "max_per_day": null,
     "request_timeout_seconds": 45,
     "max_consecutive_empty": 2,
     "renew_after_idle_seconds": 300,
-    "probe_after_idle_seconds": 300
+    "probe_after_idle_seconds": 300,
+    "isolate_items": [
+      "unknown",
+      "site_data"
+    ],
+    "note": "Anhui production (2026-10-31): one lane, 1 s after every response (user 23:40: 也改成1s的间隔吧; legacy adaptation_workflow_policy since 23:39); keepalive after 300 s idle; 401/403/40302/429 stop the province; a transient or unknown failure settles that item for review, never re-sent, other dates go on (3 in a row pause the report)"
   },
   "session": {
     "keepalive_dataset": null,
@@ -21,7 +52,8 @@
     "collection_order": [
       "actual_load"
     ],
-    "legacy_keepalive_dataset": "actual_load"
+    "legacy_keepalive_dataset": "actual_load",
+    "cutover_keepalive_dataset": "queryRqxtfhyc"
   },
   "notices": {},
   "release": {

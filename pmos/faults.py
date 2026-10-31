@@ -13,7 +13,9 @@ network     no or incomplete response                   block province, no keepa
 unknown     unexpected business code / HTML page        block province, no keepalive
 site_data   HTTP 200 + business success, but the        quarantine dataset,
             payload failed local validation             others continue
-local       our bug, config or disk problem             block province, keepalive
+local       our bug, config or disk problem             block province (keepalive only
+                                                        for template waits); proven
+                                                        unsent page step: hold dataset
 ==========  ==========================================  ======================
 
 "keepalive" means the session keeper may keep renewing the login while a
@@ -28,7 +30,7 @@ CATEGORIES = ("auth", "permission", "rate_limit", "network", "unknown", "site_da
 
 class Fault(Exception):
     def __init__(self, code: str, category: str, *, http_status: int | None = None,
-                 business_status: str | None = None):
+                 business_status: str | None = None, unsent: bool = False):
         if category not in CATEGORIES:
             raise ValueError("fault_category_invalid")
         super().__init__(code)
@@ -36,6 +38,9 @@ class Fault(Exception):
         self.category = category
         self.http_status = http_status
         self.business_status = business_status
+        # Proven by the transport: no business request of this operation
+        # reached the network (the request gate passed none). Consumes nothing.
+        self.unsent = unsent
 
 
 @dataclass(frozen=True)
@@ -45,6 +50,15 @@ class Decision:
     dataset_status: str | None = None   # new spec status for dataset-scoped faults
 
 
+class DriverLost(RuntimeError):
+    """The browser driver or its connection is gone (Anhui 2026-10-31: a late CDP reply killed Playwright).
+
+    Every further call would fail at once and settle item after item as
+    unknown, so the worker records it and exits for its supervisor to restart
+    it (no business block); the request in flight stays unknown, never re-sent.
+    """
+
+
 def decide(fault: Fault, phase: str, *, permission_scope: str = "province") -> Decision:
     """``phase`` is "collect" (enabled datasets) or "sample" (adaptation)."""
     if fault.category == "site_data":
@@ -52,6 +66,10 @@ def decide(fault: Fault, phase: str, *, permission_scope: str = "province") -> D
     if fault.category == "permission" and (phase == "sample" or (
             permission_scope == "dataset" and fault.http_status == 200 and fault.business_status == "40302")):
         return Decision("dataset", True, "denied")
+    if fault.category == "local" and fault.unsent:
+        # One dataset's page step failed before anything was sent (a missing
+        # module/component, an unmet form check): that dataset waits for review.
+        return Decision("dataset", True, "paused")
     if fault.category == "local" and fault.code in {
             "request_template_missing", "request_template_stale", "report_frame_missing", "spacing_not_elapsed"}:
         return Decision("province", True)

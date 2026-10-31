@@ -5,16 +5,32 @@
   "browser": {
     "profile_dir": "~/pmos-browser/shanxi",
     "page_url_contains": null,
-    "note": "server override: <instance>/browser.json {\"profile_dir\": \"/home/ubuntu/sd_crawler/shanxi/state/server_browser_profile\"}"
+    "note": "server override: <instance>/browser.json {\"profile_dir\": \"/home/ubuntu/sd_crawler/shanxi/state/server_browser_profile\"}",
+    "request_gate": true,
+    "memory_guard": {
+      "browser_cgroup": "system.slice/shanxi-browser.service",
+      "note": "Shanxi production's memory guard: business pauses on a short worker/browser/host/driver reserve, the login is still renewed; per-machine override in <instance>/browser.json"
+    },
+    "page_heap_refresh_mib": 300
   },
   "policy": {
-    "response_interval_seconds": 15,
+    "response_interval_seconds": 1,
     "max_per_hour": null,
     "max_per_day": null,
     "request_timeout_seconds": 45,
     "max_consecutive_empty": 2,
     "renew_after_idle_seconds": 300,
-    "probe_after_idle_seconds": 300
+    "probe_after_idle_seconds": 300,
+    "lane_intervals": {
+      "native": 1,
+      "publication": 1
+    },
+    "isolate_items": [
+      "unknown",
+      "site_data",
+      "permission"
+    ],
+    "unpublished_window_days": 7
   },
   "session": {
     "keepalive_dataset": null,
@@ -23,10 +39,11 @@
     },
     "collection_order": [
       "queryRqxtfhyc"
-    ],
-    "legacy_keepalive_dataset": "queryRqxtfhyc"
+    ]
   },
-  "notices": {},
+  "notices": {
+    "production_baseline": "2026-10-31 server: one worker, main 15 s, coordinator 5 s on native and publication, non-auth single-item failures isolated (user 2026-10-30), renewal = queryMarketClearingRT export of 2026-10-30 after 300 s idle, no TIME"
+  },
   "release": {
     "mode": "offline_only",
     "policy_reference": "2026-10-27 retained authorization records; never applied to production"

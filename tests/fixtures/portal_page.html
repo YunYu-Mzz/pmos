@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- Offline stand-in for the PMOS portal: an Element UI menu tree whose root
+     nodes carry the site's menu data (name, currentNode {name, url}, nextNode)
+     on __vue__.node.data; a leaf opens its route in the portal's own app frame.
+     A PMOS frame of the same route is already open. -->
+<html><head><meta charset="utf-8"><title>portal fixture</title>
+<style>
+  .el-tree-node__children { padding-left: 16px; }
+  .el-tree-node:not(.is-expanded) > .el-tree-node__children { display: none; }
+  iframe { width: 300px; height: 100px; }
+</style></head>
+<body>
+<div class="el-tree" id="tree"></div>
+<div id="frames"><iframe id="pmos-x" src="/component_page.html#/pxf-x/report"></iframe></div>
+<script>
+window.clicks = 0;
+const menu = [{name: '信息披露', nextNode: [
+  {name: '现货日前信息', nextNode: [
+    {currentNode: {name: '日前备用总量', url: '/pxf-x/report'}},
+    {currentNode: {name: '统调用电负荷', url: '/pxf-x/load'}}]},
+  {name: '现货出清结果', nextNode: [{currentNode: {name: '出清电价', url: '/pxf-x/price'}}]}]}];
+function openRoute(url) {
+  let frame = document.getElementById('pxf-x');
+  if (!frame) { frame = document.createElement('iframe'); frame.id = 'pxf-x'; document.getElementById('frames').append(frame); }
+  frame.src = '/component_page.html#' + url;
+}
+function node(data) {
+  const el = document.createElement('div'); el.className = 'el-tree-node';
+  const content = document.createElement('div'); content.className = 'el-tree-node__content';
+  const children = data.nextNode || [];
+  if (children.length) {
+    const icon = document.createElement('span'); icon.className = 'el-tree-node__expand-icon'; icon.textContent = '▸';
+    icon.onclick = () => el.classList.toggle('is-expanded'); content.append(icon);
+  }
+  // As on the Shanxi portal: the label is span.span-ellipsis holding an icon and a span.
+  const label = document.createElement('span'); label.className = 'span-ellipsis';
+  const icon = document.createElement('img'); const text = document.createElement('span');
+  text.textContent = data.name || data.currentNode.name; label.append(icon, text);
+  if (!children.length) label.onclick = () => {
+    window.clicks += 1;
+    document.querySelectorAll('.is-current').forEach(n => n.classList.remove('is-current'));
+    el.classList.add('is-current'); openRoute(data.currentNode.url);
+  };
+  content.append(label); el.append(content);
+  if (children.length) {
+    const box = document.createElement('div'); box.className = 'el-tree-node__children';
+    children.forEach(c => box.append(node(c))); el.append(box);
+  }
+  el.__vue__ = {node: {data}};
+  return el;
+}
+menu.forEach(m => document.getElementById('tree').append(node(m)));
+</script></body></html>

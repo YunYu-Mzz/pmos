@@ -1,7 +1,7 @@
 {
   "id": "sitewide_46fa5856d5315e4e",
   "name": "新能源总出力",
-  "status": "candidate",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -16,22 +16,52 @@
     "component": "pdblnReport001",
     "call": "initData",
     "set": {
-      "queryParam.mdate": "{date}"
+      "tableData": [],
+      "queryParam.mdate": "{date}",
+      "queryParam.name": "{scope[name]}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_xnyzsscl",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport001"
     }
   },
   "response": {
     "kind": "json"
   },
+  "scopes": [
+    {
+      "name": "光伏总实时出力"
+    }
+  ],
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "pending",
-    "options_api": "pdblnReportDic001"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "001",
+    "legacy_source": "lnsnxh_xnyzsscl",
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "7b6a06ffc7348dcc6bbc9137088eac52bc22f00e0cfc157c496b75ddd47dd60a"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {
+        "queryParam.name": "name"
+      }
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {
-      "at": "2026-10-23T10:28:32+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "pending"
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
     }
   ]
 }

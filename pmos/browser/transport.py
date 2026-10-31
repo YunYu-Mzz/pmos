@@ -41,7 +41,7 @@ from pathlib import Path
 from urllib.parse import urlencode, urlsplit
 
 from .. import platform
-from ..faults import Fault
+from ..faults import DriverLost, Fault
 from ..validate import CAPTURE_TYPE, Response
 from . import ui
 
@@ -129,23 +129,53 @@ _STEP_JS = "async step => {" + _FIND + """
 
 
 # Installed once per frame; active only while window.__pmosQuietUntil lies ahead.
+# While a PMOS call runs, the page's "save file" click is suppressed and the
+# Blob it was about to save is handed to PMOS instead: the site builds it from
+# its own arraybuffer response, which CDP's response.body() can corrupt for
+# charset-labelled binary exports (Shanxi production saves the download for
+# the same reason).
 _QUIET_JS = """ms => {
-  if (!window.__pmosQuietInstalled) {
+  if (window.__pmosQuietInstalled !== 3) {
     const quiet = () => (window.__pmosQuietUntil || 0) > Date.now();
+    const blobs = new Map();
+    const create = URL.createObjectURL;
+    URL.createObjectURL = function (object) {
+      const url = create.apply(this, arguments);
+      if (quiet() && object instanceof Blob) {
+        blobs.set(url, object);
+        while (blobs.size > 4) blobs.delete(blobs.keys().next().value);
+      }
+      return url;
+    };
     const click = HTMLAnchorElement.prototype.click;
     HTMLAnchorElement.prototype.click = function () {
-      if (quiet() && (this.hasAttribute('download') || /^blob:|^data:/.test(this.href || ''))) return;
+      if (quiet() && (this.hasAttribute('download') || /^blob:|^data:/.test(this.href || ''))) {
+        const blob = blobs.get(this.href), name = this.getAttribute('download') || '';
+        if (blob) {
+          blobs.delete(this.href);
+          // The page never revokes its download URLs: each file stayed in the
+          // renderer for good. The Blob object itself stays readable here.
+          try { URL.revokeObjectURL(this.href); } catch (e) {}
+          window.__pmosBlob = {pending: true, name};
+          blob.arrayBuffer().then(buffer => {
+            const bytes = new Uint8Array(buffer); let raw = '';
+            for (let i = 0; i < bytes.length; i += 16384) raw += String.fromCharCode(...bytes.subarray(i, i + 16384));
+            window.__pmosBlob = {name, size: bytes.length, base64: btoa(raw)};
+          }, () => { window.__pmosBlob = {name, error: 'blob_read_failed'}; });
+        }
+        return;
+      }
       return click.apply(this, arguments);
     };
     const open = window.open;
     window.open = function () { return quiet() ? null : open.apply(this, arguments); };
-    window.__pmosQuietInstalled = true;
+    window.__pmosQuietInstalled = 3;
   }
   window.__pmosQuietUntil = Date.now() + ms;
   return true;
 }"""
 
-_NATIVE_JS = """args => {
+_NATIVE_RESOLVE = """
   if (typeof window.__pmosRequire !== 'function') {
     const chunks = window.webpackJsonp;
     if (!chunks || typeof chunks.push !== 'function') throw new Error('webpack_runtime_missing');
@@ -158,14 +188,83 @@ _NATIVE_JS = """args => {
   const fn = args.export ? (exported && (exported[args.export] || (exported.default || {})[args.export]))
                          : (exported && (exported.default || exported));
   if (typeof fn !== 'function') throw new Error('native_export_missing');
+"""
+
+_NATIVE_JS = "args => {" + _NATIVE_RESOLVE + """
   const result = fn(...(args.args || []));
   if (result && typeof result.catch === 'function') result.catch(() => {});
   return true;
 }"""
 
+# Preflight only: the helper must already be loaded in this frame. A module of
+# a lazily loaded chunk (Shanxi's file helper 63a1 arrives with the announcement
+# dialog) is missing until the page itself loads it.
+_NATIVE_PROBE_JS = "args => {" + _NATIVE_RESOLVE + "  return true;\n}"
+
+
+class _Expect:
+    """``page.expect_response`` / ``expect_download`` without Playwright's Waiter.
+
+    The Waiter sends ``__waitInfo__`` messages that expect no reply, yet the
+    1.63 Python client keeps each one's callback (with its stack) in the
+    connection and the driver never answers: two leaked per wait, for the life
+    of the connection (654 after 327 Shanxi calls). A plain listener for the
+    duration of the wait leaves nothing behind.
+    """
+
+    def __init__(self, page, event: str, predicate=None, *, timeout: float):
+        self.page, self.event, self.timeout = page, event, timeout / 1000
+        self.predicate = predicate or (lambda value: True)
+
+    def _on(self, value) -> None:
+        if self.future.done():
+            return
+        try:
+            if self.predicate(value):
+                self.future.set_result(value)
+        except Exception as exc:
+            self.future.set_exception(exc)
+
+    def _close(self) -> None:
+        self.page.remove_listener(self.event, self._on)
+        if not self.future.done():
+            self.future.cancel()
+
+    async def __aenter__(self):
+        loop = asyncio.get_running_loop()
+        self.future, self.deadline = loop.create_future(), loop.time() + self.timeout
+        self.page.on(self.event, self._on)
+        return self
+
+    async def __aexit__(self, exc_type, *exc):
+        if exc_type is not None:
+            self._close()
+        return False
+
+    @property
+    def value(self):
+        """Awaitable, like Playwright's: the first matching event within the timeout."""
+        return self._value()
+
+    async def _value(self):
+        try:
+            remaining = self.deadline - asyncio.get_running_loop().time()
+            return await asyncio.wait_for(self.future, max(remaining, 0.001))
+        finally:
+            self._close()
+
 
 class Templates:
-    """Latest observed request per site path, captured from the page itself."""
+    """Latest observed request per site path, captured from the page itself.
+
+    Listening to the context's requests makes the Playwright driver keep an
+    object per network request (the Shanxi collector's memory growth). By
+    default PMOS therefore listens only inside :meth:`window`, i.e. while one
+    of its own page operations runs (a bootstrap export, a component call):
+    the page's own request is captured as a template there, and background
+    traffic between operations creates nothing. ``always=True`` keeps the
+    old behaviour for sources whose template only a human click provides.
+    """
 
     def __init__(self, origin: str, clock=time.monotonic, *, max_items: int = 128, ttl: float = 900):
         self.origin = origin
@@ -175,22 +274,55 @@ class Templates:
         self.pending: set = set()
         self.max_items, self.ttl = max_items, ttl
         self._context = self._listener = None
+        self._spawn = None
+        self._always = False
+        self._windows = 0
 
-    def observe(self, context, spawn) -> None:
+    def observe(self, context, spawn, *, always: bool = False) -> None:
         self.detach()
-        self._context = context
-        self._listener = lambda request: self._request(request, spawn)
-        context.on("request", self._listener)
+        self._context, self._spawn, self._always = context, spawn, always
+        if always:
+            self._listen()
+
+    @property
+    def listening(self) -> bool:
+        return self._listener is not None
+
+    def _listen(self) -> None:
+        if self._context is not None and self._listener is None:
+            self._listener = lambda request: self._request(request, self._spawn)
+            self._context.on("request", self._listener)
+
+    def _unlisten(self) -> None:
+        if self._context is not None and self._listener is not None:
+            self._context.remove_listener("request", self._listener)
+        self._listener = None
+
+    def window(self):
+        """Listen for the duration of one PMOS page operation (nests)."""
+        templates = self
+
+        class _Window:
+            def __enter__(self):
+                templates._windows += 1
+                templates._listen()
+
+            def __exit__(self, *exc):
+                templates._windows -= 1
+                if templates._windows == 0 and not templates._always:
+                    templates._unlisten()
+                return False
+        return _Window()
 
     def detach(self) -> None:
-        if self._context is not None:
-            self._context.remove_listener("request", self._listener)
-        self._context = self._listener = None
+        self._unlisten()
+        self._context = self._spawn = None
+        self._always, self._windows = False, 0
         self.items.clear()
 
-    def prune(self) -> None:
+    def prune(self, *, keep_detached: bool = False) -> None:
         for path, template in list(self.items.items()):
-            if self.clock() - template["at"] > self.ttl or template["frame"].is_detached():
+            if self.clock() - template["at"] > self.ttl or (template["frame"].is_detached() and not keep_detached):
                 self.items.pop(path, None)
         while len(self.items) > self.max_items:
             self.items.pop(min(self.items, key=lambda key: self.items[key]["at"]))
@@ -215,26 +347,219 @@ class Templates:
         except Exception:
             pass  # a vanished frame simply leaves no template
 
-    def get(self, path: str, max_age: float | None = None) -> dict:
-        self.prune()
+    def get(self, path: str, max_age: float | None = None, *, fallback_frame=None) -> dict:
+        """``fallback_frame``: a template whose frame is gone is sent from it (its headers are the session's)."""
+        self.prune(keep_detached=fallback_frame is not None)
         template = self.items.get(path)
         if template is None:
             raise Fault("request_template_missing", "local")
         if max_age is not None and self.clock() - template["at"] > max_age:
             raise Fault("request_template_stale", "local")
         if template["frame"].is_detached():
-            raise Fault("request_template_frame_detached", "local")
+            if fallback_frame is None:
+                raise Fault("request_template_frame_detached", "local")
+            return {**template, "frame": fallback_frame}
         return template
+
+
+class RequestGate:
+    """Owned-frame request gate for one PMOS page operation (Shanxi production's design).
+
+    While a call runs, every request from the operation's frame (or its child
+    frames) is decided here: the one expected business request (method +
+    path) passes once, SSO/gateway exchanges and static assets pass, and
+    everything else -- a component's own mount-time query, a second business
+    request, another origin -- is aborted and recorded. One operation can
+    therefore never send more business requests than the ledger recorded.
+    """
+
+    def __init__(self, page, origin: str, frame, expected: tuple[str, str] | None):
+        self.page, self.origin, self.frame, self.expected = page, origin, frame, expected
+        self.counts = {"business": 0, "auth": 0, "static": 0, "blocked": 0}
+        self.blocked: list[str] = []
+        self.closed = False
+
+    def _ours(self, frame) -> bool:
+        while frame is not None:
+            if frame == self.frame:
+                return True
+            frame = frame.parent_frame
+        return False
+
+    async def handle(self, route) -> None:
+        request = route.request
+        try:
+            frame = request.frame
+        except Exception:
+            frame = None  # service-worker requests belong to no frame
+        if frame is None or not self._ours(frame):
+            return await route.continue_()
+        parsed = urlsplit(request.url)
+        if parsed.scheme in ("data", "blob"):
+            return await route.continue_()
+        if f"{parsed.scheme}://{parsed.netloc}" == self.origin:
+            if parsed.path in platform.GATE_AUTH_PATHS:
+                self.counts["auth"] += 1
+                return await route.continue_()
+            if request.method in ("GET", "HEAD") and request.resource_type in platform.GATE_STATIC_TYPES:
+                self.counts["static"] += 1
+                return await route.continue_()
+            if self.expected == (request.method, parsed.path) and self.counts["business"] == 0 and not self.closed:
+                self.counts["business"] += 1
+                return await route.continue_()
+        self.counts["blocked"] += 1
+        if len(self.blocked) < 20:
+            self.blocked.append(f"{request.method} {parsed.path}")
+        await route.abort("blockedbyclient")
+
+    async def __aenter__(self):
+        await self.page.context.route("**/*", self.handle)
+        return self
+
+    async def __aexit__(self, *exc):
+        try:
+            await self.page.context.unroute("**/*", self.handle)
+        except Exception:
+            pass
+        return False
+
+    def summary(self) -> dict:
+        return {**self.counts, "blocked_paths": list(self.blocked)}
+
+    async def unsent(self) -> bool:
+        """After a failed page call: did no business request get out?
+
+        The gate closes first, so a request the failed call may still have
+        started is aborted when it reaches the route; then the count decides.
+        """
+        self.closed = True
+        await asyncio.sleep(0.5)
+        return self.counts["business"] == 0
+
+
+class _NoGate:
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *exc):
+        return False
+
+    async def unsent(self) -> bool:
+        return False  # without a gate nothing proves it
+
+    def summary(self):
+        return None
+
+
+# Playwright's messages once its driver or the browser connection is gone.
+_DRIVER_GONE = ("Connection closed", "Target page, context or browser has been closed", "Browser has been closed",
+                "browser has disconnected")
+
+
+def _lost_or_network(exc: Exception):
+    """A dead driver is no network outcome: the worker must restart (DriverLost); anything else may have been sent."""
+    if any(marker in str(exc) for marker in _DRIVER_GONE):
+        return DriverLost(str(exc)[:200])
+    return Fault("network_error", "network")
+
+
+def _template_body(raw, changes: dict) -> str:
+    """The template's JSON body with ``changes`` (dotted paths that must already exist) applied."""
+    try:
+        body = json.loads(raw or "")
+    except (TypeError, ValueError):
+        raise Fault("template_body_not_json", "local", unsent=True) from None
+    for path, value in changes.items():
+        keys, target = path.split("."), body
+        for key in keys[:-1]:
+            target = target.get(key) if isinstance(target, dict) else None
+        if not isinstance(target, dict) or keys[-1] not in target:
+            raise Fault("template_body_field_missing", "local", unsent=True)
+        target[keys[-1]] = value
+    return json.dumps(body, ensure_ascii=False, separators=(",", ":"))
+
+
+# After a portal re-entry the page finishes its own load requests (SSO token exchange) first.
+PORTAL_REENTRY_SETTLE_SECONDS = 8
 
 
 class PageTransport:
     def __init__(self, page, origin: str, templates: Templates, timeout_seconds: float,
-                 scripts: dict[str, str] | None = None):
+                 scripts: dict[str, str] | None = None, *, gate: bool = False, main_frame_fallback: bool = False):
         self.page = page
+        # Anhui (legacy node_price_whole_day / native_tables.fetch): a template outlives its page; it is
+        # sent from the current page's main frame once its own frame is gone (a recycled or crashed page).
+        self.main_frame_fallback = main_frame_fallback
         self.origin = origin
         self.templates = templates
         self.timeout = timeout_seconds
         self.scripts = scripts or {}
+        self.gate = gate
+        # A renderer crash: every later call would fail in 0 s on the dead page
+        # (Anhui 2026-10-31 17:05: 14 items in a row), so nothing is sent until
+        # the engine reloads it.
+        self.crashed = False
+        # (old page) -> a fresh page of the same role; set by whoever attached (cli._browser).
+        self.reopen = None
+        self.opened_at = time.monotonic()
+        self._watch(page)
+
+    def _watch(self, page) -> None:
+        try:
+            page.on("crash", lambda *_: setattr(self, "crashed", True))
+        except Exception:
+            pass
+
+    async def recover_page(self) -> dict:
+        """After a renderer crash: a fresh page of the same role (Playwright never revives a crashed one).
+
+        As the Anhui legacy did (a new page, then the keeper's check). The
+        page's old request templates belong to dead frames and are not used.
+        """
+        if self.reopen is None:
+            raise Fault("page_reopen_unavailable", "local")
+        old = self.page
+        self.page = await self.reopen(old)
+        self.crashed = False
+        self.opened_at = time.monotonic()
+        self._watch(self.page)
+        try:
+            await old.close()
+        except Exception:
+            pass
+        return {"reopened": True, "frames_closed": await self.reset_frames()}
+
+    async def page_health(self) -> dict:
+        """How long PMOS has used this page and its JS heap (in-page only, nothing is sent)."""
+        try:
+            heap = await self.page.evaluate("() => performance.memory ? performance.memory.usedJSHeapSize : null")
+        except Exception:
+            heap = None
+        return {"age_seconds": time.monotonic() - self.opened_at,
+                "js_heap_mb": round(heap / 1048576) if isinstance(heap, (int, float)) else None}
+
+    async def reset_frames(self) -> int:
+        """At start and after a re-login: PMOS's own app frames reopen with the current session."""
+        return await ui.close_owned_frames(self.page)
+
+    async def portal_reentry(self, route: str) -> dict:
+        """Open ``route`` from the portal's menu, as a person does, then let PMOS's own frames reopen.
+
+        A lapsed subsystem answers its page queries 40302 while its exports
+        still work; reopening PMOS's frames alone did not help, entering it
+        from the portal menu did (Shanxi, 2026-10-31). The page's own load
+        requests go out as they do for a person; no business call of ours.
+        """
+        with self.templates.window():
+            path = await ui.portal_menu_path(self.page, route)
+            await ui.select_menu(self.page, path, self.timeout, force=True)
+            frame = await ui.portal_frame(self.page, route, self.timeout)
+            # A report the portal keeps open is only re-shown by the click: load it anew (r25, 22:46).
+            await ui.reload_frame(frame, self.timeout, settle=PORTAL_REENTRY_SETTLE_SECONDS)
+        return {"menu": path, "reloaded": True, "frames_closed": await self.reset_frames()}
+
+    def _gate(self, frame, expected):
+        return RequestGate(self.page, self.origin, frame, expected) if self.gate else _NoGate()
 
     def ready(self, request: dict) -> bool:
         """Could ``send`` run now without a local failure? Never sends anything."""
@@ -247,77 +572,167 @@ class PageTransport:
         if max_age is not None and self.templates.clock() - template["at"] > max_age:
             return False
         try:
-            return not template["frame"].is_detached()
+            if not template["frame"].is_detached():
+                return True
+            return self.main_frame_fallback and not self.crashed and not self.page.is_closed()
         except Exception:
             return False
 
     async def send(self, request: dict) -> Response:
+        if self.crashed:
+            raise Fault("page_crashed", "local", unsent=True)
         kind = request["transport"]
         if kind == "fetch":
             return await self._fetch(request)
         if kind in ("component", "native"):
-            return await self._call(request)
+            with self.templates.window():
+                return await self._call(request)
         if kind == "ui":
-            return await self._ui(request)
+            with self.templates.window():
+                return await self._ui(request)
         raise Fault("transport_unknown", "local")
 
     async def _fetch(self, request: dict) -> Response:
-        template = self.templates.get(request.get("template", request["path"]), request.get("max_template_age"))
+        template = self.templates.get(request.get("template", request["path"]), request.get("max_template_age"),
+                                      fallback_frame=self.page.main_frame if self.main_frame_fallback else None)
         url = self.origin + request["path"]
         if request.get("query"):
             url += "?" + urlencode(request["query"])
         if "body" in request:
             body = json.dumps(request["body"], ensure_ascii=False, separators=(",", ":"))
+        elif "template_body_set" in request:
+            # The page's own body with only these fields changed (Anhui legacy
+            # replay: the date, never the page's other fixed values).
+            body = _template_body(template.get("body"), request["template_body_set"])
         else:
             body = template["body"] if request["method"] == "POST" else None
         self.templates.sending += 1
+        # A request may wait longer than the policy default (an Anhui whole-day answer: ~20 MB, 6-9 s server time).
+        wait = max(float(request.get("timeout") or self.timeout), self.timeout)
         try:
             result = await template["frame"].evaluate(_FETCH_JS, {
                 "url": url, "method": request["method"], "headers": template["headers"], "body": body,
-                "timeout": int(self.timeout * 1000), "limit": MAX_RESPONSE_BYTES})
-        except Exception:
+                "timeout": int(wait * 1000), "limit": MAX_RESPONSE_BYTES})
+        except Exception as exc:
             # Timeout, abort, redirect or a dropped connection: the server may
             # or may not have handled it. The ledger keeps it unknown.
-            raise Fault("network_error", "network") from None
+            raise _lost_or_network(exc) from None
         finally:
             self.templates.sending -= 1
         return Response(int(result["status"]), result["contentType"], base64.b64decode(result["base64"]))
 
+    async def preflight(self, request: dict) -> None:
+        """Bring the page to the call's state and check it, before any attempt is recorded.
+
+        Opens the frame, runs ``prepare``, waits for the component (a native
+        call: checks its helper module is loaded) and every ``preflight``
+        condition (e.g. the live form's ``exportUrl`` / ``selectUrl``). A
+        failure here means nothing was sent: the engine
+        defers the dataset instead of consuming the task.
+        """
+        if request["transport"] not in ("component", "native"):
+            return
+        with self.templates.window():
+            frame = await ui.ensure_frame(self.page, request, self.timeout)
+            async with self._gate(frame, None) as gate:  # no business request during preflight
+                if request.get("prepare"):
+                    await self._prepare(frame, request["prepare"])
+                if request["transport"] == "component":
+                    await self._wait_for(frame, {"component": request["component"], "match": request.get("match")},
+                                         "component_missing")
+                else:
+                    try:
+                        await frame.evaluate(_NATIVE_PROBE_JS, {"module": request["module"],
+                                                                "export": request.get("export")})
+                    except Exception as exc:
+                        raise Fault(_page_error(exc, "native_probe_failed"), "local") from None
+                for condition in request.get("preflight", []):
+                    await self._wait_for(frame, condition, "preflight_condition_unmet")
+            self.last_preflight = gate.summary()
+
     async def _call(self, request: dict) -> Response:
         """Trigger the page's own code and keep the response it causes on ``path``."""
-        frame = await ui.ensure_frame(self.page, request, self.timeout)
-        if request.get("prepare"):
-            await self._prepare(frame, request["prepare"])
+        target = {"component": request.get("component"), "match": request.get("match")}
+        try:
+            frame = await ui.ensure_frame(self.page, request, self.timeout)
+            if request.get("prepare") and not request.get("_preflighted"):
+                await self._prepare(frame, request["prepare"])
+            if request["transport"] == "component":
+                await self._wait_for(frame, target, "component_missing")
+        except Fault as fault:
+            # Before the business call: nothing of ours was sent, unless an
+            # unguarded prepare step may have queried (no preflight ran).
+            if fault.category != "local" or (request.get("prepare") and not request.get("_preflighted")):
+                raise
+            raise Fault(fault.code, "local", unsent=True) from None
         if request["transport"] == "component":
-            target = {"component": request["component"], "match": request.get("match")}
-            await self._wait_for(frame, target, "component_missing")
             script, args = _COMPONENT_JS, {**target, "set": request.get("set", {}), "call": request["call"],
                                            "args": request.get("args", [])}
         else:
             script, args = _NATIVE_JS, {"module": request["module"], "export": request.get("export"),
                                         "args": request.get("args", [])}
         path = request["path"]
+        blob = request.get("capture") == "blob"
+        # A request may wait longer than the policy default (e.g. a blank-option probe).
+        wait = max(float(request.get("timeout") or self.timeout), self.timeout)
+        gate = self._gate(frame, (request["method"], path))
         try:
-            await frame.evaluate(_QUIET_JS, int(self.timeout * 1000) + 5000)
-            async with self.page.expect_response(
-                    lambda r: urlsplit(r.url).path == path and r.request.method == request["method"],
-                    timeout=self.timeout * 1000) as captured:
+            await frame.evaluate(_QUIET_JS, int(wait * 1000) + 5000)
+            if blob:
+                await frame.evaluate("() => { window.__pmosBlob = null; return true; }")
+            async with gate:
+                async with _Expect(self.page, "response",
+                                   lambda r: urlsplit(r.url).path == path and r.request.method == request["method"],
+                                   timeout=wait * 1000) as captured:
+                    try:
+                        await frame.evaluate(script, args)
+                    except Exception as exc:
+                        code = _page_error(exc, "page_call_failed")
+                        raise Fault(code, "local", unsent=await gate.unsent()) from None
                 try:
-                    await frame.evaluate(script, args)
-                except Exception as exc:
-                    raise Fault(_page_error(exc, "page_call_failed"), "local") from None
-            response = await captured.value
-            body = await response.body()
+                    response = await captured.value
+                except asyncio.TimeoutError:
+                    # Still inside the gate: close it, then the count proves
+                    # whether the page sent the business request at all (a form
+                    # that refuses a blank option sends nothing).
+                    if await gate.unsent():
+                        raise Fault("page_sent_nothing", "local", unsent=True) from None
+                    raise Fault("network_error", "network") from None
+                # A JSON reply to an export is the site's answer (e.g. 40302), not a file to wait for.
+                if blob and 200 <= response.status < 300 and "json" not in response.headers.get("content-type", "").lower():
+                    saved = await self._saved_blob(frame)
+                    body = base64.b64decode(saved["base64"])
+                    try:  # its base64 copy would otherwise stay in the page until the next download
+                        await frame.evaluate("() => { window.__pmosBlob = null; return true; }")
+                    except Exception:
+                        pass
+                    return Response(response.status, response.headers.get("content-type", ""), body,
+                                    name=saved.get("name") or "", operation=gate.summary())
+                body = await response.body()
         except Fault:
             raise
-        except Exception:
-            raise Fault("network_error", "network") from None
+        except Exception as exc:
+            raise _lost_or_network(exc) from None
         finally:
             try:
                 await frame.evaluate(_QUIET_JS, 3000)  # the save click follows the response
             except Exception:
                 pass
-        return Response(response.status, response.headers.get("content-type", ""), body)
+        return Response(response.status, response.headers.get("content-type", ""), body, operation=gate.summary())
+
+    async def _saved_blob(self, frame) -> dict:
+        """The Blob the page tried to save after its response (see _QUIET_JS)."""
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + self.timeout
+        while loop.time() < deadline:
+            saved = await frame.evaluate("() => window.__pmosBlob || null")
+            if saved and not saved.get("pending"):
+                if saved.get("error") or "base64" not in saved:
+                    raise Fault("page_download_blob_unreadable", "unknown")
+                return saved
+            await asyncio.sleep(0.1)
+        # The response arrived but the page never saved a file: result unknown.
+        raise Fault("page_download_blob_missing", "unknown")
 
     async def _prepare(self, frame, steps: list) -> None:
         """Bring the page into the state the call needs (mount a menu's view ...).
@@ -376,6 +791,18 @@ class PageTransport:
                 raise
             except Exception:
                 raise Fault("network_error", "network") from None
+        if request["action"] == "options":
+            # Discovery: the date set, the one dropdown read and closed; 查询 is never clicked.
+            try:
+                for field in request.get("fields", []):
+                    await ui.fill(frame, field, self.timeout)
+                options = await ui.select_options(frame, request["select"], self.timeout)
+            except Fault:
+                raise
+            except Exception:
+                raise Fault("network_error", "network") from None
+            return Response(200, "application/json",
+                            json.dumps({"status": 0, "data": options}, ensure_ascii=False).encode())
         for field in request.get("fields", []):
             await ui.fill(frame, field, self.timeout)
 
@@ -387,14 +814,14 @@ class PageTransport:
                     and (not request.get("path") or path == request["path"]))
 
         try:
-            async with self.page.expect_response(from_report, timeout=self.timeout * 1000) as captured:
+            async with _Expect(self.page, "response", from_report, timeout=self.timeout * 1000) as captured:
                 await (await ui.button(frame, request.get("query_button", "查询"))).click()
             query = await captured.value
             query_body = await query.body()
             await ui.settled(frame, self.timeout)
             if request["action"] == "query":
                 return Response(query.status, query.headers.get("content-type", ""), query_body)
-            async with self.page.expect_download(timeout=self.timeout * 1000) as event:
+            async with _Expect(self.page, "download", timeout=self.timeout * 1000) as event:
                 await (await ui.button(frame, request.get("export_button", "导出"))).click()
             return await self._downloaded(await event.value)
         except Fault:
@@ -439,7 +866,7 @@ class PageTransport:
             raise Fault("record_attachment_ambiguous", "local")
         parts = []
         for name in names:
-            async with self.page.expect_download(timeout=self.timeout * 1000) as event:
+            async with _Expect(self.page, "download", timeout=self.timeout * 1000) as event:
                 await box.get_by_role("button", name=name, exact=True).click(timeout=self.timeout * 1000)
             parts.append(await self._downloaded(await event.value, name))
         if not parts:

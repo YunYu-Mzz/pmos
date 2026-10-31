@@ -1,0 +1,83 @@
+{
+  "id": "publication_1404bce682303715_whole_day",
+  "name": "1每个交易时段实际运行输电断面约束情况及其影子价格情况（整日）",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_14",
+    "template_body_set": {
+      "businessTime": "{date}",
+      "genName": ""
+    },
+    "timeout": 120,
+    "prime": {
+      "period": "2026-10-28",
+      "request": {
+        "transport": "ui",
+        "frame": "infoCode=mgjysdsjjsjydsdsmysqkjqyzjgqk",
+        "menu": [
+          "现货市场",
+          "省内现货市场",
+          "市场运行信息",
+          "1每个交易时段实际运行输电断面约束情况及其影子价格情况"
+        ],
+        "fields": [
+          {
+            "kind": "date",
+            "placeholder": [
+              "请选择日期",
+              "选择日期"
+            ],
+            "value": "2026-10-28"
+          },
+          {
+            "kind": "select",
+            "label": "断面名称",
+            "value": "0.27×(500kV官桥5388线路+500kV官涓5387线路)+220kV涓蓉4V92线路"
+          }
+        ],
+        "action": "query",
+        "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_14",
+        "method": "POST"
+      }
+    }
+  },
+  "response": {
+    "kind": "json",
+    "whole_day": {
+      "option_field": "sec_name",
+      "time_field": "dataTime",
+      "times": 96,
+      "repeat": "uniform"
+    }
+  },
+  "source": {
+    "legacy": "anhui node_price_whole_day",
+    "per_option": "publication_1404bce682303715",
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
+  },
+  "history": [
+    {
+      "at": "2026-11-01T00:30:41+08:00",
+      "event": "generated_from_legacy_queue",
+      "per_option": "publication_1404bce682303715"
+    }
+  ]
+}

@@ -1,43 +1,64 @@
 {
   "id": "system_reserve",
   "name": "系统备用信息",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
     "end": "today"
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=xtbyxx",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场运行信息",
-      "系统备用信息"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_7",
+    "template_body_set": {
+      "businessTime": "{date}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=xtbyxx",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场运行信息",
+        "系统备用信息"
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_7",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "xtbyxx",
-    "value_layout": "time_series"
+    "legacy": "anhui native_rollout_registry",
+    "binding_sha256": "c2b52889186b1437056ae3ad230b9e98ea32d5ebb23a48b05e5a26c495a46db1",
+    "success_code": 0,
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-10-31T23:14:50+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "c2b52889186b1437056ae3ad230b9e98ea32d5ebb23a48b05e5a26c495a46db1"
     }
   ]
 }

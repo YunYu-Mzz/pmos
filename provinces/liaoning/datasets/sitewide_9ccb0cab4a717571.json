@@ -1,12 +1,11 @@
 {
   "id": "sitewide_9ccb0cab4a717571",
   "name": "系统负荷预测（月）（新）",
-  "status": "candidate",
+  "status": "verified",
   "period": {
     "kind": "month",
     "start": "2026-01",
-    "end": "today",
-    "complete_only": true
+    "end": "today"
   },
   "request": {
     "transport": "component",
@@ -17,21 +16,44 @@
     "component": "pdblnReport077",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{month}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_ydxtfhyc_new",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport077"
     }
   },
   "response": {
     "kind": "json"
   },
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "pending"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "077",
+    "legacy_source": "lnsnxh_ydxtfhyc_new",
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "dbac2b0cc35677ad4825301e539b060988bece832349ebefe61e560f226d4569"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {
-      "at": "2026-10-23T10:28:32+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "pending"
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
     }
   ]
 }

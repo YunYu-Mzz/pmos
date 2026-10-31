@@ -29,7 +29,7 @@ RESPONSE_KINDS = ("json", "xlsx", "xls", "excel", "pdf", "binary", "document")
 PLACEHOLDERS = set(periods.variables("day", "2026-01-01"))
 # A documents download request is rendered per attachment, not per period.
 DOWNLOAD_PLACEHOLDERS = {"record", "row", "attachment", "title", "record_id", "published", "period"}
-RENDERED = ("body", "query", "set", "args", "fields", "match", "prepare", "record")
+RENDERED = ("body", "query", "set", "args", "fields", "match", "prepare", "record", "preflight", "template_body_set")
 STEP_KEYS = {"unless", "component", "match", "set", "emit", "payload", "bus", "call", "args", "await"}
 SCRIPT = re.compile(r"[a-z][a-z0-9_]{1,63}")
 # Mixed case is allowed so migrated datasets keep their legacy ids (archives
@@ -168,6 +168,10 @@ class DatasetSpec:
             raise SpecError(f"{where}: unknown placeholders {sorted(unknown)}")
         if self.response.get("kind") not in RESPONSE_KINDS:
             raise SpecError(f"{where}: response.kind must be one of {RESPONSE_KINDS}")
+        echo = self.response.get("echo")
+        if echo is not None and (self.response["kind"] != "json" or not isinstance(echo, dict) or not echo
+                                 or not all(isinstance(k, str) and isinstance(v, str) for k, v in echo.items())):
+            raise SpecError(f"{where}: response.echo maps a JSON record field to a scope label")
         transport = self.request["transport"]
         if "pagination" in self.request:
             from .paging import PagingError, check as check_paging
@@ -213,11 +217,20 @@ class DatasetSpec:
         """(key, values) per task dimension; an unscoped dataset has one ("", {})."""
         return [(scope_key(item), item) for item in self.scopes] or [("", {})]
 
+    def scope_index(self) -> dict[str, dict]:
+        """key -> values, rebuilt when the scope list is replaced or changes length (thousands of nodes)."""
+        marker = (id(self.scopes), len(self.scopes or []))
+        cached = self.__dict__.get("_scope_index")
+        if cached is None or cached[0] != marker:
+            cached = (marker, dict(self.scope_items()))
+            self.__dict__["_scope_index"] = cached
+        return cached[1]
+
     def scope_values(self, key: str) -> dict:
-        for item_key, values in self.scope_items():
-            if item_key == key:
-                return values
-        raise SpecError(f"{self.id}: unknown scope {key}")
+        found = self.scope_index().get(key)
+        if found is None:
+            raise SpecError(f"{self.id}: unknown scope {key}")
+        return found
 
     def build(self, period: str, scope: dict | None = None) -> dict:
         """The concrete request for one period and scope (still without auth headers).
@@ -265,6 +278,16 @@ class DatasetSpec:
             request.setdefault("template", block["path"])
         return request
 
+    def with_page_size(self, size: int) -> "DatasetSpec":
+        """This spec asking ``size`` records per page, identity included (a period begun at that size)."""
+        import copy
+        value = copy.deepcopy(self)
+        value.request["pagination"]["page_size"] = size
+        contract = value.source.get("identity_contract")
+        if contract and "page_size" in contract:
+            contract["page_size"] = size
+        return value
+
     def scripts(self) -> set[str]:
         """Page scripts (provinces/<id>/scripts/<name>.js) this spec relies on."""
         requests = [self.request] + ([self.documents["download"]] if self.documents else [])
@@ -294,7 +317,8 @@ def check_request(where: str, request: dict) -> None:
             if not isinstance(request.get(key), str):
                 raise SpecError(f"{where}: component transport needs request.{key}")
     if transport == "ui":
-        if not isinstance(request.get("frame"), str) or request.get("action") not in ("query", "export", "list", "record"):
+        if not isinstance(request.get("frame"), str) or request.get("action") not in ("query", "export", "list", "record",
+                                                                                      "options"):
             raise SpecError(f"{where}: ui transport needs request.frame and action query|export|list|record")
         if request["action"] == "record" and request.get("record") != "{record}":
             raise SpecError(f"{where}: a ui record action takes \"record\": \"{{record}}\" (a documents download)")
@@ -307,6 +331,15 @@ def check_request(where: str, request: dict) -> None:
     open_url = request.get("open_url")
     if open_url is not None and (not isinstance(open_url, str) or not open_url.startswith("/")):
         raise SpecError(f"{where}: request.open_url must be a same-site path (with #route)")
+    template_set = request.get("template_body_set")
+    if template_set is not None and (transport != "fetch" or "body" in request or not isinstance(template_set, dict)
+                                     or not template_set or not all(isinstance(k, str) and k for k in template_set)):
+        raise SpecError(f"{where}: request.template_body_set is a fetch's field -> value map, without its own body")
+    menu_entry = request.get("site_menu")
+    if menu_entry is not None and not (isinstance(menu_entry, dict) and str(menu_entry.get("route", "")).startswith("/")
+                                       and (menu_entry.get("source") is None
+                                            or (isinstance(menu_entry["source"], str) and menu_entry["source"]))):
+        raise SpecError(f"{where}: request.site_menu needs the menu entry's route (and optionally its infoCode source)")
     menu = request.get("menu")
     if menu is not None and (not isinstance(menu, list) or not all(isinstance(m, str) and m for m in menu)):
         raise SpecError(f"{where}: request.menu must be a list of menu labels")
@@ -320,6 +353,13 @@ def check_request(where: str, request: dict) -> None:
         raise SpecError(f"{where}: request.match is an object of component field values")
     if transport == "component" and request.get("component") == "*" and not request.get("match"):
         raise SpecError(f"{where}: component \"*\" (any name) needs request.match to pick one instance")
+    if "capture" in request and (transport not in ("component", "native") or request["capture"] not in ("response", "blob")):
+        raise SpecError(f"{where}: request.capture is response|blob for component or native calls")
+    if "preflight" in request:
+        if transport not in ("component", "native") or not isinstance(request["preflight"], list):
+            raise SpecError(f"{where}: request.preflight is a list of conditions for component or native calls")
+        for condition in request["preflight"]:
+            _check_condition(where, condition)
     if "prepare" in request:
         if transport not in ("component", "native") or not isinstance(request["prepare"], list):
             raise SpecError(f"{where}: request.prepare is a list of steps for component or native calls")

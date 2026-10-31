@@ -17,6 +17,10 @@
     "call": "initData",
     "set": {
       "queryParam.date": "{date}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_w_dqxtfhyc",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport014"
     }
   },
   "response": {

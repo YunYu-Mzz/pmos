@@ -7,6 +7,7 @@ import json
 import signal
 import sys
 import time
+from pathlib import Path
 
 from . import adapt
 from .engine import Engine, enqueue
@@ -53,8 +54,12 @@ def cmd_datasets(province: Province, args) -> None:
     _print(rows)
 
 
-def cmd_status(province: Province, _args) -> None:
-    from .reporting import ledger_snapshot
+def cmd_status(province: Province, args) -> None:
+    from .reporting import ledger_snapshot, status_metrics
+    if getattr(args, "mail", False):
+        # For a status mail bridge: counts and timestamps only, read-only.
+        _print({"province": province.id, **status_metrics(province.instance())})
+        return
     _print({"province": province.id, "release": "offline_only", **ledger_snapshot(province.instance() / "ledger.sqlite3")})
 
 
@@ -67,8 +72,51 @@ def cmd_control(province: Province, args) -> None:
 
 def cmd_ack(province: Province, args) -> None:
     """After a human re-login / review: clear exactly the named block."""
+    if not args.approval.strip():
+        raise ValueError("approval_required")
     state = StateStore(province.instance() / "state")
-    _print({"cleared": state.clear_block(args.reason)})
+    cleared = state.clear_block(args.reason)
+    state.event("block_acknowledged", reason=args.reason, approval=args.approval)
+    _print({"cleared": cleared})
+
+
+def cmd_release_hold(province: Province, args) -> None:
+    """After review: let one held dataset continue, or with --all every dataset held for exactly that reason."""
+    if not args.approval.strip():
+        raise ValueError("approval_required")
+    state = StateStore(province.instance() / "state")
+    holds = state.read("dataset_holds", {}) or {}
+    if getattr(args, "all", False):
+        if args.dataset:
+            raise ValueError("dataset_or_all")
+        names = [name for name, hold in holds.items() if hold["reason"] == args.reason]
+        if not names:
+            raise ValueError("no_dataset_hold")
+    else:
+        current = holds.get(args.dataset)
+        if current is None:
+            raise ValueError("no_dataset_hold")
+        if current["reason"] != args.reason:
+            raise ValueError("hold_reason_mismatch")
+        names = [args.dataset]
+    for name in names:
+        del holds[name]
+    state.write("dataset_holds", holds)
+    for name in names:
+        state.event("dataset_released", dataset=name, reason=args.reason, approval=args.approval)
+    _print({"released": names, "reason": args.reason})
+
+
+def cmd_skip_lapse(province: Province, args) -> None:
+    """A person's decision: the suspected query lapse is a real denial (e.g. no data by hand either)."""
+    from .engine import settle_query_lapse
+    if not args.approval.strip():
+        raise ValueError("approval_required")
+    state = StateStore(province.instance() / "state")
+    if state.read("query_lapse") is None:
+        raise ValueError("no_query_lapse")
+    held = settle_query_lapse(state, "query_lapse_skipped", approval=args.approval)
+    _print({"province": province.id, "held": held})
 
 
 def cmd_settle(province: Province, args) -> None:
@@ -80,11 +128,67 @@ def cmd_settle(province: Province, args) -> None:
         ledger.close()
 
 
+# Errors the PMOS page scripts throw before they call any page function (see
+# _NATIVE_JS / _COMPONENT_JS): such an attempt cannot have sent anything.
+PRE_CALL_CODES = frozenset({
+    "webpack_runtime_missing", "webpack_require_unavailable", "native_module_missing", "native_export_missing",
+    "component_missing", "component_ambiguous", "component_param_missing", "component_method_missing"})
+
+
+def cmd_review_attempt(province: Province, args) -> None:
+    """After review: settle the local page failure that blocked the province, then clear the block.
+
+    Only the latest attempt, failed locally with no HTTP status, and only while
+    it is the reviewed block. ``not_sent`` (only for an error raised before the
+    page call): the attempt consumes nothing and the item stays pending.
+    ``isolated``: the task settles ``failed``, never retried, identity and file
+    stay consumed. Nothing is sent either way.
+    """
+    if not args.approval.strip():
+        raise ValueError("approval_required")
+    state = StateStore(province.instance() / "state")
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        block = state.blocked()
+        attempt = ledger.db.execute("SELECT * FROM attempts WHERE id=?", (args.attempt,)).fetchone()
+        latest = ledger.db.execute("SELECT MAX(id) FROM attempts").fetchone()[0]
+        if attempt is None or attempt["id"] != latest or ledger.unsettled():
+            raise ValueError("latest_settled_attempt_required")
+        if (attempt["outcome"], attempt["http_status"], attempt["business_status"]) != ("failed", None, None):
+            raise ValueError("unsent_local_failure_required")
+        if (block is None or block.get("category") != "local" or block.get("reason") != attempt["reason"]
+                or block.get("dataset") != attempt["dataset"] or block.get("http_status") is not None):
+            raise ValueError("matching_local_block_required")
+        task = ledger.task(attempt["dataset"], attempt["period"], attempt["scope"])
+        if task is None or task["status"] != "pending":
+            raise ValueError("pending_task_required")
+        entry = {"dataset": attempt["dataset"], "period": attempt["period"], "scope": attempt["scope"],
+                 "attempt": attempt["id"], "decision": args.decision, "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+        if args.decision == "not_sent":
+            if attempt["reason"] not in PRE_CALL_CODES:
+                raise ValueError("not_a_pre_call_failure")
+            ledger.not_sent(attempt["id"], attempt["reason"], reviewed=True)
+        else:
+            reason = "isolated:" + attempt["reason"]
+            ledger.settle_task(attempt["dataset"], attempt["period"], "failed", scope=attempt["scope"], reason=reason)
+            entry.update(reason=reason, category="local")
+            state.write("isolated_items", (state.read("isolated_items", []) or [])[-999:] + [entry])
+        state.event("attempt_reviewed", approval=args.approval, **entry)
+        state.clear_block(attempt["reason"])
+        _print({"reviewed": entry, "block_cleared": attempt["reason"]})
+    finally:
+        ledger.close()
+
+
 async def _browser(province: Province, *, record: bool = False):
     from playwright.async_api import async_playwright
     from .browser.attach import attach
     from .browser.session import Recorder, visible_logout
     from .browser.transport import PageTransport, Templates
+    from . import memory
+    # Before the driver starts (NODE_OPTIONS) and before any CDP connection.
+    memory.prepare_driver(province, province.instance() / "state")
+    memory.install_asyncio_wait_fix()
     playwright = await async_playwright().start()
     browser, page = await attach(playwright, province.origin, province.browser_config())
     tasks: set = set()
@@ -94,22 +198,61 @@ async def _browser(province: Province, *, record: bool = False):
         tasks.add(task)
         task.add_done_callback(tasks.discard)
 
-    templates = Templates(province.origin)
-    templates.observe(page.context, spawn)
+    templates = Templates(province.origin, ttl=float(province.browser_config().get("template_ttl_seconds", 900)))
+    # Listen to page requests only during PMOS's own operations unless the
+    # province asks otherwise (driver memory: see Templates).
+    templates.observe(page.context, spawn, always=province.browser_config().get("observe_templates") == "always")
     transport = PageTransport(page, province.origin, templates, province.policy.request_timeout_seconds,
-                              province.scripts())
+                              province.scripts(), gate=bool(province.browser_config().get("request_gate")),
+                              main_frame_fallback=province.browser_config().get("template_frame_fallback") == "main_frame")
+    # Frames a previous run opened may carry a session from before a re-login.
+    await transport.reset_frames()
+
+    async def reopen(old):
+        """A fresh page of the crashed one's role: the work page from the portal, else the same address."""
+        from .browser.attach import work_page
+        config = province.browser_config()
+        if config.get("work_page"):
+            return await work_page(browser, province.origin, config["work_page"], exclude=(old,))
+        fresh = await old.context.new_page()
+        await fresh.goto(old.url, wait_until="load", timeout=province.policy.request_timeout_seconds * 1000)
+        return fresh
+    transport.reopen = reopen
     recorder = None
     if record:
         recorder = Recorder(province.origin, province.instance() / "captures" / f"{time.strftime('%Y%m%d-%H%M%S')}.jsonl")
         recorder.attach(page.context, spawn)
 
     async def check_session():
+        page = transport.page             # a crash recovery replaces it
         if not browser.is_connected() or page.is_closed():
             return Fault("browser_disconnected", "unknown")
         code = await visible_logout(page)
         return Fault(code, "auth") if code else None
 
     return playwright, transport, check_session, recorder
+
+
+def _maintenance(engine: Engine, transport) -> list:
+    """Memory upkeep between ticks, and (opt-in per province) the memory admission."""
+    from .memory import Admission, BrowserReclaim, Maintenance, PageHeapRefresh
+    page = getattr(transport, "page", None)
+    upkeep = [Maintenance(engine.state, getattr(getattr(page, "context", None), "browser", None))]
+    # Shanxi (merged from shanxi/pmos-live 693e3c9): an in-place reload of the site tab past a JS heap limit.
+    refresh = engine.province.browser_config().get("page_heap_refresh_mib")
+    if page is not None and refresh:
+        upkeep.append(PageHeapRefresh(engine.state, page, transport, limit_mib=float(refresh)))
+    alert = engine.province.browser_config().get("renderer_alert")
+    profile = engine.province.browser_config().get("profile_dir")
+    if alert and profile:
+        from .memory import RendererWatch
+        upkeep.append(RendererWatch(engine.state, str(Path(profile).expanduser()), alert))
+    guard = engine.province.browser_config().get("memory_guard")
+    if guard:
+        engine.admission = Admission(engine.state, guard)
+        if page is not None:
+            upkeep.append(BrowserReclaim(engine.state, page, guard))
+    return upkeep
 
 
 def _stop_event() -> asyncio.Event:
@@ -123,9 +266,202 @@ def _stop_event() -> asyncio.Event:
 async def _run(province: Province) -> None:
     playwright, transport, check_session, _ = await _browser(province)
     try:
-        await Engine(province, transport, check_session).run(_stop_event())
+        engine = Engine(province, transport, check_session)
+        await engine.run(_stop_event(), between=_maintenance(engine, transport))
     finally:
         await playwright.stop()  # disconnect only; the browser keeps running
+
+
+def acceptance_gate(province: Province) -> dict:
+    """Acceptance runs need this instance's reviewed handoff; checked before any browser attach."""
+    from .ledger import Ledger
+    path = province.instance() / "ledger.sqlite3"
+    if not path.is_file():
+        raise ValueError("acceptance_requires_a_handoff_ledger; see docs/SHANXI_MIGRATION.md")
+    ledger = Ledger(path)
+    try:
+        handoff = ledger.handoff()
+        if handoff is None:
+            raise ValueError("acceptance_requires_owner_handoff_receipt")
+        if handoff["province"] != province.id:
+            raise ValueError("acceptance_receipt_province_mismatch")
+        blocker = ledger.dispatch_blocker()
+        if blocker:
+            raise ValueError(f"acceptance_not_dispatchable:{blocker}")
+        if StateStore(province.instance() / "state").blocked():
+            raise ValueError("acceptance_instance_blocked_review_first")
+        return {**handoff, "used": ledger.attempts_since_handoff(), "request_budget": ledger.request_budget()}
+    finally:
+        ledger.close()
+
+
+async def _accept(province: Province, handoff: dict) -> None:
+    """Work the receipt's scope until its budget is used, anything blocks, or the scope is done."""
+    print(json.dumps({"acceptance": province.id, "scope": len(handoff["scope"]), "budget": handoff["request_budget"],
+                      "used": handoff["used"], "receipt_sha256": handoff["receipt_sha256"]}, ensure_ascii=False),
+          file=sys.stderr)
+    playwright, transport, check_session, _ = await _browser(province)
+    try:
+        engine = Engine(province, transport, check_session, account_alias=handoff["account_alias"])
+        engine.state.set_control(collect=True, stop_all=False)
+
+        def finished() -> bool:
+            phase = (engine.state.read("status", {}) or {}).get("phase")
+            return bool(engine.ledger.dispatch_blocker() or not _held(engine.state)
+                        or engine.state.control().get("stop_all") or phase == "complete")
+        await engine.run(_stop_event(), stop_when=finished,  # closes the engine's ledger
+                         between=_maintenance(engine, transport))
+        ledger = Ledger(province.instance() / "ledger.sqlite3")
+        try:
+            attempts = ledger.attempts_since_handoff()
+        finally:
+            ledger.close()
+        _print({"acceptance_finished": province.id, "status": engine.state.read("status"),
+                "block": engine.state.blocked(), "attempts": attempts})
+    finally:
+        await playwright.stop()  # disconnect only; the browser keeps running
+
+
+def _held(state: StateStore) -> bool:
+    """No block, or one the worker holds while renewing the login (it stays for review).
+
+    Like Shanxi's session hold: only a block that forbids keepalive, or a
+    renewal that failed during the hold, ends the process.
+    """
+    block = state.blocked()
+    if block is None:
+        return True
+    hold = state.read("hold", {}) or {}
+    renewal_stopped = hold.get("block_at") == block["at"] and hold.get("keepalive") is False
+    return bool(block.get("keepalive_allowed")) and not renewal_stopped
+
+
+def cmd_probe_blank(province: Province, args) -> None:
+    """Queue one blank-option probe for the running worker (it keeps the single request sequence) and wait."""
+    spec = province.datasets().get(args.dataset)
+    if spec is None or not spec.scopes:
+        raise ValueError("probe_needs_a_per_option_dataset")
+    state = StateStore(province.instance() / "state")
+    command_id = enqueue(state, {"action": "probe_blank", "dataset": args.dataset, "period": args.period,
+                                 **({"timeout": args.timeout} if args.timeout else {}),
+                                 **({"option": args.option} if args.option else {})})
+    deadline = time.time() + args.wait
+    while time.time() < deadline:
+        result = state.read("command_results", {}).get(command_id)
+        if result is not None:
+            _print(result)
+            return
+        time.sleep(2)
+    _print({"queued": command_id, "note": "the worker has not run it yet"})
+
+
+def cmd_queue_and_wait(province: Province, args) -> None:
+    """Queue collect-one / probe-api-blank for the running worker (one request sequence) and wait for it."""
+    spec = province.datasets().get(args.dataset)
+    if spec is None or not spec.scopes:
+        raise ValueError("needs_a_per_option_dataset")
+    command = {"action": args.command.replace("-", "_"), "dataset": args.dataset}
+    if getattr(args, "period", None):
+        command["period"] = args.period
+    if getattr(args, "option", None):
+        command["option"] = args.option
+    if getattr(args, "export_path", None):
+        command.update(export_path=args.export_path, date_field=args.date_field)
+    state = StateStore(province.instance() / "state")
+    command_id = enqueue(state, command)
+    deadline = time.time() + args.wait
+    while time.time() < deadline:
+        result = state.read("command_results", {}).get(command_id)
+        if result is not None:
+            _print(result)
+            return
+        time.sleep(2)
+    _print({"queued": command_id, "note": "the worker has not run it yet"})
+
+
+def cmd_release_denied(province: Province, args) -> None:
+    ids = []
+    for part in args.attempts.split(","):
+        low, _, high = part.partition("-")
+        ids += list(range(int(low), int(high or low) + 1))
+    if not ids or len(ids) > 1000:
+        raise ValueError("attempt_range_invalid")
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        if ledger.unsettled():
+            raise ValueError("unsettled_attempt")
+        reopened = ledger.release_denied(ids, args.approval, defer=getattr(args, "defer", False))
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("denied_released", attempts=f"{ids[0]}-{ids[-1]}",
+                                                    count=len(reopened), approval=args.approval)
+    _print({"province": province.id, "released": len(reopened), "datasets": sorted({r[1] for r in reopened})})
+
+
+def cmd_extend_scope(province: Province, args) -> None:
+    """Offline: the approved order (a superset of the scope) and the datasets seeded daily from their spec periods."""
+    plan = json.loads(args.plan.read_text(encoding="utf-8"))
+    specs = province.datasets()
+    unknown = [name for name in plan["order"] if name not in specs]
+    if unknown:
+        raise ValueError("scope_dataset_without_spec:" + ",".join(unknown))
+    weak = [name for name in plan["seeded"] if specs[name].status not in ("sampled", "verified", "enabled")]
+    if weak:
+        raise ValueError("seeded_dataset_not_proven:" + ",".join(weak))
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        _print({"province": province.id, **ledger.extend_scope(plan["order"], plan["seeded"], args.approval)})
+    finally:
+        ledger.close()
+
+
+def cmd_import_manifest(province: Province, args) -> None:
+    """Offline: the legacy main archive manifest as consumed export tombstones, so nothing it saved is sent again."""
+    if province.id != "shanxi":
+        raise ValueError("legacy_manifest_import_is_shanxi_only")
+    from .migration.shanxi import manifest_tombstones
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        handoff = ledger.handoff()
+        if handoff is None:
+            raise ValueError("late_import_requires_a_handoff")
+        found = manifest_tombstones(args.manifest, province.datasets(), handoff["account_alias"])
+        result = ledger.import_late_legacy(f"manifest:{args.manifest.name}", found["snapshot_sha256"], found["rows"],
+                                           args.approval)
+        _print({"province": province.id, **result, "skipped": found["skipped"], "datasets": found["datasets"],
+                "snapshot_sha256": found["snapshot_sha256"]})
+    finally:
+        ledger.close()
+
+
+def cmd_cutover(province: Province, args) -> None:
+    """Offline cutover planning and ledger building (no browser, no site request)."""
+    import importlib
+    try:
+        module = importlib.import_module(f".migration.{province.id}", __package__)
+    except ModuleNotFoundError:
+        raise ValueError("no_cutover_module_for_province") from None
+    directory = province.datasets_dir
+    if args.command == "cutover-plan":
+        plan = (module.plan_cutover(args.snapshot) if province.id == "liaoning"
+                else module.plan_cutover(args.snapshot, directory))
+        if args.report:
+            args.report.parent.mkdir(parents=True, exist_ok=True)
+            with args.report.open("x", encoding="utf-8") as stream:
+                json.dump(plan, stream, ensure_ascii=False, indent=1)
+        _print({k: plan[k] for k in ("ready", "global_blockers", "scope", "pending_in_scope", "pending_total",
+                                      "excluded_pending", "plan_sha256") if k in plan})
+        return
+    plan = json.loads(args.plan.read_text(encoding="utf-8"))
+    cutover = json.loads((province.directory / "cutover.json").read_text(encoding="utf-8"))
+    if province.id != "shanxi":
+        raise ValueError("cutover_apply_cli_is_shanxi_only_for_now")
+    result = module.apply_cutover(args.snapshot, directory, province.instance(), plan,
+                                  legacy_owner={"stopped_evidence": args.owner_evidence}, code_sha=args.code_sha,
+                                  approval=args.approval, request_budget=args.budget, cutover=cutover)
+    _print({"receipt_sha256": result["receipt"]["receipt_sha256"], "scope": len(result["receipt"]["scope"]),
+            "budget": result["receipt"]["request_budget"], "seeded": sum(result["seeded"].values()),
+            "ledger": result["ledger"]})
 
 
 async def _capture(province: Province, minutes: float) -> None:
@@ -224,14 +560,78 @@ def main(argv: list[str] | None = None) -> int:
         d = commands.add_parser("datasets", help="list dataset specs")
         d.add_argument("--status")
         d.add_argument("--scopes", action="store_true", help="list scope keys and values")
-        commands.add_parser("status", help="instance status (no browser, no requests)")
+        st_parser = commands.add_parser("status", help="instance status (no browser, no requests)")
+        st_parser.add_argument("--mail", action="store_true", help="the metrics a status mail needs, as JSON")
         for name in ("start", "stop", "pause", "resume"):
             commands.add_parser(name, help=f"{name} collection (read by the running worker)")
         a = commands.add_parser("ack", help="clear a reviewed block, e.g. after re-login")
         a.add_argument("reason")
+        a.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        rh = commands.add_parser("release-hold", help="let one reviewed held dataset continue")
+        rh.add_argument("dataset", nargs="?")
+        rh.add_argument("--all", action="store_true", help="every dataset held for exactly --reason")
+        rh.add_argument("--reason", required=True, help="the hold's reason, as status shows it")
+        rh.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        sl = commands.add_parser("skip-lapse", help="a person's decision: the suspected query lapse is a real denial")
+        sl.add_argument("--approval", required=True, help="the user's words, verbatim")
         st = commands.add_parser("settle-unknown", help="mark an interrupted attempt as unknown after review")
         st.add_argument("attempt", type=int)
+        ra = commands.add_parser("review-attempt",
+                                 help="offline: after review, settle the failed attempt of a local-fault block")
+        ra.add_argument("attempt", type=int)
+        ra.add_argument("--decision", required=True, choices=("not_sent", "isolated"))
+        ra.add_argument("--approval", required=True, help="the user's approval, verbatim")
         commands.add_parser("run", help="attach to the logged-in browser and run the worker")
+        commands.add_parser("accept", help="acceptance run: only with a handoff receipt, stops at its budget")
+        commands.add_parser("stop-all", help="no request of any kind, keepalive included (read by the worker)")
+        eb = commands.add_parser("extend-budget", help="offline: add a user-approved request budget to the handoff")
+        eb.add_argument("--add", required=True, type=int)
+        eb.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        cp = commands.add_parser("cutover-plan", help="offline: which datasets move from a frozen legacy snapshot")
+        cp.add_argument("--snapshot", required=True, type=lambda v: __import__("pathlib").Path(v))
+        cp.add_argument("--report", type=lambda v: __import__("pathlib").Path(v), help="write the full plan here")
+        ca = commands.add_parser("cutover-apply", help="offline: build a NEW instance ledger with tombstones and the handoff")
+        ca.add_argument("--snapshot", required=True, type=lambda v: __import__("pathlib").Path(v))
+        ca.add_argument("--plan", required=True, type=lambda v: __import__("pathlib").Path(v))
+        ca.add_argument("--budget", required=True, type=int)
+        ca.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        ca.add_argument("--owner-evidence", required=True, help="how the legacy owner was proven stopped")
+        ca.add_argument("--code-sha", required=True)
+        pb = commands.add_parser("probe-blank", help="queue one blank-option request (1000 per page) for the running worker")
+        pb.add_argument("dataset")
+        pb.add_argument("--period", required=True)
+        pb.add_argument("--wait", type=float, default=180)
+        pb.add_argument("--timeout", type=float, help="page-call timeout for this probe (at least the policy's)")
+        pb.add_argument("--option", default="", help="an option value instead of blank (e.g. the page's default)")
+        co = commands.add_parser("collect-one", help="queue: collect the dataset's next pending item now (normal collection)")
+        co.add_argument("dataset")
+        co.add_argument("--period", help="with --option: that day and option instead of the next pending item")
+        co.add_argument("--option")
+        co.add_argument("--wait", type=float, default=180)
+        pa = commands.add_parser("probe-api-blank",
+                                 help="queue: replay the page's query once with every option blank (after collect-one)")
+        pa.add_argument("dataset")
+        pa.add_argument("--period", required=True)
+        pa.add_argument("--wait", type=float, default=180)
+        pe = commands.add_parser("probe-export-blank", help="queue: the export endpoint once with every option blank")
+        pe.add_argument("dataset")
+        pe.add_argument("--period", required=True)
+        pe.add_argument("--export-path", required=True)
+        pe.add_argument("--date-field", default="tdate")
+        pe.add_argument("--option", default="", help="an option value instead of blank (e.g. the page's default)")
+        pe.add_argument("--wait", type=float, default=180)
+        rd = commands.add_parser("release-denied", help="offline: user-approved, denied (40302) attempts back to pending")
+        rd.add_argument("attempts", help="attempt ids, e.g. 622-637 or 622,623")
+        rd.add_argument("--defer", action="store_true", help="not yet published: the items wait for the next day")
+        rd.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        es = commands.add_parser("extend-scope", help="offline: add a user-approved collection order and daily seeding")
+        es.add_argument("--plan", required=True, type=lambda v: __import__("pathlib").Path(v),
+                        help="JSON with order and seeded, e.g. provinces/<id>/full_year_scope.json")
+        es.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        im = commands.add_parser("import-legacy-manifest",
+                                 help="offline: the legacy main archive manifest as consumed tombstones (after handoff)")
+        im.add_argument("--manifest", required=True, type=lambda v: __import__("pathlib").Path(v))
+        im.add_argument("--approval", required=True, help="the user's approval, verbatim")
         c = commands.add_parser("capture", help="record the page's own API calls while a human browses")
         c.add_argument("--minutes", type=float, default=10)
         cand = commands.add_parser("candidate", help="create a candidate spec from a captured call")
@@ -290,9 +690,14 @@ def main(argv: list[str] | None = None) -> int:
                 with path.open("xb") as stream:
                     stream.write(canonical(report) + b"\n")
             _print({k: report[k] for k in report if k not in {"source_views", "source_refs"}})
-        elif args.target == "new-province" or getattr(args, "command", None) not in (None, "check", "datasets", "status"):
-            # This release cannot attach, clear a block, queue a sample or
-            # enable a dataset. No environment variable bypass is provided.
+        elif args.target == "new-province" or getattr(args, "command", None) not in (
+                None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
+                "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "pause", "resume", "skip-lapse",
+                "import-legacy-manifest", "release-denied", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
+            # This release cannot attach outside acceptance, queue a sample or
+            # enable a dataset; clearing a block or a hold needs the user's
+            # approval text. pause/resume only toggle collection of a running
+            # worker (it keeps renewing the login). No environment variable bypass.
             raise ValueError("offline_release_live_actions_disabled; see docs/ACCEPTANCE.md")
         elif args.target == "provinces":
             cmd_provinces(args)
@@ -302,10 +707,36 @@ def main(argv: list[str] | None = None) -> int:
             province = Province.load(args.target)
             handlers = {"check": cmd_check, "datasets": cmd_datasets, "status": cmd_status,
                         "start": cmd_control, "stop": cmd_control, "pause": cmd_control, "resume": cmd_control,
-                        "ack": cmd_ack, "settle-unknown": cmd_settle, "candidate": cmd_candidate,
+                        "ack": cmd_ack, "settle-unknown": cmd_settle, "review-attempt": cmd_review_attempt,
+                        "release-hold": cmd_release_hold, "skip-lapse": cmd_skip_lapse,
+                        "candidate": cmd_candidate,
                         "sample": cmd_sample, "enable": cmd_enable}
             if args.command == "run":
                 asyncio.run(_run(province))
+            elif args.command == "accept":
+                handoff = acceptance_gate(province)
+                asyncio.run(_accept(province, handoff))
+            elif args.command == "stop-all":
+                StateStore(province.instance() / "state").set_control(stop_all=True)
+                _print({"province": province.id, "stop_all": True})
+            elif args.command in ("cutover-plan", "cutover-apply"):
+                cmd_cutover(province, args)
+            elif args.command == "probe-blank":
+                cmd_probe_blank(province, args)
+            elif args.command in ("collect-one", "probe-api-blank", "probe-export-blank"):
+                cmd_queue_and_wait(province, args)
+            elif args.command == "release-denied":
+                cmd_release_denied(province, args)
+            elif args.command == "extend-scope":
+                cmd_extend_scope(province, args)
+            elif args.command == "import-legacy-manifest":
+                cmd_import_manifest(province, args)
+            elif args.command == "extend-budget":
+                ledger = Ledger(province.instance() / "ledger.sqlite3")
+                try:
+                    _print({"province": province.id, **ledger.extend_handoff(args.add, args.approval)})
+                finally:
+                    ledger.close()
             elif args.command == "capture":
                 asyncio.run(_capture(province, args.minutes))
             else:

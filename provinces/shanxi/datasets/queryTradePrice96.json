@@ -24,7 +24,6 @@
         "exportUrl": "/px-phbsx-retail-shop/infoPub/exportSpotPrice"
       },
       "set": {
-        "date": "{date}",
         "queryConfig.data": {
           "beginDate": "{date}",
           "endDate": "{date}"
@@ -32,7 +31,8 @@
       },
       "call": "exportData",
       "path": "/px-phbsx-retail-shop/infoPub/exportSpotPrice",
-      "method": "POST"
+      "method": "POST",
+      "capture": "blob"
     }
   },
   "response": {

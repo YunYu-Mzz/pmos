@@ -1,6 +1,6 @@
 {
   "id": "sitewide_7d2f4e6e4598aba8",
-  "name": "日前出清各类电源电量及台数（市场燃煤）",
+  "name": "日前出清各类电源电量及台数",
   "status": "verified",
   "period": {
     "kind": "day",
@@ -16,23 +16,52 @@
     "component": "pdblnReport003",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{date}",
-      "queryParam.name": "市场燃煤"
+      "queryParam.name": "{scope[name]}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_rqcqgldydljzs",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport003"
     }
   },
   "response": {
     "kind": "json"
   },
+  "scopes": [
+    {
+      "name": "市场燃煤"
+    }
+  ],
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "admitted",
-    "options_api": "pdblnReportDic003"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "003",
+    "legacy_source": "lnsnxh_rqcqgldydljzs",
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "ea08b0a5d84737d7dbdc7f747461e585ca13f30d6488aeba04a919ba863ab115"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {
+        "queryParam.name": "name"
+      }
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {
-      "at": "2026-10-23T10:28:32+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "admitted"
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
     }
   ]
 }

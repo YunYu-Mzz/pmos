@@ -1,43 +1,64 @@
 {
   "id": "day_ahead_interregional_plan",
   "name": "日前各交易时段外来外送电交易计划",
-  "status": "candidate",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
     "end": "today"
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=rqgtxysdswlwsdjyjh",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场预测信息",
-      "日前各交易时段外来外送电交易计划"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_4",
+    "template_body_set": {
+      "businessTime": "{date}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=rqgtxysdswlwsdjyjh",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场预测信息",
+        "日前各交易时段外来外送电交易计划"
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_4",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "rqgtxysdswlwsdjyjh",
-    "value_layout": "time_series"
+    "legacy": "anhui native_rollout_registry",
+    "binding_sha256": "c6d1f5d31768f3650dc5aad47ed971ebd0110f34494ddcc4ef4af75f6b47bb74",
+    "success_code": 0,
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-10-31T23:14:50+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "c6d1f5d31768f3650dc5aad47ed971ebd0110f34494ddcc4ef4af75f6b47bb74"
     }
   ]
 }

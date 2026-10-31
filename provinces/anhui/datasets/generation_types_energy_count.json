@@ -1,49 +1,117 @@
 {
   "id": "generation_types_energy_count",
   "name": "各类电源类型电量及台数（火电）",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 1
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=gldyldljt",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      },
-      {
-        "kind": "select",
-        "label": "数据类型",
-        "value": "火电"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场交易信息",
-      "现货市场申报出清信息",
-      "各类电源类型电量及台数"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select5_4",
+    "template_body_set": {
+      "businessTime": "{date}",
+      "type": "{scope[数据类型]}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=gldyldljt",
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场交易信息",
+        "现货市场申报出清信息",
+        "各类电源类型电量及台数"
+      ],
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        },
+        {
+          "kind": "select",
+          "label": "数据类型",
+          "value": "{scope[数据类型]}"
+        }
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select5_4",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json",
+    "echo": {
+      "node_name": "数据类型"
+    }
   },
+  "scopes": [
+    {
+      "数据类型": "火电"
+    },
+    {
+      "数据类型": "光伏"
+    },
+    {
+      "数据类型": "储能"
+    },
+    {
+      "数据类型": "风电"
+    }
+  ],
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "gldyldljt",
-    "value_layout": "time_series"
+    "legacy": "anhui multidimensional candidates",
+    "binding_sha256": "ff0e0f073d34b3072c963a3fdaad2c6fe3f88c4f6d1692eb5a433fb38ce1e5a6",
+    "ui_request": {
+      "transport": "ui",
+      "frame": "infoCode=gldyldljt",
+      "action": "export",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        },
+        {
+          "kind": "select",
+          "label": "数据类型",
+          "value": "火电"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场交易信息",
+        "现货市场申报出清信息",
+        "各类电源类型电量及台数"
+      ]
+    },
+    "roll_forward_options": true,
+    "discover_options": {
+      "label": "数据类型"
+    },
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期",
+        "type": "数据类型"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-11-01T00:36:04+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "ff0e0f073d34b3072c963a3fdaad2c6fe3f88c4f6d1692eb5a433fb38ce1e5a6"
     }
   ]
 }

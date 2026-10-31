@@ -1,0 +1,101 @@
+{
+  "id": "day_ahead_node_marginal_price_whole_day",
+  "name": "日前节点边际电价（节点价格）（整日）",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select5_8",
+    "template_body_set": {
+      "businessTime": "{date}",
+      "genName": "",
+      "type": "{scope[数据类型]}"
+    },
+    "timeout": 120,
+    "prime": {
+      "period": "2026-10-28",
+      "request": {
+        "transport": "ui",
+        "frame": "infoCode=rqjdbjdj",
+        "menu": [
+          "现货市场",
+          "省内现货市场",
+          "市场交易信息",
+          "现货市场申报出清信息",
+          "日前节点边际电价"
+        ],
+        "fields": [
+          {
+            "kind": "date",
+            "placeholder": "选择日期",
+            "value": "2026-10-28"
+          },
+          {
+            "kind": "select",
+            "label": "数据类型",
+            "value": "阻塞价格"
+          },
+          {
+            "kind": "select",
+            "label": "节点名称",
+            "value": "安徽.窑河光伏/220kV.220kV母线"
+          }
+        ],
+        "action": "query",
+        "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select5_8",
+        "method": "POST"
+      }
+    }
+  },
+  "response": {
+    "kind": "json",
+    "whole_day": {
+      "option_field": "node_name",
+      "time_field": "dataTime",
+      "times": 96,
+      "repeat": "single",
+      "type_field": "price_type",
+      "type_label": "数据类型"
+    }
+  },
+  "scopes": [
+    {
+      "数据类型": "节点价格"
+    },
+    {
+      "数据类型": "能量价格"
+    },
+    {
+      "数据类型": "阻塞价格"
+    }
+  ],
+  "source": {
+    "legacy": "anhui node_price_whole_day",
+    "per_option": "day_ahead_node_marginal_price",
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期",
+        "type": "数据类型"
+      }
+    }
+  },
+  "history": [
+    {
+      "at": "2026-11-01T00:30:41+08:00",
+      "event": "generated_from_legacy_queue",
+      "per_option": "day_ahead_node_marginal_price"
+    }
+  ]
+}

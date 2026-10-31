@@ -24,14 +24,14 @@
         "exportUrl": "/px-phbsx-retail-shop/informationRelease/xhsccqdlExport"
       },
       "set": {
-        "date": "{month}",
         "queryConfig.data": {
           "tdate": "{month}"
         }
       },
       "call": "exportData",
       "path": "/px-phbsx-retail-shop/informationRelease/xhsccqdlExport",
-      "method": "POST"
+      "method": "POST",
+      "capture": "blob"
     }
   },
   "response": {

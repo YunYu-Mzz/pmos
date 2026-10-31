@@ -1,6 +1,6 @@
 {
   "id": "sitewide_931ac1f25ce9e62a",
-  "name": "重要通道实际输电情况（高岭直流通道）",
+  "name": "重要通道实际输电情况",
   "status": "verified",
   "period": {
     "kind": "day",
@@ -16,23 +16,52 @@
     "component": "pdblnReport030",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{date}",
-      "queryParam.name": "高岭直流通道"
+      "queryParam.name": "{scope[name]}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_zytdsjsdqk",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport030"
     }
   },
   "response": {
     "kind": "json"
   },
+  "scopes": [
+    {
+      "name": "高岭直流通道"
+    }
+  ],
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "admitted",
-    "options_api": "pdblnReportDic030"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "030",
+    "legacy_source": "lnsnxh_zytdsjsdqk",
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "b844f86a2dbe38a4c420a8ff6dd7532b26a8bc2417d4cfaa613b9d135b39b76b"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {
+        "queryParam.name": "name"
+      }
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {
-      "at": "2026-10-23T10:28:32+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "admitted"
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
     }
   ]
 }

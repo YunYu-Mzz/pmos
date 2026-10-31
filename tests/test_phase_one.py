@@ -97,8 +97,9 @@ class OfflineContracts(unittest.TestCase):
             replay("liaoning", path, "0" * 64)
 
     def test_live_cli_commands_fail_before_browser_or_state_mutation(self):
+        # pause/resume are allowed: they only toggle a running worker's collection.
         with patch("pmos.cli._browser", side_effect=AssertionError("must not attach")):
-            for cmd in ("run", "capture", "start", "resume", "stop"):
+            for cmd in ("run", "capture", "start", "stop"):
                 with self.subTest(command=cmd):
                     self.assertEqual(main(["shanxi", cmd]), 2)
 

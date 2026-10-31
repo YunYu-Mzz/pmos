@@ -15,6 +15,11 @@
     "method": "POST",
     "prepare": [
       {
+        "wait": {
+          "component": "chHeader"
+        }
+      },
+      {
         "component": "chHeader",
         "call": "setConfig",
         "await": true,
@@ -98,7 +103,20 @@
     "legacy": "shanxi/adapters/native_dispatch.py",
     "legacy_status": "native_json_queue_validated",
     "strategy": "curve",
-    "component_source_sha256": "7662702401b614db59bb6afd4f15d3735234f1fc061f9b210c42ba3796a6909b"
+    "component_source_sha256": "7662702401b614db59bb6afd4f15d3735234f1fc061f9b210c42ba3796a6909b",
+    "identity_contract": {
+      "body": {
+        "infoCode": "sn_xhpl_dqxnyfdnl_7_3",
+        "dateTime": "{date}",
+        "marketId": "PHBSX"
+      },
+      "date_fields": [
+        "dateTime"
+      ],
+      "request_envelope": "flat",
+      "fixed_page": 1
+    },
+    "lane": "native"
   },
   "history": [
     {

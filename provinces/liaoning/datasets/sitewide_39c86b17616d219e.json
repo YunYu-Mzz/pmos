@@ -1,6 +1,6 @@
 {
   "id": "sitewide_39c86b17616d219e",
-  "name": "实时出清各类电源电量及台数（光伏）",
+  "name": "实时出清各类电源电量及台数",
   "status": "verified",
   "period": {
     "kind": "day",
@@ -16,23 +16,52 @@
     "component": "pdblnReport004",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{date}",
-      "queryParam.name": "光伏"
+      "queryParam.name": "{scope[name]}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_rncqgldydljts",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport004"
     }
   },
   "response": {
     "kind": "json"
   },
+  "scopes": [
+    {
+      "name": "光伏"
+    }
+  ],
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "admitted",
-    "options_api": "pdblnReportDic004"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "004",
+    "legacy_source": "lnsnxh_rncqgldydljts",
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "8315c100122e80df20a6973956229e992b3efaa34cdd163e1de37b900e9dbe7b"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {
+        "queryParam.name": "name"
+      }
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {
-      "at": "2026-10-23T10:28:32+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "admitted"
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
     }
   ]
 }

@@ -1,0 +1,63 @@
+{
+  "id": "realtime_node_price",
+  "name": "实时出清节点阻塞价格电能量价格",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport005",
+    "frame": "/pdbln/report/PdblnReport005",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport005",
+    "component": "pdblnReport005",
+    "call": "initData",
+    "set": {
+      "tableData": [],
+      "queryParam.mdate": "{date}",
+      "queryParam.name": "{scope[name]}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "scopes": [
+    {
+      "name": "辽宁.沈东热厂/220kV.一母母线"
+    }
+  ],
+  "source": {
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "005",
+    "legacy_source": null,
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "63cac6185f28e33720bfb0bfcd38b3390335ca37f983d39ecc354b7375e93350"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {
+        "queryParam.name": "name"
+      }
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
+  },
+  "history": [
+    {
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
+    }
+  ]
+}

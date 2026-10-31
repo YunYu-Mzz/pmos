@@ -8,37 +8,57 @@
     "end": "today"
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=sjfh",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场运行信息",
-      "实际负荷"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_6",
+    "template_body_set": {
+      "businessTime": "{date}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=sjfh",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场运行信息",
+        "实际负荷"
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_6",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "sjfh",
-    "value_layout": "time_series",
-    "unified_live_acceptance": "pending; legacy status is not a unified-runtime proof"
+    "legacy": "anhui native_rollout_registry",
+    "binding_sha256": "09666b8effc613bdb3aadc0fe92009f6dfcb053ba2d0855615560c09a94c102f",
+    "success_code": 0,
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-10-31T23:14:50+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "09666b8effc613bdb3aadc0fe92009f6dfcb053ba2d0855615560c09a94c102f"
     }
   ]
 }

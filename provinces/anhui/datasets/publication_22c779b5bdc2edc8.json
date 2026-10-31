@@ -1,34 +1,51 @@
 {
   "id": "publication_22c779b5bdc2edc8",
   "name": "辅助服务市场申报出清信息",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 1
   },
   "request": {
-    "transport": "ui",
-    "frame": "spotGoods/FZFWSCSBCQXX",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": [
-          "请选择日期",
-          "选择日期"
-        ],
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "长三角电力市场",
-      "省内市场",
-      "辅助服务市场申报出清信息"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-contract-extranet-daypart/queryPlatform/execute",
+    "template_body_set": {
+      "date": "{date}",
+      "dataType": "{scope[数据类型]}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "spotGoods/FZFWSCSBCQXX",
+      "menu": [
+        "长三角电力市场",
+        "省内市场",
+        "辅助服务市场申报出清信息"
+      ],
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": [
+            "请选择日期",
+            "选择日期"
+          ],
+          "value": "{date}"
+        },
+        {
+          "kind": "select",
+          "label": "数据类型",
+          "value": "{scope[数据类型]}"
+        }
+      ],
+      "action": "query",
+      "path": "/px-contract-extranet-daypart/queryPlatform/execute",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "scopes": [
     {
@@ -39,18 +56,50 @@
     }
   ],
   "source": {
-    "legacy": "anhui period_report_queue",
-    "report_code": "FZFWSCSBCQXX",
-    "legacy_status": "period_report_collecting",
-    "scope_coverage": "observed_options_combinations_queued_not_all_verified",
-    "legacy_jobs": 572,
-    "legacy_saved": 1
+    "legacy": "anhui multidimensional candidates",
+    "binding_sha256": "e3457e5328d2f5ea746d2e38185ee1d2389d922c9c57e78ebc9d5821eaeb9d37",
+    "ui_request": {
+      "transport": "ui",
+      "frame": "spotGoods/FZFWSCSBCQXX",
+      "action": "export",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": [
+            "请选择日期",
+            "选择日期"
+          ],
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "长三角电力市场",
+        "省内市场",
+        "辅助服务市场申报出清信息"
+      ]
+    },
+    "roll_forward_options": true,
+    "discover_options": {
+      "label": "数据类型"
+    },
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "date"
+      ],
+      "dimension_fields": {
+        "date": "日期",
+        "dataType": "数据类型"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "period_report_collecting"
+      "at": "2026-11-01T00:36:04+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "e3457e5328d2f5ea746d2e38185ee1d2389d922c9c57e78ebc9d5821eaeb9d37"
     }
   ]
 }

@@ -68,6 +68,11 @@ class Province:
 
     def datasets(self) -> dict[str, DatasetSpec]:
         specs = load_all(self.datasets_dir) if self.datasets_dir.exists() else {}
+        # Options a running worker discovered on the page since its spec was written (engine state).
+        for name, scopes in (getattr(self, "extra_scopes", None) or {}).items():
+            if name in specs and specs[name].scopes:
+                known = {canonical_scope(item) for item in specs[name].scopes}
+                specs[name].scopes = specs[name].scopes + [item for item in scopes if canonical_scope(item) not in known]
         available = set(self.scripts())
         for spec in specs.values():
             missing = spec.scripts() - available
@@ -121,3 +126,7 @@ class Province:
 
 def province_ids(root: Path = PROVINCES) -> list[str]:
     return sorted(p.name for p in root.iterdir() if (p / "province.json").exists()) if root.exists() else []
+
+
+def canonical_scope(item: dict) -> str:
+    return json.dumps(item, ensure_ascii=False, sort_keys=True)

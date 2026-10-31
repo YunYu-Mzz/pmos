@@ -27,6 +27,7 @@ class Response:
     body: bytes
     name: str = ""                 # file name offered by the site, if any
     parts: tuple = ()              # several files from one UI action (an article's attachments)
+    operation: dict | None = None  # requests the page made during the operation (gate summary)
 
     @property
     def media_type(self) -> str:

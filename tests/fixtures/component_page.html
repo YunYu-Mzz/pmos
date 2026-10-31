@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- Offline stand-in for a PMOS report page: a Vue-like component whose queryPage
+     sends its business request plus an SSO exchange and one extra query, and
+     whose exportData saves a Blob through an anchor click; two methods fail
+     before / right after starting the query. -->
+<html><head><meta charset="utf-8"><title>component fixture</title></head>
+<body><div id="app"></div>
+<script>
+const vm = {
+  $options: {name: '/pxf-x/report'}, $children: [], queryUrl: '/px-x/query', exportUrl: '/px-x/export',
+  date: '', queryConfig: {data: {}, pageInfo: {pageNum: 1, pageSize: 20}},
+  async queryPage() {
+    await fetch('/px-common-authcenter/sso/token', {method: 'POST', body: '{}'});
+    fetch('/px-x/extra', {method: 'POST', body: '{}'}).catch(() => {});
+    const r = await fetch(this.queryUrl, {method: 'POST', body: JSON.stringify({data: {date: this.date}})});
+    this.result = await r.json();
+  },
+  refuseBlank() { /* a form that refuses an empty option: shows a hint, sends nothing */ },
+  failBeforeQuery() { throw new Error('page_method_failed'); },
+  failAfterQuery() { fetch(this.queryUrl, {method: 'POST', body: '{}'}).catch(() => {}); throw new Error('page_method_failed'); },
+  async exportData() {
+    const r = await fetch(this.exportUrl, {method: 'POST', body: JSON.stringify(this.queryConfig.data)});
+    const blob = new Blob([await r.arrayBuffer()]);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'export.xls';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+  }
+};
+document.getElementById('app').__vue__ = vm;
+</script></body></html>

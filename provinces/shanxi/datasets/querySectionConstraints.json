@@ -1,35 +1,93 @@
 {
   "id": "querySectionConstraints",
   "name": "断面约束",
-  "status": "verified",
+  "status": "sampled",
   "period": {
     "kind": "day",
-    "start": "2026-01-01",
+    "start": "2026-10-20",
     "end": "today"
   },
   "request": {
-    "transport": "fetch",
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/duanmianyueshu",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/duanmianyueshu",
+    "path": "/px-phbsx-retail-shop/infoGrid/dmys",
     "method": "POST",
-    "path": "/px-phbsx-retail-shop/infoGrid/dmysExcel",
-    "body": {
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/infoGrid/dmys"
+    },
+    "preflight": [
+      {
+        "component": "*",
+        "match": {
+          "queryUrl": "/px-phbsx-retail-shop/infoGrid/dmys"
+        },
+        "equals": {
+          "exportUrl": "/px-phbsx-retail-shop/infoGrid/dmysExcel"
+        }
+      }
+    ],
+    "set": {
+      "queryConfig.pageInfo": {
+        "pageNum": 1,
+        "pageSize": 1000,
+        "pageSizes": [
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ],
+        "total": 0
+      },
       "date": "{date}"
+    },
+    "call": "handleCurrentChange",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "page_size": 1000,
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "max_pages": 50,
+      "size": "queryConfig.pageInfo.pageSize"
     }
   },
   "response": {
-    "kind": "xlsx"
+    "kind": "json"
   },
   "source": {
-    "legacy": "shanxi/dataset_catalog.json",
-    "legacy_status": "verified_tencent_current_process_sequential",
-    "query_endpoint": "/px-phbsx-retail-shop/infoGrid/dmys",
-    "evidence_sha256": "ad7ad0ed39caec388ce635cf4580ddc7494a3ebc84a61255e1ff1d53cc8520d9",
-    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+    "legacy": "shanxi native queue (plain dates)",
+    "strategy": "plain",
+    "lane": "native",
+    "legacy_kind": "native_plain_section_dates",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "date": "{date}"
+        }
+      },
+      "date_fields": [
+        "date"
+      ],
+      "page_size": 1000
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T12:01:41+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "verified_tencent_current_process_sequential"
+      "at": "2026-10-31T16:41:20+08:00",
+      "event": "generated_from_server_native_queue",
+      "snapshot": "var/shanxi_server_snapshot_20261031"
+    },
+    {
+      "at": "2026-10-31T20:20:00+08:00",
+      "event": "page_size_1000",
+      "reason": "全年采集：用页面自己的最大选项 1000；已按 20 开始的周期仍以 20 完成（不重叠不缺页）"
     }
   ]
 }

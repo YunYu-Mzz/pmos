@@ -5,8 +5,7 @@
   "period": {
     "kind": "month",
     "start": "2026-01",
-    "end": "today",
-    "complete_only": true
+    "end": "today"
   },
   "request": {
     "transport": "component",
@@ -17,21 +16,44 @@
     "component": "pdblnReport086",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{month}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_dwfhztqk",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport086"
     }
   },
   "response": {
     "kind": "json"
   },
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "admitted"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "086",
+    "legacy_source": "lnsnxh_dwfhztqk",
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "6ebb9b3ff87270f6e2441fd2daf7a9e8459e1c3e0a223e63fc3c88b14f4aa7b5"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {
-      "at": "2026-10-23T10:28:32+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "admitted"
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
     }
   ]
 }

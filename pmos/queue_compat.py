@@ -436,6 +436,8 @@ def import_shadow(ledger, rows: list[LegacyTask], context: QueueContext, *, sour
             raise ValueError("cross_province_or_account_mapping_forbidden")
     ledger.db.execute("BEGIN IMMEDIATE")
     try:
+        if ledger.db.execute("SELECT 1 FROM owner_handoff LIMIT 1").fetchone():
+            raise ValueError("no_import_after_owner_handoff")
         if ledger.db.execute("SELECT 1 FROM attempts LIMIT 1").fetchone() or ledger.db.execute("SELECT 1 FROM tasks LIMIT 1").fetchone():
             # If dispatch won the transaction race, importing cannot turn its
             # in-flight ledger into a shadow. If import wins, begin's fence

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "note": "Copied into the handoff receipt at cutover; inactive in the offline release.",
+  "session": {
+    "keepalive_dataset": "queryMarketClearingRT",
+    "keepalive_period": "2026-10-30",
+    "probe": null
+  },
+  "seeding": "legacy_pending_only",
+  "production_reference": "2026-10-31 server snapshot: TencentKeeper renews 300 s after the last business response by exporting queryMarketClearingRT (exportTimeVoidance) for the archived, proven day 2026-10-30; no TIME probe; coordinator works existing queues only"
+}

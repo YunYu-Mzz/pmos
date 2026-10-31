@@ -1,55 +1,323 @@
 {
   "id": "querySectionConstraintsShadowPrice",
   "name": "断面约束情况及影子价格",
-  "status": "verified",
+  "status": "sampled",
   "period": {
     "kind": "day",
-    "start": "2026-01-01",
+    "start": "2026-10-13",
     "end": "today"
   },
   "request": {
-    "transport": "fetch",
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/Selectdmyueshuyingziprice",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/Selectdmyueshuyingziprice",
+    "path": "/px-phbsx-retail-shop/infoPub/queryShadowPrice",
     "method": "POST",
-    "path": "/px-phbsx-retail-shop/infoPub/exportShadowPrice",
-    "body": {
-      "strName": "龙小线+龙轩线",
-      "infoDate": "{date}"
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/infoPub/queryShadowPrice"
     },
-    "bootstrap": {
-      "transport": "component",
-      "frame": "/pxf-phbsx-infomation/Selectdmyueshuyingziprice",
-      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/Selectdmyueshuyingziprice",
-      "component": "*",
-      "match": {
-        "exportUrl": "/px-phbsx-retail-shop/infoPub/exportShadowPrice"
-      },
-      "set": {
-        "date": "{date}",
-        "queryConfig.data": {
-          "strName": "龙小线+龙轩线",
-          "infoDate": "{date}"
+    "preflight": [
+      {
+        "component": "*",
+        "match": {
+          "queryUrl": "/px-phbsx-retail-shop/infoPub/queryShadowPrice"
+        },
+        "equals": {
+          "selectUrl": "/px-phbsx-retail-shop/infoPub/queryShadowPriceLable",
+          "exportUrl": "/px-phbsx-retail-shop/infoPub/exportShadowPrice"
         }
-      },
-      "call": "exportData",
-      "path": "/px-phbsx-retail-shop/infoPub/exportShadowPrice",
-      "method": "POST"
+      }
+    ],
+    "set": {
+      "date": "{date}",
+      "selectValue": "{scope[strName]}",
+      "queryConfig": {
+        "data": {
+          "infoDate": "{date}",
+          "strName": "{scope[strName]}"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 1000,
+          "pageSizes": [
+            20,
+            50,
+            100,
+            200,
+            500,
+            1000
+          ],
+          "total": 0
+        }
+      }
+    },
+    "call": "queryPage",
+    "pagination": {
+      "page": "queryConfig.pageInfo.pageNum",
+      "page_size": 1000,
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "max_pages": 50
     }
   },
   "response": {
-    "kind": "xlsx"
+    "kind": "json"
   },
+  "scopes": [
+    {
+      "strName": "丁崖主变"
+    },
+    {
+      "strName": "临汾主变"
+    },
+    {
+      "strName": "丹北双"
+    },
+    {
+      "strName": "云南线＋南古I线"
+    },
+    {
+      "strName": "云古II线＋邢古线"
+    },
+    {
+      "strName": "介湖双"
+    },
+    {
+      "strName": "侯新双回线"
+    },
+    {
+      "strName": "侯村主变"
+    },
+    {
+      "strName": "刘古+壶古线"
+    },
+    {
+      "strName": "北岳＃1主变"
+    },
+    {
+      "strName": "北岳＃3+#4主变"
+    },
+    {
+      "strName": "北得双"
+    },
+    {
+      "strName": "卧湖三回"
+    },
+    {
+      "strName": "右翠双"
+    },
+    {
+      "strName": "向方双"
+    },
+    {
+      "strName": "吕胜双回线"
+    },
+    {
+      "strName": "城丹双＋城化线"
+    },
+    {
+      "strName": "城神线"
+    },
+    {
+      "strName": "官阳双"
+    },
+    {
+      "strName": "寨贤双"
+    },
+    {
+      "strName": "小东双"
+    },
+    {
+      "strName": "崛南双"
+    },
+    {
+      "strName": "平城主变"
+    },
+    {
+      "strName": "得崖双"
+    },
+    {
+      "strName": "忻侯双回线"
+    },
+    {
+      "strName": "忻州主变"
+    },
+    {
+      "strName": "文宜线＋夏文线"
+    },
+    {
+      "strName": "明海湖＃3、4主变"
+    },
+    {
+      "strName": "晋东双回线"
+    },
+    {
+      "strName": "朔云线"
+    },
+    {
+      "strName": "朔州主变"
+    },
+    {
+      "strName": "柳芮双"
+    },
+    {
+      "strName": "榆久双回线"
+    },
+    {
+      "strName": "河平双"
+    },
+    {
+      "strName": "泉连双回线"
+    },
+    {
+      "strName": "洪善主变"
+    },
+    {
+      "strName": "渡寨双"
+    },
+    {
+      "strName": "湖关三+明海湖主变"
+    },
+    {
+      "strName": "湖关三回线"
+    },
+    {
+      "strName": "湖寨双"
+    },
+    {
+      "strName": "滨杨双回线"
+    },
+    {
+      "strName": "瑞北双线"
+    },
+    {
+      "strName": "瑞天双"
+    },
+    {
+      "strName": "瑞白双"
+    },
+    {
+      "strName": "盐三II线"
+    },
+    {
+      "strName": "盐三II线+平银线"
+    },
+    {
+      "strName": "稷梁双"
+    },
+    {
+      "strName": "稷闻双"
+    },
+    {
+      "strName": "稷雄双"
+    },
+    {
+      "strName": "稷龙双"
+    },
+    {
+      "strName": "苏紫双"
+    },
+    {
+      "strName": "苗忻双"
+    },
+    {
+      "strName": "荣原双"
+    },
+    {
+      "strName": "袁岚线＋云岚双回线"
+    },
+    {
+      "strName": "贤兴线＋贤临线"
+    },
+    {
+      "strName": "运城主变"
+    },
+    {
+      "strName": "运柳双"
+    },
+    {
+      "strName": "铺吉双"
+    },
+    {
+      "strName": "长久三回线"
+    },
+    {
+      "strName": "阳泉主变"
+    },
+    {
+      "strName": "阳苏双"
+    },
+    {
+      "strName": "阳苏双＋阳红I线"
+    },
+    {
+      "strName": "雁同主变"
+    },
+    {
+      "strName": "雁岳双"
+    },
+    {
+      "strName": "雁湖双+雁岳双"
+    },
+    {
+      "strName": "雁湖双回线"
+    },
+    {
+      "strName": "霍寺双"
+    },
+    {
+      "strName": "霍州主变"
+    },
+    {
+      "strName": "高崖双回线"
+    },
+    {
+      "strName": "龙冶线"
+    },
+    {
+      "strName": "龙城主变"
+    },
+    {
+      "strName": "龙小线"
+    },
+    {
+      "strName": "龙康线"
+    },
+    {
+      "strName": "龙康线＋龙小线"
+    },
+    {
+      "strName": "龙长线"
+    },
+    {
+      "strName": "官阳双+平泉I线"
+    }
+  ],
   "source": {
-    "legacy": "shanxi/dataset_catalog.json",
-    "legacy_status": "verified_waiting_sequential_collection",
-    "query_endpoint": "/px-phbsx-retail-shop/infoPub/queryShadowPrice",
-    "evidence_sha256": "ea3ed0b49d9d61be214edd0b406fd1c3ee84d1452b276c86f8a332627fd64923",
-    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+    "legacy": "shanxi native queue (shadow section)",
+    "strategy": "shadow_section",
+    "lane": "native",
+    "legacy_kind": "native_shadow_section_preflight",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "infoDate": "{date}",
+          "strName": "{scope[strName]}"
+        }
+      },
+      "date_fields": [
+        "infoDate"
+      ],
+      "page_size": 1000
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T12:01:41+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "verified_waiting_sequential_collection"
+      "at": "2026-10-31T16:41:20+08:00",
+      "event": "generated_from_server_native_queue",
+      "snapshot": "var/shanxi_server_snapshot_20261031"
     }
   ]
 }

@@ -1,48 +1,109 @@
 {
   "id": "renewables_output_forecast",
   "name": "新能源总出力预测(日)（新能源总出力预测数值）",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 1
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=xnyzclly_r",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      },
-      {
-        "kind": "select",
-        "label": "数据类型",
-        "value": "新能源总出力预测数值"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场预测信息",
-      "新能源总出力预测(日)"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_7",
+    "template_body_set": {
+      "businessTime": "{date}",
+      "type": "{scope[数据类型]}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=xnyzclly_r",
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场预测信息",
+        "新能源总出力预测(日)"
+      ],
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        },
+        {
+          "kind": "select",
+          "label": "数据类型",
+          "value": "{scope[数据类型]}"
+        }
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_7",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
+  "scopes": [
+    {
+      "数据类型": "新能源总出力预测数值"
+    },
+    {
+      "数据类型": "光伏总出力预测数值"
+    },
+    {
+      "数据类型": "风电总出力预测数值"
+    }
+  ],
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "xnyzclly_r",
-    "value_layout": "time_series"
+    "legacy": "anhui multidimensional candidates",
+    "binding_sha256": "fbe57503f69fce7163227e3efb63dc9510cd46b553b9b7944b94694afe335162",
+    "ui_request": {
+      "transport": "ui",
+      "frame": "infoCode=xnyzclly_r",
+      "action": "export",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        },
+        {
+          "kind": "select",
+          "label": "数据类型",
+          "value": "新能源总出力预测数值"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场预测信息",
+        "新能源总出力预测(日)"
+      ]
+    },
+    "roll_forward_options": true,
+    "discover_options": {
+      "label": "数据类型"
+    },
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期",
+        "type": "数据类型"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-11-01T00:36:04+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "fbe57503f69fce7163227e3efb63dc9510cd46b553b9b7944b94694afe335162"
     }
   ]
 }

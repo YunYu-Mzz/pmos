@@ -1,48 +1,109 @@
 {
   "id": "renewables_output_actual",
   "name": "新能源总出力（新能源总出力）",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 1
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=xnyzcl",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      },
-      {
-        "kind": "select",
-        "label": "数据类型",
-        "value": "新能源总出力"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场运行信息",
-      "新能源总出力"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_4",
+    "template_body_set": {
+      "businessTime": "{date}",
+      "type": "{scope[数据类型]}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=xnyzcl",
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场运行信息",
+        "新能源总出力"
+      ],
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        },
+        {
+          "kind": "select",
+          "label": "数据类型",
+          "value": "{scope[数据类型]}"
+        }
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select4_4",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
+  "scopes": [
+    {
+      "数据类型": "新能源总出力"
+    },
+    {
+      "数据类型": "风电总出力"
+    },
+    {
+      "数据类型": "光伏总出力"
+    }
+  ],
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "xnyzcl",
-    "value_layout": "time_series"
+    "legacy": "anhui multidimensional candidates",
+    "binding_sha256": "f063c18e6f9cc8435fe24f03d72deab2989df018fc146803a05b17f3269ee16d",
+    "ui_request": {
+      "transport": "ui",
+      "frame": "infoCode=xnyzcl",
+      "action": "export",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        },
+        {
+          "kind": "select",
+          "label": "数据类型",
+          "value": "新能源总出力"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场运行信息",
+        "新能源总出力"
+      ]
+    },
+    "roll_forward_options": true,
+    "discover_options": {
+      "label": "数据类型"
+    },
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期",
+        "type": "数据类型"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-11-01T00:36:04+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "f063c18e6f9cc8435fe24f03d72deab2989df018fc146803a05b17f3269ee16d"
     }
   ]
 }

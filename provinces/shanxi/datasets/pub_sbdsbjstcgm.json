@@ -13,6 +13,11 @@
     "method": "POST",
     "prepare": [
       {
+        "wait": {
+          "component": "chHeader"
+        }
+      },
+      {
         "component": "chHeader",
         "call": "setConfig",
         "await": true,
@@ -195,17 +200,125 @@
     ],
     "stop_at_known": true,
     "download": {
-      "transport": "native",
+      "transport": "component",
       "frame": "/pxf-settlement-outnetpub/",
       "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
-      "module": "63a1",
-      "export": "a",
+      "prepare": [
+        {
+          "wait": {
+            "component": "chHeader"
+          }
+        },
+        {
+          "component": "chHeader",
+          "call": "setConfig",
+          "await": true,
+          "unless": {
+            "component": "chHeader",
+            "equals": {
+              "marketHeader": "PHBSX"
+            }
+          }
+        },
+        {
+          "component": "chHeader",
+          "call": "getValues",
+          "await": true,
+          "unless": {
+            "component": "chHeader",
+            "equals": {
+              "marketHeader": "PHBSX"
+            }
+          }
+        },
+        {
+          "wait": {
+            "component": "chHeader",
+            "equals": {
+              "marketHeader": "PHBSX"
+            }
+          }
+        },
+        {
+          "component": "chHeader",
+          "emit": "sendDataToMain",
+          "payload": {
+            "viewName": "operationOrganizationQuery",
+            "viewId": "b05ce175-6b4b-49df-8203-bd424d3861aa",
+            "viewCode": "sbdsbjstcgm",
+            "marketMain": "PHBSX",
+            "openWay": "1",
+            "pidTem": "1",
+            "uploadDepartment": "国网山西省电力公司",
+            "uploadDepartmentId": "SCZT_SCZT_DWQY"
+          },
+          "unless": {
+            "component": "operationOrganizationQuery",
+            "match": {
+              "viewId": "b05ce175-6b4b-49df-8203-bd424d3861aa"
+            }
+          }
+        },
+        {
+          "wait": {
+            "component": "operationOrganizationQuery",
+            "match": {
+              "viewId": "b05ce175-6b4b-49df-8203-bd424d3861aa"
+            }
+          }
+        },
+        {
+          "component": "chHeader",
+          "emit": "sendShowTmToMain",
+          "payload": true
+        },
+        {
+          "sleep": 0.5
+        },
+        {
+          "component": "operationOrganizationQuery",
+          "match": {
+            "viewId": "b05ce175-6b4b-49df-8203-bd424d3861aa"
+          },
+          "set": {
+            "detailComponent": "unstructedMessage",
+            "isfullscreen": true,
+            "messagePropData": {
+              "title": "{title}",
+              "attachment": [
+                "{attachment}"
+              ],
+              "isfullscreen": true,
+              "tagShow": false,
+              "dynamicTags": []
+            },
+            "dialogTableVisible": true
+          }
+        },
+        {
+          "wait": {
+            "component": "unstructedMessage",
+            "match": {
+              "attachment": [
+                "{attachment}"
+              ]
+            }
+          }
+        }
+      ],
+      "component": "unstructedMessage",
+      "match": {
+        "attachment": [
+          "{attachment}"
+        ]
+      },
+      "call": "fileDownload",
       "args": [
-        "{attachment[id]}",
-        null
+        "{attachment}"
       ],
       "path": "/px-settlement-infpubmeex/fileService/download",
-      "method": "GET"
+      "method": "GET",
+      "capture": "blob"
     },
     "download_response": {
       "kind": "document"
@@ -219,13 +332,24 @@
     "listed_rows": 1,
     "listed_files": 1,
     "component_source_sha256": "0b2955bf40b33f7905536851f99f2fec22c90690a089e41d70a69e6c4aaec25c",
-    "note": "date filter is the publication date (from legacy startDate to today); file download calls the page's own helper (webpack module 63a1.a)"
+    "note": "date filter is the publication date (from legacy startDate to today); a file downloads through the announcement's detail dialog (unstructedMessage.fileDownload), as production",
+    "lane": "publication"
   },
   "history": [
     {
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "native_metadata_query_verified_not_live_queue"
+    },
+    {
+      "at": "2026-10-31T18:00:00+08:00",
+      "event": "download_via_detail_dialog",
+      "reason": "attempt 50 native_module_missing: helper 63a1 loads only with the dialog chunk"
+    },
+    {
+      "at": "2026-10-31T18:30:00+08:00",
+      "event": "wait_for_header_first",
+      "reason": "18:23 first preflight on a freshly opened frame: chHeader not mounted yet (production waits for it first)"
     }
   ]
 }

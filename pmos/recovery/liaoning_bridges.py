@@ -85,7 +85,10 @@ def _normalized_ast(node):
             if getattr(child, "type_params", []) != []:
                 raise ValueError("generic_legacy_writer_type_parameters_unreviewed")
             child._fields = tuple(field for field in child._fields if field != "type_params")
-    return ast.dump(node, annotate_fields=True, include_attributes=False)
+    # Python 3.13+ omits empty fields unless asked; keep the pinned (3.9-3.12) form.
+    import inspect
+    extra = {"show_empty": True} if "show_empty" in inspect.signature(ast.dump).parameters else {}
+    return ast.dump(node, annotate_fields=True, include_attributes=False, **extra)
 
 
 def _pin_source(raw, pins):

@@ -1,4 +1,5 @@
 """Browser boundary with fake Playwright objects (no browser, no network)."""
+import asyncio
 import base64
 import unittest
 
@@ -56,6 +57,42 @@ class TemplateTests(unittest.IsolatedAsyncioTestCase):
             templates.get("/px-x/other")
 
 
+class Context:
+    def __init__(self):
+        self.listeners = []
+
+    def on(self, event, listener):
+        self.listeners.append((event, listener))
+
+    def remove_listener(self, event, listener):
+        self.listeners.remove((event, listener))
+
+
+class OperationScopedObservation(unittest.IsolatedAsyncioTestCase):
+    async def test_requests_are_observed_only_inside_pmos_operations(self):
+        templates, context, spawned = Templates(ORIGIN), Context(), []
+        templates.observe(context, spawned.append)
+        self.assertEqual(context.listeners, [], "no driver objects for background traffic")
+        with templates.window():
+            with templates.window():
+                self.assertEqual(len(context.listeners), 1)
+            self.assertTrue(templates.listening, "nested windows keep listening")
+            context.listeners[0][1](Request("/px-x/export", Frame(), {"X-Token": "t"}))
+        self.assertEqual(context.listeners, [])
+        for coroutine in spawned:
+            await coroutine
+        self.assertEqual(templates.get("/px-x/export")["headers"], {"x-token": "t"}, "template kept for replay")
+
+    def test_always_mode_keeps_listening_and_detach_removes_everything(self):
+        templates, context = Templates(ORIGIN), Context()
+        templates.observe(context, lambda c: None, always=True)
+        with templates.window():
+            pass
+        self.assertEqual(len(context.listeners), 1)
+        templates.detach()
+        self.assertEqual(context.listeners, [])
+
+
 class FetchTransportTests(unittest.IsolatedAsyncioTestCase):
     def transport(self, frame):
         templates = Templates(ORIGIN)
@@ -102,3 +139,43 @@ class AttachTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ExpectWithoutWaiter(unittest.IsolatedAsyncioTestCase):
+    """transport._Expect: page.expect_* semantics with a plain listener that is always removed."""
+
+    class Page:
+        def __init__(self):
+            self.listeners = {}
+
+        def on(self, event, handler):
+            self.listeners.setdefault(event, []).append(handler)
+
+        def remove_listener(self, event, handler):
+            self.listeners[event].remove(handler)
+
+        def emit(self, event, value):
+            for handler in list(self.listeners.get(event, [])):
+                handler(value)
+
+    async def test_the_first_matching_event_resolves_and_the_listener_goes(self):
+        from pmos.browser.transport import _Expect
+        page = self.Page()
+        async with _Expect(page, "response", lambda r: r == "wanted", timeout=1000) as captured:
+            page.emit("response", "other")
+            page.emit("response", "wanted")
+        self.assertEqual(await captured.value, "wanted")
+        self.assertEqual(page.listeners["response"], [])
+
+    async def test_timeout_and_an_exception_in_the_block_both_remove_the_listener(self):
+        from pmos.browser.transport import _Expect
+        page = self.Page()
+        async with _Expect(page, "download", timeout=50) as event:
+            pass
+        with self.assertRaises(asyncio.TimeoutError):
+            await event.value
+        self.assertEqual(page.listeners["download"], [])
+        with self.assertRaises(RuntimeError):
+            async with _Expect(page, "response", timeout=1000):
+                raise RuntimeError("page call failed")
+        self.assertEqual(page.listeners["response"], [])

@@ -25,7 +25,6 @@
         "exportUrl": "/px-phbsx-retail-shop/informationRelease/yhccjqkExport"
       },
       "set": {
-        "date": "{month}",
         "queryConfig.data": {
           "endDate": "{month}",
           "startDate": "{month}"
@@ -33,7 +32,8 @@
       },
       "call": "exportData",
       "path": "/px-phbsx-retail-shop/informationRelease/yhccjqkExport",
-      "method": "POST"
+      "method": "POST",
+      "capture": "blob"
     }
   },
   "response": {

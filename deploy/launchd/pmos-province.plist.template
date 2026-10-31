@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- PMOS worker on macOS (Anhui runs on this Mac). Fill the {PLACEHOLDERS}; the province session
+     installs it with `launchctl bootstrap gui/501 <file>` only after the user approves the cutover.
+     KeepAlive restarts only an abnormal exit (a lost driver, DriverLost): a finished budget or a
+     block exits 0 and stays stopped for review. ThrottleInterval 30 as the Anhui legacy units. -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>{LABEL}</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>{PYTHON}</string>
+		<string>-m</string>
+		<string>pmos</string>
+		<string>{PROVINCE}</string>
+		<string>accept</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PMOS_DATA</key>
+		<string>{PMOS_DATA}</string>
+		<key>PYTHONPATH</key>
+		<string>{RELEASE}</string>
+	</dict>
+	<key>WorkingDirectory</key>
+	<string>{RELEASE}</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<dict>
+		<key>SuccessfulExit</key>
+		<false/>
+	</dict>
+	<key>ThrottleInterval</key>
+	<integer>30</integer>
+	<key>StandardOutPath</key>
+	<string>{LOG_DIR}/pmos-{PROVINCE}.log</string>
+	<key>StandardErrorPath</key>
+	<string>{LOG_DIR}/pmos-{PROVINCE}.err.log</string>
+</dict>
+</plist>

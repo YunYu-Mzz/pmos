@@ -1,0 +1,13 @@
+<!doctype html>
+<!-- Offline stand-in for the Anhui portal: 信息披露 expands to 综合查询, whose
+     click handler (the site's own script) opens the column page in a new tab
+     with a dynamic parameter. -->
+<html><head><meta charset="utf-8"><title>anhui portal fixture</title>
+<style>.hidden { display: none; }</style></head>
+<body>
+<div id="disclosure">信息披露</div>
+<div id="query" class="hidden">综合查询</div>
+<script>
+document.getElementById('disclosure').onclick = () => document.getElementById('query').classList.remove('hidden');
+document.getElementById('query').onclick = () => window.open('/column_page.html?ts=' + Date.now() + '#/x/columnHomeLeftMenuNew');
+</script></body></html>

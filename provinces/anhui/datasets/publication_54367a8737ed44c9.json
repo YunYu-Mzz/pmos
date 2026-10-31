@@ -1,48 +1,67 @@
 {
   "id": "publication_54367a8737ed44c9",
   "name": "开停机不满最小约束时间机组名单",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
     "end": "today"
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=khjbmnxyssjjdmd",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": [
-          "请选择日期",
-          "选择日期"
-        ],
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场边界信息",
-      "开停机不满最小约束时间机组名单"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select2_4",
+    "template_body_set": {
+      "businessTime": "{date}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=khjbmnxyssjjdmd",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": [
+            "请选择日期",
+            "选择日期"
+          ],
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场边界信息",
+        "开停机不满最小约束时间机组名单"
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select2_4",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "source": {
-    "legacy": "anhui period_report_queue",
-    "report_code": "khjbmnxyssjjdmd",
-    "legacy_status": "period_report_collecting",
-    "legacy_jobs": 286,
-    "legacy_saved": 1
+    "legacy": "anhui native_rollout_registry",
+    "binding_sha256": "fc86bc71a358ec74577e8040926a4dbcb38ba803a2b8e5df0e2e819bd51b5c3b",
+    "success_code": 0,
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "period_report_collecting"
+      "at": "2026-10-31T23:14:50+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "fc86bc71a358ec74577e8040926a4dbcb38ba803a2b8e5df0e2e819bd51b5c3b"
     }
   ]
 }

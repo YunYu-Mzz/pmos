@@ -1,6 +1,6 @@
 {
   "id": "queryRqxtfhyc",
-  "name": "系统负荷预测(日)",
+  "name": "系统负荷预测日",
   "status": "verified",
   "period": {
     "kind": "day",
@@ -8,36 +8,57 @@
     "end": "today"
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=xtfhyc_r",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场预测信息",
-      "系统负荷预测日"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_1",
+    "template_body_set": {
+      "businessTime": "{date}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=xtfhyc_r",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场预测信息",
+        "系统负荷预测日"
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_1",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "xtfhyc_r",
-    "value_layout": "time_series"
+    "legacy": "anhui native_rollout_registry",
+    "binding_sha256": "1bdfd5e812a95f3d29d46d2ba02517fc4a457aa3534e8232872194cb6c762de7",
+    "success_code": 0,
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-10-31T23:14:50+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "1bdfd5e812a95f3d29d46d2ba02517fc4a457aa3534e8232872194cb6c762de7"
     }
   ]
 }

@@ -1,0 +1,120 @@
+{
+  "id": "alt_tab_candidate_b8c8f55fe60f",
+  "name": "省间现货分通道成交情况",
+  "status": "sampled",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+    "path": "/px-phbsx-retail-shop/informationRelease/sjxxrnftdcjqkQuery",
+    "method": "POST",
+    "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+    "prepare": [
+      {
+        "wait": {
+          "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao"
+        }
+      },
+      {
+        "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+        "set": {
+          "activeName": "rinei"
+        },
+        "call": "handleClick",
+        "unless": {
+          "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+          "equals": {
+            "activeName": "rinei",
+            "queryUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrnftdcjqkQuery",
+            "exportUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrnftdcjqkExport"
+          }
+        }
+      }
+    ],
+    "preflight": [
+      {
+        "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+        "equals": {
+          "activeName": "rinei",
+          "queryUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrnftdcjqkQuery",
+          "exportUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrnftdcjqkExport"
+        }
+      }
+    ],
+    "set": {
+      "date": "{date}",
+      "rangeDate": [
+        "{date}",
+        "{date}"
+      ],
+      "queryConfig.data": {
+        "startDate": "{date}",
+        "endDate": "{date}"
+      },
+      "queryConfig.pageInfo": {
+        "pageNum": 1,
+        "pageSize": 1000,
+        "pageSizes": [
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ],
+        "total": 0
+      }
+    },
+    "call": "queryPage",
+    "pagination": {
+      "page": "queryConfig.pageInfo.pageNum",
+      "page_size": 1000,
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "max_pages": 50
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi native queue (alternate tab)",
+    "strategy": "alternate_tab",
+    "lane": "native",
+    "legacy_kind": "native_alternate_tab",
+    "source_dataset": "candidate_b8c8f55fe60f",
+    "source_sha256": "dcef4e67d5836ea6690706fd637698d41d235c5d8ca3ea7d138349a852e4e92f",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "startDate": "{date}",
+          "endDate": "{date}"
+        }
+      },
+      "date_fields": [
+        "startDate",
+        "endDate"
+      ],
+      "page_size": 1000
+    },
+    "note": "component/route exactly as the legacy plan pairs them; no production send has completed yet"
+  },
+  "history": [
+    {
+      "at": "2026-10-31T16:41:20+08:00",
+      "event": "generated_from_server_native_queue",
+      "snapshot": "var/shanxi_server_snapshot_20261031"
+    },
+    {
+      "at": "2026-10-31T20:20:00+08:00",
+      "event": "wait_for_tab_component",
+      "reason": "预检 component_missing：路由切换后页签组件稍后才挂载，先等它出现（生产同样先等待）"
+    }
+  ]
+}

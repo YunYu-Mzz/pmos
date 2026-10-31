@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- Offline stand-in for the Liaoning column page (综合查询栏目页): chHeader holds
+     the encrypted menu, chAside decrypts it and opens a report frame in this
+     page on handleNodeClick, as the site's own menu does. -->
+<html><head><meta charset="utf-8"><title>column fixture</title></head>
+<body><div id="header"></div><div id="aside"></div><div id="frames"></div>
+<script>
+window.opened = [];
+const entries = [{label: '实际负荷', infoCode: 'lnsnxh_sjfh', guid: 'g-010',
+                  viewname: '/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport010'},
+                 {label: '平均申报电价', infoCode: 'lnsnxh_rqpjsbdj', guid: 'g-043',
+                  viewname: '/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport043'}];
+const header = {$options: {name: 'chHeader'}, $children: [], menuBoxObj: {a: [{label: '现货', children: entries}]}};
+const aside = {$options: {name: 'chAside'}, $children: [],
+  decryData(rows) { return rows; },
+  $refs: {tree: {getNode(guid) { return {guid}; }}},
+  handleNodeClick(row, node) {
+    window.opened.push([row.guid, node.guid]);
+    const frame = document.createElement('iframe');
+    frame.src = '/component_page.html#' + row.viewname;
+    document.getElementById('frames').append(frame);
+  }};
+document.getElementById('header').__vue__ = header;
+document.getElementById('aside').__vue__ = aside;
+</script></body></html>

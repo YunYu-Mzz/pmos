@@ -17,6 +17,9 @@
     "call": "query",
     "set": {
       "queryParam.date": "{date}"
+    },
+    "site_menu": {
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport022"
     }
   },
   "response": {

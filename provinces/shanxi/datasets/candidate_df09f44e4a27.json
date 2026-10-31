@@ -1,55 +1,326 @@
 {
   "id": "candidate_df09f44e4a27",
   "name": "实时输电断面约束及阻塞情况",
-  "status": "verified",
+  "status": "sampled",
   "period": {
     "kind": "day",
-    "start": "2026-01-01",
+    "start": "2026-10-13",
     "end": "today"
   },
   "request": {
-    "transport": "fetch",
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/shishishudiandmysjzs",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shishishudiandmysjzs",
+    "path": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery",
     "method": "POST",
-    "path": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkExport",
-    "body": {
-      "tdName": "阳苏双＋阳红I线",
-      "tdate": "{date}"
+    "component": "*",
+    "match": {
+      "queryUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery"
     },
-    "bootstrap": {
-      "transport": "component",
-      "frame": "/pxf-phbsx-infomation/shishishudiandmysjzs",
-      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shishishudiandmysjzs",
-      "component": "*",
-      "match": {
-        "exportUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkExport"
-      },
-      "set": {
-        "date": "{date}",
-        "queryConfig.data": {
-          "tdName": "阳苏双＋阳红I线",
-          "tdate": "{date}"
+    "preflight": [
+      {
+        "component": "*",
+        "match": {
+          "queryUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery"
+        },
+        "equals": {
+          "selectUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkParam",
+          "exportUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkExport"
         }
-      },
-      "call": "exportData",
-      "path": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkExport",
-      "method": "POST"
+      }
+    ],
+    "set": {
+      "date": "{date}",
+      "selectValue": "{scope[tdName]}",
+      "queryConfig": {
+        "data": {
+          "tdate": "{date}",
+          "tdName": "{scope[tdName]}"
+        },
+        "pageInfo": {
+          "pageNum": 1,
+          "pageSize": 1000,
+          "pageSizes": [
+            20,
+            50,
+            100,
+            200,
+            500,
+            1000
+          ],
+          "total": 0
+        }
+      }
+    },
+    "call": "queryPage",
+    "pagination": {
+      "page": "queryConfig.pageInfo.pageNum",
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "page_size": 1000,
+      "max_pages": 50
     }
   },
   "response": {
-    "kind": "xlsx"
+    "kind": "json"
   },
+  "scopes": [
+    {
+      "tdName": "丁崖主变"
+    },
+    {
+      "tdName": "临汾主变"
+    },
+    {
+      "tdName": "丹北双"
+    },
+    {
+      "tdName": "云南线＋南古I线"
+    },
+    {
+      "tdName": "云古II线＋邢古线"
+    },
+    {
+      "tdName": "介湖双"
+    },
+    {
+      "tdName": "侯新双回线"
+    },
+    {
+      "tdName": "侯村主变"
+    },
+    {
+      "tdName": "刘古+壶古线"
+    },
+    {
+      "tdName": "北岳＃1主变"
+    },
+    {
+      "tdName": "北岳＃3+#4主变"
+    },
+    {
+      "tdName": "北得双"
+    },
+    {
+      "tdName": "卧湖三回"
+    },
+    {
+      "tdName": "右翠双"
+    },
+    {
+      "tdName": "向方双"
+    },
+    {
+      "tdName": "吕胜双回线"
+    },
+    {
+      "tdName": "城丹双＋城化线"
+    },
+    {
+      "tdName": "城神线"
+    },
+    {
+      "tdName": "官阳双"
+    },
+    {
+      "tdName": "寨贤双"
+    },
+    {
+      "tdName": "小东双"
+    },
+    {
+      "tdName": "崛南双"
+    },
+    {
+      "tdName": "平城主变"
+    },
+    {
+      "tdName": "得崖双"
+    },
+    {
+      "tdName": "忻侯双回线"
+    },
+    {
+      "tdName": "忻州主变"
+    },
+    {
+      "tdName": "文宜线＋夏文线"
+    },
+    {
+      "tdName": "明海湖＃3、4主变"
+    },
+    {
+      "tdName": "晋东双回线"
+    },
+    {
+      "tdName": "朔云线"
+    },
+    {
+      "tdName": "朔州主变"
+    },
+    {
+      "tdName": "柳芮双"
+    },
+    {
+      "tdName": "榆久双回线"
+    },
+    {
+      "tdName": "河平双"
+    },
+    {
+      "tdName": "泉连双回线"
+    },
+    {
+      "tdName": "洪善主变"
+    },
+    {
+      "tdName": "渡寨双"
+    },
+    {
+      "tdName": "湖关三+明海湖主变"
+    },
+    {
+      "tdName": "湖关三回线"
+    },
+    {
+      "tdName": "湖寨双"
+    },
+    {
+      "tdName": "滨杨双回线"
+    },
+    {
+      "tdName": "瑞北双线"
+    },
+    {
+      "tdName": "瑞天双"
+    },
+    {
+      "tdName": "瑞白双"
+    },
+    {
+      "tdName": "盐三II线"
+    },
+    {
+      "tdName": "盐三II线+平银线"
+    },
+    {
+      "tdName": "稷梁双"
+    },
+    {
+      "tdName": "稷闻双"
+    },
+    {
+      "tdName": "稷雄双"
+    },
+    {
+      "tdName": "稷龙双"
+    },
+    {
+      "tdName": "苏紫双"
+    },
+    {
+      "tdName": "苗忻双"
+    },
+    {
+      "tdName": "荣原双"
+    },
+    {
+      "tdName": "袁岚线＋云岚双回线"
+    },
+    {
+      "tdName": "贤兴线＋贤临线"
+    },
+    {
+      "tdName": "运城主变"
+    },
+    {
+      "tdName": "运柳双"
+    },
+    {
+      "tdName": "铺吉双"
+    },
+    {
+      "tdName": "长久三回线"
+    },
+    {
+      "tdName": "阳泉主变"
+    },
+    {
+      "tdName": "阳苏双"
+    },
+    {
+      "tdName": "雁同主变"
+    },
+    {
+      "tdName": "雁岳双"
+    },
+    {
+      "tdName": "雁湖双+雁岳双"
+    },
+    {
+      "tdName": "雁湖双回线"
+    },
+    {
+      "tdName": "霍寺双"
+    },
+    {
+      "tdName": "霍州主变"
+    },
+    {
+      "tdName": "高崖双回线"
+    },
+    {
+      "tdName": "龙冶线"
+    },
+    {
+      "tdName": "龙城主变"
+    },
+    {
+      "tdName": "龙小线"
+    },
+    {
+      "tdName": "龙小线+龙轩线"
+    },
+    {
+      "tdName": "龙康线"
+    },
+    {
+      "tdName": "龙康线＋龙小线"
+    },
+    {
+      "tdName": "龙长线"
+    },
+    {
+      "tdName": "官阳双+平泉I线"
+    }
+  ],
   "source": {
-    "legacy": "shanxi/dataset_catalog.json",
-    "legacy_status": "verified_waiting_sequential_collection",
-    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery",
-    "evidence_sha256": "d9368f64b7a1b1ff253229ff30bf3736a06b37596eb0e75d3401ce8a847b6a35",
-    "note": "fetch replays the page's own export template; until the page has shown it, the bootstrap runs the page's own exportData once"
+    "legacy": "shanxi native queue (named scope)",
+    "strategy": "named_scope",
+    "lane": "native",
+    "legacy_kind": "native_named_scope_preflight",
+    "source_sha256": "64879a5c1a4965b330a60ff1778b0959c347f85162ba061fd0bca002dbed4029",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "tdate": "{date}",
+          "tdName": "{scope[tdName]}"
+        }
+      },
+      "date_fields": [
+        "tdate"
+      ],
+      "page_size": 1000
+    },
+    "note": "unit names are exactly those in the legacy queue; preflight mirrors the legacy live-form check",
+    "replaces_export_spec": true
   },
   "history": [
     {
-      "at": "2026-10-23T12:01:41+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "verified_waiting_sequential_collection"
+      "at": "2026-10-31T16:38:41+08:00",
+      "event": "generated_from_server_native_queue",
+      "snapshot": "var/shanxi_server_snapshot_20261031"
     }
   ]
 }

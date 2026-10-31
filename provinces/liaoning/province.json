@@ -4,16 +4,47 @@
   "origin": "https://pmos.ln.sgcc.com.cn",
   "browser": {
     "profile_dir": "~/pmos-browser/liaoning",
-    "page_url_contains": null
+    "page_url_contains": null,
+    "note": "server override: <instance>/browser.json {\"profile_dir\": \"/home/ecs-user/sd_crawler/liaoning/state/server_browser_profile\"}; Chrome stays owned by liaoning-browser-owner.service (never stop it: its driver closes Chrome)",
+    "work_page": {
+      "name": "pmos-liaoning-work",
+      "open_from": "/#/dashboard",
+      "url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+      "note": "the portal plus legacy worker pages stay open; PMOS opens its own column page from the portal with window.open (inherits sessionStorage natively), as the legacy cold start did"
+    },
+    "request_gate": true,
+    "memory_guard": {
+      "browser_cgroup": "system.slice/liaoning-browser-owner.service",
+      "note": "Chrome, its owner and driver; per-machine override in <instance>/browser.json"
+    },
+    "page_recycle": {
+      "max_age_seconds": 21600,
+      "max_js_heap_mb": 768,
+      "note": "Liaoning: same-site pages grew to 1.8 GB over 6 days (Blink GC, not reclaimable by forced GC); only a fresh page frees it"
+    },
+    "renderer_alert": {
+      "rss_mb": 1536,
+      "cpu_percent": 300,
+      "note": "an event (renderer_heavy) for the province session; the page itself is recycled by page_recycle"
+    }
   },
   "policy": {
-    "response_interval_seconds": 15,
+    "response_interval_seconds": 1,
     "max_per_hour": null,
     "max_per_day": null,
     "request_timeout_seconds": 45,
     "max_consecutive_empty": 2,
     "renew_after_idle_seconds": 300,
-    "probe_after_idle_seconds": 300
+    "probe_after_idle_seconds": 300,
+    "isolate_items": [
+      "unknown",
+      "site_data",
+      "permission"
+    ],
+    "isolation_streak": 1,
+    "denial_streak": 1,
+    "min_free_disk_mb": 2048,
+    "note": "Liaoning production (2026-10-31): 1 s after each response on every serial lane (user 21:05); keepalive after 300 s idle; a denial or an unknown result pauses only that source and is never re-sent; 429 / auth stop the province; 2 empty periods in a row pause the dataset; business pauses below 2 GB free disk (root disk 40 GB, 5.6 GB free on 10-31)"
   },
   "session": {
     "keepalive_dataset": null,
@@ -21,7 +52,8 @@
     "collection_order": [
       "system_load"
     ],
-    "legacy_keepalive_dataset": "system_load"
+    "legacy_keepalive_dataset": "system_load",
+    "cutover_keepalive_dataset": "system_load"
   },
   "notices": {},
   "release": {

@@ -14,6 +14,25 @@
     "body": {
       "beginDate": "{date}",
       "endDate": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/shishishichangchuqing",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shishishichangchuqing",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/infoPub/exportTimeVoidance"
+      },
+      "set": {
+        "queryConfig.data": {
+          "beginDate": "{date}",
+          "endDate": "{date}"
+        }
+      },
+      "call": "exportData",
+      "capture": "blob",
+      "path": "/px-phbsx-retail-shop/infoPub/exportTimeVoidance",
+      "method": "POST"
     }
   },
   "response": {
@@ -24,13 +43,20 @@
     "legacy_status": "verified_tencent_current_process_sequential",
     "query_endpoint": "/px-phbsx-retail-shop/infoPub/queryTimeVoidance",
     "evidence_sha256": "5a927922f673d67c3e1bfdb10249beb0e2b1793ffac3c9690e0593c62bf0d800",
-    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)",
+    "renewal": "production renewal dataset; designated by the handoff receipt (provinces/shanxi/cutover.json)"
   },
   "history": [
     {
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "verified_tencent_current_process_sequential"
+    },
+    {
+      "at": "2026-10-31T16:44:10+08:00",
+      "event": "keepalive_matches_production",
+      "dataset": "queryMarketClearingRT",
+      "path": "/px-phbsx-retail-shop/infoPub/exportTimeVoidance"
     }
   ]
 }

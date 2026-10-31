@@ -53,7 +53,19 @@
     "legacy": "shanxi/adapters/native_dispatch.py",
     "legacy_status": "native_json_queue_validated",
     "strategy": "plain",
-    "component_source_sha256": "fb27dd4370fb22678bcb11ea12c8eb9344aff243847dcf396794b24f37dc98b5"
+    "component_source_sha256": "fb27dd4370fb22678bcb11ea12c8eb9344aff243847dcf396794b24f37dc98b5",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "date": "{date}"
+        }
+      },
+      "date_fields": [
+        "date"
+      ],
+      "page_size": 20
+    },
+    "lane": "native"
   },
   "history": [
     {

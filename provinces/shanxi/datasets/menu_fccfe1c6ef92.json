@@ -29,7 +29,18 @@
     "legacy": "shanxi/adapters/native_dispatch.py",
     "legacy_status": "native_json_queue_validated",
     "strategy": "market",
-    "component_source_sha256": "aeb2c688c526e7d8a14f1f853099fefccc72ce8098faf37e84e2c9157e609b9b"
+    "component_source_sha256": "aeb2c688c526e7d8a14f1f853099fefccc72ce8098faf37e84e2c9157e609b9b",
+    "identity_contract": {
+      "body": {
+        "date": "{date}"
+      },
+      "date_fields": [
+        "date"
+      ],
+      "request_envelope": "flat",
+      "fixed_page": 1
+    },
+    "lane": "native"
   },
   "history": [
     {

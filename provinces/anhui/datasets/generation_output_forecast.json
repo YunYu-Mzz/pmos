@@ -1,43 +1,64 @@
 {
   "id": "generation_output_forecast",
   "name": "发电总出力预测",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
     "end": "today"
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=fdzclly",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": "选择日期",
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场预测信息",
-      "发电总出力预测"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_5",
+    "template_body_set": {
+      "businessTime": "{date}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=fdzclly",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": "选择日期",
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场预测信息",
+        "发电总出力预测"
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_5",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "source": {
-    "legacy": "powercrawler/daily_reports.py",
-    "info_code": "fdzclly",
-    "value_layout": "time_series"
+    "legacy": "anhui native_rollout_registry",
+    "binding_sha256": "d8ea820a24ba1ac3bcc17a45b181d494dad4c0679d1cc5b3b9bfde07171c0a8e",
+    "success_code": 0,
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": null
+      "at": "2026-10-31T23:14:50+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "d8ea820a24ba1ac3bcc17a45b181d494dad4c0679d1cc5b3b9bfde07171c0a8e"
     }
   ]
 }

@@ -36,7 +36,8 @@
     "legacy_status": "native_json_queue_validated",
     "strategy": "public",
     "component_source_sha256": "7edf47aa9ffd8fee5d3ed97a16281c7e4c3db604d98fd33eaa0c8a61a12a39a6",
-    "note": "single page of the public notice cards (pageSize 6); paging not observed"
+    "note": "single page of the public notice cards (pageSize 6); paging not observed",
+    "lane": "native"
   },
   "history": [
     {

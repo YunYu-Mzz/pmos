@@ -30,6 +30,14 @@ NOTICE_SELECTORS = ".el-message-box__message,.el-message__content,.el-notificati
 # Native background calls that are not business activity and whose failures
 # must never stop collection: the site's own renewal timer posts an unresolved
 # Promise as its token (always 4000/40302), and token/clock polling.
+# Requests a page operation may make besides its one business request, as the
+# Shanxi coordinator's owned-frame gate allows them (SSO / gateway exchanges).
+GATE_AUTH_PATHS = frozenset({
+    "/px-common-authcenter/sso/token", "/px-gateway/GatewayConfig/security",
+    "/px-common-authcenter/auth/v2/information", "/px-gateway/GatewayConfig/getGatewayConfig",
+})
+GATE_STATIC_TYPES = frozenset({"document", "script", "image", "font", "stylesheet", "media"})
+
 NATIVE_BACKGROUND_PATHS = frozenset({
     "/px-common-authority/framework/login/refreshExpireTime",
     "/px-common-authority/framework/login/forAWhile",

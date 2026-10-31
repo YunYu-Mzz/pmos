@@ -22,7 +22,7 @@
         },
         "pageInfo": {
           "pageNum": 1,
-          "pageSize": 20,
+          "pageSize": 1000,
           "pageSizes": [
             20,
             50,
@@ -44,8 +44,9 @@
       "records": "data.list",
       "total": "data.total",
       "last": "data.isLastPage",
-      "page_size": 20,
-      "max_pages": 200
+      "page_size": 1000,
+      "max_pages": 200,
+      "size": "queryParam.pageInfo.pageSize"
     }
   },
   "response": {
@@ -55,13 +56,31 @@
     "legacy": "shanxi/adapters/native_dispatch.py",
     "legacy_status": "native_json_queue_validated",
     "strategy": "node",
-    "component_source_sha256": "15e617bee62c2e421c3bd1b09b4243da04bfb4d341e225d70481a70bf1a345d8"
+    "component_source_sha256": "15e617bee62c2e421c3bd1b09b4243da04bfb4d341e225d70481a70bf1a345d8",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "nodeName": "",
+          "atDate": "{date}"
+        }
+      },
+      "date_fields": [
+        "atDate"
+      ],
+      "page_size": 1000
+    },
+    "lane": "native"
   },
   "history": [
     {
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "native_json_queue_validated"
+    },
+    {
+      "at": "2026-10-31T20:20:00+08:00",
+      "event": "page_size_1000",
+      "reason": "全年采集：用页面自己的最大选项 1000；已按 20 开始的周期仍以 20 完成（不重叠不缺页）"
     }
   ]
 }

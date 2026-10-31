@@ -23,14 +23,14 @@
         "exportUrl": "/px-phbsx-retail-shop/infoPub/exportSsTotalReserves"
       },
       "set": {
-        "date": "{date}",
         "queryConfig.data": {
           "infoDate": "{date}"
         }
       },
       "call": "exportData",
       "path": "/px-phbsx-retail-shop/infoPub/exportSsTotalReserves",
-      "method": "POST"
+      "method": "POST",
+      "capture": "blob"
     }
   },
   "response": {

@@ -15,6 +15,11 @@
     "method": "POST",
     "prepare": [
       {
+        "wait": {
+          "component": "chHeader"
+        }
+      },
+      {
         "component": "chHeader",
         "call": "setConfig",
         "await": true,
@@ -96,7 +101,7 @@
         },
         "pageInfo": {
           "pageNum": 1,
-          "pageSize": 20,
+          "pageSize": 1000,
           "total": 0
         }
       }
@@ -107,8 +112,9 @@
       "records": "data.objectList.list",
       "total": "data.objectList.total",
       "last": "data.objectList.isLastPage",
-      "page_size": 20,
-      "max_pages": 200
+      "page_size": 1000,
+      "max_pages": 200,
+      "size": "queryParam.pageInfo.pageSize"
     }
   },
   "response": {
@@ -119,13 +125,40 @@
     "legacy": "shanxi/adapters/native_dispatch.py",
     "legacy_status": "native_json_queue_validated",
     "strategy": "dynamic",
-    "component_source_sha256": "61d87dd81dcd16553e3b71728f45620b031f8121ceb27d0529af5a804b37bd81"
+    "component_source_sha256": "61d87dd81dcd16553e3b71728f45620b031f8121ceb27d0529af5a804b37bd81",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "dateTime": "{date}",
+          "dynamicFilter": {},
+          "infoCode": "sn_xhpl_rqkzsfy_7_5",
+          "marketId": "PHBSX",
+          "menuId": "38cb41a3-fa11-4b61-b826-543b1ff98924"
+        }
+      },
+      "date_fields": [
+        "dateTime"
+      ],
+      "page_size": 1000
+    },
+    "lane": "native",
+    "isolation_streak": 1
   },
   "history": [
     {
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "native_json_queue_validated"
+    },
+    {
+      "at": "2026-10-31T19:40:00+08:00",
+      "event": "released_from_user_deferral",
+      "reason": "用户：所有都放开；网站当时返回业务码5000，故第一个隔离失败即暂停该数据集"
+    },
+    {
+      "at": "2026-10-31T20:20:00+08:00",
+      "event": "page_size_1000",
+      "reason": "全年采集：用页面自己的最大选项 1000；已按 20 开始的周期仍以 20 完成（不重叠不缺页）"
     }
   ]
 }

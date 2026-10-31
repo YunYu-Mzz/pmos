@@ -1,0 +1,117 @@
+{
+  "id": "alt_tab_candidate_9cb0d3d052e5",
+  "name": "现货市场出清情况",
+  "status": "sampled",
+  "period": {
+    "kind": "month",
+    "start": "2026-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-phbsx-infomation/tabXianhuochuqing",
+    "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/tabXianhuochuqing",
+    "path": "/px-phbsx-retail-shop/informationRelease/xhsccqdjQuery",
+    "method": "POST",
+    "component": "/pxf-phbsx-infomation/tabXianhuochuqing",
+    "prepare": [
+      {
+        "wait": {
+          "component": "/pxf-phbsx-infomation/tabXianhuochuqing"
+        }
+      },
+      {
+        "component": "/pxf-phbsx-infomation/tabXianhuochuqing",
+        "set": {
+          "activeName": "chuqingdianjia"
+        },
+        "call": "handleClick",
+        "unless": {
+          "component": "/pxf-phbsx-infomation/tabXianhuochuqing",
+          "equals": {
+            "activeName": "chuqingdianjia",
+            "queryUrl": "/px-phbsx-retail-shop/informationRelease/xhsccqdjQuery",
+            "exportUrl": "/px-phbsx-retail-shop/informationRelease/xhsccqdjExport"
+          }
+        }
+      }
+    ],
+    "preflight": [
+      {
+        "component": "/pxf-phbsx-infomation/tabXianhuochuqing",
+        "equals": {
+          "activeName": "chuqingdianjia",
+          "queryUrl": "/px-phbsx-retail-shop/informationRelease/xhsccqdjQuery",
+          "exportUrl": "/px-phbsx-retail-shop/informationRelease/xhsccqdjExport"
+        }
+      }
+    ],
+    "set": {
+      "date": "{month}",
+      "rangeDate": [
+        "{month}",
+        "{month}"
+      ],
+      "queryConfig.data": {
+        "tdate": "{month}"
+      },
+      "queryConfig.pageInfo": {
+        "pageNum": 1,
+        "pageSize": 1000,
+        "pageSizes": [
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ],
+        "total": 0
+      }
+    },
+    "call": "queryPage",
+    "pagination": {
+      "page": "queryConfig.pageInfo.pageNum",
+      "page_size": 1000,
+      "records": "data.list",
+      "total": "data.total",
+      "last": "data.isLastPage",
+      "max_pages": 50
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "shanxi native queue (alternate tab)",
+    "strategy": "alternate_tab",
+    "lane": "native",
+    "legacy_kind": "native_alternate_tab",
+    "source_dataset": "candidate_9cb0d3d052e5",
+    "source_sha256": "b803db26e27b0ed9387e364e53fbd783c0e72bf6dfb7b963ce7da16f37e80fa3",
+    "identity_contract": {
+      "body": {
+        "data": {
+          "tdate": "{month}"
+        }
+      },
+      "date_fields": [
+        "tdate"
+      ],
+      "page_size": 1000
+    },
+    "note": "component/route exactly as the legacy plan pairs them; no production send has completed yet"
+  },
+  "history": [
+    {
+      "at": "2026-10-31T16:41:20+08:00",
+      "event": "generated_from_server_native_queue",
+      "snapshot": "var/shanxi_server_snapshot_20261031"
+    },
+    {
+      "at": "2026-10-31T20:20:00+08:00",
+      "event": "wait_for_tab_component",
+      "reason": "预检 component_missing：路由切换后页签组件稍后才挂载，先等它出现（生产同样先等待）"
+    }
+  ]
+}

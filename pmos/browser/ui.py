@@ -51,11 +51,34 @@ _OPEN_FRAME_JS = """args => {
 }"""
 
 
+# Only the app frames PMOS opened itself (ids "pmos-..."), never the site's own.
+_CLOSE_FRAMES_JS = """() => {
+  const frames = [...document.querySelectorAll('iframe[id^="pmos-"]')];
+  frames.forEach(frame => frame.remove());
+  return frames.length;
+}"""
+
+
+async def close_owned_frames(page) -> int:
+    """Remove PMOS's own app frames so the next call opens them with the current login.
+
+    An app keeps the session it loaded with: after a human re-login, a reused
+    frame of it was answered 40302 on every query (Shanxi, 2026-10-31 19:25).
+    """
+    closed = await page.evaluate(_CLOSE_FRAMES_JS)
+    if closed:
+        # Let Playwright see the removed frames detach before the next ensure_frame
+        # (right after start, a removed frame was still matched: Shanxi r26/r27,
+        # 2026-11-01 00:32 and 00:37, preflight component_missing within 2 s).
+        await asyncio.sleep(1)
+    return closed
+
+
 # Each tree node with its full label path, from the root section to itself.
 _MENU_NODES_JS = """nodes => nodes.map((node, index) => {
   const path = []; let current = node;
   while (current) {
-    const label = current.querySelector(':scope > .el-tree-node__content .asideTreeSpan, :scope > .el-tree-node__content .el-tree-node__label');
+    const label = current.querySelector(':scope > .el-tree-node__content .asideTreeSpan, :scope > .el-tree-node__content .el-tree-node__label, :scope > .el-tree-node__content > .span-ellipsis');
     if (label) path.unshift(label.textContent.trim());
     current = current.parentElement && current.parentElement.closest('.el-tree-node');
   }
@@ -65,6 +88,80 @@ _MENU_NODES_JS = """nodes => nodes.map((node, index) => {
   return {index, path, visible, current: node.classList.contains('is-current'),
           expanded: node.classList.contains('is-expanded') || node.getAttribute('aria-expanded') === 'true'};
 })"""
+
+# Every entry of the site's left menu tree with its label path (root section
+# first) and route, from the tree's own data, as the legacy disclosure-menu
+# reader read it. Nothing is clicked or sent.
+_MENU_ROUTES_JS = """() => {
+  const out = [];
+  const walk = (node, parents) => {
+    const current = node.currentNode || {};
+    if (typeof current.name === 'string' && typeof current.url === 'string')
+      out.push({path: [...parents, current.name], url: current.url});
+    for (const child of node.nextNode || []) walk(child, [...parents, node.name || current.name || '']);
+  };
+  for (const root of document.querySelectorAll('.el-tree > .el-tree-node')) {
+    const data = root.__vue__ && root.__vue__.node && root.__vue__.node.data;
+    if (data) walk(data, []);
+  }
+  return out;
+}"""
+
+
+def route_of(location: str) -> str:
+    """``/pxf-<app>/<page>`` of a frame needle, an app URL or a menu route."""
+    tail = location.split("#")[-1].split("?")[0]
+    parts = [part for part in tail.split("/") if part]
+    return "/" + "/".join(parts[-2:])
+
+
+async def portal_menu_path(page, route: str) -> list:
+    """The label path of the portal menu entry that opens ``route``."""
+    entries = [entry for entry in await page.evaluate(_MENU_ROUTES_JS) if route_of(entry["url"]) == route_of(route)]
+    if not entries:
+        raise Fault("portal_menu_route_missing", "local")
+    return entries[0]["path"]
+
+
+async def portal_frame(page, route: str, timeout: float):
+    """The site's own (not PMOS's) app frame once it shows ``route``."""
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    while loop.time() < deadline:
+        for frame in page.frames:
+            if frame.parent_frame is None or route_of(frame.url) != route_of(route):
+                continue
+            element = await frame.frame_element()
+            if not (await element.get_attribute("id") or "").startswith("pmos-"):
+                await settled(frame, timeout)
+                return frame
+        await asyncio.sleep(0.2)
+    raise Fault("portal_frame_open_timeout", "local")
+
+
+async def reload_frame(frame, timeout: float, settle: float = 3) -> None:
+    """Load the app document anew, as after a person's entry from the portal.
+
+    Shanxi 2026-10-31 22:46:57: the person's entry reloaded the 信息披露 app
+    document, which exchanged its SSO token three times; its own query 10 s
+    later was answered. A hash-only route change (PMOS's first re-entry) kept
+    the old document and its queries stayed refused.
+    """
+    await frame.evaluate("() => { window.__pmosBeforeReload = true; setTimeout(() => location.reload(), 0); return true; }")
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    while loop.time() < deadline:
+        await asyncio.sleep(0.2)
+        try:
+            if await frame.evaluate("() => window.__pmosBeforeReload !== true && document.readyState === 'complete'"):
+                break
+        except Exception:
+            continue                      # the document is being replaced
+    else:
+        raise Fault("portal_frame_reload_timeout", "local")
+    await settled(frame, timeout)
+    await asyncio.sleep(settle)           # its SSO token exchange (about 1 s on Shanxi)
+
 
 # A point inside the visible part of a (possibly clipped) long menu label.
 _VISIBLE_POINT_JS = """element => {
@@ -85,7 +182,26 @@ _VISIBLE_POINT_JS = """element => {
 
 
 def frames_matching(page, needle: str) -> list:
-    return [frame for frame in page.frames if needle in frame.url]
+    # A frame just removed (close_owned_frames) can still be listed until its detach event arrives.
+    return [frame for frame in page.frames if needle in frame.url and not getattr(frame, "is_detached", lambda: False)()]
+
+
+# Liaoning: a report opens from the column page's own menu component, as the
+# legacy worker's OPEN_REPORT did (chAside.handleNodeClick on the decrypted
+# menu entry with this route, and infoCode when given); the page creates the frame itself.
+_SITE_MENU_JS = """x => {
+  const seen = new Set(), vms = [], queue = [...document.querySelectorAll('*')].map(e => e.__vue__).filter(Boolean);
+  while (queue.length) { const v = queue.shift(); if (seen.has(v)) continue; seen.add(v); vms.push(v); queue.push(...(v.$children || [])); }
+  const aside = vms.find(v => v.$options && v.$options.name === 'chAside');
+  const header = vms.find(v => v.$options && v.$options.name === 'chHeader');
+  if (!aside || !header || !header.menuBoxObj || typeof aside.handleNodeClick !== 'function') throw new Error('site_menu_missing');
+  const rows = [], walk = list => { for (const r of list || []) { rows.push(r); walk(r.children || r.childList || []); } };
+  walk(aside.decryData(JSON.parse(JSON.stringify(Object.values(header.menuBoxObj).flat()))));
+  const found = rows.filter(r => r.viewname === x.route && (!x.source || r.infoCode === x.source));
+  if (found.length !== 1) throw new Error('site_menu_entry_missing');
+  aside.handleNodeClick(found[0], aside.$refs.tree && aside.$refs.tree.getNode(found[0].guid));
+  return true;
+}"""
 
 
 async def ensure_frame(page, request: dict, timeout: float):
@@ -96,6 +212,20 @@ async def ensure_frame(page, request: dict, timeout: float):
     if len(found) > 1:
         raise Fault("report_frame_ambiguous", "local")
     loop = asyncio.get_running_loop()
+    if request.get("site_menu"):
+        try:
+            await page.evaluate(_SITE_MENU_JS, request["site_menu"])
+        except Exception as exc:
+            raise Fault("site_menu_entry_missing" if "site_menu_entry_missing" in str(exc) else "site_menu_missing",
+                        "local") from None
+        deadline = loop.time() + timeout
+        while loop.time() < deadline:
+            found = frames_matching(page, needle)
+            if len(found) == 1:
+                await settled(found[0], timeout)
+                return found[0]
+            await asyncio.sleep(0.2)
+        raise Fault("report_frame_open_timeout", "local")
     if request.get("open_url"):
         await page.evaluate(_OPEN_FRAME_JS, {"src": request["open_url"], "id": "pmos-" + request["frame"][-40:]})
         deadline = loop.time() + timeout
@@ -135,8 +265,11 @@ async def _menu_node(page, path: list, timeout: float) -> dict:
         await asyncio.sleep(0.2)
 
 
-async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = False) -> None:
-    """Open the menu leaf ``labels`` (root section first) in the site's left tree."""
+async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = False, force: bool = False) -> None:
+    """Open the menu leaf ``labels`` (root section first) in the site's left tree.
+
+    ``force``: click the leaf even if it is the current one (a re-entry).
+    """
     nodes = await page.locator(".el-tree-node").evaluate_all(_MENU_NODES_JS)
     if not any(n["path"] == labels[:1] and n["visible"] for n in nodes):
         # The root section is chosen in the horizontal top menu first.
@@ -151,10 +284,12 @@ async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = 
     for depth in range(1, len(labels) + 1):
         leaf = depth == len(labels)
         node = await _menu_node(page, labels[:depth], timeout)
-        if node["current"] if leaf else node["expanded"]:
+        if (node["current"] and not force) if leaf else node["expanded"]:
             continue
         item = page.locator(".el-tree-node").nth(node["index"])
-        target = item.locator(":scope > .el-tree-node__content .asideTreeSpan, :scope > .el-tree-node__content .el-tree-node__label"
+        # Labels: .asideTreeSpan / .el-tree-node__label (Liaoning, Anhui), .span-ellipsis (Shanxi portal).
+        target = item.locator(":scope > .el-tree-node__content .asideTreeSpan, :scope > .el-tree-node__content .el-tree-node__label,"
+                              " :scope > .el-tree-node__content > .span-ellipsis"
                               if leaf else ":scope > .el-tree-node__content > .el-tree-node__expand-icon")
         if await target.count() != 1:
             raise Fault("menu_control_changed", "local")
@@ -190,9 +325,13 @@ async def _leave_hover_menu(page) -> None:
 
 async def settled(frame, timeout: float) -> None:
     try:
-        await frame.wait_for_function(_BUSY_JS, timeout=timeout * 1000)
+        handle = await frame.wait_for_function(_BUSY_JS, timeout=timeout * 1000)
     except Exception:
         raise Fault("page_busy_timeout", "network") from None
+    try:
+        await handle.dispose()  # else its JSHandle lives as long as the page
+    except Exception:
+        pass
 
 
 async def _field(frame, field: dict):
@@ -232,6 +371,35 @@ async def fill(frame, field: dict, timeout: float) -> None:
     await settled(frame, timeout)
     if await locator.input_value() != value:
         raise Fault("form_value_not_committed", "local")
+
+
+_OPTION_ITEMS_JS = """items => items.map(e => {
+  const vm = e.__vue__, value = vm ? vm.value : undefined;
+  return {label: e.textContent.trim(), value_type: typeof value,
+          value: (typeof value === 'string' || (typeof value === 'number' && isFinite(value))) ? value : null};
+})"""
+
+
+async def select_options(frame, field: dict, timeout: float) -> list[dict]:
+    """The options of one labelled select as the page lists them (text, value), read without choosing one.
+
+    As the Anhui legacy single-selector discovery: open the dropdown, read
+    every item's text and its ElOption value, close it with Escape.
+    """
+    locator = await _field(frame, field)
+    before = await locator.input_value()
+    await locator.click()
+    items = frame.locator(".el-select-dropdown__item:visible")
+    deadline = asyncio.get_running_loop().time() + min(timeout, 10)
+    while await items.count() == 0:
+        if asyncio.get_running_loop().time() > deadline:
+            raise Fault("select_options_missing", "local")
+        await asyncio.sleep(0.1)
+    found = await items.evaluate_all(_OPTION_ITEMS_JS)
+    await locator.press("Escape")
+    if await locator.input_value() != before:
+        raise Fault("select_value_changed_by_reading", "local")
+    return found
 
 
 async def button(frame, text: str):

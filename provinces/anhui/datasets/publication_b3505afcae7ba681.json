@@ -1,48 +1,67 @@
 {
   "id": "publication_b3505afcae7ba681",
   "name": "价格限值",
-  "status": "sampled",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
     "end": "today"
   },
   "request": {
-    "transport": "ui",
-    "frame": "infoCode=jgxz",
-    "action": "export",
-    "fields": [
-      {
-        "kind": "date",
-        "placeholder": [
-          "请选择日期",
-          "选择日期"
-        ],
-        "value": "{date}"
-      }
-    ],
-    "menu": [
-      "现货市场",
-      "省内现货市场",
-      "市场参数信息",
-      "价格限值"
-    ]
+    "transport": "fetch",
+    "method": "POST",
+    "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select1_1",
+    "template_body_set": {
+      "businessTime": "{date}"
+    },
+    "bootstrap": {
+      "transport": "ui",
+      "frame": "infoCode=jgxz",
+      "fields": [
+        {
+          "kind": "date",
+          "placeholder": [
+            "请选择日期",
+            "选择日期"
+          ],
+          "value": "{date}"
+        }
+      ],
+      "menu": [
+        "现货市场",
+        "省内现货市场",
+        "市场参数信息",
+        "价格限值"
+      ],
+      "action": "query",
+      "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select1_1",
+      "method": "POST"
+    }
   },
   "response": {
-    "kind": "excel"
+    "kind": "json"
   },
   "source": {
-    "legacy": "anhui period_report_queue",
-    "report_code": "jgxz",
-    "legacy_status": "period_report_collecting",
-    "legacy_jobs": 286,
-    "legacy_saved": 1
+    "legacy": "anhui native_rollout_registry",
+    "binding_sha256": "7e750195a4a9d9b195fba7b190d4e5610f84e3dd60ecd23382319dc7a38e9e44",
+    "success_code": 0,
+    "identity_contract": {
+      "request_data_path": [
+        "template_body_set"
+      ],
+      "date_fields": [
+        "businessTime"
+      ],
+      "dimension_fields": {
+        "businessTime": "日期"
+      }
+    }
   },
   "history": [
     {
-      "at": "2026-10-23T11:50:14+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "period_report_collecting"
+      "at": "2026-10-31T23:14:50+08:00",
+      "event": "generated_from_legacy_native_binding",
+      "binding_sha256": "7e750195a4a9d9b195fba7b190d4e5610f84e3dd60ecd23382319dc7a38e9e44"
     }
   ]
 }

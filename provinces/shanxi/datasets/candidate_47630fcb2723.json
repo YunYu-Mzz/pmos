@@ -24,7 +24,6 @@
         "exportUrl": "/px-phbsx-retail-shop/infoGrid/ectpcqjgExcel"
       },
       "set": {
-        "date": "{date}",
         "queryConfig.data": {
           "endDate": "{date}",
           "startDate": "{date}"
@@ -32,7 +31,8 @@
       },
       "call": "exportData",
       "path": "/px-phbsx-retail-shop/infoGrid/ectpcqjgExcel",
-      "method": "POST"
+      "method": "POST",
+      "capture": "blob"
     }
   },
   "response": {

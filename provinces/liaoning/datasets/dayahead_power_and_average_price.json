@@ -1,0 +1,67 @@
+{
+  "id": "dayahead_power_and_average_price",
+  "name": "日前各时段出清电力及平均电价",
+  "status": "verified",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today"
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport012",
+    "frame": "/pdbln/report/PdblnReport012",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport012",
+    "component": "pdblnReport012",
+    "call": "initData",
+    "set": {
+      "tableData": [],
+      "queryParam.date": "{date}",
+      "queryParam.type": "{scope[type]}"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "scopes": [
+    {
+      "type": "市场出清结果总加"
+    },
+    {
+      "type": "市场平均价格"
+    }
+  ],
+  "source": {
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "012",
+    "legacy_source": null,
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "d50ef6b3f0176158f1e64d3cc95c27b9109434750cb910f43b9e876c871aace9",
+      "ce60783f72b394008e6c237c660f9a0729b28838d04e28789a8d9a695fff5e22"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.date"
+      ],
+      "dimension_fields": {
+        "queryParam.type": "type"
+      }
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
+  },
+  "history": [
+    {
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
+    }
+  ]
+}

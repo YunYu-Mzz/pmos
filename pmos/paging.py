@@ -117,6 +117,11 @@ def page_result(body: bytes, pagination: dict, page: int) -> tuple[int, bool]:
     total = get_path(value, pagination["total"]) if "total" in pagination else None
     size = pagination.get("page_size", 20)
     last = get_path(value, pagination["last"]) if "last" in pagination else None
+    if 0 < count < size and (last is False or (not isinstance(last, bool) and isinstance(total, int)
+                                               and (index - 1) * size + count < total)):
+        # Fewer records than asked although more exist: the site caps the page
+        # size below ours, and counting on would silently skip records.
+        raise PagingError("pagination_page_size_capped")
     if isinstance(last, bool):
         done = count == 0 or last  # the page says so (e.g. the next button is disabled)
     else:

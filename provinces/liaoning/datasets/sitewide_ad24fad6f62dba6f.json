@@ -1,7 +1,7 @@
 {
   "id": "sitewide_ad24fad6f62dba6f",
   "name": "辅助服务需求总量",
-  "status": "candidate",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -16,21 +16,44 @@
     "component": "pdblnReport074",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{date}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_tpxq",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport074"
     }
   },
   "response": {
     "kind": "json"
   },
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "pending"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339",
+    "legacy_kind": "report",
+    "number": "074",
+    "legacy_source": "lnsnxh_tpxq",
+    "legacy_scope": "historical_dates_only_verified_selections",
+    "proof_sha256": [
+      "9ead08036a9c6ebe82f528a9aadc2183bf85eb8f994cf1b5e5fa7556afec32b2"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {
-      "at": "2026-10-23T10:28:32+08:00",
-      "event": "migrated_from_legacy",
-      "legacy_status": "pending"
+      "at": "2026-10-31T16:18:48+08:00",
+      "event": "generated_from_legacy_manifest",
+      "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
     }
   ]
 }
