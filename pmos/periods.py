@@ -1,7 +1,8 @@
 """Statistical periods: validation, expansion and request-template variables.
 
 A period value is always a string so it can key tasks, archives and receipts:
-day ``2026-10-11``, month ``2026-10``, year ``2026``. ``snapshot`` datasets
+day ``2026-10-11``, month ``2026-10``, year ``2026``, week_start_monday
+``2026-10-26`` (a report asked by the Monday of its week). ``snapshot`` datasets
 have no statistical period; their task is keyed by the sampling date.
 """
 from __future__ import annotations
@@ -11,7 +12,7 @@ from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 CHINA = ZoneInfo("Asia/Shanghai")
-KINDS = ("day", "month", "year", "snapshot")
+KINDS = ("day", "month", "year", "snapshot", "week_start_monday")
 
 
 class PeriodError(ValueError):
@@ -28,6 +29,9 @@ def parse(kind: str, value: str) -> date:
         if kind in ("day", "snapshot"):
             parsed = date.fromisoformat(value)
             canonical = parsed.isoformat()
+        elif kind == "week_start_monday":
+            parsed = date.fromisoformat(value)
+            canonical = parsed.isoformat() if parsed.weekday() == 0 else None
         elif kind == "month":
             parsed = date.fromisoformat(value + "-01")
             canonical = parsed.strftime("%Y-%m")
@@ -51,6 +55,8 @@ def last_day(kind: str, value: str) -> date:
         return first.replace(day=calendar.monthrange(first.year, first.month)[1])
     if kind == "year":
         return first.replace(month=12, day=31)
+    if kind == "week_start_monday":
+        return first + timedelta(days=6)
     return first
 
 
@@ -64,6 +70,8 @@ def validate(kind: str, value: str, *, on: date | None = None) -> str:
 def value_of(kind: str, day: date) -> str:
     if kind in ("day", "snapshot"):
         return day.isoformat()
+    if kind == "week_start_monday":
+        return (day - timedelta(days=day.weekday())).isoformat()
     if kind == "month":
         return day.strftime("%Y-%m")
     if kind == "year":
@@ -75,6 +83,8 @@ def previous(kind: str, value: str) -> str:
     first = parse(kind, value)
     if kind in ("day", "snapshot"):
         return value_of(kind, first - timedelta(days=1))
+    if kind == "week_start_monday":
+        return value_of(kind, first - timedelta(days=7))
     if kind == "month":
         return value_of(kind, (first - timedelta(days=1)).replace(day=1))
     return value_of(kind, date(first.year - 1, 1, 1))

@@ -1,0 +1,54 @@
+{
+  "id": "sitewide_d86eb498e4cf0eca",
+  "name": "省内关键输电断面可用容量（周）",
+  "status": "verified",
+  "period": {
+    "kind": "week_start_monday",
+    "start": "2026-01-05",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "component": "pdblnReport025",
+    "call": "initData",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport025",
+    "frame": "/pdbln/report/PdblnReport025",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport025",
+    "set": {
+      "tableData": [],
+      "queryParam.mdate": "{date}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_sngjsddmkyrlzd",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport025"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/goal92_candidate_specs.py MondayWeekAdapter",
+    "legacy_kind": "report",
+    "number": "025",
+    "legacy_source": "lnsnxh_sngjsddmkyrlzd",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    },
+    "note": "asked by the Monday of its week; 43 Mondays of legacy originals through 2026-10-26"
+  },
+  "history": [
+    {
+      "at": "2026-11-01T17:00:00+08:00",
+      "event": "generated_from_legacy_adapter",
+      "note": "endpoint and parameter from MondayWeekAdapter('025', 'mdate'); the migration's report_spec has no rule for it"
+    }
+  ]
+}

@@ -218,10 +218,11 @@ class DatasetSpec:
         A task seeded before (a legacy owner's open candidate of the running
         day) waits for it too: an empty or partial answer would be saved for good.
         """
-        if self.period["kind"] != "day" or not self.period.get("lag_days"):
+        kind = self.period["kind"]
+        if kind not in ("day", "week_start_monday") or not self.period.get("lag_days"):
             return None
         from datetime import timedelta
-        return periods.value_of("day", (on or periods.today()) - timedelta(days=self.period["lag_days"]))
+        return periods.value_of(kind, (on or periods.today()) - timedelta(days=self.period["lag_days"]))
 
     # -- scopes: extra dimensions of one period (unit, node, section ...) ----
     def scope_items(self) -> list[tuple[str, dict]]:

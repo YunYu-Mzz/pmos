@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Liaoning's daily reports (--lane daily, 17) or FineReport reports (--lane engine, 3) join the PMOS handoff.
+"""Liaoning's daily (--lane daily, 17), FineReport (--lane engine, 3) or weekly (--lane weekly, 2) reports join the PMOS handoff.
 
 Offline; sends nothing. plan: what the legacy worker completed of them (read-only).
 apply --approval "...": their tombstones and the new collection order, with pmos-liaoning and the legacy
@@ -37,7 +37,7 @@ def main() -> None:
     apply = commands.add_parser("apply")
     apply.add_argument("--approval", required=True)
     for command in (plan, apply):
-        command.add_argument("--lane", choices=("daily", "engine"), default="daily")
+        command.add_argument("--lane", choices=("daily", "engine", "weekly"), default="daily")
         command.add_argument("--early-empty-consumed", action="store_true",
                              help="the empty answers asked before publication become tombstones too (user's decision); give it to plan and apply alike")
     args = parser.parse_args()
@@ -45,7 +45,7 @@ def main() -> None:
         raise SystemExit("PMOS_DATA must be set (e.g. /home/ecs-user/pmos-data)")
     province = Province.load("liaoning", RELEASE / "provinces")
     specs = province.datasets()
-    names = liaoning.DAILY_LANE if args.lane == "daily" else liaoning.ENGINE_LANE
+    names = {"daily": liaoning.DAILY_LANE, "engine": liaoning.ENGINE_LANE, "weekly": liaoning.WEEKLY_LANE}[args.lane]
     weak = [name for name in names if specs[name].status not in ("sampled", "verified", "enabled")]
     if weak:
         raise SystemExit("not verified: " + ",".join(weak))

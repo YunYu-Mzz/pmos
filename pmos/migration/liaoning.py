@@ -337,6 +337,8 @@ DAILY_LANE = ("system_load", "centralized_solar_daily", "centralized_wind_daily"
               "local_hydro_plan", "must_run_stop_units", "nuclear_total", "tie_line_dayahead", "tie_line_schedule")
 # The FineReport reports (routes moved 2026-10-23): their originals are in report_engine, 033's older ones in power_reports.
 ENGINE_LANE = ("sitewide_e38351fe661a034a", "sitewide_0353290a57044c3e", "nonmarket_generation_forecast")
+# The two weekly reports the verified queue held without a parameter rule: their originals are in advanced_reports.
+WEEKLY_LANE = ("sitewide_d86eb498e4cf0eca", "sitewide_f5d806b38bb8a248")
 DAILY_QUEUES = "state/crawlee_daily_verified_20261014/request_queues"
 DAILY_ORIGINALS = "data/2026/original/power_reports"
 DAILY_ENGINE = "data/2026/original/report_engine"

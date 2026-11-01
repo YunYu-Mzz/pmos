@@ -1,11 +1,12 @@
 {
   "id": "sitewide_f5d806b38bb8a248",
   "name": "系统负荷预测（周）",
-  "status": "candidate",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 1
   },
   "request": {
     "transport": "component",
@@ -27,13 +28,27 @@
     "kind": "json"
   },
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py"
+    "legacy": "lncrawler/sitewide_specs.py",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.date"
+      ],
+      "dimension_fields": {}
+    }
   },
   "history": [
     {
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": null
+    },
+    {
+      "at": "2026-11-01T17:00:00+08:00",
+      "event": "verified_against_legacy_originals",
+      "note": "endpoint and parameter equal its 304 days of legacy originals in advanced_reports; lag_days by publish_lag"
     }
   ]
 }

@@ -90,6 +90,54 @@ class RealSpecs(unittest.TestCase):
         self.assertEqual(migration.DAILY_LANE[0], "system_load")
 
 
+class Weekly(unittest.TestCase):
+    def test_a_monday_is_the_only_period_of_a_weekly_report(self):
+        from datetime import date
+        from pmos import periods
+        kind = "week_start_monday"
+        self.assertEqual(periods.parse(kind, "2026-10-26"), date(2026, 10, 26))
+        with self.assertRaises(periods.PeriodError):
+            periods.parse(kind, "2026-10-27")
+        self.assertEqual(periods.value_of(kind, date(2026, 11, 1)), "2026-10-26", "a Sunday belongs to its week")
+        self.assertEqual(periods.previous(kind, "2026-10-26"), "2026-10-19")
+        self.assertEqual(periods.last_day(kind, "2026-10-26"), date(2026, 11, 1))
+        self.assertEqual(periods.expand(kind, "2026-10-12", "today", on=date(2026, 11, 3), lag_days=2),
+                         ["2026-10-26", "2026-10-19", "2026-10-12"], "11-02 is not due until 11-04")
+        self.assertEqual(periods.expand(kind, "2026-10-12", "today", on=date(2026, 11, 4), lag_days=2)[0], "2026-11-02")
+        self.assertEqual(periods.variables(kind, "2026-10-26")["date"], "2026-10-26")
+
+    def test_both_specs_can_be_collected_and_keep_their_identity_bound_to_the_request(self):
+        from datetime import date
+        from pmos.engine import task_identity
+        specs = REAL.datasets()
+        self.assertEqual(len(migration.WEEKLY_LANE), 2)
+        monday = specs["sitewide_d86eb498e4cf0eca"]
+        self.assertEqual(monday.status, "verified")
+        self.assertEqual(monday.build("2026-10-26")["set"]["queryParam.mdate"], "2026-10-26")
+        self.assertEqual(monday.newest_due(on=date(2026, 11, 3)), "2026-10-26")
+        self.assertEqual(task_identity("liaoning", "a", monday, "2026-10-26", "").document()["period"],
+                         {"kind": "week_start_monday", "anchor": "2026-10-26"})
+        daily = specs["sitewide_f5d806b38bb8a248"]
+        self.assertEqual((daily.status, daily.period["lag_days"]), ("verified", migration.publish_lag(daily.name)))
+        self.assertEqual(task_identity("liaoning", "a", daily, "2026-10-26", "").period["kind"], "day")
+
+    def test_their_legacy_originals_become_tombstones_with_the_engines_identity(self):
+        import tempfile
+        from pmos.engine import task_identity
+        name = "sitewide_d86eb498e4cf0eca"
+        spec = REAL.datasets()[name]
+        newest = spec.periods_to_collect()[0]
+        with tempfile.TemporaryDirectory() as directory:
+            legacy = Legacy(Path(directory))
+            found = legacy.root / migration.DAILY_ADVANCED / name / newest / "m" / "s"
+            found.mkdir(parents=True)
+            (found / "metadata.json").write_text(json.dumps({"row_count": 59}))
+            lane = migration.daily_lane(legacy.root, REAL.datasets(), names=(name,))
+        ((key, identity),) = lane["rows"]
+        self.assertEqual(identity.key, task_identity("liaoning", "liaoning-production", spec, newest, "").key)
+        self.assertNotIn(newest, lane["per_dataset"][name]["no_original"])
+
+
 class Classification(unittest.TestCase):
     def setUp(self):
         self.tmp = TempDir()
