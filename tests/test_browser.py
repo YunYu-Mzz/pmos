@@ -128,6 +128,32 @@ class FetchTransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("xyz", str(caught.exception))
 
 
+class ClosedPageTemplates(unittest.TestCase):
+    def test_a_template_on_a_closed_page_counts_as_gone(self):
+        from pmos.browser.transport import Templates
+
+        class Page:
+            def __init__(self, closed):
+                self.closed = closed
+
+            def is_closed(self):
+                return self.closed
+
+        class Frame:
+            def __init__(self, page):
+                self.page = page
+
+            def is_detached(self):
+                return False                      # Playwright keeps a closed page's main frame attached
+        templates = Templates("https://x.test")
+        templates.items["/p"] = {"frame": Frame(Page(True)), "headers": {}, "method": "POST", "body": None,
+                                 "page_body": "{}", "at": templates.clock()}
+        new_main = Frame(Page(False))
+        self.assertIs(templates.get("/p", fallback_frame=new_main)["frame"], new_main)
+        with self.assertRaises(Fault):
+            templates.get("/p")
+
+
 class BringForward(unittest.IsolatedAsyncioTestCase):
     """Anhui 2026-11-01 12:07: page work in a hidden Edge tab waited out every timeout."""
 

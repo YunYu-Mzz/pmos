@@ -442,7 +442,7 @@ class Engine:
                 self.state.event("dataset_hold_expired", dataset=name)
         return holds
 
-    def _hold_unsent(self, dataset: str, code: str) -> None:
+    def _hold_unsent(self, dataset: str, code: str, detail: dict | None = None) -> None:
         """Nothing got out (the gate proves it): the item stays unconsumed and the dataset cools down.
 
         Liaoning 2026-11-01 00:03: a preparation that could not be confirmed
@@ -459,10 +459,10 @@ class Engine:
             return
         until = None if streak >= UNSENT_HOLDS_TO_STOP else self.clock() + UNSENT_COOLDOWN_SECONDS
         holds[dataset] = {"reason": "unsent:" + code, "status": "paused", "at": time.strftime("%Y-%m-%dT%H:%M:%S"),
-                          **({"until": until} if until else {}), "streak": streak}
+                          **({"until": until} if until else {}), "streak": streak, **(detail or {})}
         self.state.write("dataset_holds", holds)
         self.state.event("dataset_held", dataset=dataset, reason="unsent:" + code, status="paused",
-                         cooldown=until is not None, streak=streak)
+                         cooldown=until is not None, streak=streak, **(detail or {}))
 
     def hold_dataset(self, dataset: str, reason: str, status: str) -> None:
         holds = self.dataset_holds()
@@ -931,7 +931,7 @@ class Engine:
                 # sent, the item stays pending, its dataset pauses for review
                 # and the rest (keepalive included) continues.
                 if fault.unsent:
-                    self._hold_unsent(current["dataset"], fault.code)
+                    self._hold_unsent(current["dataset"], fault.code, fault.detail)
                 else:
                     self.hold_dataset(current["dataset"], fault.code, "paused")
                 return 1

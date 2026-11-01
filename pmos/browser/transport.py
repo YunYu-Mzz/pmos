@@ -322,7 +322,7 @@ class Templates:
 
     def prune(self, *, keep_detached: bool = False) -> None:
         for path, template in list(self.items.items()):
-            if self.clock() - template["at"] > self.ttl or (template["frame"].is_detached() and not keep_detached):
+            if self.clock() - template["at"] > self.ttl or (_frame_gone(template["frame"]) and not keep_detached):
                 self.items.pop(path, None)
         while len(self.items) > self.max_items:
             self.items.pop(min(self.items, key=lambda key: self.items[key]["at"]))
@@ -343,7 +343,10 @@ class Templates:
             # Do not retain request objects or their driver backing buffers. The page's own JSON body
             # is kept as a short text copy for a template_body_set replay (Anhui: the date and options
             # change, the page's other fields stay); a replay without it never sends one ("body").
-            text = request.post_data if request.method == "POST" else None
+            try:
+                text = request.post_data if request.method == "POST" else None
+            except Exception:
+                text = None                       # a binary body: the template is kept, without one
             page_body = text if isinstance(text, str) and len(text) <= MAX_PAGE_BODY_CHARS else None
             self.items[path] = {"frame": request.frame, "headers": headers, "method": request.method,
                                 "body": None, "page_body": page_body, "at": self.clock()}
@@ -359,11 +362,23 @@ class Templates:
             raise Fault("request_template_missing", "local")
         if max_age is not None and self.clock() - template["at"] > max_age:
             raise Fault("request_template_stale", "local")
-        if template["frame"].is_detached():
+        if _frame_gone(template["frame"]):
             if fallback_frame is None:
                 raise Fault("request_template_frame_detached", "local")
             return {**template, "frame": fallback_frame}
         return template
+
+
+def _frame_gone(frame) -> bool:
+    """Detached, or on a page that was closed: Playwright keeps a closed page's main frame attached
+    (Anhui 2026-11-01 13:42/13:55: replays after a page recycle hit the old page, "Target page … closed")."""
+    try:
+        if frame.is_detached():
+            return True
+        page = getattr(frame, "page", None)
+        return bool(page is not None and page.is_closed())
+    except Exception:
+        return True
 
 
 class RequestGate:
@@ -608,7 +623,7 @@ class PageTransport:
         if max_age is not None and self.templates.clock() - template["at"] > max_age:
             return False
         try:
-            if not template["frame"].is_detached():
+            if not _frame_gone(template["frame"]):
                 return True
             return self.main_frame_fallback and not self.crashed and not self.page.is_closed()
         except Exception:
@@ -650,6 +665,10 @@ class PageTransport:
                 "url": url, "method": request["method"], "headers": template["headers"], "body": body,
                 "timeout": int(wait * 1000), "limit": MAX_RESPONSE_BYTES})
         except Exception as exc:
+            if _frame_gone(template["frame"]) and not self.page.is_closed():
+                # The frame's page closed under the call while the current page lives: the script never
+                # ran there, so nothing was sent and the driver is fine (not DriverLost).
+                raise Fault("template_frame_closed", "local", unsent=True) from None
             # Timeout, abort, redirect or a dropped connection: the server may
             # or may not have handled it. The ledger keeps it unknown.
             raise _lost_or_network(exc) from None

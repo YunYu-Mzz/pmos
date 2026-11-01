@@ -577,9 +577,12 @@ class Ledger:
             reopened = []
             for attempt in attempts:
                 row = self.db.execute("SELECT * FROM attempts WHERE id=?", (attempt,)).fetchone()
+                # pending: stopped mid-navigation; unknown/driver_lost: a replay on a closed page's frame
+                # (Anhui 2026-11-01 13:42, "Target page … closed": the script never ran).
                 if (row is None or row["kind"] not in ("collect", "sample") or row["http_status"] is not None
                         or row["business_status"] is not None
-                        or not (row["outcome"] == "pending" or (row["outcome"] == "failed" and row["reason"] in NAVIGATION_CODES))):
+                        or not (row["outcome"] == "pending" or (row["outcome"] == "failed" and row["reason"] in NAVIGATION_CODES)
+                                or (row["outcome"] == "unknown" and row["reason"] == "driver_lost"))):
                     raise ValueError(f"attempt_{attempt}_is_not_an_unsent_navigation")
                 reason = "reviewed_not_sent:" + (row["reason"] or "stopped_while_navigating")
                 self.db.execute("UPDATE attempts SET outcome='not_sent', finished_at=COALESCE(finished_at, ?), reason=?"

@@ -427,6 +427,27 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(json.loads(Site.bodies[0]), {**page_body, "businessTime": "2026-10-26"})
         self.assertIsNone(self.transport.templates.items["/px-x/query"]["body"], "a plain replay still sends none")
 
+    async def test_after_a_recycle_a_template_of_the_closed_page_is_sent_from_the_new_page(self):
+        """Anhui 2026-11-01 13:42/13:55: replays hit the closed page's main frame and read as a lost driver."""
+        import asyncio
+        await self.page.goto(self.origin + "/component_page.html")
+        with self.transport.templates.window():
+            await self.page.evaluate("() => fetch('/px-x/query', {method: 'POST', body: JSON.stringify({businessTime: '2026-10-28'})})")
+            await asyncio.sleep(0.5)
+        fresh = await self.page.context.new_page()
+        await fresh.goto(self.origin + "/component_page.html")
+        old = self.transport.page
+        self.transport.page, self.transport.main_frame_fallback = fresh, True
+        await old.close()
+        request = {"transport": "fetch", "method": "POST", "path": "/px-x/query", "template_body_set": {"businessTime": "2026-10-27"}}
+        self.assertTrue(self.transport.ready(request))
+        Site.received.clear()
+        response = await self.transport.send(request)
+        self.assertEqual(json.loads(response.body)["status"], 0)
+        self.assertEqual(Site.received, ["/px-x/query"], "sent from the new page")
+        self.transport.main_frame_fallback = False
+        self.assertFalse(self.transport.ready(request), "without the fallback the closed page's template waits")
+
     async def test_a_template_outlives_its_frame_only_where_the_main_frame_fallback_is_on(self):
         await self.page.goto(self.origin + "/portal_page.html")
         frame = next(f for f in self.page.frames if f.parent_frame is not None)
