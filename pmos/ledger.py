@@ -686,6 +686,28 @@ class Ledger:
             raise
         return (attempt, row["dataset"], row["period"], row["scope"])
 
+    def release_sample(self, attempt: int, approval: str) -> tuple:
+        """User-approved: a sample PMOS itself could not keep (a report of several pages, before paging) may be asked once more.
+
+        Liaoning r18 2026-11-01: 实时断面's 10-25 answered page 1 and was refused for having more. The site answered, so it
+        was never ``not_sent``: the attempt keeps its outcome and only stops consuming its identity. Only this reason.
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("release_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            row = self.db.execute("SELECT * FROM attempts WHERE id=?", (attempt,)).fetchone()
+            if row is None or row["kind"] != "sample" or row["outcome"] != "failed" or row["reason"] != "finereport_table_more_pages":
+                raise ValueError(f"attempt_{attempt}_is_not_a_refused_sample")
+            if self.db.execute("SELECT 1 FROM released_attempts WHERE attempt_id=?", (attempt,)).fetchone():
+                raise ValueError(f"attempt_{attempt}_already_released")
+            self.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, approval, self.clock()))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+        return (attempt, row["dataset"], row["period"], row["scope"])
+
     def release_early(self, attempt: int, approval: str) -> tuple:
         """User-approved: an answer saved before its day was published (a partial or empty day) stops
         consuming its item, which is pending again and waits for its day (``lag_days``).

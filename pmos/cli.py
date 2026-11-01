@@ -383,19 +383,22 @@ def cmd_try_report(province: Province, args) -> None:
         raise ValueError("unknown_dataset")
     if spec.status != "candidate":
         raise ValueError("not_a_candidate:" + spec.status)
-    ledger = Ledger(province.instance() / "ledger.sqlite3")
-    try:
-        handoff = ledger.handoff()
-    finally:
-        ledger.close()
-    if handoff is None or args.dataset not in handoff["scope"]:
-        raise ValueError("not_in_the_handoff_scope")
     scope = None
     if getattr(args, "scope", None):
         from .spec import scope_key
         scope = scope_key(json.loads(args.scope))
         if scope not in {key for key, _ in spec.scope_items()}:
             raise ValueError("scope_not_of_this_report")
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        handoff = ledger.handoff()
+        asked = ledger.consumed(args.dataset, args.period, scope if scope is not None else spec.scope_items()[0][0])
+    finally:
+        ledger.close()
+    if handoff is None or args.dataset not in handoff["scope"]:
+        raise ValueError("not_in_the_handoff_scope")
+    if asked:
+        raise ValueError("already_asked_try_another_period")
     state = StateStore(province.instance() / "state")
     command_id = enqueue(state, {"action": "sample", "dataset": args.dataset, "period": args.period, "scope": scope})
     state.event("report_tried", dataset=args.dataset, period=args.period, approval=args.approval)
@@ -476,6 +479,20 @@ def cmd_release_interrupted(province: Province, args) -> None:
     finally:
         ledger.close()
     StateStore(province.instance() / "state").event("interrupted_answer_released", attempt=attempt, dataset=dataset,
+                                                    period=period, scope=scope, approval=args.approval)
+    _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
+
+
+def cmd_release_sample(province: Province, args) -> None:
+    """User-approved: a sample refused for having more pages than PMOS could read then; its identity may be asked once more."""
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        if ledger.unsettled():
+            raise ValueError("unsettled_attempt")
+        attempt, dataset, period, scope = ledger.release_sample(args.attempt, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("refused_sample_released", attempt=attempt, dataset=dataset,
                                                     period=period, scope=scope, approval=args.approval)
     _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
 
@@ -835,6 +852,9 @@ def main(argv: list[str] | None = None) -> int:
         ri = commands.add_parser("release-interrupted", help="offline: an answer lost when the worker was stopped may be asked once more")
         ri.add_argument("attempt", type=int)
         ri.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        rs = commands.add_parser("release-sample", help="a sample refused for more pages than could be read then may be asked once more")
+        rs.add_argument("attempt", type=int)
+        rs.add_argument("--approval", required=True, help="the user's approval, verbatim")
         rdisc = commands.add_parser("release-discovery", help="after review: a held dropdown discovery runs again")
         rdisc.add_argument("dataset", nargs="?")
         rdisc.add_argument("--all", action="store_true", help="every held discovery")
@@ -912,7 +932,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "backfill", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-discovery", "review-unsent", "prioritize", "probe-blank", "probe-report", "read-dictionary", "try-report", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-sample", "release-discovery", "review-unsent", "prioritize", "probe-blank", "probe-report", "read-dictionary", "try-report", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -954,6 +974,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_release_early(province, args)
             elif args.command == "release-discovery":
                 cmd_release_discovery(province, args)
+            elif args.command == "release-sample":
+                cmd_release_sample(province, args)
             elif args.command == "release-interrupted":
                 cmd_release_interrupted(province, args)
             elif args.command == "review-unsent":

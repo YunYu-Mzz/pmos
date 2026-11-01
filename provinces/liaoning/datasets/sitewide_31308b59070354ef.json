@@ -1,7 +1,7 @@
 {
   "id": "sitewide_31308b59070354ef",
   "name": "实时市场各时段出清的断面约束及阻塞情况",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -33,7 +33,7 @@
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "lnsnxh_ssscgsdcqddmysjzsqk",
-    "note": "10-25: page 1 has 36 rows and the report says it has more: all pages are read now, stored together as {report_pages: [...]}",
+    "note": "sample 2026-10-24: 5 pages, rows 1 to 168 in one run, a header only on page 1, every row of the day asked",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -72,6 +72,18 @@
       "at": "2026-11-01T23:20:00+08:00",
       "event": "paging_added",
       "note": "back to candidate: its one sample was refused for its pages, not for its data"
+    },
+    {
+      "at": "2026-11-01T23:19:53+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-24",
+      "result": "saved",
+      "sha256": "9724bf985b21b58c046fc10614af0b76f6607b8272343ee5ef547660a597e58e"
+    },
+    {
+      "at": "2026-11-01T23:25:00+08:00",
+      "event": "shape_read",
+      "note": "sample original read before the first seed"
     }
   ]
 }

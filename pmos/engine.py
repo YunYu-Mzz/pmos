@@ -1667,9 +1667,11 @@ class Engine:
                 if command.get("day"):
                     self.state.write("dictionary_reads", {**(self.state.read("dictionary_reads", {}) or {}), command["dataset"]: command["day"]})
                 self.state.event("report_look_failed", dataset=command.get("dataset"), action=command["action"], reason=fault.code)
-            elif fault.code.startswith("preflight_deferred:"):
+            elif fault.code.startswith("preflight_deferred:") or fault.code in ("consumed_identity_requires_review",
+                                                                               "consumed_file_requires_review"):
                 # Nothing was sent: that report's page could not be reached (Liaoning r14 2026-11-01 19:29: a menu with two
-                # rows of one report took the worker down). The asker has the answer; collection goes on.
+                # rows of one report took the worker down), or a person asked again for what was already asked (r19 23:17: a
+                # retried sample stopped the province). The asker has the answer; collection goes on.
                 self.state.event("command_not_sent", dataset=command.get("dataset"), action=command.get("action"), reason=fault.code)
             else:
                 decision = decide(fault, "sample")

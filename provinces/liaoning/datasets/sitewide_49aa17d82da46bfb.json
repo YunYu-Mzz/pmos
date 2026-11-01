@@ -1,7 +1,7 @@
 {
   "id": "sitewide_49aa17d82da46bfb",
   "name": "日前省间联络线输电可用容量",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -32,46 +32,6 @@
   "response": {
     "kind": "finereport_daily"
   },
-  "source": {
-    "legacy": "state/server_verified_expansion_20261023/native_menu.json",
-    "legacy_source": "sn_xhpl_dasm_corridor_7_7_1",
-    "note": "125 channels x 2 types from the form's dropdowns, 2026-11-01. 京津唐冀北 正向可用 on 10-25 answers 999999.00 in every slot: kept as the site gives it.",
-    "identity_contract": {
-      "request_data_path": [
-        "set"
-      ],
-      "date_fields": [
-        "日期",
-        "交易日期"
-      ],
-      "dimension_fields": {
-        "通道名称": "channel",
-        "数据类型": "type"
-      }
-    }
-  },
-  "history": [
-    {
-      "at": "2026-11-01T19:20:00+08:00",
-      "event": "prepared_for_probe",
-      "note": "user 2026-11-01: \"都按你建议的来\""
-    },
-    {
-      "at": "2026-11-01T20:05:00+08:00",
-      "event": "combos_to_read",
-      "note": "a blank choice answers a blank page, or the form has dropdowns: read their options next"
-    },
-    {
-      "at": "2026-11-01T20:25:00+08:00",
-      "event": "probed",
-      "note": "dropdowns read"
-    },
-    {
-      "at": "2026-11-01T22:30:00+08:00",
-      "event": "followed",
-      "note": "r17 probe: a 96-point grid for one combination"
-    }
-  ],
   "scopes": [
     {
       "channel": "东天＋月锦断面",
@@ -1072,6 +1032,62 @@
     {
       "channel": "金永直流",
       "type": "正向可用"
+    }
+  ],
+  "source": {
+    "legacy": "state/server_verified_expansion_20261023/native_menu.json",
+    "legacy_source": "sn_xhpl_dasm_corridor_7_7_1",
+    "note": "125 channels x 2 types from the form's dropdowns. 东天＋月锦断面 反向可用 on 10-25: 96 values, 632 to 637. 京津唐冀北 正向可用 the same day (a probe): 999999.00 in every slot, kept as the site gives it; the two differ, so the choice takes effect.",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "日期",
+        "交易日期"
+      ],
+      "dimension_fields": {
+        "通道名称": "channel",
+        "数据类型": "type"
+      }
+    }
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_probe",
+      "note": "user 2026-11-01: \"都按你建议的来\""
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "combos_to_read",
+      "note": "a blank choice answers a blank page, or the form has dropdowns: read their options next"
+    },
+    {
+      "at": "2026-11-01T20:25:00+08:00",
+      "event": "probed",
+      "note": "dropdowns read"
+    },
+    {
+      "at": "2026-11-01T22:30:00+08:00",
+      "event": "followed",
+      "note": "r17 probe: a 96-point grid for one combination"
+    },
+    {
+      "at": "2026-11-01T23:20:12+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "saved",
+      "sha256": "4f43583c08b6fd69db22b113192c36093f4eac1b8903c360d45023f7aab0cf2b",
+      "scope": {
+        "channel": "东天＋月锦断面",
+        "type": "反向可用"
+      }
+    },
+    {
+      "at": "2026-11-01T23:25:00+08:00",
+      "event": "shape_read",
+      "note": "sample original read before the first seed"
     }
   ]
 }

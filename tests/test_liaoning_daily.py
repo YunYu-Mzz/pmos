@@ -619,11 +619,11 @@ class RealTrial(unittest.TestCase):
 
     def test_the_fourteen_finereport_forms_are_candidates_to_probe(self):
         specs = [s for s in REAL.datasets().values() if s.request.get("transport") == "finereport" and s.status == "candidate"]
-        self.assertEqual(len(specs), self.FINEREPORT - 6 - 2, "6 answered their samples, 2 are the site's own errors")
+        self.assertEqual(len(specs), self.FINEREPORT - 8 - 2, "8 answered their samples, 2 are the site's own errors")
         self.assertEqual({s.request["site_menu"]["route"] for s in specs}, {"spotgoodsSum"})
         every = REAL.datasets().values()
         self.assertEqual(len([s for s in every if s.response["kind"] == "finereport_page"]), 5, "the five .cpt")
-        self.assertEqual(REAL.datasets()["sitewide_31308b59070354ef"].status, "candidate", "back from quarantine: pages are read now")
+        self.assertEqual(REAL.datasets()["sitewide_31308b59070354ef"].status, "sampled", "its 5 pages were read")
 
     def test_the_nine_per_option_reports_read_their_dictionary_without_a_selection(self):
         specs = REAL.datasets()
@@ -684,6 +684,8 @@ class Trial(unittest.IsolatedAsyncioTestCase):
             value = json.loads((REPO / "provinces/liaoning/datasets" / f"{name}.json").read_text(encoding="utf-8"))
             if name == "tie_line_intraday":
                 value["period"], value["status"] = {**value["period"], "start": day(6)}, "candidate"
+            if name == "sitewide_49aa17d82da46bfb":
+                value["status"] = "candidate"
             if name == "sitewide_46fa5856d5315e4e":
                 value["period"] = {**value["period"], "start": day(2)}
             (directory / "datasets" / f"{name}.json").write_text(json.dumps(value, ensure_ascii=False))
@@ -803,6 +805,48 @@ class Trial(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result["detail"]["queued"], [{"op": "widget"}])
         self.assertEqual(self.province.datasets()["tie_line_intraday"].status, "candidate")
         self.assertIsNone(engine.state.blocked())
+
+    async def test_asking_again_what_was_asked_answers_the_asker_and_stops_nothing(self):
+        """Liaoning r19 23:17: try-report of a day an earlier sample had failed on blocked the province, and the worker left."""
+        from argparse import Namespace
+        from pmos import cli
+        from pmos.faults import Fault
+        engine = self.engine()
+        self.clock.advance(5)
+        self.transport.queue.append(Response(200, "application/json", b"not json at all"))
+        engine.enqueue({"action": "sample", "dataset": "tie_line_intraday", "period": day(3), "scope": None})
+        await self.run_commands(engine, 1)
+        self.assertTrue(engine.ledger.consumed("tie_line_intraday", day(3), ""))
+        engine.state.remove("block")
+        sent = len(self.transport.sent)
+        engine.enqueue({"action": "sample", "dataset": "tie_line_intraday", "period": day(3), "scope": None})
+        results = await self.run_commands(engine, 1)
+        last = list(results.values())[-1]
+        self.assertEqual((last["ok"], last["reason"]), (False, "consumed_identity_requires_review"))
+        self.assertIsNone(engine.state.blocked())
+        self.assertEqual(len(self.transport.sent), sent)
+        spec_status = self.province.datasets()["tie_line_intraday"].status
+        if spec_status == "candidate":
+            with self.assertRaisesRegex(ValueError, "already_asked"):
+                cli.cmd_try_report(self.province, Namespace(dataset="tie_line_intraday", period=day(3), approval="同意", wait=0, scope=None))
+
+    def test_a_sample_refused_for_its_pages_can_be_released_and_nothing_else_can(self):
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        self.addCleanup(ledger.close)
+        attempt = ledger.begin("sample", "tie_line_intraday", day(3), "")
+        ledger.finish(attempt, "failed", http_status=200, reason="finereport_table_more_pages")
+        other = ledger.begin("sample", "tie_line_intraday", day(4), "")
+        ledger.finish(other, "failed", http_status=200, reason="unexpected_business_status")
+        self.assertTrue(ledger.consumed("tie_line_intraday", day(3), ""))
+        with self.assertRaisesRegex(ValueError, "approval"):
+            ledger.release_sample(attempt, " ")
+        with self.assertRaisesRegex(ValueError, "not_a_refused_sample"):
+            ledger.release_sample(other, "同意")
+        self.assertEqual(ledger.release_sample(attempt, "同意")[0], attempt)
+        self.assertFalse(ledger.consumed("tie_line_intraday", day(3), ""))
+        self.assertTrue(ledger.consumed("tie_line_intraday", day(4), ""))
+        with self.assertRaisesRegex(ValueError, "already_released"):
+            ledger.release_sample(attempt, "同意")
 
     async def test_a_candidate_is_not_seeded_until_its_sample_answers_and_that_day_is_not_asked_again(self):
         engine = self.engine()
