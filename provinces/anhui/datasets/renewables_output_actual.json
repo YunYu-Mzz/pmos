@@ -101,7 +101,7 @@
   },
   "history": [
     {
-      "at": "2026-11-01T11:26:44+08:00",
+      "at": "2026-11-01T12:31:22+08:00",
       "event": "generated_from_legacy_native_binding",
       "binding_sha256": "fcc3eaf89bede99ac68f033b8f6cac0eb99ede57730d9beabd4328e77b8b1686"
     }

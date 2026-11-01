@@ -93,7 +93,7 @@
   },
   "history": [
     {
-      "at": "2026-11-01T11:26:44+08:00",
+      "at": "2026-11-01T12:31:22+08:00",
       "event": "generated_from_legacy_queue",
       "per_option": "real_time_node_marginal_price"
     }
