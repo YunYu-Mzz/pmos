@@ -185,9 +185,31 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r12：周报少问一天，试点数字如实，一份答复只占一份磁盘（2026-11-01）
+
+r12 = r11 加下面三项；r11 没有部署就被 r12 取代。起因是辽宁会话核对 r10 时问的三点。
+
+**周报的 2026-10-20 不再问。** 计划把 `sitewide_f5d806b38bb8a248` 这一天记成 `no_original`，这是我漏看了：
+- 旧系统 10-21 01:01 问过这一天，HTTP 200、业务码 0、1 行，2,059 字节，和 10-19、10-21 一样大。
+- 原件在 `state/local_adaptation_20261020/responses/sitewide_f5d806b38bb8a248_overview_refresh/response.json`（sha `813dd92d…`），清单的 `prior_outcomes` 记为 saved。队列是后来才开始的，原件目录里没有它。
+- 所以它和 09-10、09-13（发出后被中断，没拿到数据）不是一类。`prior_originals` 读清单，再核对文件的 SHA，写墓碑，计划里列在 `original_in_adaptation`。周报计划变成墓碑 348、要采 0 天。
+
+收尾时这一份原件要一起带走，它不在 `data/2026/original` 下面。
+
+**`--only` 的数字。** 列表计划原来打印全量口径，看不出试点要发多少。现在 `first_listing_pages`、`files_left_to_download`、`will_be_asked` 是这次 apply 的，全量的在 `*_all_columns`。
+
+**先试点再全量。** `--only` 只把这几个栏目放进范围，任务也只有它们的，墓碑却是全部 295 条。全量 apply 用同一个快照，`late_import_already_done` 不算错，只补范围。`apply_daily_lane` 现在拒绝换快照（`lane_already_imported_with_another_snapshot`）：换快照只可能是后来才加 `--resend-empty`，而那 3 条墓碑收不回来，文件照样不会发。决定取那 161 个文件不改快照，快照只来自旧附件队列；试点的 5 个栏目里也没有这些文件。
+
+**磁盘。** 95 秒实测 58 次请求（每分钟约 36 次）：`original/` 涨 1,592 KB，`responses/` 涨 1,588 KB，台账涨 201 KB，所以每次请求约 58 KB，稳定增长约 2.1 MB/分钟。同时 WAL 涨了 2.9 MB，它只是临时文件，所以短时间看 `df` 会更高。
+- `responses/` 存的是同一份字节，为了崩溃后能复核。现在原件和它是硬链接：一个文件两个名字，都保留，互不影响。链接不成就照旧写一份。之后每次请求约 31 KB，约 1.2 MB/分钟。
+- 已有的约 3,800 份不处理，只省约 90 MB。
+- 磁盘低于 2,048 MB 时：业务暂停，保活照发，空间回来后自动恢复，不用操作；告警邮件有 `disk_paused`。
+
+**存档变慢的隐患。** `Archive._known` 每存一次都解析整个 `manifest.jsonl`。80 万行约 330 MB，解析一次约 1.7 秒，每次请求还要存两次，内存也会冲高。现在只读新增的部分。
+
 ## r11：3 个会员名录，以及全菜单核对（2026-11-01）
 
-r11 = r10 加 3 个会员名录；r10 没有部署就被 r11 取代。
+r11 = r10 加 3 个会员名录；r10 没有部署就被 r11 取代，r11 也没有部署，内容都在 r12 里。
 
 **会员名录。** 电力用户（88 条）、售电公司（198 条）、发电企业（295 条），每天共约 30 页，都没有附件。规格是新的 `sitewide_8090c94f9cf7b256`、`sitewide_b03896324973acd7`、`sitewide_f1051ebc83754fde`，随 `--lane lists` 加入，没有墓碑。
 - 页面脚本 `open_member_menu.js` 照搬旧系统的 PREPARE/READY：不跑视图的挂载逻辑，直接设市场字段，所以打开时不发 `getIpc`。

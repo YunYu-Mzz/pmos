@@ -36,6 +36,10 @@ class Archive:
         self.province = province
         self.manifest = self.root / "manifest.jsonl"
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        self.link_from: "Archive | None" = None   # the archive whose copy of the same bytes this one may share
+        self.latest: tuple[str, Path] | None = None
+        self._known_size = 0
+        self._known_keys: set[tuple] = set()
 
     def directory(self, dataset: str, period: str, scope: str = "") -> Path:
         if not dataset.isidentifier():
@@ -70,21 +74,8 @@ class Archive:
                 if hashlib.sha256(target.read_bytes()).hexdigest() != digest:
                     raise ArchiveError("existing_original_hash_mismatch")
             else:
-                descriptor, temporary = tempfile.mkstemp(dir=directory, prefix=".incoming.")
-                try:
-                    with os.fdopen(descriptor, "wb") as stream:
-                        stream.write(payload)
-                        stream.flush()
-                        os.fsync(stream.fileno())
-                    os.replace(temporary, target)
-                    directory_fd = os.open(directory, os.O_RDONLY)
-                    try:
-                        os.fsync(directory_fd)
-                    finally:
-                        os.close(directory_fd)
-                finally:
-                    if os.path.exists(temporary):
-                        os.unlink(temporary)
+                self._write(directory, target, digest, payload)
+            self.latest = (digest, target)
             record = {"province": self.province, "dataset": dataset, "period": period, "scope": scope,
                       "sha256": digest, "size": len(payload), "path": target.relative_to(self.root).as_posix(),
                       "acquisition": acquisition, "archived_at": now_iso(), **receipt}
@@ -95,9 +86,53 @@ class Archive:
                     os.fsync(stream.fileno())
             return record
 
+    def _write(self, directory: Path, target: Path, digest: str, payload: bytes) -> None:
+        """The file, durably: a hard link when ``link_from`` has just stored these very bytes, else a new copy."""
+        peer = self.link_from.latest if self.link_from is not None else None
+        linked = False
+        if peer is not None and peer[0] == digest:
+            try:
+                if peer[1].stat().st_size == len(payload):
+                    os.link(peer[1], target)
+                    linked = True
+            except OSError:
+                pass                      # another file system, or the copy is gone: write our own
+        descriptor = temporary = None
+        if not linked:
+            descriptor, temporary = tempfile.mkstemp(dir=directory, prefix=".incoming.")
+        try:
+            if not linked:
+                with os.fdopen(descriptor, "wb") as stream:
+                    stream.write(payload)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                os.replace(temporary, target)
+            directory_fd = os.open(directory, os.O_RDONLY)
+            try:
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
+        finally:
+            if temporary is not None and os.path.exists(temporary):
+                os.unlink(temporary)
+
     def _known(self, dataset: str, period: str, scope: str, digest: str) -> bool:
-        return any(r["dataset"] == dataset and r["period"] == period and r.get("scope", "") == scope
-                   and r["sha256"] == digest for r in self.records())
+        """Already in the manifest? Reads only what was appended since the last call (a year's manifest is large)."""
+        size = self.manifest.stat().st_size if self.manifest.exists() else 0
+        if size != self._known_size:
+            with self.manifest.open("rb") as stream:
+                if size < self._known_size:
+                    self._known_size, self._known_keys = 0, set()
+                stream.seek(self._known_size)
+                # Only whole lines: a line another process is still appending is read next time.
+                chunk = stream.read(size - self._known_size)
+            complete = chunk[:chunk.rfind(b"\n") + 1]
+            for line in complete.decode("utf-8").splitlines():
+                if line.strip():
+                    row = json.loads(line)
+                    self._known_keys.add((row["dataset"], row["period"], row.get("scope", ""), row["sha256"]))
+            self._known_size += len(complete)
+        return (dataset, period, scope, digest) in self._known_keys
 
     def records(self, dataset: str | None = None) -> list[dict]:
         if not self.manifest.exists():

@@ -90,6 +90,44 @@ class RealSpecs(unittest.TestCase):
         self.assertEqual(migration.DAILY_LANE[0], "system_load")
 
 
+class PriorOriginal(unittest.TestCase):
+    def legacy(self, directory, body=b'{"status":0,"data":[{"v":1}]}', sha=None, outcome="saved"):
+        import hashlib
+        name = "sitewide_f5d806b38bb8a248"
+        root = Path(directory) / "legacy"
+        response = root / "state/local_adaptation_20261020/responses/refresh/response.json"
+        response.parent.mkdir(parents=True)
+        response.write_bytes(body)
+        digest = hashlib.sha256(body).hexdigest()
+        manifest = root / migration.MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(json.dumps({"sources": {name: {
+            "prior_outcomes": {"k": {"outcome": outcome, "raw_sha256": digest}},
+            "proofs": [{"sha256": sha or digest, "rows": 1, "params": {"date": day(4)},
+                        "response_file": str(response.relative_to(root))}]}}}))
+        return root, name
+
+    def test_a_day_only_the_legacy_adaptation_saved_is_not_asked_again(self):
+        """sitewide_f5d8's 2026-10-20: asked on 10-21, 200 and rows, its file outside the originals tree."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            root, name = self.legacy(directory)
+            lane = migration.daily_lane(root, REAL.datasets(), names=(name,))
+        self.assertEqual(lane["per_dataset"][name]["original_in_adaptation"], [day(4)])
+        self.assertNotIn(day(4), lane["per_dataset"][name]["no_original"])
+        self.assertEqual(lane["per_dataset"][name]["consumed"], 1)
+        self.assertEqual(lane["rows"][0][0], f"daily:{name}:{day(4)}")
+
+    def test_a_prior_outcome_whose_file_does_not_prove_it_stays_open(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            root, name = self.legacy(directory, sha="0" * 64)
+            self.assertEqual(migration.prior_originals(root, name), [])
+        with tempfile.TemporaryDirectory() as directory:
+            root, name = self.legacy(directory, outcome="empty")
+            self.assertEqual(migration.prior_originals(root, name), [])
+
+
 class Weekly(unittest.TestCase):
     def test_a_monday_is_the_only_period_of_a_weekly_report(self):
         from datetime import date
@@ -440,6 +478,8 @@ class Columns(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(lane["files_left_to_download"], 1)
         self.assertEqual(lane["first_listing_pages"], 3 + 1, "41 records at 20 a page, and a column the legacy tree has no page of")
         self.assertEqual(lane["will_be_asked"], 4 + 1)
+        self.assertEqual(migration.list_lane(root, specs, only=["pub_jyjgJbxx"])["will_be_asked"], 1, "this apply's numbers")
+        self.assertEqual(migration.list_lane(root, specs, only=["pub_jyjgJbxx"])["first_listing_pages_all_columns"], 4)
         resend = migration.list_lane(root, specs, resend_empty=True)
         self.assertEqual(sorted(key for key, _ in resend["rows"]), ["kf1", "kf3"], "an unknown answer is not resent by this")
         self.assertEqual(resend["files_left_to_download"], 2)
@@ -452,6 +492,23 @@ class Columns(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(lane["rows"]), 1)
         with self.assertRaisesRegex(ValueError, "pub_nothing"):
             migration.list_lane(root, self.province.datasets(), only=["pub_nothing"])
+
+    def test_a_pilot_scopes_only_its_columns_and_the_full_lane_imports_the_same_snapshot_once(self):
+        root = self.queue(outcomes=["f1"], empty=["f3"])
+        specs = self.province.datasets()
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        pilot = migration.apply_daily_lane(ledger, migration.list_lane(root, specs, only=["pub_jyjgJbxx"]), "试点",
+                                           source_id="liaoning-lists-lane")
+        self.assertEqual((pilot["imported"]["added"], pilot["added"]), (2, ["pub_jyjgJbxx"]), "all tombstones, one column")
+        self.assertEqual(ledger.handoff()["scope"], ["pub_jyjgJbxx", "actual"])
+        self.assertEqual(ledger.db.execute("SELECT COUNT(*) FROM tasks WHERE dataset LIKE 'pub_%'").fetchone()[0], 0)
+        full = migration.apply_daily_lane(ledger, migration.list_lane(root, specs), "全量", source_id="liaoning-lists-lane")
+        self.assertTrue(full["imported"]["already_done"], "the same snapshot is no second import")
+        self.assertEqual(full["added"], [self.NAME])
+        with self.assertRaisesRegex(ValueError, "another_snapshot"):
+            migration.apply_daily_lane(ledger, migration.list_lane(root, specs, resend_empty=True), "晚了", source_id="liaoning-lists-lane")
+        self.assertEqual(ledger.db.execute("SELECT COUNT(*) FROM legacy_records WHERE source_id='liaoning-lists-lane'").fetchone()[0], 2)
+        ledger.close()
 
     def test_an_unsettled_legacy_queue_is_refused(self):
         root = self.queue()

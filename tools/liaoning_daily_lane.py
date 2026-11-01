@@ -54,6 +54,7 @@ def main() -> None:
                                   resend_empty=args.resend_empty)
         names = lane["datasets"]
         extra = {key: lane[key] for key in ("columns", "datasets", "first_listing_pages", "files_left_to_download",
+                                            "first_listing_pages_all_columns", "files_left_to_download_all_columns",
                                             "answered_without_a_file", "resend_empty", "withheld_year_conflict")}
     else:
         names = {"daily": liaoning.DAILY_LANE, "engine": liaoning.ENGINE_LANE, "weekly": liaoning.WEEKLY_LANE}[args.lane]

@@ -148,6 +148,8 @@ class Engine:
         self.archive = Archive(self.instance / "original", province.id)
         self.samples = Archive(self.instance / "samples", province.id)
         self.responses = Archive(self.instance / "responses", province.id)
+        # An answer goes to responses/ first (crash review), then to original/: one file, two names.
+        self.archive.link_from = self.responses
         self.quarantine = Archive(self.instance / "quarantine", province.id)
         self.serial = asyncio.Lock()
         self._lock_fd: int | None = None

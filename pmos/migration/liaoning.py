@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -379,6 +380,26 @@ def _power_original(day_dir: Path, day: str) -> str | None:
     return verdict
 
 
+def prior_originals(root: Path, name: str) -> list[str]:
+    """Days of a report whose only original the legacy adaptation kept: the manifest's prior_outcomes, proved by its file.
+
+    sitewide_f5d806b38bb8a248's 2026-10-20 was asked on 10-21 and saved under state/local_adaptation_20261020/responses;
+    the queue started after it and the originals tree does not hold it.
+    """
+    root = Path(root).resolve()
+    if not (root / MANIFEST).is_file():
+        return []
+    source = read_manifest(root)[0]["sources"].get(name) or {}
+    saved = {item.get("raw_sha256") for item in (source.get("prior_outcomes") or {}).values() if item.get("outcome") == "saved"}
+    days = []
+    for proof in source.get("proofs") or []:
+        path = root / str(proof.get("response_file") or "")
+        if proof.get("sha256") in saved and proof.get("rows") and path.is_file() and path.resolve().is_relative_to(root):
+            if hashlib.sha256(path.read_bytes()).hexdigest() == proof["sha256"]:
+                days += [v for v in (proof.get("params") or {}).values() if isinstance(v, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", v)]
+    return sorted(set(days))
+
+
 def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-production", names=DAILY_LANE,
                *, early_empty_consumed: bool = False) -> dict:
     """What the legacy worker completed of the daily reports, as tombstones in PMOS's own identities. Read-only.
@@ -410,6 +431,8 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
         load = root / DAILY_LOAD
         if name == "system_load":
             known |= {p.stem for p in load.glob("*.json")}
+        prior = prior_originals(root, name)
+        known |= set(prior)
         consumed, early, opened, failed = [], [], [], []
         for day in sorted(known):
             verdict = _power_original(originals / day, day)
@@ -424,7 +447,7 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
             if name == "system_load" and (load / f"{day}.json").is_file():
                 record = json.loads((load / f"{day}.json").read_bytes()).get("record") or {}
                 verdict = "saved" if _numbers(record.get("columns")) else "early_empty"
-            if verdict == "saved":
+            if verdict == "saved" or day in prior:
                 consumed.append(day)
             elif verdict == "early_empty":
                 early.append(day)
@@ -441,7 +464,7 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
         # isolated_active_reviews say so of 09-10 and 09-13, which this report does not read.
         never = [day for day in spec.periods_to_collect() if day not in known]
         report[name] = {"consumed": len(consumed), "early_empty": early, "open": opened, "handled_without_original": failed,
-                        "no_original": never}
+                        "no_original": never, **({"original_in_adaptation": prior} if prior else {})}
     return {"rows": rows, "states": states, "per_dataset": report, "datasets": list(names),
             "early_empty_consumed": early_empty_consumed,
             "will_be_asked": sum(len(item["open"]) + len(item["no_original"]) + (0 if early_empty_consumed else len(item["early_empty"]))
@@ -474,7 +497,7 @@ def list_lane(root: Path, specs: dict, account_alias: str = "liaoning-production
     if queue.get("active") or queue.get("global_hold") or queue.get("source_holds"):
         raise ValueError("legacy_attachment_queue_not_settled")
     rows, states, report = [], {}, {name: Counter() for name in names}
-    answered, withheld, left = [], [], 0
+    answered, withheld, left = [], [], Counter()
 
     def identity(job):
         name = by_legacy[job["dataset"]]
@@ -498,27 +521,30 @@ def list_lane(root: Path, specs: dict, account_alias: str = "liaoning-production
             answered.append({**listed, "state": state})
             report[name][state] += 1
             if resend_empty and state == "empty":
-                left += 1
+                left[name] += 1
             else:
                 rows.append((key, value))
                 states[key] = state
         else:
-            left += 1
+            left[name] += 1
             report[name]["queued"] += 1
-    pages = 0
+    pages = {}
     names += [name for name in MEMBER_LANE if name in specs]
     for name in names:
         newest = sorted((root / NATIVE_LISTS / specs[name].source["legacy_dataset"]).glob("*/*/*/metadata.json"))
         total = json.loads(newest[-1].read_bytes()).get("total") if newest else None
         size = specs[name].request["pagination"]["page_size"]
-        pages += max(1, -(-int(total or 0) // size))
+        pages[name] = max(1, -(-int(total or 0) // size))
     datasets = names if only is None else [name for name in names if name in set(only)]
     if only is not None and len(datasets) != len(set(only)):
         raise ValueError("list_lane_only_unknown:" + ",".join(sorted(set(only) - set(names))))
+    asked_pages, asked_files = sum(pages[name] for name in datasets), sum(left[name] for name in datasets)
     return {"rows": rows, "states": states, "per_dataset": {name: dict(tally) for name, tally in report.items() if tally},
             "datasets": datasets, "columns": len(names), "answered_without_a_file": answered, "resend_empty": resend_empty,
-            "withheld_year_conflict": withheld, "first_listing_pages": pages, "files_left_to_download": left,
-            "will_be_asked": pages + left, "snapshot_sha256": digest([[key, value.key, states.get(key, "saved")] for key, value in rows])}
+            "withheld_year_conflict": withheld, "first_listing_pages": asked_pages, "files_left_to_download": asked_files,
+            "first_listing_pages_all_columns": sum(pages.values()), "files_left_to_download_all_columns": sum(left.values()),
+            "one_snapshot": True, "will_be_asked": asked_pages + asked_files,
+            "snapshot_sha256": digest([[key, value.key, states.get(key, "saved")] for key, value in rows])}
 
 
 def apply_daily_lane(ledger, lane: dict, approval: str, *, source_id: str = "liaoning-daily-lane") -> dict:
@@ -526,6 +552,11 @@ def apply_daily_lane(ledger, lane: dict, approval: str, *, source_id: str = "lia
     handoff = ledger.handoff()
     if handoff is None:
         raise ValueError("daily_lane_requires_a_handoff")
+    if lane.get("one_snapshot"):
+        # A pilot and the full lane import one snapshot. Another one means other flags (--resend-empty): tombstones are never taken back.
+        earlier = {row[0] for row in ledger.db.execute("SELECT snapshot_sha256 FROM late_legacy_imports WHERE source_id=?", (source_id,))}
+        if earlier and lane["snapshot_sha256"] not in earlier:
+            raise ValueError("lane_already_imported_with_another_snapshot")
     try:
         imported = ledger.import_late_legacy(source_id, lane["snapshot_sha256"], lane["rows"], approval,
                                              states=lane["states"])
