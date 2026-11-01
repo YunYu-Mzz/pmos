@@ -216,3 +216,10 @@ PMOS 对照检查后补了三处：
 4. **验收**：`launchctl bootstrap gui/501 <发布目录>/deploy/launchd/com.yunyu.pmos.anhui.plist`。预算 5 用完后正常退出，保持停止。
 5. **持续运行**：用户批准后 `extend-budget --add <N> --approval "<原话>"`，再 `launchctl kickstart gui/501/com.yunyu.pmos.anhui`。
 6. **回滚**：`stop-all`，bootout PMOS 单元，确认只剩一个综合查询页，再恢复旧的三个单元。PMOS 已发过的身份要先告诉旧系统，不能重发。
+
+## 11-01 11:3x 验收第 1 步连不上 Edge → r2
+
+- 现象：`connect_over_cdp` 访问 `ws://127.0.0.1:49290/devtools/browser/9720b6ab-…` 返回 404，进程以 1 退出，没有向网站发任何请求，台账 0 次尝试。
+- 原因：DevToolsActivePort 文件写于 10-23，里面是那次启动的浏览器 GUID；10-31 起运行的 Edge 没有重写这个文件。端口对，GUID 已过期。
+- 修复（`attach.cdp_endpoint`）：端口仍从文件读，浏览器当前的 socket 改问本机 `/json/version`，并要求它是同一端口上的 loopback 地址。`browser.profile_process_check`（安徽开启）还会用 lsof 和 ps 核对：监听这个端口的进程必须带 `--user-data-dir=<专用 profile>`。
+- 发布：`release-20261101-r2` = r1 加上这一处修复（见 `CHANGES-r2.txt`）。交接回执的 code_sha 是 r1 的 SHA256SUMS（保留为 `SHA256SUMS.receipt-r1`），实例台账不用重做。

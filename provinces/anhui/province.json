@@ -5,6 +5,7 @@
   "browser": {
     "profile_dir": "~/pmos-browser/anhui",
     "page_url_contains": "/pxf-settlement-outnetpub/",
+    "profile_process_check": true,
     "note": "local override: <instance>/browser.json {\"profile_dir\": \"/Users/yunyu/Desktop/sd_crawler/anhui/state/server_browser_profile\"} (the dedicated Edge; its DevToolsActivePort gives the CDP port after a relaunch); only the one 综合查询 page matches",
     "request_gate": true,
     "work_page": {

@@ -13,7 +13,14 @@ class AttachError(RuntimeError):
 
 
 def cdp_endpoint(browser: dict) -> str:
-    """``browser.cdp_url`` wins; otherwise read DevToolsActivePort of ``profile_dir``."""
+    """``browser.cdp_url`` wins; otherwise the port of ``profile_dir``'s DevToolsActivePort, asked for the
+    running browser's own socket (``/json/version``).
+
+    Anhui 2026-11-01: the file still held the browser GUID of the launch that
+    wrote it (10-23); the Edge running since 10-31 never rewrote it, so that
+    path answered 404 while the port was right. ``profile_process_check``:
+    the process listening on the port must run with this ``--user-data-dir``.
+    """
     url = browser.get("cdp_url")
     if url:
         if not re.fullmatch(r"(http|ws)://127\.0\.0\.1:\d{2,5}(/.*)?", url):
@@ -22,11 +29,44 @@ def cdp_endpoint(browser: dict) -> str:
     profile = browser.get("profile_dir")
     if not profile:
         raise AttachError("browser.cdp_url or browser.profile_dir required")
+    profile = Path(profile).expanduser()
     # Anhui's profile is under ~/Desktop, where macOS briefly refuses launchd processes (EPERM).
-    lines = eperm_retry(_active_port, Path(profile).expanduser() / "DevToolsActivePort")
+    lines = eperm_retry(_active_port, profile / "DevToolsActivePort")
     if len(lines) != 2 or not lines[0].isdigit() or not re.fullmatch(r"/devtools/browser/[A-Za-z0-9-]+", lines[1]):
         raise AttachError("devtools_active_port_invalid")
-    return f"ws://127.0.0.1:{int(lines[0])}{lines[1]}"
+    port = int(lines[0])
+    if browser.get("profile_process_check"):
+        commands = _listener_commands(port)
+        wanted = f" --user-data-dir={profile.resolve()} "
+        if not commands or not all(wanted in f" {command.strip()} " for command in commands):
+            raise AttachError("devtools_port_not_this_profile")
+    socket = _browser_socket(port)
+    if not re.fullmatch(rf"ws://127\.0\.0\.1:{port}/devtools/browser/[A-Za-z0-9-]+", socket or ""):
+        raise AttachError("devtools_version_invalid")
+    return socket
+
+
+def _browser_socket(port: int) -> str | None:
+    """The browser's current ``webSocketDebuggerUrl`` (loopback only; nothing of the site is asked)."""
+    import json
+    import urllib.request
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/json/version", timeout=5) as answer:
+            return json.loads(answer.read()).get("webSocketDebuggerUrl")
+    except (OSError, ValueError):
+        raise AttachError("devtools_version_unreachable") from None
+
+
+def _listener_commands(port: int) -> list[str]:
+    """Command lines of the processes listening on the loopback port (macOS lsof and ps)."""
+    import subprocess
+    try:
+        pids = subprocess.run(["lsof", "-nP", "-a", f"-iTCP:{port}", "-sTCP:LISTEN", "-t"],
+                              capture_output=True, text=True, timeout=10).stdout.split()
+        return [subprocess.run(["ps", "-o", "command=", "-p", pid], capture_output=True, text=True,
+                               timeout=10).stdout for pid in sorted(set(pids))]
+    except (OSError, subprocess.SubprocessError):
+        raise AttachError("devtools_port_owner_unreadable") from None
 
 
 def _active_port(active: Path) -> list[str]:

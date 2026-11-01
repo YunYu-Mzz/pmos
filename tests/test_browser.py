@@ -150,9 +150,31 @@ class AttachTests(unittest.TestCase):
                     refused.append(path)
                     raise PermissionError(errno.EPERM, "Operation not permitted")
                 return real(path)
-            with patch.object(Path, "lstat", lstat), patch("pmos.fsretry.time.sleep"):
-                self.assertEqual(cdp_endpoint({"profile_dir": profile}), "ws://127.0.0.1:9333/devtools/browser/ab-12")
+            current = "ws://127.0.0.1:9333/devtools/browser/cd-34"
+            with patch.object(Path, "lstat", lstat), patch("pmos.fsretry.time.sleep"), \
+                    patch("pmos.browser.attach._browser_socket", return_value=current):
+                self.assertEqual(cdp_endpoint({"profile_dir": profile}), current)
             self.assertEqual(len(refused), 2)
+
+    def test_the_running_browser_names_its_socket_and_the_port_must_belong_to_the_profile(self):
+        """Anhui 2026-11-01: the file kept the GUID of an older launch (404); the port was right."""
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as profile:
+            (Path(profile) / "DevToolsActivePort").write_text("49290\n/devtools/browser/old-guid\n", encoding="ascii")
+            config = {"profile_dir": profile, "profile_process_check": True}
+            mine = f"/Applications/Edge --remote-debugging-port=49290 --user-data-dir={Path(profile).resolve()} --flag\n"
+            with patch("pmos.browser.attach._browser_socket", return_value="ws://127.0.0.1:49290/devtools/browser/new-guid"):
+                with patch("pmos.browser.attach._listener_commands", return_value=[mine]):
+                    self.assertEqual(cdp_endpoint(config), "ws://127.0.0.1:49290/devtools/browser/new-guid")
+                for others in ([], [mine.replace(str(Path(profile).resolve()), "/tmp/another-profile")],
+                               [mine, "/Applications/Other --user-data-dir=/tmp/x\n"]):
+                    with patch("pmos.browser.attach._listener_commands", return_value=others):
+                        with self.assertRaisesRegex(AttachError, "devtools_port_not_this_profile"):
+                            cdp_endpoint(config)
+            with patch("pmos.browser.attach._browser_socket", return_value="ws://127.0.0.1:9999/devtools/browser/x"):
+                with self.assertRaisesRegex(AttachError, "devtools_version_invalid"):
+                    cdp_endpoint({"profile_dir": profile})
 
 
 if __name__ == "__main__":
