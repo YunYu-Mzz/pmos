@@ -184,3 +184,25 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 闲置超过 10 分钟先重开；
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
+
+## r4：日报和系统负荷 18 张（2026-11-01）
+
+用户原话（经辽宁会话）："发给五省统一，按这个顺序排"，这 18 张是第一优先。切换时它们不在范围内，14:31 旧系统冻结后新日期没人采。网站的历史还在，晚几天不丢数据。
+
+**为什么不解码 Crawlee 队列的身份。** PMOS 的身份只由"报表 + 日期"决定，由引擎算出。旧系统已完成的证据是原件，队列只用来识别"处理过却没有原件"的日子。只读核对：队列标记已处理的 4,997 条全部有原件，这类日子是 0 个。17 张的接口路径和查询参数都和原件的 `query_identity` 一致，5 张 `candidate` 因此升为 `verified`，并按 `publish_lag` 设了滞后天数。
+
+**判定（`daily_lane`）：**
+- 原件里有数据，或者过了发布期才采到的空结果：已完成，写墓碑。
+- 只有当天或第二天采到的空结果：不算完成，PMOS 再采（用户原话"当天或第二天采到的空结果，当作未采处理"）。这样的日子有 15 个，正常每天 96 点，这些是 0 点。
+- 队列没处理、也没有原件：PMOS 采。这样的日子有 22 个。
+- 队列处理过却没有原件：当旧失败，不重发，并列出来。目前 0 个。
+- `nonmarket_generation_forecast`：power_reports 或 report_engine 任一有数据就算完成。引擎 `nonnull_points` 为 0 的不算。
+- `system_load`：`raw/system_load` 的记录就是它的原件。
+
+计划（只读）：5,453 条墓碑，37 个日子要采，其中 15 个 10-31 之前的日子是早期空结果，4 个是较老的未答复（`distributed_solar` 10-24、`distributed_wind_actual` 10-26 和 10-27、`nonmarket` 04-14）。
+
+**顺序。** 这 18 张排在范围最前面，新日期先于 80 万条节点电价。
+
+**保活。** r3 其实发不出保活：`system_load` 不在范围内，PMOS 归档里也没有它，`keep_session` 只能记 `renewal_needs_one_saved_period`。r4 把它纳入范围，并在 `province.json` 里设了固定日期 `session.keepalive_period`，所以不必等它的第一个新日期归档就能保活。
+
+**操作（离线，worker 要先停）：** `tools/liaoning_daily_lane.py plan`，停 `pmos-liaoning`，`apply --approval "<用户原话>"`，再用 r4 启动。

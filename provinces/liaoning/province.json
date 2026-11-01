@@ -56,7 +56,9 @@
       "system_load"
     ],
     "legacy_keepalive_dataset": "system_load",
-    "cutover_keepalive_dataset": "system_load"
+    "cutover_keepalive_dataset": "system_load",
+    "keepalive_period": "2026-10-31",
+    "keepalive_period_note": "A fixed, proven day: PMOS's archive holds no system_load until its first new day is due, and keep_session could send nothing (2026-11-01). The legacy raw record of this day has all 96 points"
   },
   "notices": {},
   "release": {

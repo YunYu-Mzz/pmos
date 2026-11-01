@@ -327,6 +327,119 @@ def _early_empty(row, early: set):
     return row
 
 
+# The daily reports the legacy worker ran on Crawlee queues, not in the verified queue the cutover read.
+# system_load first: it is the keepalive. Their originals are the proof; PMOS's identity is one report and one day.
+DAILY_LANE = ("system_load", "centralized_solar_daily", "centralized_wind_daily", "distributed_solar",
+              "distributed_solar_actual", "distributed_wind", "distributed_wind_actual", "generation_total_forecast",
+              "generator_maintenance_capacity", "hydro_daily", "local_coal_forecast", "local_hydro_actual",
+              "local_hydro_plan", "must_run_stop_units", "nonmarket_generation_forecast", "nuclear_total",
+              "tie_line_dayahead", "tie_line_schedule")
+DAILY_QUEUES = "state/crawlee_daily_verified_20261014/request_queues"
+DAILY_ORIGINALS = "data/2026/original/power_reports"
+DAILY_ENGINE = "data/2026/original/report_engine"
+DAILY_LOAD = "data/2026/raw/system_load"
+
+
+def _numbers(value) -> int:
+    """How many numbers an answer holds: 0 means the report had nothing for that day yet."""
+    if isinstance(value, dict):
+        return sum(_numbers(item) for item in value.values())
+    if isinstance(value, list):
+        return sum(_numbers(item) for item in value)
+    if isinstance(value, str):
+        try:
+            float(value)
+            return 1
+        except ValueError:
+            return 0
+    return int(isinstance(value, (int, float)) and not isinstance(value, bool))
+
+
+def _power_original(day_dir: Path, day: str) -> str | None:
+    """"saved" or "early_empty" for one day's legacy originals, None if it holds none."""
+    from datetime import date, timedelta
+    verdict = None
+    for version in sorted(day_dir.iterdir()) if day_dir.is_dir() else []:
+        try:
+            meta, body = json.loads((version / "metadata.json").read_bytes()), json.loads((version / "response.json").read_bytes())
+        except (FileNotFoundError, NotADirectoryError):
+            continue
+        if _numbers(body.get("data") if isinstance(body, dict) else body):
+            return "saved"
+        # User, via the Liaoning session: "10-31、11-01 这类当天或第二天采到的空结果，当作未采处理".
+        captured = str(meta.get("captured_at", ""))[:10]
+        early = not captured or date.fromisoformat(captured) < date.fromisoformat(day) + timedelta(days=EARLY_EMPTY_DAYS)
+        verdict = verdict if verdict == "saved" else "early_empty" if early else "saved"
+    return verdict
+
+
+def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-production", names=DAILY_LANE) -> dict:
+    """What the legacy worker completed of the daily reports, as tombstones in PMOS's own identities. Read-only.
+
+    A day is complete with an original holding data, or a later empty answer. A day whose only answer came
+    before it was published stays open, and so does one the queue never handled. A day the queue handled
+    without any original is a legacy failure: never re-sent, and listed.
+    """
+    root = Path(root).resolve()
+    rows, report = [], {}
+    for name in names:
+        spec = specs[name]
+        days = {}
+        queue = root / DAILY_QUEUES / ("liaoning-2026-daily-verified-20261014-" + name.replace("_", "-"))
+        for path in sorted(queue.glob("*.json")) if queue.is_dir() else []:
+            if path.name != "__metadata__.json":
+                record = json.loads(path.read_bytes())
+                days[record["user_data"]["date"]] = "handled" if record.get("handled_at") else "open"
+        known = set(days)
+        originals = root / DAILY_ORIGINALS / name
+        known |= {p.name for p in originals.iterdir()} if originals.is_dir() else set()
+        engine = root / DAILY_ENGINE / name
+        known |= {p.name for p in engine.iterdir()} if engine.is_dir() else set()
+        load = root / DAILY_LOAD
+        if name == "system_load":
+            known |= {p.stem for p in load.glob("*.json")}
+        consumed, early, opened, failed = [], [], [], []
+        for day in sorted(known):
+            verdict = _power_original(originals / day, day)
+            if verdict != "saved" and engine.is_dir():
+                for version in sorted((engine / day).glob("*/metadata.json")):
+                    if json.loads(version.read_bytes()).get("nonnull_points"):
+                        verdict = "saved"
+            if name == "system_load" and (load / f"{day}.json").is_file():
+                record = json.loads((load / f"{day}.json").read_bytes()).get("record") or {}
+                verdict = "saved" if _numbers(record.get("columns")) else "early_empty"
+            if verdict == "saved":
+                consumed.append(day)
+            elif verdict == "early_empty":
+                early.append(day)
+            elif days.get(day) == "handled":
+                failed.append(day)
+                consumed.append(day)
+            else:
+                opened.append(day)
+        rows += [(f"daily:{name}:{day}", task_identity("liaoning", account_alias, spec, day, "")) for day in consumed]
+        report[name] = {"consumed": len(consumed), "early_empty": early, "open": opened, "handled_without_original": failed}
+    return {"rows": rows, "per_dataset": report, "datasets": list(names),
+            "snapshot_sha256": digest([[key, identity.key] for key, identity in rows])}
+
+
+def apply_daily_lane(ledger, lane: dict, approval: str) -> dict:
+    """Offline, on the handoff's ledger: the tombstones, then the daily reports first in the collection order."""
+    handoff = ledger.handoff()
+    if handoff is None:
+        raise ValueError("daily_lane_requires_a_handoff")
+    try:
+        imported = ledger.import_late_legacy("liaoning-daily-lane", lane["snapshot_sha256"], lane["rows"], approval)
+    except ValueError as exc:
+        if str(exc) != "late_import_already_done":
+            raise
+        imported = {"source_id": "liaoning-daily-lane", "added": 0, "already_done": True}
+    names = lane["datasets"]
+    order = names + [name for name in handoff["scope"] if name not in names]
+    seeded = handoff["seeded"] + [name for name in names if name not in handoff["seeded"]]
+    return {"imported": imported, **ledger.extend_scope(order, seeded, approval)}
+
+
 TASK_KEY_PREFIX = "liaoning:2026:expanded:"
 MANY_OPTIONS = 100
 

@@ -1,11 +1,12 @@
 {
   "id": "generator_maintenance_capacity",
   "name": "发电机组检修总容量",
-  "status": "candidate",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 2
   },
   "request": {
     "transport": "component",
@@ -31,6 +32,11 @@
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "pending"
+    },
+    {
+      "at": "2026-11-01T15:45:00+08:00",
+      "event": "verified_against_legacy_originals",
+      "note": "endpoint path and query parameters equal the query_identity of the legacy originals in data/2026/original/power_reports (300-305 days); lag_days by migration.liaoning.publish_lag"
     }
   ]
 }
