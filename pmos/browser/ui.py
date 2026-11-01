@@ -426,7 +426,8 @@ async def select_options(frame, field: dict, timeout: float) -> list[dict]:
     """The options of one labelled select as the page lists them (text, value), read without choosing one.
 
     As the Anhui legacy single-selector discovery: open the dropdown, read
-    every item's text and its ElOption value, close it with Escape.
+    every item's text and its ElOption value, close it with Escape. Its value
+    may end as one of the listed options; anything else fails the read.
     """
     locator = await _field(frame, field)
     # The date just set may make the page reload this select's options and reset its default
@@ -446,10 +447,19 @@ async def select_options(frame, field: dict, timeout: float) -> list[dict]:
     settle = asyncio.get_running_loop().time() + 3
     while await items.count() or (after := await locator.evaluate(_SELECT_STATE_JS)) != before:
         if asyncio.get_running_loop().time() > settle:
-            model_changed = json.loads(after)[0] != json.loads(before)[0] if not await items.count() else True
-            raise Fault("select_value_changed_by_reading" if model_changed else "select_text_not_restored", "local")
+            break
         await asyncio.sleep(0.1)
-    return found
+    else:
+        return found
+    if await items.count():
+        raise Fault("select_dropdown_not_closed", "local")
+    # As the legacy single-selector discovery (selector_inventory, allow_single_root_model_change):
+    # the text alone may differ, and the opened select may have taken exactly one of the options
+    # it lists (Anhui 12:31: five reports pick one when opened). Nothing is queried either way.
+    old_model, new_model = json.loads(before)[0], json.loads(after)[0]
+    if old_model == new_model or sum(o.get("value") == new_model for o in found) == 1:
+        return found
+    raise Fault("select_value_changed_by_reading", "local")
 
 
 async def _stable_state(locator, *, hold: float, limit: float) -> str:

@@ -305,3 +305,9 @@ PMOS 对照检查后补了三处：
   - 读完后的核对区分两种情况：组件值变了（`select_value_changed_by_reading`）、只是文字没恢复（`select_text_not_restored`）。
   - `engine.PAGE_ANSWERED_CODES`：页面能操作、只是读取核对没通过的，不计入"页面操作连续失败"。选项发现失败仍然只暂停那张报表的发现。
   - 夹具 `?reset=1`：填日期 400 毫秒后页面重设默认值。全套 515 项（两个 venv）和真浏览器 19 项通过。
+- **r8（与旧系统的读法对齐）：** 旧系统 `adapters/selector_inventory.observe_selector_options` 读单个下拉框时，允许两种情况：
+  - 只有显示文字变了，已选值没变；
+  - 被打开的那个下拉框，已选值变成了页面列出的选项中恰好一个（`allow_single_root_model_change`）。
+
+  r6 验收时，5 张报表一打开下拉框就会自己选中一项，PMOS 比旧系统严，所以都报了"值变了"。r8 的 `ui.select_options` 照旧系统放行这两种情况，其余情况仍报 `select_value_changed_by_reading`；下拉框关不上报 `select_dropdown_not_closed`。发现从不点查询，所以选中项变了也不影响任何数据。夹具 `?pick=1`（读取时选中一个列出的选项）通过，`?change=1` 改成页面没列出的值，仍会报错。
+- 0f64（月度检修计划，2026-11）的发现报 `menu_label_not_visible`，记为未发出，这张报表的发现被暂停，它的采集照常。月份栏目的菜单以后再查。

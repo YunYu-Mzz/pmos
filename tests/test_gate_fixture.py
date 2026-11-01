@@ -347,6 +347,9 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(Fault) as caught:
             await self.transport.send({**request, "frame": "/filterable_select_page.html?change=1"})
         self.assertEqual(caught.exception.code, "select_value_changed_by_reading", "a real change is still caught")
+        await self.page.goto(self.origin + "/filterable_select_page.html?pick=1")
+        response = await self.transport.send({**request, "frame": "/filterable_select_page.html?pick=1"})
+        self.assertEqual(len(json.loads(response.body)["data"]), 3, "it took one of its own options: as the legacy, read")
         await self.page.goto(self.origin + "/filterable_select_page.html?reset=1")
         response = await self.transport.send({**request, "frame": "/filterable_select_page.html?reset=1"})
         self.assertEqual(len(json.loads(response.body)["data"]), 3, "read once the page's own reset has settled")

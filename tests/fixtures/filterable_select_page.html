@@ -3,8 +3,9 @@
      各类电源类型电量及台数): while the dropdown is open the input shows nothing
      and the selected label moves to the placeholder; after Escape the label
      comes back one tick later, as ElSelect's visible watcher does. The model
-     value never changes unless ?change=1 (a page that really changes it)
-     or ?reset=1 (the page resets the default after a new date). -->
+     value never changes unless ?change=1 (a value the page does not list), ?pick=1 (the
+     select takes one of its options when read) or ?reset=1 (the page resets the default after a
+     new date). -->
 <html><head><meta charset="utf-8"><title>filterable select fixture</title>
 <style>.hidden { display: none; }</style></head>
 <body>
@@ -32,7 +33,8 @@ pick.onclick = () => { drop.classList.remove('hidden'); pick.placeholder = pick.
 pick.onkeydown = e => {
   if (e.key !== 'Escape') return;
   drop.classList.add('hidden');
-  if (change) vm.value = '水电';
+  if (change) vm.value = '其他';                       // a value the page does not list
+  if (location.search.includes('pick=1')) vm.value = '风电';   // the select took one of its own options
   setTimeout(() => { pick.value = vm.value; pick.placeholder = '请选择'; }, 150);
 };
 </script></body></html>
