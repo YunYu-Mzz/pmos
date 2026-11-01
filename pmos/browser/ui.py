@@ -199,7 +199,8 @@ _SITE_MENU_JS = """x => {
   const rows = [], walk = list => { for (const r of list || []) { rows.push(r); walk(r.children || r.childList || []); } };
   walk(aside.decryData(JSON.parse(JSON.stringify(Object.values(header.menuBoxObj).flat()))));
   const found = rows.filter(r => r.viewname === x.route && (!x.source || r.infoCode === x.source));
-  if (found.length !== 1) throw new Error('site_menu_entry_missing');
+  // One report can sit under two menu paths (Liaoning's 064, 065, 066): either opens it. Two different reports are no answer.
+  if (!found.length || new Set(found.map(r => r.infoCode)).size !== 1) throw new Error('site_menu_entry_missing');
   aside.handleNodeClick(found[0], aside.$refs.tree && aside.$refs.tree.getNode(found[0].guid));
   return true;
 }"""

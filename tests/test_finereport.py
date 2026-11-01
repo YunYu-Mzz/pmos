@@ -80,5 +80,23 @@ class Specs(unittest.TestCase):
                 check_request("t", {**good, **broken})
 
 
+class Table(unittest.TestCase):
+    def evaluate(self, body):
+        from pmos.validate import Response, evaluate
+        return evaluate({"kind": "finereport_table"}, Response(200, "application/json", json.dumps(body, ensure_ascii=False).encode()))
+
+    def test_a_table_of_any_shape_is_saved_and_a_blank_one_is_empty(self):
+        html = "<table><tr><td>断面</td><td>值</td></tr><tr><td>甲</td><td>1</td></tr></table>"
+        self.assertEqual(self.evaluate({"currentPage": 1, "totalPage": 1, "htmlTag": html}).result, "saved")
+        blank = '<div class="pageContentDIV"><table class="x-table "><tr><td></td></tr><tr><td></td></tr></table></div>'
+        self.assertEqual(self.evaluate({"currentPage": 1, "totalPage": 1, "htmlTag": blank}).result, "empty")
+
+    def test_more_pages_are_not_saved_as_if_page_one_were_all(self):
+        from pmos.faults import Fault
+        with self.assertRaises(Fault) as caught:
+            self.evaluate({"currentPage": 1, "totalPage": 3, "htmlTag": "<table><tr><td>甲</td></tr></table>"})
+        self.assertEqual((caught.exception.code, caught.exception.category), ("finereport_table_more_pages", "site_data"))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -123,6 +123,16 @@ def evaluate(spec_response: dict, response: Response) -> Outcome:
         except ValueError as exc:
             raise Fault(str(exc), "site_data", http_status=response.status) from None
         return Outcome("saved" if any(item["value"] is not None for item in values) else "empty", ".json")
+    if kind == "finereport_table":
+        # The same answer, a table of any shape.
+        if body is None:
+            raise Fault("json_expected", "unknown", http_status=response.status)
+        from .finereport import table_rows
+        try:
+            rows = table_rows(body)
+        except ValueError as exc:
+            raise Fault(str(exc), "site_data", http_status=response.status) from None
+        return Outcome("saved" if rows else "empty", ".json")
     if body is not None:
         fault = classify_envelope(body, response.status)
         if fault is not None:

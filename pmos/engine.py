@@ -22,6 +22,7 @@ import asyncio
 import fcntl
 import inspect
 import os
+import re
 import time
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -938,7 +939,8 @@ class Engine:
 
     # -- the loop ---------------------------------------------------------
     def block(self, fault: Fault, decision: Decision, dataset: str | None = None) -> None:
-        self.state.block(fault.code, category=fault.category, dataset=dataset,
+        # A block's reason is a plain code; a composed one ("preflight_deferred:...") must not take the worker down with it.
+        self.state.block(re.sub(r"[^a-z0-9_]", "_", fault.code.lower())[:80] or "unknown", category=fault.category, dataset=dataset,
                          keepalive_allowed=decision.keepalive, http_status=fault.http_status,
                          business_status=fault.business_status)
 
@@ -1644,7 +1646,8 @@ class Engine:
             else:
                 raise ValueError("command_unknown")
         except Fault as fault:
-            results[command["id"]] = {"ok": False, "reason": fault.code, "category": fault.category}
+            results[command["id"]] = {"ok": False, "reason": fault.code, "category": fault.category,
+                                      **({"detail": fault.detail} if fault.detail else {})}
             if command.get("action") == "discover_options" and fault.category in ("local", "unknown"):
                 # Reading a dropdown sends no business request (Anhui 2026-11-01 11:31:
                 # select_value_changed_by_reading stopped the province): only that
@@ -1656,6 +1659,10 @@ class Engine:
                 if command.get("day"):
                     self.state.write("dictionary_reads", {**(self.state.read("dictionary_reads", {}) or {}), command["dataset"]: command["day"]})
                 self.state.event("report_look_failed", dataset=command.get("dataset"), action=command["action"], reason=fault.code)
+            elif fault.code.startswith("preflight_deferred:"):
+                # Nothing was sent: that report's page could not be reached (Liaoning r14 2026-11-01 19:29: a menu with two
+                # rows of one report took the worker down). The asker has the answer; collection goes on.
+                self.state.event("command_not_sent", dataset=command.get("dataset"), action=command.get("action"), reason=fault.code)
             else:
                 decision = decide(fault, "sample")
                 if decision.scope == "province":

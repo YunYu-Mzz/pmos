@@ -45,6 +45,21 @@ class _Cells(HTMLParser):
             self.cell.append(data)
 
 
+def table_rows(body) -> list[list[str]]:
+    """The one page of a FineReport table, any shape: its non-blank rows, [] for the site's blank report.
+
+    ValueError: more than one page. Saving page 1 alone would silently lose the rest, so such a report waits for a spec
+    that reads them all.
+    """
+    if not isinstance(body, dict) or type(body.get("currentPage")) is not int or not isinstance(body.get("htmlTag"), str):
+        raise ValueError("finereport_table_pagination_changed")
+    if body["currentPage"] != 1 or body.get("totalPage") not in (0, 1):
+        raise ValueError("finereport_table_more_pages")
+    parser = _Cells()
+    parser.feed(body["htmlTag"])
+    return [row for row in parser.rows if any(row)]
+
+
 def daily_values(body) -> list[dict]:
     """The day's 96 {time, value} (value None when blank), [] for the site's blank report. ValueError: a changed table."""
     if (not isinstance(body, dict) or type(body.get("currentPage")) is not int or body["currentPage"] != 1

@@ -363,6 +363,18 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         opened = await self.page.evaluate("window.opened")
         self.assertEqual(len(opened), 5, "each column opens once while it stays the one on screen")
 
+    async def test_one_report_under_two_menu_paths_opens_and_two_reports_on_one_route_do_not(self):
+        """Liaoning r14 19:29: the menu has 064 twice; the refusal took the worker down."""
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/column_page.html")
+        frame = await ui.ensure_frame(self.page, {"frame": "/pdbln/report/PdblnReport064",
+                                                  "site_menu": {"source": "lnsnxh_n", "route": "/x/pdbln/report/PdblnReport064"}}, 5)
+        self.assertTrue(frame.url.endswith("/pdbln/report/PdblnReport064"))
+        self.assertEqual(await self.page.evaluate("window.opened"), [["g-064a", "g-064a"]])
+        with self.assertRaises(Fault) as caught:
+            await ui.ensure_frame(self.page, {"frame": "/pdbln/report/PdblnReport098", "site_menu": {"route": "/x/pdbln/report/PdblnReport098"}}, 5)
+        self.assertEqual(caught.exception.code, "site_menu_entry_missing")
+
     async def test_the_work_page_opens_once_from_the_portal_and_is_found_by_its_name_after(self):
         from pmos.browser.attach import work_page
         await self.page.goto(self.origin + "/portal_page.html")
@@ -561,6 +573,19 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
                                               "match": {"queryPage": "*function", "exportData": "*function"}, "call": "queryPage",
                                               "method": "POST", "path": "/px-x/query"})
         self.assertEqual(response.status, 200)
+
+    async def test_a_form_with_its_own_date_widget_and_no_unit_is_asked_and_reopened_by_its_menu_code(self):
+        """The r14 probes: a report's file name differs from its menu code, and many forms show no unit."""
+        from pmos.browser.finereport import REOPEN_IDLE_SECONDS
+        from pmos.validate import evaluate
+        await self.finereport_page()
+        request = {**self.finereport_request(), "frame": "lnsnxh_a.frm", "form": {"date_widget": "交易日期", "unit": None}}
+        response = await self.transport.send(request)
+        self.assertEqual(evaluate({"kind": "finereport_table"}, response).result, "saved")
+        Site.finereport.clear()
+        self.transport.finereport_sessions["lnsnxh_a.frm"] -= REOPEN_IDLE_SECONDS + 1
+        await self.transport.send(request)
+        self.assertEqual(Site.finereport[0], "map:lnsnxh_a", "reopened by the menu code, though the frame is found by the file name")
 
     async def test_a_session_idle_too_long_is_opened_anew_before_it_is_asked(self):
         from pmos.browser.finereport import REOPEN_IDLE_SECONDS

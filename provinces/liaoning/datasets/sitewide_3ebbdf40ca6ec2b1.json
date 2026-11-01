@@ -12,7 +12,7 @@
     "transport": "finereport",
     "method": "POST",
     "path": "/px-basesystem-reportform/decision/view/form",
-    "frame": "sn_xhpl_dlphyd_7_4",
+    "frame": "lnsnxh_sj_phyd.frm",
     "site_menu": {
       "source": "sn_xhpl_dlphyd_7_4",
       "route": "spotgoodsSum"
@@ -20,21 +20,39 @@
     "set": {
       "queryParam.mdate": "{date}"
     },
-    "date_field": "queryParam.mdate"
+    "date_field": "queryParam.mdate",
+    "form": {
+      "date_widget": "日期",
+      "unit": null
+    }
   },
   "response": {
-    "kind": "finereport_daily"
+    "kind": "finereport_table"
   },
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_dlphyd_7_4",
-    "note": "excluded by the user 2026-10-16. Its form is unknown: probe-report first; request and response here are placeholders."
+    "note": "probed 2026-11-01 19:2x: mapped, a form with 日期. The table's shape is unknown until a try-report.",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    }
   },
   "history": [
     {
       "at": "2026-11-01T19:20:00+08:00",
       "event": "prepared_for_probe",
       "note": "user 2026-11-01: \"都按你建议的来\""
+    },
+    {
+      "at": "2026-11-01T19:40:00+08:00",
+      "event": "probed",
+      "note": "mapping 0, form ready"
     }
   ]
 }

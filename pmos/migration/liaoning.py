@@ -344,7 +344,10 @@ ENGINE_LANE = ("sitewide_e38351fe661a034a", "sitewide_0353290a57044c3e", "nonmar
 # scope still candidates: nothing is seeded until a `sample` of theirs has an answer, which makes them sampled.
 TRIAL_LANE = ("tie_line_intraday", "sitewide_deb417edc0244802", "sitewide_f95e530cd8bf1d85", "sitewide_f09e45e44534ce37",
               "sitewide_5878dbf34cf4177a", "historical_electricity", "additional_1410113473630834688",
-              "sitewide_7a300d985f7a8cfc", "sitewide_c351e2bf9c6027aa", "sitewide_04b5500fb8e7813c", "pdbln_report_028")
+              "sitewide_7a300d985f7a8cfc", "sitewide_c351e2bf9c6027aa", "sitewide_04b5500fb8e7813c", "pdbln_report_028",
+              # FineReport forms the r14 probes found mapped, with a date and at most a blank unit list.
+              "sitewide_3ebbdf40ca6ec2b1", "sitewide_bd2561ac7f825385", "sitewide_546644ece23fec6a", "sitewide_e87a7708ade1e187",
+              "sitewide_676f39b53210a68b", "sitewide_bb3ebe897b7667ff")
 WEEKLY_LANE = ("sitewide_d86eb498e4cf0eca", "sitewide_f5d806b38bb8a248")
 DAILY_QUEUES = "state/crawlee_daily_verified_20261014/request_queues"
 DAILY_ORIGINALS = "data/2026/original/power_reports"

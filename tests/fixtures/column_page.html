@@ -9,7 +9,12 @@ window.opened = [];
 const entries = [{label: '实际负荷', infoCode: 'lnsnxh_sjfh', guid: 'g-010',
                   viewname: '/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport010'},
                  {label: '平均申报电价', infoCode: 'lnsnxh_rqpjsbdj', guid: 'g-043',
-                  viewname: '/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport043'}];
+                  viewname: '/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport043'},
+                 // one report under two menu paths; two reports on one route
+                 {label: '年', infoCode: 'lnsnxh_n', guid: 'g-064a', viewname: '/x/pdbln/report/PdblnReport064'},
+                 {label: '年', infoCode: 'lnsnxh_n', guid: 'g-064b', viewname: '/x/pdbln/report/PdblnReport064'},
+                 {label: '甲', infoCode: 'a', guid: 'g-a', viewname: '/x/pdbln/report/PdblnReport098'},
+                 {label: '乙', infoCode: 'b', guid: 'g-b', viewname: '/x/pdbln/report/PdblnReport098'}];
 const header = {$options: {name: 'chHeader'}, $children: [], menuBoxObj: {a: [{label: '现货', children: entries}]}};
 const aside = {$options: {name: 'chAside'}, $children: [],
   decryData(rows) { return rows; },

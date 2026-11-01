@@ -716,7 +716,8 @@ class PageTransport:
         if kind == "finereport":
             frame = await finereport.open_report(self.page, request, self.timeout, self.finereport_sessions)
             return await finereport.query_day(self.page, frame, request["set"][request["date_field"]], _Expect, self.timeout,
-                                              self.finereport_sessions, request["frame"])
+                                              self.finereport_sessions, request["frame"],
+                                              widget=(request.get("form") or {}).get("date_widget", finereport.DATE_WIDGET))
         raise Fault("transport_unknown", "local")
 
     async def _fetch(self, request: dict) -> Response:
@@ -839,7 +840,8 @@ class PageTransport:
                     # whether the page sent the business request at all (a form
                     # that refuses a blank option sends nothing).
                     if await gate.unsent():
-                        raise Fault("page_sent_nothing", "local", unsent=True) from None
+                        raise Fault("page_sent_nothing", "local", unsent=True,
+                                    detail={"blocked_paths": gate.summary().get("blocked_paths", [])[:8]}) from None
                     raise Fault("network_error", "network") from None
                 # A JSON reply to an export is the site's answer (e.g. 40302), not a file to wait for.
                 if blob and 200 <= response.status < 300 and "json" not in response.headers.get("content-type", "").lower():

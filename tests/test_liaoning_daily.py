@@ -608,8 +608,9 @@ class RealTrial(unittest.TestCase):
     def test_the_reports_on_trial_are_candidates_with_what_their_forms_ask(self):
         specs = REAL.datasets()
         for name in migration.TRIAL_LANE:
-            self.assertEqual(specs[name].status, "candidate", name)
+            self.assertIn(specs[name].status, ("candidate", "sampled"), name)
         self.assertEqual(specs["sitewide_5878dbf34cf4177a"].request["set"]["queryParam.date"], "{date}", "023 asks date, not mdate")
+        self.assertEqual(specs["tie_line_intraday"].status, "sampled", "its 10-25 sample answered, r14 19:29")
         self.assertNotIn("complete_only", specs["sitewide_deb417edc0244802"].period, "or 2026 is never asked")
         self.assertEqual(specs["sitewide_f09e45e44534ce37"].request["site_menu"]["source"], "lnsnxh_ydfdsbjxjh", "the code on the 10-23 menu")
         self.assertEqual(specs["historical_electricity"].request["timeout"], 240, "the site took 161 s to answer in October")
@@ -620,6 +621,9 @@ class RealTrial(unittest.TestCase):
         specs = [s for s in REAL.datasets().values() if s.request.get("transport") == "finereport" and s.status == "candidate"]
         self.assertEqual(len(specs), self.FINEREPORT)
         self.assertEqual({s.request["site_menu"]["route"] for s in specs}, {"spotgoodsSum"})
+        ready = [s for s in specs if s.response["kind"] == "finereport_table"]
+        self.assertEqual({s.id for s in ready} - set(migration.TRIAL_LANE), set(), "what can be tried can join")
+        self.assertEqual(len(ready), 6)
 
     def test_the_nine_per_option_reports_read_their_dictionary_without_a_selection(self):
         specs = REAL.datasets()
@@ -662,7 +666,7 @@ class Trial(unittest.IsolatedAsyncioTestCase):
         for name in self.names:
             value = json.loads((REPO / "provinces/liaoning/datasets" / f"{name}.json").read_text(encoding="utf-8"))
             if name == "tie_line_intraday":
-                value["period"] = {**value["period"], "start": day(6)}
+                value["period"], value["status"] = {**value["period"], "start": day(6)}, "candidate"
             if name == "sitewide_46fa5856d5315e4e":
                 value["period"] = {**value["period"], "start": day(2)}
             (directory / "datasets" / f"{name}.json").write_text(json.dumps(value, ensure_ascii=False))
@@ -708,6 +712,23 @@ class Trial(unittest.IsolatedAsyncioTestCase):
             cli.cmd_try_report(self.province, Namespace(**{**vars(args), "dataset": "sitewide_49aa17d82da46bfb"}))
         with self.assertRaisesRegex(ValueError, "not_a_candidate"):
             cli.cmd_try_report(self.province, Namespace(**{**vars(args), "dataset": "sitewide_46fa5856d5315e4e"}))
+
+    async def test_a_page_that_cannot_be_reached_answers_the_asker_and_the_worker_goes_on(self):
+        """Liaoning r14 2026-11-01 19:29: sample -> preflight_deferred:... -> a block whose reason is no plain code -> exit 2."""
+        from pmos.faults import Decision, Fault
+        engine = self.engine()
+        async def preflight(request):
+            raise Fault("site_menu_entry_missing", "local")
+        self.transport.preflight = preflight
+        engine.enqueue({"action": "sample", "dataset": "tie_line_intraday", "period": day(3), "scope": None})
+        results = await self.run_commands(engine, 1)
+        result = next(iter(results.values()))
+        self.assertEqual((result["ok"], result["reason"]), (False, "preflight_deferred:site_menu_entry_missing"))
+        self.assertIsNone(engine.state.blocked())
+        self.assertEqual(self.province.datasets()["tie_line_intraday"].status, "candidate", "unchanged")
+        self.assertEqual(self.transport.sent, [], "nothing went out")
+        engine.block(Fault("preflight_deferred:x", "local"), Decision("province", False))
+        self.assertEqual(engine.state.blocked()["reason"], "preflight_deferred_x", "a composed code can never take the worker down")
 
     async def test_a_candidate_is_not_seeded_until_its_sample_answers_and_that_day_is_not_asked_again(self):
         engine = self.engine()

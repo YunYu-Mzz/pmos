@@ -21,6 +21,8 @@ from ..validate import Response
 from . import ui
 
 REOPEN_IDLE_SECONDS = 600
+DATE_WIDGET = "日期"
+UNIT = "单位:MW"
 STAGE_PAUSE_SECONDS = 1.0
 
 _REOPEN_JS = """async source => {
@@ -53,8 +55,8 @@ _PEEK_JS = """() => window.__pmosFrQueue.map(o => { const u = new URL(o.url || F
   return {path: u.pathname, method: (o.type || $.ajaxSettings.type || 'GET').toUpperCase(),
           op: d.op || u.searchParams.get('op'), cmd: d.cmd || u.searchParams.get('cmd')}; })"""
 
-_COMMIT_JS = """date => { const f = _g(), v = f.parameterEl.getWidgetByName('日期'); v.setValue(date);
-  if (v.getValue() !== date) throw new Error('date_not_applied'); f.parameterCommit(); return v.getValue(); }"""
+_COMMIT_JS = """x => { const f = _g(), v = f.parameterEl.getWidgetByName(x.widget); v.setValue(x.date);
+  if (v.getValue() !== x.date) throw new Error('date_not_applied'); f.parameterCommit(); return v.getValue(); }"""
 
 _RELEASE_JS = "() => { const o = window.__pmosFrQueue.shift(); window.__pmosFrAjax.call(FR, o); return true; }"
 
@@ -63,16 +65,28 @@ _RELEASE_JS = "() => { const o = window.__pmosFrQueue.shift(); window.__pmosFrAj
 _WIDGETS_JS = """() => Object.entries(_g().parameterEl.name_widgets || {}).map(([name, w]) => {
   let value = null;
   try { const v = w.getValue && w.getValue(); value = v === null || typeof v === 'object' ? null : v; } catch (e) {}
-  return {name, type: (w.options && w.options.type) || null, value};
+  const o = w.options || {};
+  return {name, type: o.type || null, value, items: Array.isArray(o.items) ? o.items.length : null, loads_items: !!o.widgetUrl,
+          depends_on: o.dependence || null};
 })"""
+
+# A form that never became ready (Liaoning's .cpt reports): what the page has instead. Names only, no session values.
+_PAGE_JS = """() => { const p = window.contentPane, out = {FR: typeof FR, g: typeof _g, contentPane: typeof p, title: document.title};
+  try { out.g_keys = typeof _g === 'function' && _g() ? Object.keys(_g()).filter(k => /param|report|page|widget/i.test(k)).slice(0, 20) : null; } catch (e) {}
+  try { if (p) { out.parameterEl = !!p.parameterEl; out.currentPageIndex = p.currentPageIndex; out.reportTotalPage = p.reportTotalPage;
+                 out.pane_keys = Object.keys(p).filter(k => /param|report|page/i.test(k)).slice(0, 20);
+                 const el = p.parameterEl; if (el && el.name_widgets) out.pane_widgets = Object.keys(el.name_widgets); } } catch (e) {}
+  out.inputs = [...document.querySelectorAll('input,select')].slice(0, 20).map(i => ({name: i.name || i.id || null, type: i.type}));
+  out.table_cells = document.querySelectorAll('td').length;
+  return out; }"""
 
 
 def _unsent(code: str, detail: dict | None = None) -> Fault:
     return Fault(code, "local", unsent=True, detail=detail)
 
 
-async def _ready(frame, timeout: float) -> None:
-    """The page's form is up; its queue is installed once per document."""
+async def _ready(frame, timeout: float, unit: str | None = UNIT) -> None:
+    """The page's form is up; its queue is installed once per document. ``unit``: what its unit widget must say (None: it has none)."""
     loop = asyncio.get_running_loop()
     deadline = loop.time() + timeout
     while True:
@@ -83,14 +97,17 @@ async def _ready(frame, timeout: float) -> None:
             if loop.time() > deadline:
                 raise _unsent("finereport_not_ready") from None
             await asyncio.sleep(0.2)
+    if unit is None:
+        return
     units = await frame.evaluate(_UNITS_JS)
-    if "单位:MW" not in units:
+    if unit not in units:
         raise _unsent("finereport_unit_changed", {"units": units[:3]})
 
 
 async def open_report(page, request: dict, timeout: float, last: dict):
     """The report's frame, ready; its session is renewed first when it idled too long or is unknown."""
     source = request["frame"]
+    code = (request.get("site_menu") or {}).get("source") or source
     found = ui.frames_matching(page, source)
     if len(found) > 1:
         raise _unsent("report_frame_ambiguous")
@@ -103,7 +120,7 @@ async def open_report(page, request: dict, timeout: float, last: dict):
         frame = found[0]
     else:
         try:
-            await page.evaluate(_REOPEN_JS, source)
+            await page.evaluate(_REOPEN_JS, code)
         except Exception:
             raise _unsent("finereport_reopen_failed") from None
         last.pop(source, None)
@@ -115,7 +132,7 @@ async def open_report(page, request: dict, timeout: float, last: dict):
                 raise _unsent("report_frame_open_timeout")
             await asyncio.sleep(0.2)
         frame = found[0]
-    await _ready(frame, timeout)
+    await _ready(frame, timeout, (request.get("form") or {}).get("unit", UNIT))
     return frame
 
 
@@ -162,6 +179,11 @@ async def probe(page, request: dict, expect, timeout: float) -> Response:
                 break
             except Exception:
                 await asyncio.sleep(0.2)
+        if frame is not None and not found["form_ready"]:
+            try:
+                found["page"] = await frame.evaluate(_PAGE_JS)
+            except Exception:
+                found["page"] = None
     return Response(200, "application/json", json.dumps({"status": 0, "data": found}, ensure_ascii=False).encode())
 
 
@@ -188,13 +210,13 @@ def _is_stage(request, frame, cmd: str) -> bool:
     return cmd in names
 
 
-async def query_day(page, frame, date: str, expect, timeout: float, last: dict, source: str) -> Response:
+async def query_day(page, frame, date: str, expect, timeout: float, last: dict, source: str, *, widget: str = DATE_WIDGET) -> Response:
     """The three stages of one day; the last answer, or the first that was no answer to go on from."""
     if await frame.evaluate(_PEEK_JS):
         last.pop(source, None)
         raise _unsent("finereport_queue_not_empty")
     try:
-        await frame.evaluate(_COMMIT_JS, date)
+        await frame.evaluate(_COMMIT_JS, {"date": date, "widget": widget})
     except Exception:
         raise _unsent("finereport_date_not_applied") from None
     for index, stage in enumerate(STAGES):

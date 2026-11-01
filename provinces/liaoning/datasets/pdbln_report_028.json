@@ -39,13 +39,18 @@
       ],
       "dimension_fields": {}
     },
-    "note": "appeared in the menu by 2026-10-23, no component source kept: read its query fields with probe-report before any sample; the date field here is a guess"
+    "note": "probed 2026-11-01: its queryParam is {mdate}, methods query and initData"
   },
   "history": [
     {
       "at": "2026-11-01T19:20:00+08:00",
       "event": "prepared_for_trial",
       "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
+    },
+    {
+      "at": "2026-11-01T19:40:00+08:00",
+      "event": "probed",
+      "note": "query fields read"
     }
   ]
 }
