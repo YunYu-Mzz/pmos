@@ -394,11 +394,26 @@ class Engine:
         reports only after ~150 date-only days; nothing else changes (lag,
         priming, bootstrap and every check run as in normal collection).
         """
-        first = self.state.read("priority_datasets", []) or []
+        first = [entry["dataset"] for entry in self.state.read("priority_datasets", []) or []]
         if not first:
             return specs
         rank = {name: index for index, name in enumerate(first)}
         return sorted(specs, key=lambda spec: rank.get(spec.id, len(rank)))
+
+    def _priority_taken(self, dataset: str) -> None:
+        """One item of a prioritized dataset was tried: its quota (``items``) shrinks; at 0 it leaves the list."""
+        entries = self.state.read("priority_datasets", []) or []
+        if not any(entry["dataset"] == dataset and entry.get("items") is not None for entry in entries):
+            return
+        left = []
+        for entry in entries:
+            if entry["dataset"] == dataset and entry.get("items") is not None:
+                entry = {**entry, "items": entry["items"] - 1}
+                if entry["items"] <= 0:
+                    self.state.event("priority_quota_done", dataset=dataset)
+                    continue
+            left.append(entry)
+        self.state.write("priority_datasets", left)
 
     def _waiting_publication(self, enabled: list[DatasetSpec]) -> list[str]:
         return sorted(spec.id for spec in enabled
@@ -882,8 +897,11 @@ class Engine:
                 await self.keep_session()
                 self._status("memory_paused", reasons=admitted["reasons"])
                 return 5
-            if await self.collect(spec, task["period"], task["scope"]) is not None:
-                self._query_answered(spec)
+            try:
+                if await self.collect(spec, task["period"], task["scope"]) is not None:
+                    self._query_answered(spec)
+            finally:
+                self._priority_taken(spec.id)
             self._status("collecting", last_dataset=spec.id, last_period=task["period"], last_scope=task["scope"])
             return 0.2
         except Fault as fault:

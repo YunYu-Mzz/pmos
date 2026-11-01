@@ -450,13 +450,19 @@ def cmd_review_unsent(province: Province, args) -> None:
 def cmd_prioritize(province: Province, args) -> None:
     """These datasets are collected first (normal collection otherwise); --clear restores the handoff order."""
     state = StateStore(province.instance() / "state")
-    names = [] if args.clear else [n for n in (args.datasets or "").split(",") if n]
-    unknown = [n for n in names if n not in province.datasets()]
-    if unknown or (not names and not args.clear):
+    entries = []
+    for part in ([] if args.clear else [p for p in (args.datasets or "").split(",") if p]):
+        name, _, count = part.partition(":")
+        if count and (not count.isdigit() or int(count) < 1):
+            raise ValueError("prioritize_items_invalid:" + part)
+        entries.append({"dataset": name, "items": int(count) if count else None})
+    unknown = [e["dataset"] for e in entries if e["dataset"] not in province.datasets()]
+    if unknown or (not entries and not args.clear):
         raise ValueError("prioritize_datasets_unknown:" + ",".join(unknown) if unknown else "prioritize_datasets_required")
-    state.write("priority_datasets", names)
-    state.event("datasets_prioritized", datasets=",".join(names) or "-")
-    _print({"province": province.id, "priority_datasets": names})
+    state.write("priority_datasets", entries)
+    state.event("datasets_prioritized", datasets=",".join(
+        e["dataset"] + (f":{e['items']}" if e["items"] else "") for e in entries) or "-")
+    _print({"province": province.id, "priority_datasets": entries})
 
 
 def cmd_extend_scope(province: Province, args) -> None:
@@ -690,7 +696,7 @@ def main(argv: list[str] | None = None) -> int:
         re_.add_argument("attempt", type=int)
         re_.add_argument("--approval", required=True, help="the user's approval, verbatim")
         pr = commands.add_parser("prioritize", help="these datasets are collected first (read by the running worker)")
-        pr.add_argument("datasets", nargs="?", help="comma-separated dataset ids, in order")
+        pr.add_argument("datasets", nargs="?", help="comma-separated dataset ids in order, each optionally :N items")
         pr.add_argument("--clear", action="store_true", help="back to the handoff order")
         ru = commands.add_parser("review-unsent",
                                  help="offline: user-approved, reviewed page-menu failures (or one stopped mid-navigation) consume nothing")

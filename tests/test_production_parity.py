@@ -1152,11 +1152,15 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
         self.addCleanup(engine.ledger.close)
         engine.state.set_control(collect=True)
-        engine.state.write("priority_datasets", ["cc"])
-        for _ in range(3):
+        engine.ledger.seed("cc", [PREVIOUS_DAY], "")
+        engine.state.write("priority_datasets", [{"dataset": "cc", "items": 1}, {"dataset": "bb", "items": None}])
+        for _ in range(4):
             await engine.tick()
             self.clock.advance(2)
-        self.assertEqual([r["path"] for r in self.transport.sent], ["/px-test/cc", "/px-test/aa", "/px-test/bb"])
+        self.assertEqual([r["path"] for r in self.transport.sent],
+                         ["/px-test/cc", "/px-test/bb", "/px-test/aa", "/px-test/cc"],
+                         "cc's one item first, then bb; cc's quota is used, so its other day waits its turn")
+        self.assertEqual(engine.state.read("priority_datasets"), [{"dataset": "bb", "items": None}])
 
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost
