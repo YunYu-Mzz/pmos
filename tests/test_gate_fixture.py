@@ -429,6 +429,13 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         await ui.fill(self.page.main_frame, {"kind": "select", "label": "断面名称", "value": "乙线"}, 5)
         self.assertEqual(await self.page.input_value("#pick"), "乙线")
 
+    async def test_an_input_showing_the_options_own_value_has_committed(self):
+        """Anhui r20 15:58:37, 6d80: wanted 安徽.长丰厂/20kV.长丰厂#1机, got 3378262674776262248, its internal ID."""
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/select_page.html?rawvalue=1")
+        await ui.fill(self.page.main_frame, {"kind": "select", "label": "断面名称", "value": "丙机"}, 1)
+        self.assertEqual(await self.page.input_value("#pick"), "3378262674776260623")
+
     async def test_a_value_that_never_commits_says_which_field_and_what_it_holds(self):
         from pmos.browser import ui
         await self.page.goto(self.origin + "/select_page.html")

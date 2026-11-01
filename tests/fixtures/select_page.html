@@ -17,7 +17,8 @@ const drop = document.getElementById('drop');
 for (const [text, value] of options) {
   const item = document.createElement('div'); item.className = 'el-select-dropdown__item'; item.textContent = text;
   item.__vue__ = {value}; drop.append(item);
-  item.onclick = () => { if (drop.dataset.fading) return; pick.value = text; drop.classList.add('hidden'); };
+  // ?rawvalue: the input shows the chosen option's value, not its text (Anhui 6d80, internal unit IDs, r20 15:58:37).
+  item.onclick = () => { if (drop.dataset.fading) return; pick.value = location.search.includes('rawvalue') ? value : text; drop.classList.add('hidden'); };
 }
 const pick = document.getElementById('pick');
 // ?toggle: as Element UI's select, a click on the open dropdown closes it, and its items stay visible while it fades

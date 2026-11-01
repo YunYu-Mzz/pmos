@@ -396,6 +396,10 @@ async def _field(frame, field: dict):
     return locator
 
 
+_OPTION_VALUE_JS = """e => { const v = e.__vue__ ? e.__vue__.value : undefined;
+  return typeof v === 'string' || (typeof v === 'number' && isFinite(v)) ? String(v) : null; }"""
+
+
 async def _close_dropdown(locator, listed) -> None:
     """Leave no select open (Anhui r19 2026-11-01 15:48:20): the next click on it would close it, not open it,
     and its items, still visible while it fades out, would not answer."""
@@ -410,6 +414,7 @@ async def fill(frame, field: dict, timeout: float) -> None:
     value = field["value"]
     if not field.get("any_listed") and await locator.input_value() == value:
         return
+    own_value = None
     if field.get("kind", "date") == "date":
         await locator.fill(value)
         await locator.press("Enter")
@@ -439,13 +444,15 @@ async def fill(frame, field: dict, timeout: float) -> None:
                 await _close_dropdown(locator, listed)
                 raise Fault("select_option_missing", "local", detail=detail)
             await asyncio.sleep(0.1)
+        # Some inputs show the chosen option's value, not its text (Anhui 6d80, an internal unit ID).
+        own_value = await option.evaluate(_OPTION_VALUE_JS)
         await option.click()
     else:
         raise Fault("form_field_kind_unknown", "local")
     await settled(frame, timeout)
     loop = asyncio.get_running_loop()
     commit = loop.time() + min(timeout, 3)
-    while (current := await locator.input_value()) != value:
+    while (current := await locator.input_value()) not in (value, own_value):
         if loop.time() > commit:
             raise Fault("form_value_not_committed", "local", detail={
                 "field": field.get("label") or field.get("placeholder"), "wanted": value, "got": current})
