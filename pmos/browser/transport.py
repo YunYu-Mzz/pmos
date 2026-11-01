@@ -43,7 +43,7 @@ from urllib.parse import urlencode, urlsplit
 from .. import platform
 from ..faults import DriverLost, Fault, driver_gone
 from ..validate import CAPTURE_TYPE, Response
-from . import challenge, ui
+from . import challenge, finereport, ui
 
 MAX_RESPONSE_BYTES = 64 * 1024 * 1024
 
@@ -568,6 +568,7 @@ class PageTransport:
         # (old page) -> a fresh page of the same role; set by whoever attached (cli._browser).
         self.reopen = None
         self.opened_at = time.monotonic()
+        self.finereport_sessions: dict[str, float] = {}     # report -> when its session last answered
         self._watch(page)
 
     def _watch(self, page) -> None:
@@ -699,6 +700,10 @@ class PageTransport:
         if kind == "ui":
             with self.templates.window():
                 return await self._ui(request)
+        if kind == "finereport":
+            frame = await finereport.open_report(self.page, request, self.timeout, self.finereport_sessions)
+            return await finereport.query_day(self.page, frame, request["set"][request["date_field"]], _Expect, self.timeout,
+                                              self.finereport_sessions, request["frame"])
         raise Fault("transport_unknown", "local")
 
     async def _fetch(self, request: dict) -> Response:

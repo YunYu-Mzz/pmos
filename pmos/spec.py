@@ -24,8 +24,8 @@ from . import periods
 from .paging import set_path
 
 STATUSES = ("candidate", "sampled", "verified", "enabled", "denied", "quarantined", "retired")
-TRANSPORTS = ("fetch", "component", "native", "ui")
-RESPONSE_KINDS = ("json", "xlsx", "xls", "excel", "pdf", "binary", "document")
+TRANSPORTS = ("fetch", "component", "native", "ui", "finereport")
+RESPONSE_KINDS = ("json", "xlsx", "xls", "excel", "pdf", "binary", "document", "finereport_daily")
 PLACEHOLDERS = set(periods.variables("day", "2026-01-01"))
 # A documents download request is rendered per attachment, not per period.
 DOWNLOAD_PLACEHOLDERS = {"record", "row", "attachment", "title", "record_id", "published", "period"}
@@ -327,6 +327,11 @@ def check_request(where: str, request: dict) -> None:
         for key in ("frame", "component", "call"):
             if not isinstance(request.get(key), str):
                 raise SpecError(f"{where}: component transport needs request.{key}")
+    if transport == "finereport":
+        date_field = request.get("date_field")
+        if (not isinstance(request.get("frame"), str) or not isinstance(request.get("site_menu"), dict)
+                or not isinstance(request.get("set"), dict) or date_field not in request["set"]):
+            raise SpecError(f"{where}: finereport transport needs request.frame, site_menu, set and its date_field")
     if transport == "ui":
         if not isinstance(request.get("frame"), str) or request.get("action") not in ("query", "export", "list", "record",
                                                                                       "options"):
@@ -347,7 +352,8 @@ def check_request(where: str, request: dict) -> None:
                                      or not template_set or not all(isinstance(k, str) and k for k in template_set)):
         raise SpecError(f"{where}: request.template_body_set is a fetch's field -> value map, without its own body")
     menu_entry = request.get("site_menu")
-    if menu_entry is not None and not (isinstance(menu_entry, dict) and str(menu_entry.get("route", "")).startswith("/")
+    if menu_entry is not None and not (isinstance(menu_entry, dict)
+                                       and (str(menu_entry.get("route", "")).startswith("/") or menu_entry.get("route") == "spotgoodsSum")
                                        and (menu_entry.get("source") is None
                                             or (isinstance(menu_entry["source"], str) and menu_entry["source"]))):
         raise SpecError(f"{where}: request.site_menu needs the menu entry's route (and optionally its infoCode source)")

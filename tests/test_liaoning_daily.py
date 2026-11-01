@@ -60,6 +60,19 @@ class Legacy:
 
 
 class RealSpecs(unittest.TestCase):
+    def test_the_engine_lane_counts_days_nobody_ever_asked(self):
+        """033's originals: power_reports and report_engine together; what neither has is asked too."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            legacy = Legacy(Path(directory))
+            name = "nonmarket_generation_forecast"
+            legacy.engine(name, day(3), 96)
+            result = migration.daily_lane(legacy.root, REAL.datasets(), names=(name,))
+        self.assertEqual(result["per_dataset"][name]["consumed"], 1)
+        self.assertIn(day(4), result["per_dataset"][name]["never_asked"])
+        self.assertNotIn(day(3), result["per_dataset"][name]["never_asked"])
+        self.assertEqual(result["will_be_asked"], len(result["per_dataset"][name]["never_asked"]))
+
     def test_033_is_not_in_this_lane_since_the_site_moved_it_to_finereport(self):
         """2026-10-23, route spotgoodsSum: the legacy worker excluded it here; its originals end on 10-16."""
         self.assertNotIn("nonmarket_generation_forecast", migration.DAILY_LANE)
@@ -108,8 +121,9 @@ class Classification(unittest.TestCase):
         self.legacy.queue(name, day(3), handled=False)
         default = migration.daily_lane(self.legacy.root, REAL.datasets(), names=(name,))
         chosen = migration.daily_lane(self.legacy.root, REAL.datasets(), names=(name,), early_empty_consumed=True)
-        self.assertEqual((len(default["rows"]), default["will_be_asked"], default["states"]), (1, 2, {}))
-        self.assertEqual((len(chosen["rows"]), chosen["will_be_asked"]), (2, 1), "the day never answered is still asked")
+        never = len(default["per_dataset"][name]["never_asked"])
+        self.assertEqual((len(default["rows"]), default["will_be_asked"] - never, default["states"]), (1, 2, {}))
+        self.assertEqual((len(chosen["rows"]), chosen["will_be_asked"] - never), (2, 1), "the day never answered is still asked")
         self.assertEqual(chosen["states"], {f"daily:{name}:{day(2)}": "empty"})
         self.assertNotEqual(default["snapshot_sha256"], chosen["snapshot_sha256"])
 
@@ -121,6 +135,17 @@ class Classification(unittest.TestCase):
         self.legacy.queue(name, day(4), handled=False)
         result = self.lane(name)["per_dataset"][name]
         self.assertEqual((result["consumed"], result["open"]), (2, [day(4)]))
+
+    def test_an_engine_report_counts_its_originals_from_before_the_route_moved(self):
+        name = "sitewide_e38351fe661a034a"
+        directory = self.legacy.root / migration.DAILY_ADVANCED / name / day(5) / "m" / "s"
+        directory.mkdir(parents=True)
+        (directory / "metadata.json").write_text(json.dumps({"row_count": 1}))
+        empty = self.legacy.root / migration.DAILY_ADVANCED / name / day(6) / "m" / "s"
+        empty.mkdir(parents=True)
+        (empty / "metadata.json").write_text(json.dumps({"row_count": 0}))
+        result = self.lane(name)["per_dataset"][name]
+        self.assertEqual((result["consumed"], result["open"]), (1, [day(6)]))
 
     def test_the_load_raw_records_are_its_originals(self):
         self.legacy.load(day(2), [1.0, 2.0])

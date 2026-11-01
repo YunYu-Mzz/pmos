@@ -17,6 +17,19 @@ FILE_PATH = "/px-settlement-infpubmeex/fileService/download"
 PDF = b"%PDF-1.4\n" + bytes([0xFF, 0xFE, 0x00, 0x80])
 
 
+def daily_table() -> str:
+    times = [f"{i // 4:02d}:{i % 4 * 15:02d}" for i in range(1, 97)]
+    rows = []
+    for start in range(0, 96, 16):
+        rows.append("<tr>" + "".join(f"<td>{t}</td>" for t in times[start:start + 16]) + "</tr>")
+        rows.append("<tr>" + "".join("<td>1.5</td>" for _ in range(16)) + "</tr>")
+    return "<table>" + "".join(rows) + "</table>"
+
+
+def blank_table() -> str:
+    return '<div class="pageContentDIV"><table class="x-table "><tr><td></td></tr><tr><td></td></tr></table></div>'
+
+
 class Site(http.server.SimpleHTTPRequestHandler):
     received: list = []
 
@@ -25,9 +38,35 @@ class Site(http.server.SimpleHTTPRequestHandler):
 
     bodies: list = []
 
+    finereport: list = []        # what the FineReport stand-in was asked, in order
+    finereport_dead = False      # the session ended: parameters_d answers FineReport's error page
+    finereport_blank = False
+
+    def finereport_answer(self, query: dict) -> None:
+        from urllib.parse import parse_qs
+        cmd = query.get("cmd", [""])[0]
+        Site.finereport.append(cmd)
+        if Site.finereport_dead and cmd == "parameters_d":
+            self.reply(b"<html>Dec-Session_Lifecycle_End</html>", "text/html;charset=UTF-8")
+        elif cmd == "parameters_d":
+            self.reply(b'{"status":"success"}', "application/json")
+        elif cmd == "load_content":
+            self.reply(b'{"elementCases":[]}', "application/json")
+        else:
+            self.reply(json.dumps({"currentPage": 1, "totalPage": 1, "htmlTag": blank_table() if Site.finereport_blank else daily_table()}).encode(),
+                       "application/json")
+
     def do_POST(self):
+        from urllib.parse import parse_qs
         Site.received.append(self.path)
         Site.bodies.append(self.rfile.read(int(self.headers.get("Content-Length") or 0)))
+        if self.path == "/px-settlement-infpubquery/spotgoods/queryIpSpotgoodsInfoBytableName":
+            source = json.loads(Site.bodies[-1])["tableName"]
+            Site.finereport.append("map:" + source)
+            url = f"/px-basesystem-reportform/decision/view/form?ref_t={len(Site.finereport)}&viewlet=dir%2F{source}.frm"
+            return self.reply(json.dumps({"status": 0, "data": {"url": url}}).encode(), "application/json")
+        if self.path == "/px-basesystem-reportform/decision/view/form":
+            return self.finereport_answer(parse_qs(Site.bodies[-1].decode()))
         if self.path == "/px-x/export":
             body, kind = EXPORT, "application/vnd.ms-excel;charset=UTF-8"
         elif self.path == "/px-x/deniedExport":
@@ -39,6 +78,14 @@ class Site(http.server.SimpleHTTPRequestHandler):
     challenges = 0          # the next document answers of /pxf-settlement-outnetpub/ that are a 412 challenge
 
     def do_GET(self):
+        if self.path.startswith("/px-basesystem-reportform/decision/view/form"):
+            from urllib.parse import parse_qs, urlsplit
+            query = parse_qs(urlsplit(self.path).query)
+            if "cmd" in query:
+                return self.finereport_answer(query)
+            Site.finereport.append("document")
+            Site.finereport_dead = False
+            return self.reply((FIXTURES / "finereport_form.html").read_bytes(), "text/html;charset=UTF-8")
         if self.path == "/" or self.path.startswith("/?"):
             # The Anhui portal as on 2026-11-01: /?ACYxOEl1=…#/dashboard (a dynamic parameter before the hash).
             body = (FIXTURES / "anhui_portal.html").read_bytes()
@@ -397,6 +444,68 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual({k: caught.exception.detail[k] for k in ("select_label", "select_option", "options_listed")},
                          {"select_label": "断面名称", "select_option": "不存在的线", "options_listed": 3})
         self.assertEqual(await self.page.evaluate("window.queries"), 0, "查询 was never clicked")
+
+    def finereport_request(self, source="lnsnxh_a", day="2026-10-30"):
+        return {"transport": "finereport", "method": "POST", "path": "/px-basesystem-reportform/decision/view/form", "frame": source,
+                "site_menu": {"source": source, "route": "spotgoodsSum"}, "set": {"queryParam.mdate": day}, "date_field": "queryParam.mdate"}
+
+    async def finereport_page(self):
+        Site.finereport.clear()
+        Site.finereport_dead = Site.finereport_blank = False
+        await self.page.goto(self.origin + "/finereport_portal.html")
+        from unittest.mock import patch
+        no_pause = patch("pmos.browser.finereport.STAGE_PAUSE_SECONDS", 0)
+        no_pause.start()
+        self.addCleanup(no_pause.stop)
+
+    async def test_a_finereport_day_opens_from_the_menu_and_asks_its_three_stages_one_by_one(self):
+        from pmos.finereport import daily_values
+        from pmos.validate import evaluate
+        await self.finereport_page()
+        response = await self.transport.send(self.finereport_request())
+        self.assertEqual(Site.finereport, ["map:lnsnxh_a", "document", "form_getsource", "parameters_d", "load_content", "load_report_content"],
+                         "the page mapped and loaded it; its own form asked the stages")
+        self.assertEqual(len(daily_values(json.loads(response.body))), 96)
+        self.assertEqual(evaluate({"kind": "finereport_daily"}, response).result, "saved")
+        await self.transport.send(self.finereport_request(day="2026-10-29"))
+        self.assertEqual(Site.finereport[6:], ["parameters_d", "load_content", "load_report_content"],
+                         "the same session: no mapping, no document, and form_getsource stays unsent")
+
+    async def test_a_session_idle_too_long_is_opened_anew_before_it_is_asked(self):
+        from pmos.browser.finereport import REOPEN_IDLE_SECONDS
+        await self.finereport_page()
+        await self.transport.send(self.finereport_request())
+        Site.finereport.clear()
+        self.transport.finereport_sessions["lnsnxh_a"] -= REOPEN_IDLE_SECONDS + 1
+        await self.transport.send(self.finereport_request(day="2026-10-29"))
+        self.assertEqual(Site.finereport, ["map:lnsnxh_a", "document", "form_getsource", "parameters_d", "load_content", "load_report_content"])
+
+    async def test_a_session_found_ended_is_no_answer_and_the_next_try_opens_a_new_one(self):
+        await self.finereport_page()
+        await self.transport.send(self.finereport_request())
+        Site.finereport.clear()
+        Site.finereport_dead = True
+        with self.assertRaises(Fault) as caught:
+            await self.transport.send(self.finereport_request(day="2026-10-29"))
+        self.assertEqual((caught.exception.code, caught.exception.unsent), ("finereport_session_ended", True))
+        self.assertEqual(Site.finereport, ["parameters_d"], "nothing more was asked")
+        response = await self.transport.send(self.finereport_request(day="2026-10-29"))
+        self.assertEqual(response.status, 200)
+        self.assertEqual(Site.finereport[1:3], ["map:lnsnxh_a", "document"])
+
+    async def test_a_blank_report_is_an_empty_day(self):
+        from pmos.validate import evaluate
+        await self.finereport_page()
+        Site.finereport_blank = True
+        response = await self.transport.send(self.finereport_request())
+        self.assertEqual(evaluate({"kind": "finereport_daily"}, response).result, "empty")
+
+    async def test_another_report_opens_through_the_same_component(self):
+        await self.finereport_page()
+        await self.transport.send(self.finereport_request())
+        Site.finereport.clear()
+        await self.transport.send(self.finereport_request(source="lnsnxh_b"))
+        self.assertEqual(Site.finereport[:2], ["map:lnsnxh_b", "document"])
 
     async def test_a_template_prime_chooses_the_first_listed_option(self):
         """Anhui 2026-11-01 14:49: the task's own option is not listed; any listed one shows the request."""

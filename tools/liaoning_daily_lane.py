@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""The 17 daily Liaoning reports join the PMOS handoff (offline; sends nothing).
+"""Liaoning's daily reports (--lane daily, 17) or FineReport reports (--lane engine, 3) join the PMOS handoff.
 
-plan: what the legacy worker completed of them (read-only).
+Offline; sends nothing. plan: what the legacy worker completed of them (read-only).
 apply --approval "...": their tombstones and the new collection order, with pmos-liaoning and the legacy
 crawler stopped. Each report's new days then go before the node prices' backlog.
 
-    PMOS_DATA=/home/ecs-user/pmos-data python tools/liaoning_daily_lane.py plan
+    PMOS_DATA=/home/ecs-user/pmos-data python tools/liaoning_daily_lane.py plan --lane engine
 """
 from __future__ import annotations
 
@@ -37,6 +37,7 @@ def main() -> None:
     apply = commands.add_parser("apply")
     apply.add_argument("--approval", required=True)
     for command in (plan, apply):
+        command.add_argument("--lane", choices=("daily", "engine"), default="daily")
         command.add_argument("--early-empty-consumed", action="store_true",
                              help="the empty answers asked before publication become tombstones too (user's decision); give it to plan and apply alike")
     args = parser.parse_args()
@@ -44,10 +45,11 @@ def main() -> None:
         raise SystemExit("PMOS_DATA must be set (e.g. /home/ecs-user/pmos-data)")
     province = Province.load("liaoning", RELEASE / "provinces")
     specs = province.datasets()
-    weak = [name for name in liaoning.DAILY_LANE if specs[name].status not in ("sampled", "verified", "enabled")]
+    names = liaoning.DAILY_LANE if args.lane == "daily" else liaoning.ENGINE_LANE
+    weak = [name for name in names if specs[name].status not in ("sampled", "verified", "enabled")]
     if weak:
         raise SystemExit("not verified: " + ",".join(weak))
-    lane = liaoning.daily_lane(LEGACY, specs, early_empty_consumed=args.early_empty_consumed)
+    lane = liaoning.daily_lane(LEGACY, specs, names=names, early_empty_consumed=args.early_empty_consumed)
     summary = {"tombstones": len(lane["rows"]), "will_be_asked": lane["will_be_asked"], "early_empty_consumed": lane["early_empty_consumed"],
                "snapshot_sha256": lane["snapshot_sha256"], "per_dataset": lane["per_dataset"]}
     if args.command == "plan":
@@ -58,7 +60,7 @@ def main() -> None:
         raise SystemExit("stop first: " + ",".join(running))
     ledger = Ledger(province.instance() / "ledger.sqlite3")
     try:
-        result = liaoning.apply_daily_lane(ledger, lane, args.approval)
+        result = liaoning.apply_daily_lane(ledger, lane, args.approval, source_id=f"liaoning-{args.lane}-lane")
     finally:
         ledger.close()
     print(json.dumps({**summary, "applied": result}, ensure_ascii=False, indent=2))

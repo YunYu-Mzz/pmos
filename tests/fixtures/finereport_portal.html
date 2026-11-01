@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- Offline stand-in for Liaoning's column page and its spotgoods component (2026-11-01): the menu entry mounts the
+     component, which maps its report and sets its iframe; asking it to map again opens a new FineReport session. -->
+<html><head><meta charset="utf-8"><title>portal</title></head><body>
+<div id="aside"></div><div id="header"></div><div id="spot"></div><iframe id="report" style="width:800px;height:400px"></iframe>
+<script>
+const frame = document.getElementById('report');
+const spot = {$options: {name: 'spotgoods'}, infoCode: null, _src: '', $children: [],
+  get src() { return this._src; }, set src(v) { this._src = v; frame.src = v || 'about:blank'; },
+  $nextTick() { return Promise.resolve(); },
+  queryIpSpotgoodsInfoBytableName() {
+    return fetch('/px-settlement-infpubquery/spotgoods/queryIpSpotgoodsInfoBytableName', {method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({tableName: this.infoCode})}).then(r => r.json()).then(b => { this.src = b.data.url; });
+  }};
+const entries = ['lnsnxh_a', 'lnsnxh_b'].map(s => ({viewname: 'spotgoodsSum', infoCode: s, guid: 'g-' + s, children: []}));
+const aside = {$options: {name: 'chAside'}, $children: [], $refs: {}, decryData: d => d,
+  handleNodeClick(n) { const changed = spot.infoCode !== n.infoCode; spot.infoCode = n.infoCode; if (changed) spot.queryIpSpotgoodsInfoBytableName(); }};
+document.getElementById('aside').__vue__ = aside;
+document.getElementById('header').__vue__ = {$options: {name: 'chHeader'}, $children: [], menuBoxObj: {a: entries}};
+document.getElementById('spot').__vue__ = spot;
+</script></body></html>

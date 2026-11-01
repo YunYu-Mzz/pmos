@@ -113,6 +113,16 @@ def evaluate(spec_response: dict, response: Response) -> Outcome:
         # Usually the login page or a gateway error page, never an export.
         raise Fault("unexpected_html", "unknown", http_status=response.status)
     body = _json(response)
+    if kind == "finereport_daily":
+        # Not the platform's envelope: {currentPage, totalPage, htmlTag}, no status code.
+        if body is None:
+            raise Fault("json_expected", "unknown", http_status=response.status)
+        from .finereport import daily_values
+        try:
+            values = daily_values(body)
+        except ValueError as exc:
+            raise Fault(str(exc), "site_data", http_status=response.status) from None
+        return Outcome("saved" if any(item["value"] is not None for item in values) else "empty", ".json")
     if body is not None:
         fault = classify_envelope(body, response.status)
         if fault is not None:

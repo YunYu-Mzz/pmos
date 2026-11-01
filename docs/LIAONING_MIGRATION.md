@@ -185,6 +185,24 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r7：报表引擎三条线（2026-11-01）
+
+用户定的第二优先。10-23 网站把这三张报表搬到了 FineReport 页面（路由 `spotgoodsSum`）。
+
+**不照搬旧系统。** 旧系统的主页面不能动，所以它另开隔离页，禁用脚本，手工注入 FineReport 库，还从 webpack 里取 SDK 做映射。PMOS 打开报表本来就靠菜单组件（42 张规格在用 `site_menu`），而 `spotgoods` 组件挂载时会自己调映射接口并设 iframe，所以新传输 `finereport` 直接用页面自己的流程：
+- 打开：`site_menu` 点菜单项，页面完成映射、文档、脚本加载。
+- 取数：保留旧系统验证过的做法。`FR.ajax` 只排队（`form_getsource`、`js_log`、`info/collect` 不发），`日期` 控件 `setValue` 再 `parameterCommit`，三个阶段逐个核对后放行，每个阶段之间停 1 秒。答复校验和旧系统一致：`{"status":"success"}`、含 `"elementCases"`、12 行 16 列 96 点。
+- 重开：闲置超过 600 秒（或不知道闲置多久，比如刚重启）时，清掉组件的 `src`，再调它的 `queryIpSpotgoodsInfoBytableName()`，页面重新映射，得到新会话。
+- 会话结束（答复含 `Dec-Session_Lifecycle_End`）：不算答复，也不消耗这条任务。这张表冷却后再试，那时会先重开。
+
+**规格。** `set` 里日期仍叫 `queryParam.mdate`，这样任务身份不变，旧记录还对得上。
+
+**计划。** `tools/liaoning_daily_lane.py plan --lane engine`。旧系统完成的日子来自 `report_engine`，033 加 `power_reports`，两张 sitewide 加路由变更前的 `advanced_reports`。
+
+**未验证。** 只在测试页上跑过：真实页面原生加载后 `_g()` 和 `parameterEl` 是否就绪、原生加载时会不会自动查询，都要线上第一次运行才知道。失败只暂停这张报表，不影响全省。
+
+**不做。** 一天 3 个阶段只记 1 次请求（`attempts`），打开和重开的请求也不计入预算，和其他报表的伴随请求一样。
+
 ## r6：提前采到的空结果不重采（2026-11-01）
 
 用户在辽宁会话的原话："确认切 r4，空结果不重采，做保活验证"。`plan` 和 `apply` 都带 `--early-empty-consumed`，那 15 天也写成墓碑（`daily_lane(early_empty_consumed=True)`），状态如实记 `empty`，任务原因是 `legacy_consumed:empty`。计划：5,164 条墓碑，21 个日子要采。

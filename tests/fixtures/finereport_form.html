@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- Offline stand-in for a FineReport form's own page: the three stages of parameterCommit, one after the other's answer. -->
+<html><head><meta charset="utf-8"><title>form</title></head><body>
+<script>
+const url = '/px-basesystem-reportform/decision/view/form';
+window.$ = {ajaxSettings: {type: 'GET'}};
+window.FR = {servletURL: url, ajax(o) {
+  const q = new URLSearchParams({op: o.data.op, cmd: o.data.cmd});
+  const get = o.type === 'GET';
+  fetch(get ? url + '?' + q : url, {method: get ? 'GET' : 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: get ? undefined : new URLSearchParams(o.data)}).then(r => r.text()).then(t => { if (o.success) o.success(t); });
+}};
+let date = '2026-10-09';
+const form = {parameterEl: {getWidgetByName: () => ({setValue(v) { date = v; }, getValue: () => date}),
+                            name_widgets: {unit: {getValue: () => new URLSearchParams(location.search).get('unit') || '单位:MW'}}},
+  parameterCommit() {
+    FR.ajax({type: 'POST', data: {op: 'fr_dialog', cmd: 'parameters_d', date}, success: () =>
+      FR.ajax({type: 'GET', data: {op: 'fr_form', cmd: 'load_content'}, success: () =>
+        FR.ajax({type: 'POST', data: {op: 'fr_form', cmd: 'load_report_content', date}})})});
+  }};
+window._g = () => form;
+FR.ajax({type: 'POST', data: {op: 'fr_form', cmd: 'form_getsource'}});
+</script></body></html>

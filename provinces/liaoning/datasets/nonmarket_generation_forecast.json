@@ -9,19 +9,21 @@
     "lag_days": 1
   },
   "request": {
-    "transport": "component",
+    "transport": "finereport",
     "method": "POST",
-    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport033",
-    "frame": "/pdbln/report/PdblnReport033",
-    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport033",
-    "component": "pdblnReport033",
-    "call": "initData",
+    "path": "/px-basesystem-reportform/decision/view/form",
+    "frame": "lnsnxh_fscjzzclyc",
+    "site_menu": {
+      "source": "lnsnxh_fscjzzclyc",
+      "route": "spotgoodsSum"
+    },
     "set": {
       "queryParam.mdate": "{date}"
-    }
+    },
+    "date_field": "queryParam.mdate"
   },
   "response": {
-    "kind": "json"
+    "kind": "finereport_daily"
   },
   "source": {
     "legacy": "lncrawler/power_live.py API_SPECS",
@@ -32,6 +34,11 @@
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "admitted"
+    },
+    {
+      "at": "2026-11-01T16:30:00+08:00",
+      "event": "moved_to_finereport",
+      "note": "The site moved this report to FineReport (route spotgoodsSum) on 2026-10-23; its old component stopped being its entry. set keeps the date under its old name so that its task identity does not change."
     }
   ]
 }

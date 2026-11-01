@@ -335,9 +335,12 @@ DAILY_LANE = ("system_load", "centralized_solar_daily", "centralized_wind_daily"
               "distributed_solar_actual", "distributed_wind", "distributed_wind_actual", "generation_total_forecast",
               "generator_maintenance_capacity", "hydro_daily", "local_coal_forecast", "local_hydro_actual",
               "local_hydro_plan", "must_run_stop_units", "nuclear_total", "tie_line_dayahead", "tie_line_schedule")
+# The FineReport reports (routes moved 2026-10-23): their originals are in report_engine, 033's older ones in power_reports.
+ENGINE_LANE = ("sitewide_e38351fe661a034a", "sitewide_0353290a57044c3e", "nonmarket_generation_forecast")
 DAILY_QUEUES = "state/crawlee_daily_verified_20261014/request_queues"
 DAILY_ORIGINALS = "data/2026/original/power_reports"
 DAILY_ENGINE = "data/2026/original/report_engine"
+DAILY_ADVANCED = "data/2026/original/advanced_reports"      # the two sitewide engine reports, before their route moved
 DAILY_LOAD = "data/2026/raw/system_load"
 
 
@@ -400,6 +403,8 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
         known |= {p.name for p in originals.iterdir()} if originals.is_dir() else set()
         engine = root / DAILY_ENGINE / name
         known |= {p.name for p in engine.iterdir()} if engine.is_dir() else set()
+        advanced = root / DAILY_ADVANCED / name
+        known |= {p.name for p in advanced.iterdir()} if advanced.is_dir() else set()
         load = root / DAILY_LOAD
         if name == "system_load":
             known |= {p.stem for p in load.glob("*.json")}
@@ -409,6 +414,10 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
             if verdict != "saved" and engine.is_dir():
                 for version in sorted((engine / day).glob("*/metadata.json")):
                     if json.loads(version.read_bytes()).get("nonnull_points"):
+                        verdict = "saved"
+            if verdict != "saved" and advanced.is_dir():
+                for version in sorted((advanced / day).glob("*/*/metadata.json")):
+                    if json.loads(version.read_bytes()).get("row_count"):
                         verdict = "saved"
             if name == "system_load" and (load / f"{day}.json").is_file():
                 record = json.loads((load / f"{day}.json").read_bytes()).get("record") or {}
@@ -426,26 +435,28 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
             states.update({f"daily:{name}:{day}": "empty" for day in early})
             consumed = sorted(consumed + early)
         rows += [(f"daily:{name}:{day}", task_identity("liaoning", account_alias, spec, day, "")) for day in consumed]
-        report[name] = {"consumed": len(consumed), "early_empty": early, "open": opened, "handled_without_original": failed}
+        never = [day for day in spec.periods_to_collect() if day not in known]
+        report[name] = {"consumed": len(consumed), "early_empty": early, "open": opened, "handled_without_original": failed,
+                        "never_asked": never}
     return {"rows": rows, "states": states, "per_dataset": report, "datasets": list(names),
             "early_empty_consumed": early_empty_consumed,
-            "will_be_asked": sum(len(item["open"]) + (0 if early_empty_consumed else len(item["early_empty"]))
+            "will_be_asked": sum(len(item["open"]) + len(item["never_asked"]) + (0 if early_empty_consumed else len(item["early_empty"]))
                                  for item in report.values()),
             "snapshot_sha256": digest([[key, identity.key, states.get(key, "saved")] for key, identity in rows])}
 
 
-def apply_daily_lane(ledger, lane: dict, approval: str) -> dict:
-    """Offline, on the handoff's ledger: the tombstones, then the daily reports first in the collection order."""
+def apply_daily_lane(ledger, lane: dict, approval: str, *, source_id: str = "liaoning-daily-lane") -> dict:
+    """Offline, on the handoff's ledger: the tombstones, then these reports first in the collection order."""
     handoff = ledger.handoff()
     if handoff is None:
         raise ValueError("daily_lane_requires_a_handoff")
     try:
-        imported = ledger.import_late_legacy("liaoning-daily-lane", lane["snapshot_sha256"], lane["rows"], approval,
+        imported = ledger.import_late_legacy(source_id, lane["snapshot_sha256"], lane["rows"], approval,
                                              states=lane["states"])
     except ValueError as exc:
         if str(exc) != "late_import_already_done":
             raise
-        imported = {"source_id": "liaoning-daily-lane", "added": 0, "already_done": True}
+        imported = {"source_id": source_id, "added": 0, "already_done": True}
     names = lane["datasets"]
     order = names + [name for name in handoff["scope"] if name not in names]
     seeded = handoff["seeded"] + [name for name in names if name not in handoff["seeded"]]

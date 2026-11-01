@@ -9,24 +9,21 @@
     "lag_days": 2
   },
   "request": {
-    "transport": "component",
+    "transport": "finereport",
     "method": "POST",
-    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport068",
-    "frame": "/pdbln/report/PdblnReport068",
-    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport068",
-    "component": "pdblnReport068",
-    "call": "initData",
-    "set": {
-      "tableData": [],
-      "queryParam.mdate": "{date}"
-    },
+    "path": "/px-basesystem-reportform/decision/view/form",
+    "frame": "lnsnxh_fschjzsjcl",
     "site_menu": {
       "source": "lnsnxh_fschjzsjcl",
-      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport068"
-    }
+      "route": "spotgoodsSum"
+    },
+    "set": {
+      "queryParam.mdate": "{date}"
+    },
+    "date_field": "queryParam.mdate"
   },
   "response": {
-    "kind": "json"
+    "kind": "finereport_daily"
   },
   "source": {
     "legacy": "liaoning production manifest",
@@ -55,6 +52,11 @@
       "at": "2026-10-31T16:18:48+08:00",
       "event": "generated_from_legacy_manifest",
       "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
+    },
+    {
+      "at": "2026-11-01T16:30:00+08:00",
+      "event": "moved_to_finereport",
+      "note": "The site moved this report to FineReport (route spotgoodsSum) on 2026-10-23; its old component stopped being its entry. set keeps the date under its old name so that its task identity does not change."
     }
   ]
 }
