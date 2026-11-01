@@ -168,6 +168,86 @@ class IsolationStreak(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.engine.dataset_holds()["report"]["reason"], "repeated_isolation:http_error")
         self.assertEqual([r["path"] for r in self.transport.sent], ["/px-test/report", "/px-test/other"])
 
+    async def test_a_stage_that_refuses_the_answer_keeps_it_and_its_status(self):
+        """Liaoning r20 2026-11-02 00:29: the event said 200, the row nothing, and the answer was gone."""
+        from pmos.faults import Fault
+        self.transport.queue.append(Fault("finereport_report_structure_changed", "site_data", http_status=200,
+                                          body=b"<html>no report</html>"))
+        await self.ticks(1)
+        row = self.engine.ledger.db.execute("SELECT id, outcome, http_status, reason FROM attempts ORDER BY id DESC").fetchone()
+        self.assertEqual(tuple(row)[1:], ("failed", 200, "finereport_report_structure_changed"))
+        kept = [p for p in self.engine.quarantine.root.rglob("*.bin")]
+        self.assertEqual([p.read_bytes() for p in kept], [b"<html>no report</html>"])
+        self.assertIn(f"attempt_{row['id']}", str(kept[0]))
+
+    async def test_a_network_fault_records_no_status_and_keeps_nothing(self):
+        from pmos.faults import Fault
+        self.transport.queue.append(Fault("network_error", "network", http_status=502, body=b"gateway"))
+        await self.ticks(1)
+        row = self.engine.ledger.db.execute("SELECT outcome, http_status FROM attempts ORDER BY id DESC").fetchone()
+        self.assertEqual(tuple(row), ("unknown", None))
+        self.assertEqual(list(self.engine.quarantine.root.rglob("*.bin")), [])
+
+    async def test_a_large_table_goes_past_a_failed_item_until_its_limit_in_a_row(self):
+        from pmos.faults import Fault
+        path = self.engine.province.datasets_dir / "report.json"
+        value = json.loads(path.read_text())
+        value["source"] = {"isolation_streak": 2}
+        path.write_text(json.dumps(value))
+        refusal = lambda: Fault("finereport_report_structure_changed", "site_data", http_status=200, body=b"x")
+        self.transport.queue.append(refusal())
+        await self.ticks(1)
+        self.assertEqual(self.engine.dataset_holds(), {}, "one failed item: the next one is asked")
+        self.clock.advance(20)
+        await self.ticks(1)
+        self.assertEqual(self.engine.dataset_holds(), {}, "the next answered, so the run of failures is over")
+        self.transport.queue.extend([refusal(), refusal()])
+        self.clock.advance(20)
+        await self.ticks(1)
+        self.assertEqual(self.engine.dataset_holds(), {})
+        self.clock.advance(20)
+        await self.ticks(1)
+        self.assertEqual(self.engine.dataset_holds()["report"]["reason"], "repeated_isolation:finereport_report_structure_changed")
+
+    async def test_a_released_stage_failure_is_asked_once_more_and_saved(self):
+        from pmos.faults import Fault
+        self.transport.queue.append(Fault("finereport_report_structure_changed", "site_data", http_status=200, body=b"x"))
+        await self.ticks(1)
+        ledger = self.engine.ledger
+        attempt = ledger.db.execute("SELECT id, period, scope FROM attempts ORDER BY id DESC").fetchone()
+        self.assertTrue(ledger.consumed("report", attempt["period"], attempt["scope"]))
+        with self.assertRaisesRegex(ValueError, "approval"):
+            ledger.release_stage_failure(attempt["id"], " ")
+        self.assertEqual(ledger.release_stage_failure(attempt["id"], "同意")[0], attempt["id"])
+        task = ledger.task("report", attempt["period"], attempt["scope"])
+        self.assertEqual((task["status"], task["reason"]), ("pending", f"released_stage_failure:{attempt['id']}"))
+        self.assertFalse(ledger.consumed("report", attempt["period"], attempt["scope"]))
+        with self.assertRaisesRegex(ValueError, "already_released"):
+            ledger.release_stage_failure(attempt["id"], "同意")
+        before = len(self.transport.sent)
+        for _ in range(8):
+            self.clock.advance(20)
+            await self.ticks(1)
+        self.assertGreater(len(self.transport.sent), before)
+        self.assertEqual(ledger.task("report", attempt["period"], attempt["scope"])["status"], "saved")
+        row = ledger.db.execute("SELECT outcome, reason FROM attempts WHERE id=?", (attempt["id"],)).fetchone()
+        self.assertEqual(tuple(row), ("failed", "finereport_report_structure_changed"), "the history keeps what was recorded")
+
+    async def test_only_a_stage_failure_of_an_isolated_item_can_be_released(self):
+        ledger = self.engine.ledger
+        other = ledger.begin("collect", "report", TODAY, "")
+        ledger.finish(other, "failed", http_status=500, reason="http_error")
+        with self.assertRaisesRegex(ValueError, "not_a_stage_failure"):
+            ledger.release_stage_failure(other, "同意")
+        sample = ledger.begin("sample", "other", TODAY, "")
+        ledger.finish(sample, "failed", http_status=200, reason="finereport_report_structure_changed")
+        with self.assertRaisesRegex(ValueError, "not_a_stage_failure"):
+            ledger.release_stage_failure(sample, "同意")
+        collected = ledger.begin("collect", "other", TODAY, "")
+        ledger.finish(collected, "failed", http_status=200, reason="finereport_report_structure_changed")
+        with self.assertRaisesRegex(ValueError, "not_isolated_for_it"):
+            ledger.release_stage_failure(collected, "同意")
+
     async def test_five_40302_denials_in_a_row_pause_the_dataset(self):
         from pmos.engine import DENIAL_STREAK
         path = self.engine.province.datasets_dir / "report.json"

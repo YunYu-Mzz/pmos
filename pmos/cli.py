@@ -497,6 +497,34 @@ def cmd_release_sample(province: Province, args) -> None:
     _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
 
 
+def cmd_reopen_task(province: Province, args) -> None:
+    """User-approved: an item that failed for meeting a consumed identity, once that identity has been released."""
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        if ledger.unsettled():
+            raise ValueError("unsettled_attempt")
+        ledger.reopen_refused(args.dataset, args.period, args.scope, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("refused_task_reopened", dataset=args.dataset, period=args.period,
+                                                    scope=args.scope, approval=args.approval)
+    _print({"province": province.id, "reopened": args.dataset, "period": args.period, "scope": args.scope})
+
+
+def cmd_release_stage_failure(province: Province, args) -> None:
+    """User-approved: one item of a report whose stage answered something else; it may be asked once more."""
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        if ledger.unsettled():
+            raise ValueError("unsettled_attempt")
+        attempt, dataset, period, scope = ledger.release_stage_failure(args.attempt, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("stage_failure_released", attempt=attempt, dataset=dataset,
+                                                    period=period, scope=scope, approval=args.approval)
+    _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
+
+
 def cmd_release_discovery(province: Province, args) -> None:
     """After review: a report whose dropdown discovery was held reads its options again (next day's roll-forward)."""
     if not args.approval.strip():
@@ -855,6 +883,14 @@ def main(argv: list[str] | None = None) -> int:
         rs = commands.add_parser("release-sample", help="a sample refused for more pages than could be read then may be asked once more")
         rs.add_argument("attempt", type=int)
         rs.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        rt = commands.add_parser("reopen-task", help="an item that failed for meeting a consumed identity, once that identity was released")
+        rt.add_argument("dataset")
+        rt.add_argument("period")
+        rt.add_argument("--scope", default="", help="the item's scope key, if it has one")
+        rt.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        rsf = commands.add_parser("release-stage-failure", help="one item of a report whose stage answered something else may be asked once more")
+        rsf.add_argument("attempt", type=int)
+        rsf.add_argument("--approval", required=True, help="the user's approval, verbatim")
         rdisc = commands.add_parser("release-discovery", help="after review: a held dropdown discovery runs again")
         rdisc.add_argument("dataset", nargs="?")
         rdisc.add_argument("--all", action="store_true", help="every held discovery")
@@ -932,7 +968,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "backfill", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-sample", "release-discovery", "review-unsent", "prioritize", "probe-blank", "probe-report", "read-dictionary", "try-report", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-sample", "reopen-task", "release-stage-failure", "release-discovery", "review-unsent", "prioritize", "probe-blank", "probe-report", "read-dictionary", "try-report", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -976,6 +1012,10 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_release_discovery(province, args)
             elif args.command == "release-sample":
                 cmd_release_sample(province, args)
+            elif args.command == "reopen-task":
+                cmd_reopen_task(province, args)
+            elif args.command == "release-stage-failure":
+                cmd_release_stage_failure(province, args)
             elif args.command == "release-interrupted":
                 cmd_release_interrupted(province, args)
             elif args.command == "review-unsent":

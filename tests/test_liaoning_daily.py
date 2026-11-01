@@ -656,6 +656,11 @@ class RealTrial(unittest.TestCase):
         identity = migration.task_identity("liaoning", "liaoning-production", spec, "2026-10-25", next(k for k, v in spec.scope_items() if v == spec.scopes[1]))
         self.assertEqual(identity.dimensions, {"channel": spec.scopes[1]["channel"], "type": "正向可用"})
 
+    def test_one_failed_item_does_not_stop_the_day_ahead_capacity(self):
+        """75,778 items at the 2026-11-02 count: 00:29 one answer stopped them all."""
+        self.assertEqual(REAL.datasets()["sitewide_49aa17d82da46bfb"].source["isolation_streak"], 10)
+        self.assertEqual(REAL.policy.isolation_streak, 1, "every other report keeps the stricter rule")
+
     def test_the_aliases_are_retired(self):
         specs = REAL.datasets()
         for name in ("sitewide_055496fd163e494f", "sitewide_c23050b85c48fa15", "dayahead_constraints"):
@@ -847,6 +852,55 @@ class Trial(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(ledger.consumed("tie_line_intraday", day(4), ""))
         with self.assertRaisesRegex(ValueError, "already_released"):
             ledger.release_sample(attempt, "同意")
+
+    def test_an_item_that_met_a_consumed_identity_comes_back_once_it_is_released(self):
+        """Liaoning 2026-11-02: 10-25 failed at 00:12, its sample was released after that, and nothing could put it back."""
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        self.addCleanup(ledger.close)
+        name, when = "tie_line_intraday", day(3)
+        ledger.seed(name, [when])
+        attempt = ledger.begin("sample", name, when, "")
+        ledger.finish(attempt, "failed", http_status=200, reason="finereport_table_more_pages")
+        ledger.settle_task(name, when, "failed", reason="isolated:other")
+        with self.assertRaisesRegex(ValueError, "did_not_fail_for_a_consumed_identity"):
+            ledger.reopen_refused(name, when, "", "同意")
+        ledger.settle_task(name, when, "failed", reason="isolated:consumed_identity_requires_review")
+        with self.assertRaisesRegex(ValueError, "approval"):
+            ledger.reopen_refused(name, when, "", " ")
+        with self.assertRaisesRegex(ValueError, "identity_still_consumed"):
+            ledger.reopen_refused(name, when, "", "同意")
+        ledger.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, "同意", "t"))
+        ledger.reopen_refused(name, when, "", "同意")
+        task = ledger.task(name, when)
+        self.assertEqual((task["status"], task["reason"]), ("pending", "reopened_after_release"))
+
+    def test_releasing_a_sample_also_puts_back_the_item_that_met_it(self):
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        self.addCleanup(ledger.close)
+        name = "tie_line_intraday"
+        ledger.seed(name, [day(3), day(4)])
+        met = ledger.begin("sample", name, day(3), "")
+        ledger.finish(met, "failed", http_status=200, reason="finereport_table_more_pages")
+        ledger.settle_task(name, day(3), "failed", reason="isolated:consumed_identity_requires_review")
+        ledger.release_sample(met, "同意")
+        self.assertEqual(ledger.task(name, day(3))["status"], "pending")
+        kept = ledger.begin("sample", name, day(4), "")
+        ledger.finish(kept, "failed", http_status=200, reason="finereport_table_more_pages")
+        ledger.settle_task(name, day(4), "failed", reason="isolated:other")
+        ledger.release_sample(kept, "同意")
+        self.assertEqual((ledger.task(name, day(4))["status"], ledger.task(name, day(4))["reason"]), ("failed", "isolated:other"),
+                         "a failure of another reason stays what it was")
+
+    def test_the_two_new_releases_pass_the_commands_this_release_allows(self):
+        from pmos import cli
+        for argv in (["liaoning", "reopen-task", "nothing", day(3), "--approval", "同意"],
+                     ["liaoning", "release-stage-failure", "999999", "--approval", "同意"]):
+            with patch.object(cli.Province, "load", return_value=self.province), patch("sys.stdout"), patch("sys.stderr") as err:
+                code = cli.main(argv)
+            written = "".join(str(c.args[0]) for c in err.write.call_args_list)
+            self.assertNotEqual(code, 0)
+            self.assertNotIn("offline_release_live_actions_disabled", written, argv[1])
+            self.assertRegex(written, "did_not_fail_for_a_consumed_identity|is_not_a_stage_failure", argv[1])
 
     async def test_a_candidate_is_not_seeded_until_its_sample_answers_and_that_day_is_not_asked_again(self):
         engine = self.engine()

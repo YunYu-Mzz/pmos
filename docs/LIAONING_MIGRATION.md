@@ -185,6 +185,25 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r21：一条失败不再停一张大表，失败的答复留底（2026-11-02）
+
+r20 11-02 00:51 上线。r21 = r20 加下面这些，答复辽宁会话 00:55 提的三个问题。
+
+**日前容量 00:29 整表暂停。** 第 14755 次（10-31，昭沂鲁固直流和功率约束 / 正向可用）在 load_content 这一步答的不是报表，记成 `finereport_report_structure_changed`。此前 5 条都成功，这张表当时 200 条存下、21 条空、1 条失败，75,778 条未问。整表暂停是因为辽宁的 `isolation_streak` 是 1，这个配置对 7.6 万条的表太严，是我当初定的。网站那次到底答了什么已经查不到，下面第 1 条就是补这个缺口。
+
+改动：
+1. **失败时留答复。** FineReport 的阶段在 transport 内部拒收，以前不走 quarantine，attempts 行也没有 HTTP 状态。现在 `Fault.body` 带上原文（只进 quarantine，不进事件），`engine.request` 按 evaluate 分支的做法存 `attempt_<id>` 并记状态。覆盖 `finereport_report_structure_changed`、`finereport_parameter_result_changed`、`finereport_paging_failed`。只记 site_data 类故障的状态，其他类别的记录不变。
+2. **这张表连续 10 条失败才暂停。** `sitewide_49aa17d82da46bfb` 的 `source.isolation_streak = 10`，其余报表仍是 1。真坏了最多多花 10 次请求。**已知限制：** 不连续的零星失败不会暂停，也不发 held 告警，只进 `isolated_items` 和 failed 计数，要看 `status`。每条失败都占用它的身份，要用户同意才能重问。
+3. **`release-stage-failure <attempt> --approval`**：只接受 collect、failed、原因是上面前两种、且任务正因它被隔离的一次。放开后身份不再占用，任务回到 pending，会再向网站发一次请求。attempt 本身的记录不改。
+4. **`reopen-task <dataset> <period> [--scope S] --approval`**：实时断面 10-25 在 00:12 被记成 `isolated:consumed_identity_requires_review`，之后样本放开了，但没有命令能把任务放回去。只接受这个原因，且身份确实已不再占用。`release-sample` 以后也会顺带放回这种任务。
+
+切 r21 后要做的（都要用户在辽宁会话里直接同意）：
+- `reopen-task sitewide_31308b59070354ef 2026-10-25`
+- `release-stage-failure 14755`
+- `release-hold sitewide_49aa17d82da46bfb --reason repeated_isolation:finereport_report_structure_changed`
+
+**耗时更正：** 日前容量按实测间隔中位数 4.44 秒算，75,778 条约 3.89 天，之前说的 4.4 天偏高。
+
 ## r20：重复提问不再封全省（2026-11-01）
 
 r19 23:16 上线，用户原话"确认切 r19，做试采"。r20 = r19 加下面这些。

@@ -247,7 +247,13 @@ class Engine:
                     # stays unconsumed, like a deferred preflight.
                     self.ledger.not_sent(attempt, fault.code)
                 else:
+                    # A report's stage refused the site's answer inside the transport (Liaoning r20 2026-11-02 00:29:
+                    # the row said nothing and the answer was gone): the same record as a refusal in evaluate.
+                    if fault.category == "site_data" and fault.body:
+                        self.quarantine.store(dataset or "response", period or "undated", fault.body,
+                                              ".bin", scope=f"attempt_{attempt}", reason=fault.code)
                     self.ledger.finish(attempt, "unknown" if fault.category == "network" else "failed",
+                                       http_status=fault.http_status if fault.category == "site_data" else None,
                                        reason=fault.code)
                 raise
             except DriverLost:

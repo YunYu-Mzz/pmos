@@ -371,7 +371,7 @@ async def _next_pages(page, frame, stage: tuple, total: int, expect, timeout: fl
         last[source] = time.monotonic()
         if answer.status != 200 or SESSION_END in raw:
             last.pop(source, None)
-            raise Fault("finereport_paging_failed", "site_data", http_status=answer.status, detail={"page": number})
+            raise Fault("finereport_paging_failed", "site_data", http_status=answer.status, detail={"page": number}, body=raw)
         pages.append(raw)
         await asyncio.sleep(STAGE_PAUSE_SECONDS)
     return pages
@@ -416,10 +416,10 @@ async def query_day(page, frame, fields: dict, expect, timeout: float, last: dic
                 settled = False
             if not settled:
                 last.pop(source, None)
-                raise Fault("finereport_parameter_result_changed", "site_data", http_status=200)
+                raise Fault("finereport_parameter_result_changed", "site_data", http_status=200, body=raw)
         elif cmd == "load_content" and not (raw.startswith(b"{") and b'"elementCases"' in raw):
             last.pop(source, None)
-            raise Fault("finereport_report_structure_changed", "site_data", http_status=200)
+            raise Fault("finereport_report_structure_changed", "site_data", http_status=200, body=raw)
         elif cmd == "load_report_content":
             return Response(200, "application/json", raw)
         elif op == "page_content":
@@ -433,7 +433,8 @@ async def query_day(page, frame, fields: dict, expect, timeout: float, last: dic
             try:
                 whole = {"report_pages": [json.loads(item) for item in (raw, *rest)]}
             except ValueError:
-                raise Fault("finereport_paging_failed", "site_data", detail={"page": "not_json"}) from None
+                raise Fault("finereport_paging_failed", "site_data", http_status=200, detail={"page": "not_json"},
+                            body=b"\n".join((raw, *rest))) from None
             return Response(200, "application/json", json.dumps(whole, ensure_ascii=False).encode(), operation={"report_total_pages": total})
         await asyncio.sleep(STAGE_PAUSE_SECONDS)
     raise Fault("finereport_stage_missing", "local")

@@ -30,7 +30,8 @@ CATEGORIES = ("auth", "permission", "rate_limit", "network", "unknown", "site_da
 
 class Fault(Exception):
     def __init__(self, code: str, category: str, *, http_status: int | None = None,
-                 business_status: str | None = None, unsent: bool = False, detail: dict | None = None):
+                 business_status: str | None = None, unsent: bool = False, detail: dict | None = None,
+                 body: bytes | None = None):
         if category not in CATEGORIES:
             raise ValueError("fault_category_invalid")
         super().__init__(code)
@@ -43,6 +44,8 @@ class Fault(Exception):
         self.unsent = unsent
         # Page diagnostics only (a menu label, a depth, a box size): never values, addresses or tokens.
         self.detail = detail or {}
+        # What the site answered, for the quarantine only (a report's stage refuses inside the transport): never logged.
+        self.body = body
 
 
 @dataclass(frozen=True)

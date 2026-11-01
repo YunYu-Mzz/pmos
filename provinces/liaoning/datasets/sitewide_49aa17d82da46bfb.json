@@ -1050,7 +1050,8 @@
         "通道名称": "channel",
         "数据类型": "type"
       }
-    }
+    },
+    "isolation_streak": 10
   },
   "history": [
     {

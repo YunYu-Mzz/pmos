@@ -44,6 +44,7 @@ class Site(http.server.SimpleHTTPRequestHandler):
     finereport_denied: set = set()   # reports whose mapping answers 40302
     finereport_pages = 1             # how many pages a .cpt report says it has
     finereport_no_goto = False       # ... and that it cannot turn them
+    finereport_no_report = False     # load_content answers no report
 
     def finereport_answer(self, query: dict) -> None:
         from urllib.parse import parse_qs
@@ -55,6 +56,8 @@ class Site(http.server.SimpleHTTPRequestHandler):
             self.reply(b'{"status":"success"}', "application/json")
         elif cmd == "combo_items":
             self.reply(json.dumps([{"text": "1号机", "value": "1号机"}, {"text": "2号机", "value": "2号机"}], ensure_ascii=False).encode(), "application/json")
+        elif cmd == "load_content" and Site.finereport_no_report:
+            self.reply(b"<html>no report</html>", "text/html;charset=UTF-8")
         elif cmd == "load_content":
             self.reply(b'{"elementCases":[]}', "application/json")
         else:
@@ -631,6 +634,20 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(Site.finereport.count("page_content"), 3)
         self.assertEqual(evaluate({"kind": "finereport_page"}, response).result, "saved")
         self.assertEqual(len(page_rows(json.loads(response.body))), 3, "the rows of all three pages")
+
+    async def test_a_stage_that_answers_no_report_hands_over_what_it_answered(self):
+        await self.finereport_page()
+        Site.finereport_no_report = True
+        self.addCleanup(lambda: setattr(Site, "finereport_no_report", False))
+        with self.assertRaises(Fault) as caught:
+            await self.transport.send(self.finereport_request())
+        fault = caught.exception
+        self.assertEqual((fault.code, fault.category, fault.http_status, fault.unsent, fault.body),
+                         ("finereport_report_structure_changed", "site_data", 200, False, b"<html>no report</html>"))
+        self.assertEqual(fault.detail, {}, "the answer goes to the quarantine, not into events")
+        Site.finereport_no_report = False
+        response = await self.transport.send(self.finereport_request())
+        self.assertEqual(response.status, 200, "the next item opens a new session and is answered")
 
     async def test_pages_that_cannot_be_read_fail_as_that_reports_problem(self):
         await self.finereport_page()

@@ -23,6 +23,10 @@ OUTCOMES = ("pending", "success", "empty", "failed", "unknown", "not_sent")
 BUSINESS_KINDS = ("collect", "sample", "keepalive")
 # Kinds charged to the collection budget (hour/day caps).
 BUDGET_KINDS = ("collect", "sample")
+# An item settled for meeting an identity already asked: nothing was sent for it.
+CONSUMED_REFUSAL = "isolated:consumed_identity_requires_review"
+# A report's stage answered, and not what the stage answers: the site saw the request, nothing was saved.
+STAGE_FAILURES = ("finereport_report_structure_changed", "finereport_parameter_result_changed")
 # Page-menu failures raised before any report frame opened (ui.select_menu, ui.select_options).
 NAVIGATION_CODES = frozenset({"menu_navigation_timeout", "menu_label_not_unique", "menu_control_changed",
                               "menu_label_not_visible", "menu_path_ambiguous", "select_options_missing"})
@@ -691,6 +695,7 @@ class Ledger:
 
         Liaoning r18 2026-11-01: 实时断面's 10-25 answered page 1 and was refused for having more. The site answered, so it
         was never ``not_sent``: the attempt keeps its outcome and only stops consuming its identity. Only this reason.
+        An item already settled for meeting that identity (r19 00:12) is pending again.
         """
         if not isinstance(approval, str) or not approval.strip():
             raise ValueError("release_approval_required")
@@ -702,6 +707,61 @@ class Ledger:
             if self.db.execute("SELECT 1 FROM released_attempts WHERE attempt_id=?", (attempt,)).fetchone():
                 raise ValueError(f"attempt_{attempt}_already_released")
             self.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, approval, self.clock()))
+            self.db.execute("UPDATE tasks SET status='pending', reason=?, updated_at=? WHERE dataset=? AND period=? AND scope=?"
+                            " AND status='failed' AND reason=?",
+                            (f"released_sample:{attempt}", self.clock(), row["dataset"], row["period"], row["scope"], CONSUMED_REFUSAL))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+        return (attempt, row["dataset"], row["period"], row["scope"])
+
+    def reopen_refused(self, dataset: str, period: str, scope: str, approval: str) -> None:
+        """User-approved: an item that failed only for meeting a consumed identity, once nothing consumes it any more.
+
+        Liaoning 2026-11-02: 实时断面's 10-25 was settled failed at 00:12, its sample was released after that, and no
+        command could put the item back. Nothing was asked for this reason, so the release of the identity is what counts.
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("reopen_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            task = self.db.execute("SELECT status, reason FROM tasks WHERE dataset=? AND period=? AND scope=?",
+                                   (dataset, period, scope)).fetchone()
+            if task is None or task["status"] != "failed" or task["reason"] != CONSUMED_REFUSAL:
+                raise ValueError("task_did_not_fail_for_a_consumed_identity")
+            if self.consumed(dataset, period, scope):
+                raise ValueError("identity_still_consumed")
+            self.db.execute("UPDATE tasks SET status='pending', reason=?, updated_at=? WHERE dataset=? AND period=? AND scope=?",
+                            ("reopened_after_release", self.clock(), dataset, period, scope))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def release_stage_failure(self, attempt: int, approval: str) -> tuple:
+        """User-approved: one item of a report whose stage answered something else may be asked once more.
+
+        Liaoning r20 2026-11-02 00:29: the 222nd of 日前容量 answered no report at load_content, the five before it
+        were fine. Nothing was saved: the attempt keeps its outcome in the history and only stops consuming its item,
+        which is pending again.
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("release_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            row = self.db.execute("SELECT * FROM attempts WHERE id=?", (attempt,)).fetchone()
+            if row is None or row["kind"] != "collect" or row["outcome"] != "failed" or row["reason"] not in STAGE_FAILURES:
+                raise ValueError(f"attempt_{attempt}_is_not_a_stage_failure")
+            if self.db.execute("SELECT 1 FROM released_attempts WHERE attempt_id=?", (attempt,)).fetchone():
+                raise ValueError(f"attempt_{attempt}_already_released")
+            task = self.db.execute("SELECT status, reason FROM tasks WHERE dataset=? AND period=? AND scope=?",
+                                   (row["dataset"], row["period"], row["scope"])).fetchone()
+            if task is None or task["status"] != "failed" or task["reason"] != f"isolated:{row['reason']}":
+                raise ValueError(f"attempt_{attempt}_task_is_not_isolated_for_it")
+            self.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, approval, self.clock()))
+            self.db.execute("UPDATE tasks SET status='pending', reason=?, updated_at=? WHERE dataset=? AND period=? AND scope=?",
+                            (f"released_stage_failure:{attempt}", self.clock(), row["dataset"], row["period"], row["scope"]))
             self.db.execute("COMMIT")
         except BaseException:
             self.db.execute("ROLLBACK")
