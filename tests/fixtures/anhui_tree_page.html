@@ -2,7 +2,8 @@
 <!-- Offline stand-in for the Anhui 综合查询 column (2026-11-01, 月度输变电设备检修计划): the
      left tree shows 现货市场; the top menu's 中长期市场 switches it, and while the pointer stays
      on the top bar the site's hover menu (.menuBox.menuBoxExpanded) covers the tree, as the
-     legacy's clear_hover_menu handles. -->
+     legacy's clear_hover_menu handles. With ?animate a subtree opens as Element UI's collapse
+     transition does: overflow hidden, height growing from 0 (Anhui r17 15:00:47, intertie). -->
 <html><head><meta charset="utf-8"><title>anhui tree fixture</title>
 <style>
   body { margin: 0; }
@@ -30,7 +31,14 @@ function node(data) {
   const children = data.nextNode || [];
   if (children.length) {
     const icon = document.createElement('span'); icon.className = 'el-tree-node__expand-icon'; icon.textContent = '▸';
-    icon.onclick = () => el.classList.toggle('is-expanded'); content.append(icon);
+    icon.onclick = () => {
+      el.classList.toggle('is-expanded');
+      if (!location.search.includes('animate') || !el.classList.contains('is-expanded')) return;
+      const box = el.querySelector(':scope > .el-tree-node__children');
+      box.style.overflow = 'hidden'; box.style.height = '0px';
+      setTimeout(() => { box.style.height = ''; box.style.overflow = ''; }, 600);
+    };
+    content.append(icon);
   }
   const label = document.createElement('span'); label.className = 'el-tree-node__label';
   label.textContent = data.name || data.currentNode.name;

@@ -328,6 +328,13 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
             raise Fault("menu_control_changed", "local")
         await target.scroll_into_view_if_needed(timeout=timeout * 1000)
         point = await target.evaluate(_VISIBLE_POINT_JS)
+        # A subtree just expanded still grows from height 0 inside its collapse transition
+        # (Anhui r17 2026-11-01 15:00:47, 省内现货市场: a 12x12 icon clipped): give it a moment.
+        loop = asyncio.get_running_loop()
+        settle = loop.time() + min(timeout, 3)
+        while point is None and loop.time() < settle:
+            await asyncio.sleep(0.2)
+            point = await target.evaluate(_VISIBLE_POINT_JS)
         if point is None:
             box = await target.evaluate("e => { const r = e.getBoundingClientRect(); return [Math.round(r.width),"
                                         " Math.round(r.height), e.getClientRects().length]; }")
@@ -336,7 +343,6 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
                 "box_width": box[0], "box_height": box[1], "box_rects": box[2]})
         state["leaf_clicked"] = state["leaf_clicked"] or leaf
         await target.click(position=point, timeout=timeout * 1000)
-        loop = asyncio.get_running_loop()
         deadline = loop.time() + timeout
         while True:
             node = await _menu_node(page, labels[:depth], timeout)

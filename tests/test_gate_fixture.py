@@ -224,6 +224,14 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.page.locator(".el-tree-node.is-current").count(), 1)
         self.assertEqual(await self.page.locator(".menuBox.menuBoxExpanded").count(), 0, "the hover menu was left")
 
+    async def test_a_subtree_still_opening_is_waited_for(self):
+        """Anhui r17 2026-11-01 15:00:47: 省内现货市场's 12x12 icon was clipped by the opening subtree."""
+        from pmos.browser import ui
+        await self.page.set_viewport_size({"width": 1000, "height": 700})
+        await self.page.goto(self.origin + "/anhui_tree_page.html?animate=1")
+        await ui.select_menu(self.page, ["中长期市场", "市场边界信息", "月度输变电设备检修计划"], 5)
+        self.assertEqual(await self.page.locator(".el-tree-node.is-current").count(), 1)
+
     async def test_a_menu_label_with_no_visible_point_says_where_it_failed(self):
         from pmos.browser import ui
         await self.page.set_content("""<div class="el-tree"><div class="el-tree-node"><div class="el-tree-node__content">
