@@ -3,7 +3,8 @@
   "name": "电源送出工程建设、投产计划",
   "status": "sampled",
   "period": {
-    "kind": "snapshot"
+    "kind": "snapshot",
+    "daily": true
   },
   "request": {
     "transport": "component",
@@ -149,7 +150,6 @@
     "download_response": {
       "kind": "document"
     },
-    "daily_listing": true,
     "business_year": 2026
   },
   "source": {

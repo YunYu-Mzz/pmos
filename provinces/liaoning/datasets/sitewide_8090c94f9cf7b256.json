@@ -1,0 +1,78 @@
+{
+  "id": "sitewide_8090c94f9cf7b256",
+  "name": "电力用户信息",
+  "status": "sampled",
+  "period": {
+    "kind": "snapshot",
+    "daily": true
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/ipMembersDisclosureNew/queryMembersDisApply",
+    "method": "POST",
+    "prepare": [
+      {
+        "script": "open_member_menu",
+        "args": {
+          "source": "n_dlyhjbxx,n_dlyhbgqk,n_dlyhgqglgx,n_dlyhpjcnxx,n_dlyhqtxx,n_dlyhydxx",
+          "guid": "59453273-35d6-4265-827b-9eec6ddc9867",
+          "market": "PDBLN"
+        },
+        "unless": {
+          "component": "marketShowQueryZHC",
+          "match": {
+            "infoCode": "n_dlyhjbxx,n_dlyhbgqk,n_dlyhgqglgx,n_dlyhpjcnxx,n_dlyhqtxx,n_dlyhydxx",
+            "__pmosReady": "n_dlyhjbxx,n_dlyhbgqk,n_dlyhgqglgx,n_dlyhpjcnxx,n_dlyhqtxx,n_dlyhydxx"
+          }
+        }
+      }
+    ],
+    "component": "marketShowQueryZHC",
+    "match": {
+      "infoCode": "n_dlyhjbxx,n_dlyhbgqk,n_dlyhgqglgx,n_dlyhpjcnxx,n_dlyhqtxx,n_dlyhydxx"
+    },
+    "set": {
+      "fatherCode": "20",
+      "queryParam.data.memberType": "20",
+      "formView": false,
+      "resultValue": [],
+      "total": 0
+    },
+    "call": "handleCurrent",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "size": "pageObj.pageSize",
+      "page_size": 20,
+      "first_page": 1,
+      "records": "data.list",
+      "total": "data.total",
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "liaoning/state/server_verified_expansion_20261023/active_manifest.json",
+    "legacy_dataset": "sitewide_8090c94f9cf7b256",
+    "menu_guid": "59453273-35d6-4265-827b-9eec6ddc9867",
+    "info_code": "n_dlyhjbxx,n_dlyhbgqk,n_dlyhgqglgx,n_dlyhpjcnxx,n_dlyhqtxx,n_dlyhydxx",
+    "view": "marketShowQueryZHC",
+    "member_type": "20",
+    "listed_total_20261101": 88,
+    "note": "member_type: the legacy mapping answer (ipParameterConfiguration/getByCondition), one value per column. The rows name members; they carry no files."
+  },
+  "history": [
+    {
+      "at": "2026-11-01T17:30:00+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "sampled_by_legacy_owner",
+      "note": "the legacy collector listed this column to its end every day up to 2026-11-01"
+    }
+  ]
+}

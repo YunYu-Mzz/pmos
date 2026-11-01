@@ -337,9 +337,17 @@ class RealColumns(unittest.TestCase):
         for name, spec in specs.items():
             with self.subTest(name=name):
                 self.assertIn(spec.status, ("sampled", "verified"))
-                self.assertIs(spec.documents["daily_listing"], True)
+                self.assertIs(spec.period["daily"], True)
                 self.assertEqual(spec.documents["business_year"], 2026)
                 self.assertIs(spec.documents["stop_at_known"], True)
+
+    def test_the_three_member_lists_are_listed_every_day_with_their_member_type(self):
+        specs = REAL.datasets()
+        self.assertEqual({name: specs[name].request["set"]["queryParam.data.memberType"] for name in migration.MEMBER_LANE},
+                         {"sitewide_8090c94f9cf7b256": "20", "sitewide_b03896324973acd7": "30", "sitewide_f1051ebc83754fde": "10"})
+        for name in migration.MEMBER_LANE:
+            self.assertIs(specs[name].period["daily"], True)
+            self.assertEqual(specs[name].source["legacy_dataset"], name)
 
     def test_the_two_columns_the_legacy_manifest_corrected(self):
         specs = REAL.datasets()

@@ -142,6 +142,8 @@ class DatasetSpec:
         kind = self.period.get("kind")
         if kind not in periods.KINDS:
             raise SpecError(f"{where}: period.kind must be one of {periods.KINDS}")
+        if "daily" in self.period and (kind != "snapshot" or type(self.period["daily"]) is not bool):
+            raise SpecError(f"{where}: period.daily is true or false, of a snapshot")
         if kind != "snapshot":
             try:
                 periods.parse(kind, self.period["start"])

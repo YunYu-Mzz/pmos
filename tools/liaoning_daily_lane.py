@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Liaoning's daily (--lane daily, 17), FineReport (--lane engine, 3), weekly (--lane weekly, 2) reports or the disclosure
-columns and their files (--lane lists, 63; --only a,b,c for a pilot) join the PMOS handoff.
+columns and their files with the member lists (--lane lists, 63 + 3; --only a,b,c for a pilot) join the PMOS handoff.
 
 Offline; sends nothing. plan: what the legacy worker completed of them (read-only).
 apply --approval "...": their tombstones and the new collection order, with pmos-liaoning and the legacy

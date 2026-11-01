@@ -329,9 +329,8 @@ class Engine:
         for spec in self.collection_specs():
             if spec.id not in seeded:
                 continue
-            if (spec.period["kind"] == "snapshot" and self.ledger.has_tasks(spec.id)
-                    and not (spec.documents or {}).get("daily_listing")):
-                continue  # a registry snapshot is taken once, not every day
+            if spec.period["kind"] == "snapshot" and not spec.period.get("daily") and self.ledger.has_tasks(spec.id):
+                continue  # a registry snapshot is taken once, unless the spec says every day
             done = legacy.get(spec.id, {})
             strict = bool(spec.source.get("skip_legacy_periods"))
             # A period the legacy owner completed (in any operation: its export
@@ -636,8 +635,9 @@ class Engine:
             self.state.write("page_cursor", cursor)
             return result
         self.state.remove("page_cursor")
-        if spec.documents is not None:
+        if spec.documents is not None or spec.period.get("daily"):
             self.ledger.supersede(spec.id, scope, period, "superseded_by_newer_listing")
+        if spec.documents is not None:
             complete = self.state.read("listing_complete", {})
             if spec.id not in complete:
                 # the first listing to reach the real end (early stops need one)

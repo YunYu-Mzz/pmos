@@ -1,0 +1,78 @@
+{
+  "id": "sitewide_f1051ebc83754fde",
+  "name": "发电企业信息",
+  "status": "sampled",
+  "period": {
+    "kind": "snapshot",
+    "daily": true
+  },
+  "request": {
+    "transport": "component",
+    "frame": "/pxf-settlement-outnetpub/",
+    "open_url": "/pxf-settlement-outnetpub/#/pxf-settlement-outnetpub/columnHomeLeftMenuNew",
+    "path": "/px-settlement-infpubquery/ipMembersDisclosureNew/queryMembersDisApply",
+    "method": "POST",
+    "prepare": [
+      {
+        "script": "open_member_menu",
+        "args": {
+          "source": "n_fdqyjbxx,n_fdqybgqk,n_fdqyqtxxg,n_fdqycxjzxx,n_fdqydcjzxx,n_fdqygqglxx,n_fdqyjzclsxqk,n_fdqyjzjxjsbgzjh",
+          "guid": "a2140d07-e702-4a93-8106-09f1ceb4734c",
+          "market": "PDBLN"
+        },
+        "unless": {
+          "component": "marketShowQueryZHC",
+          "match": {
+            "infoCode": "n_fdqyjbxx,n_fdqybgqk,n_fdqyqtxxg,n_fdqycxjzxx,n_fdqydcjzxx,n_fdqygqglxx,n_fdqyjzclsxqk,n_fdqyjzjxjsbgzjh",
+            "__pmosReady": "n_fdqyjbxx,n_fdqybgqk,n_fdqyqtxxg,n_fdqycxjzxx,n_fdqydcjzxx,n_fdqygqglxx,n_fdqyjzclsxqk,n_fdqyjzjxjsbgzjh"
+          }
+        }
+      }
+    ],
+    "component": "marketShowQueryZHC",
+    "match": {
+      "infoCode": "n_fdqyjbxx,n_fdqybgqk,n_fdqyqtxxg,n_fdqycxjzxx,n_fdqydcjzxx,n_fdqygqglxx,n_fdqyjzclsxqk,n_fdqyjzjxjsbgzjh"
+    },
+    "set": {
+      "fatherCode": "10",
+      "queryParam.data.memberType": "10",
+      "formView": true,
+      "resultValue": [],
+      "total": 0
+    },
+    "call": "handleCurrent",
+    "args": [
+      1
+    ],
+    "pagination": {
+      "page": "args.0",
+      "size": "pageObj.pageSize",
+      "page_size": 20,
+      "first_page": 1,
+      "records": "data.list",
+      "total": "data.total",
+      "max_pages": 200
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "liaoning/state/server_verified_expansion_20261023/active_manifest.json",
+    "legacy_dataset": "sitewide_f1051ebc83754fde",
+    "menu_guid": "a2140d07-e702-4a93-8106-09f1ceb4734c",
+    "info_code": "n_fdqyjbxx,n_fdqybgqk,n_fdqyqtxxg,n_fdqycxjzxx,n_fdqydcjzxx,n_fdqygqglxx,n_fdqyjzclsxqk,n_fdqyjzjxjsbgzjh",
+    "view": "marketShowQueryZHC",
+    "member_type": "10",
+    "listed_total_20261101": 295,
+    "note": "member_type: the legacy mapping answer (ipParameterConfiguration/getByCondition), one value per column. The rows name members; they carry no files."
+  },
+  "history": [
+    {
+      "at": "2026-11-01T17:30:00+08:00",
+      "event": "migrated_from_legacy",
+      "legacy_status": "sampled_by_legacy_owner",
+      "note": "the legacy collector listed this column to its end every day up to 2026-11-01"
+    }
+  ]
+}

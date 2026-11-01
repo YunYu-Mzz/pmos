@@ -15,7 +15,6 @@ fmonth, fday, ...}``. A documents spec keeps the list call in ``request``
       "period": [{"fields": {"year": "fyear", "month": "fmonth", "day": "fday"}},
                  {"title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月", "kind": "month"}],
       "stop_at_known": true,                       # stop listing at a page of known records
-      "daily_listing": true,                       # list again every day, after a handoff too
       "business_year": 2026,                       # download only this year's files (see _year_admits)
       "download": {"transport": "fetch", "method": "GET",
                    "path": "/px-settlement-infpubmeex/fileService/download",
@@ -40,7 +39,7 @@ from .periods import CHINA
 # week_of_day: the ISO week of a matched date (a weekly report titled by its date range).
 TITLE_KINDS = ("day", "month", "year", "week", "quarter", "week_of_day")
 KEYS = {"fields", "published_format", "filter", "expect", "attachments", "period", "stop_at_known",
-        "download", "download_response", "record_only", "daily_listing", "business_year"}
+        "download", "download_response", "record_only", "business_year"}
 YEAR_IN_TEXT = re.compile(r"(?<!\d)(20\d{2})\s*年")
 
 
@@ -58,8 +57,6 @@ def check(block: dict) -> None:
         raise DocumentError("documents.download must be a request with a transport")
     if "business_year" in block and (type(block["business_year"]) is not int or not 2000 <= block["business_year"] <= 2099):
         raise DocumentError("documents.business_year must be a year")
-    if "daily_listing" in block and type(block["daily_listing"]) is not bool:
-        raise DocumentError("documents.daily_listing must be true or false")
     for rule in block.get("period", []):
         if not isinstance(rule, dict) or not ({"fields", "title_regex"} & set(rule)):
             raise DocumentError("each documents.period rule needs fields or title_regex")

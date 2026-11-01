@@ -452,11 +452,12 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
 ATTACHMENT_QUEUE = "state/attachment_coverage_20261029/queue.json"
 ATTACHMENT_OPERATIONS = "state/attachment_coverage_20261029/operations"
 NATIVE_LISTS = "data/2026/original/native_lists"
+MEMBER_LANE = ("sitewide_8090c94f9cf7b256", "sitewide_b03896324973acd7", "sitewide_f1051ebc83754fde")
 
 
 def list_lane(root: Path, specs: dict, account_alias: str = "liaoning-production", *, only: list[str] | None = None,
               resend_empty: bool = False) -> dict:
-    """The disclosure columns (``pub_*``): what the legacy attachment queue holds, as tombstones in PMOS's own identities. Read-only.
+    """The disclosure columns (``pub_*``) and the three member lists: what the legacy attachment queue holds, as tombstones in PMOS's own identities. Read-only.
 
     A saved file is never asked again. A file the site answered with nothing (HTTP 200, 0 bytes; the legacy review
     kept it "no retry") is recorded as empty and not asked either, unless ``resend_empty``: tombstones cannot be taken
@@ -505,6 +506,7 @@ def list_lane(root: Path, specs: dict, account_alias: str = "liaoning-production
             left += 1
             report[name]["queued"] += 1
     pages = 0
+    names += [name for name in MEMBER_LANE if name in specs]
     for name in names:
         newest = sorted((root / NATIVE_LISTS / specs[name].source["legacy_dataset"]).glob("*/*/*/metadata.json"))
         total = json.loads(newest[-1].read_bytes()).get("total") if newest else None

@@ -1,0 +1,66 @@
+<!doctype html>
+<!-- Offline stand-in for the Liaoning disclosure column page (columnHomeLeftMenuNew): chHeader holds the
+     menu, chAside opens a view on handleNodeClick, treeMainOvert holds the lazily loaded view components.
+     As on the site, a mounted view runs getIpc (its mapping request), which then runs the first query. -->
+<html><head><meta charset="utf-8"><title>disclosure column fixture</title></head>
+<body><div id="header"></div><div id="aside"></div><div id="tree"></div><div id="views"></div>
+<script>
+window.opened = [];
+const post = (path, body) => fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+const documentView = name => ({
+  name,
+  data() { return {tabFlag: false, resultValue: [], total: 0, ipcMap: new Map(),
+                   queryParam: {data: {operateTimeArr: [], customInfoName: '', sourceName: '', marketId: 'PDBLN'},
+                                pageInfo: {pageNum: 1, pageSize: 10}}}; },
+  mounted: [function () { this.queryParam.pageInfo.pageSize = 20; this.getIpc(); }],
+  methods: {
+    getIpc() { post('/px-settlement-infpubquery/ipParameterConfiguration/getByConditionByPublishType', {}); this.queryData(); },
+    queryData() {
+      const path = this.tabFlag ? 'getDataJY' : 'getData';
+      return post('/px-settlement-infpubquery/ipDisclosureApply/' + path, this.queryParam);
+    },
+    fileDownload(row) { return fetch('/px-settlement-infpubmeex/fileService/download?fileId=' + row.attachment[0].id); }
+  }});
+const memberView = {
+  name: 'marketShowQueryZHC',
+  data() { return {loginMarketId: 'PDBLN', resultValue: [], total: 0, pageObj: {}, fatherCode: '', tabs: [], formView: false,
+                   queryParam: {data: {memberType: '', memberName: '', infoCode: [], time: [], marketId: '', generatorType: [], marketCode: ''},
+                                pageInfo: {pageNum: 1, pageSize: 10}}}; },
+  mounted() { this.queryParam.data.marketId = this.marketInfoTwo; this.getIpc(); },
+  methods: {
+    getIpc() { post('/px-settlement-infpubquery/ipParameterConfiguration/getByCondition', {}); this.queryData(); },
+    queryData() {
+      this.queryParam.pageInfo.pageNum = this.pageObj.pageNum || 1;
+      this.queryParam.pageInfo.pageSize = this.pageObj.pageSize || 10;
+      return post('/px-settlement-infpubquery/ipMembersDisclosureNew/queryMembersDisApply', this.queryParam);
+    },
+    handleCurrent(page) { this.pageObj.pageNum = page; return this.queryData(); }
+  }};
+const views = {attchViewQueryJY: documentView('attchViewQueryJY'), operationOrganizationQuery: documentView('operationOrganizationQuery'),
+               marketShowQueryZHC: memberView};
+const tree = {$options: {name: 'treeMainOvert', components: {}}, $children: [], marketInfoTwo: 'PDBLN'};
+for (const [name, value] of Object.entries(views)) tree.$options.components[name] = () => Promise.resolve({default: value});
+const nodes = [
+  {infoCode: 'LSTCFDJGCS', guid: '69c8957d-f65b-4fab-b7d4-2d79cf980cd5', viewname: 'attchViewQueryJY'},
+  {infoCode: 'jyjgJbxx', guid: '653c08ee-a036-4b55-80d3-f98b2796d788', viewname: 'operationOrganizationQuery'},
+  {infoCode: 'dwqyqyjbxx', guid: 'ece5fedc-515b-4eac-b795-2b8edc5e1099', viewname: 'operationOrganizationQuery'},
+  {infoCode: 'n_dlyhjbxx,n_dlyhbgqk,n_dlyhgqglgx,n_dlyhpjcnxx,n_dlyhqtxx,n_dlyhydxx', guid: '59453273-35d6-4265-827b-9eec6ddc9867', viewname: 'marketShowQueryZHC'},
+  {infoCode: 'n_fdqyjbxx,n_fdqybgqk,n_fdqyqtxxg,n_fdqycxjzxx,n_fdqydcjzxx,n_fdqygqglxx,n_fdqyjzclsxqk,n_fdqyjzjxjsbgzjh', guid: 'a2140d07-e702-4a93-8106-09f1ceb4734c', viewname: 'marketShowQueryZHC'}];
+const header = {$options: {name: 'chHeader'}, $children: [], menuBoxObj: {a: [{label: '披露', children: nodes}]}};
+const aside = {$options: {name: 'chAside'}, $children: [], decryData(rows) { return rows; },
+  $refs: {tree: {getNode(guid) { return {guid}; }}},
+  handleNodeClick(node) {
+    window.opened.push(node.infoCode);
+    document.getElementById('views').innerHTML = '';
+    const options = views[node.viewname];
+    const el = document.createElement('div'); document.getElementById('views').append(el);
+    const vm = {...options.data(), $options: options, $children: [], $nextTick: async () => {},
+                infoCode: node.infoCode, viewId: node.guid, marketInfoTwo: tree.marketInfoTwo};
+    for (const [name, method] of Object.entries(options.methods)) vm[name] = method.bind(vm);
+    el.__vue__ = vm;
+    [].concat(options.mounted || []).forEach(hook => hook.call(vm));
+  }};
+document.getElementById('header').__vue__ = header;
+document.getElementById('aside').__vue__ = aside;
+document.getElementById('tree').__vue__ = tree;
+</script></body></html>

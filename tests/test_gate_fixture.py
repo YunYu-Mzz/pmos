@@ -316,6 +316,50 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(caught.exception.code, "site_menu_entry_missing")
         self.assertEqual(Site.received, [])
 
+    async def test_liaoning_disclosure_columns_open_without_their_first_query_and_ask_what_the_legacy_asked(self):
+        """The real specs and page scripts, on a stand-in of the column page: nothing goes out at mount."""
+        from pmos import paging
+        directory = Path(__file__).parent.parent / "provinces" / "liaoning"
+        specs = load_all(directory / "datasets")
+        self.transport.scripts = {path.stem: path.read_text(encoding="utf-8") for path in (directory / "scripts").glob("*.js")}
+        await self.page.goto(self.origin + "/disclosure_column.html")
+
+        async def ask(name, page):
+            spec = specs[name]
+            request = paging.apply(spec.build("2026-11-01"), spec.request["pagination"], page)
+            request = {**request, "frame": "/disclosure_column.html"}
+            request.pop("open_url")
+            Site.received.clear()
+            Site.bodies.clear()
+            response = await self.transport.send(request)
+            self.assertEqual(json.loads(response.body)["status"], 0)
+            self.assertEqual(Site.received, [spec.request["path"]], name + ": only the list request")
+            return json.loads(Site.bodies[0])
+
+        body = await ask("pub_LSTCFDJGCS", 1)
+        self.assertEqual(body["data"]["menuId"], "69c8957d-f65b-4fab-b7d4-2d79cf980cd5")
+        self.assertEqual(body["pageInfo"], {"pageNum": 1, "pageSize": 20})
+        self.assertEqual((await ask("pub_LSTCFDJGCS", 2))["pageInfo"]["pageNum"], 2)
+        record = {"guid": "g1", "title": "t", "attachment": "[]"}
+        download = specs["pub_LSTCFDJGCS"].build_download({"record_id": "g1", "title": "t", "period": "2026-09", "record": record,
+                                                           "attachment": {"id": "f2", "name": "f2.pdf"}})
+        download = {**download, "frame": "/disclosure_column.html"}
+        download.pop("open_url")
+        Site.received.clear()
+        self.assertEqual((await self.transport.send(download)).body, PDF)
+        self.assertEqual(Site.received, [FILE_PATH + "?fileId=f2"], "the view's own fileDownload, the row narrowed to this file")
+        await ask("pub_jyjgJbxx", 1)                    # getDataJY: ask() holds it to the spec's own path
+        await ask("pub_dwqyqyjbxx", 1)
+        name = "sitewide_8090c94f9cf7b256"
+        body = await ask(name, 1)
+        self.assertEqual(body, {"data": {"memberType": "20", "memberName": "", "infoCode": [], "time": [], "marketId": "PDBLN",
+                                         "generatorType": [], "marketCode": "PDBLN"}, "pageInfo": {"pageNum": 1, "pageSize": 20}},
+                         "exactly the fields the legacy observer saw on every page")
+        self.assertEqual((await ask(name, 3))["pageInfo"]["pageNum"], 3)
+        self.assertEqual((await ask("sitewide_f1051ebc83754fde", 1))["data"]["memberType"], "10")
+        opened = await self.page.evaluate("window.opened")
+        self.assertEqual(len(opened), 5, "each column opens once while it stays the one on screen")
+
     async def test_the_work_page_opens_once_from_the_portal_and_is_found_by_its_name_after(self):
         from pmos.browser.attach import work_page
         await self.page.goto(self.origin + "/portal_page.html")

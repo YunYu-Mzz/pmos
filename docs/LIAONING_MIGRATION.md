@@ -185,7 +185,51 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r11：3 个会员名录，以及全菜单核对（2026-11-01）
+
+r11 = r10 加 3 个会员名录；r10 没有部署就被 r11 取代。
+
+**会员名录。** 电力用户（88 条）、售电公司（198 条）、发电企业（295 条），每天共约 30 页，都没有附件。规格是新的 `sitewide_8090c94f9cf7b256`、`sitewide_b03896324973acd7`、`sitewide_f1051ebc83754fde`，随 `--lane lists` 加入，没有墓碑。
+- 页面脚本 `open_member_menu.js` 照搬旧系统的 PREPARE/READY：不跑视图的挂载逻辑，直接设市场字段，所以打开时不发 `getIpc`。
+- `memberType` 取旧系统映射回答里的值（20、30、10），每个栏目一个。
+- 请求体字段和旧系统观察记录（`member_scope_evidence_20261029`）逐字相同。
+
+**一个开关。** `documents.daily_listing` 改成 `period.daily`，因为名录不是文档栏目，也要每天列。`supersede` 对这样的规格也生效：错过的旧日子不再补问。
+
+**页面替身测试。** `tests/fixtures/disclosure_column.html` 仿栏目页：挂载视图时会发映射请求和第一次查询。用真实规格和两个真实页面脚本跑：打开时一个多余请求都没有，翻页、下载、`getDataJY` 都对。这不能代替真实网站，只排除了脚本和规格自身的错。
+
+### 全菜单核对（只读）
+
+旧系统记录的账号菜单 173 项（`native_menu.json`）对 PMOS 规格：154 项有规格，19 项没有，"首页"除外是 18 项。
+
+| 项 | 数量 | 情况 |
+|---|---|---|
+| FineReport 报表（路由 `spotgoodsSum`） | 14 | 旧系统没有原件；`expanded_adapters` 只登记了其中两项的名字，从没采过。表单参数不知道，要先真实探测 |
+| 组件报表 | 3 | 发输变电设备检修计划（日）`028`、水电总出力预测（周）`023`、调峰电力 `061`（旧系统有三维候选 `cascading_061`） |
+| 路由 `table2` | 1 | 输变电设备检修计划执行情况及影响 |
+
+**队列外的 11 个候选规格：**
+
+| 规格 | 情况 | 下一步 |
+|---|---|---|
+| `tie_line_intraday` 032 | 菜单有，旧系统没试过 | 发样本 |
+| `sitewide_deb417ed` 064、`sitewide_f95e530c` 087 | 菜单有，旧系统样本为空 | 发样本 |
+| `sitewide_f09e45e4` 063 | 菜单有，旧系统样本失败 | 发样本 |
+| `sitewide_7a300d98` 026 | 菜单有，旧系统字典为空 | 先读字典 |
+| `sitewide_c351e2bf` 075 | 菜单有，旧系统样本为空 | 先读字典 |
+| `sitewide_055496fd` 086、`sitewide_c23050b8` 087 | 和已有规格同一张报表 | 不采，标记为别名 |
+| `sitewide_99347e93` 090、`sitewide_ef55aac4` 091 | 不在账号菜单 | 不采 |
+| `dayahead_constraints` | 菜单走 FineReport，不是 050 | 并入 FineReport 那 14 项 |
+
+**附加 11 项：** 8 项账号菜单没有（合同、结算单、零售合约等，`current_authenticated_native_menu_missing_no_query`），采不了。3 项能访问：交易公告（141 条，旧系统存了 3 页）、常见问题（2 条，内容是测试数据）、报表目录（10 条，旧系统回答不明）。
+
+**历史用电 `historical_electricity`：** 接口 `LnInformationDeliveryController/queryEnergyFee`。旧系统试了两个月：2026-09 为空，2026-08 网站业务码 5040，之后暂停。范围是"当前账号能看到的用电单元"，这个账号可能本来就没有数据。
+
+**每日字典：** 旧系统每天读字典列出选项，PMOS 用固定选项。旧系统记录里选项数稳定（节点 1324、其余 2 到 9），偶尔为 0 是当天还没发布。计划是每天读一次，发现新选项就告警，由人决定补哪些日子，不自动播种：`spec_periods` 交接下自动加选项会把全年都问一遍。
+
 ## r10：63 个披露栏目和它们的附件，加两张周报（2026-11-01）
+
+r10 没有部署，内容都在 r11 里。
 
 第四优先的前两项。周报在上一个提交里（`--lane weekly`）。这一版接列表和附件，工具是 `tools/liaoning_daily_lane.py --lane lists`。
 
@@ -195,7 +239,7 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
 
 13 个 `candidate` 改成 `sampled`，证据是旧系统每天把它们列到底。
 
-**每天列一次（`documents.daily_listing`）。** 交接之后，`seed` 对 `snapshot` 规格只播种一次，文档栏目也不例外，这样列过一次就再也发现不了新文件。打开这个键的规格每天播种。山西的栏目没打开，行为不变；是否也要打开由山西会话决定。
+**每天列一次（`period.daily`）。** 交接之后，`seed` 对 `snapshot` 规格只播种一次，文档栏目也不例外，这样列过一次就再也发现不了新文件。打开这个键的规格每天播种。山西的栏目没打开，行为不变；是否也要打开由山西会话决定。
 
 **停在已知页（`stop_at_known`）。** 第一次列到真正的末尾，之后遇到整页都已知就停。只读回放了旧系统归档的约 1,235 页（10-23 到 11-01）：
 - 所有栏目都是新的在前，没有一处倒序。
