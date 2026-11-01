@@ -252,3 +252,10 @@ PMOS 对照检查后补了三处：
 - **辽宁经验 22（报表引擎会话闲置超时）对照：**
   - PMOS 目前没有走 FineReport 引擎会话（parameters_d）的规格：辽宁的引擎线 024 和 068 不在首批范围；安徽的 `/fineReport/select*` 是普通 JSON 接口，没有引擎会话。所以目前不受影响。
   - 迁移辽宁引擎线时要做：闲置超过 10 分钟先重开报表页（文档加两个脚本，私有引擎先清本地映射槽位再映射）；`Dec-Session_Lifecycle_End` 单独作为一个暂停原因；失败时保存脱敏后的响应原文（PMOS 目前只给 site_data 留原文）。
+
+## 11-01 选项发现误判"值变了" → r4
+
+- **原因：** 可搜索的 el-select 在下拉框打开时会清空输入框，把选中项挪到占位提示里；按 Escape 关闭后，要等下一轮渲染才把文字放回去。PMOS 按完 Escape 立刻读输入框的文字，就误判为 `select_value_changed_by_reading`（generation_types_energy_count，11:31）。
+- **修复（`ui.select_options`）：** 按 ElSelect 组件自己的值和输入框文字一起判断，等下拉框收起、两者都恢复原样（最多 3 秒）才算读完；真的变了仍报这个错。夹具 `filterable_select_page.html` 模拟了"打开时清空、关闭后延迟恢复"和"真的改了值"两种情况。
+- **`release-discovery <dataset> --approval "<原话>"`：** 解除 r3 下被暂停的选项发现，从下一次按天滚动起重新读取。
+- 测试：全套 511 项（安徽 venv、山西 venv）和真浏览器 18 项通过。

@@ -326,6 +326,21 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(await self.page.locator(".el-select-dropdown__item").first.is_visible(), "closed again")
         self.assertEqual(Site.received, [])
 
+    async def test_a_filterable_select_is_judged_by_its_value_after_it_has_settled(self):
+        """Anhui 2026-11-01 11:31: the input was blank for a tick after Escape (select_value_changed_by_reading)."""
+        request = {"transport": "ui", "action": "options", "frame": "/filterable_select_page.html",
+                   "fields": [{"kind": "date", "placeholder": "选择日期", "value": "2026-10-29"}],
+                   "select": {"kind": "select", "label": "电源类型"}}
+        await self.page.goto(self.origin + "/filterable_select_page.html")
+        response = await self.transport.send(request)
+        self.assertEqual([o["label"] for o in json.loads(response.body)["data"]], ["火电", "水电", "风电"])
+        self.assertEqual(await self.page.input_value("#pick"), "火电")
+        await self.page.goto(self.origin + "/filterable_select_page.html?change=1")
+        with self.assertRaises(Fault) as caught:
+            await self.transport.send({**request, "frame": "/filterable_select_page.html?change=1"})
+        self.assertEqual(caught.exception.code, "select_value_changed_by_reading", "a real change is still caught")
+        self.assertEqual(Site.received, [])
+
     async def test_a_template_outlives_its_frame_only_where_the_main_frame_fallback_is_on(self):
         await self.page.goto(self.origin + "/portal_page.html")
         frame = next(f for f in self.page.frames if f.parent_frame is not None)

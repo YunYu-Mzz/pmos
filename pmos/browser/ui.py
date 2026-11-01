@@ -380,6 +380,17 @@ _OPTION_ITEMS_JS = """items => items.map(e => {
 })"""
 
 
+# The select's model value (ElSelect's own, where there is one) and the input's text: both must be back.
+_SELECT_STATE_JS = """el => {
+  for (let n = el; n; n = n.parentElement) {
+    const vm = n.__vue__;
+    if (vm && vm.$options && vm.$options.name === 'ElSelect')
+      return JSON.stringify([vm.value === undefined ? null : vm.value, el.value]);
+  }
+  return JSON.stringify([null, el.value]);
+}"""
+
+
 async def select_options(frame, field: dict, timeout: float) -> list[dict]:
     """The options of one labelled select as the page lists them (text, value), read without choosing one.
 
@@ -387,7 +398,7 @@ async def select_options(frame, field: dict, timeout: float) -> list[dict]:
     every item's text and its ElOption value, close it with Escape.
     """
     locator = await _field(frame, field)
-    before = await locator.input_value()
+    before = await locator.evaluate(_SELECT_STATE_JS)
     await locator.click()
     items = frame.locator(".el-select-dropdown__item:visible")
     deadline = asyncio.get_running_loop().time() + min(timeout, 10)
@@ -397,8 +408,13 @@ async def select_options(frame, field: dict, timeout: float) -> list[dict]:
         await asyncio.sleep(0.1)
     found = await items.evaluate_all(_OPTION_ITEMS_JS)
     await locator.press("Escape")
-    if await locator.input_value() != before:
-        raise Fault("select_value_changed_by_reading", "local")
+    # A filterable ElSelect shows nothing while open and puts its label back a tick after
+    # closing (Anhui 2026-11-01 11:31): read again until value and text are back (3 s).
+    settle = asyncio.get_running_loop().time() + 3
+    while await items.count() or await locator.evaluate(_SELECT_STATE_JS) != before:
+        if asyncio.get_running_loop().time() > settle:
+            raise Fault("select_value_changed_by_reading", "local")
+        await asyncio.sleep(0.1)
     return found
 
 

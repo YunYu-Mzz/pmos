@@ -327,7 +327,8 @@ class DiscoveryFailure(unittest.IsolatedAsyncioTestCase):
         clock = Clock()
         transport = FakeTransport(clock)
         transport.queue = [Fault("select_value_changed_by_reading", "local")]
-        engine = Engine(Province.load("anhui", tmp.path / "provinces"), transport, instance=tmp.path / "var", clock=clock)
+        province = Province.load("anhui", tmp.path / "provinces")
+        engine = Engine(province, transport, instance=province.instance(), clock=clock)
         self.addCleanup(engine.ledger.close)
         engine.enqueue({"action": "discover_options", "dataset": "sections", "period": DAY[1]})
         self.assertTrue(await engine.run_command())
@@ -336,7 +337,12 @@ class DiscoveryFailure(unittest.IsolatedAsyncioTestCase):
         engine._roll_forward_options(set(), __import__("pmos.periods", fromlist=["today"]).today())
         self.assertFalse([c for c in engine.state.read("commands", []) or [] if c.get("action") == "discover_options"],
                          "no new discovery for the held report")
-        engine.state.write("discovery_holds", {})                 # reviewed and released
+        from argparse import Namespace
+        from pmos import cli
+        with self.assertRaises(ValueError):
+            cli.cmd_release_discovery(engine.province, Namespace(dataset="sections", approval=" "))
+        cli.cmd_release_discovery(engine.province, Namespace(dataset="sections", approval="用户原话"))   # reviewed
+        self.assertEqual(engine.state.read("discovery_holds"), {})
         engine.enqueue({"action": "discover_options", "dataset": "sections", "period": DAY[1]})
         clock.advance(5)
         self.assertTrue(await engine.run_command())

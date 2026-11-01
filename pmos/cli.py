@@ -412,6 +412,20 @@ def cmd_release_early(province: Province, args) -> None:
     _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
 
 
+def cmd_release_discovery(province: Province, args) -> None:
+    """After review: a report whose dropdown discovery was held reads its options again (next day's roll-forward)."""
+    if not args.approval.strip():
+        raise ValueError("approval_required")
+    state = StateStore(province.instance() / "state")
+    holds = state.read("discovery_holds", {}) or {}
+    if args.dataset not in holds:
+        raise ValueError("no_discovery_hold")
+    released = holds.pop(args.dataset)
+    state.write("discovery_holds", holds)
+    state.event("options_discovery_released", dataset=args.dataset, reason=released["reason"], approval=args.approval)
+    _print({"province": province.id, "released": args.dataset, "reason": released["reason"]})
+
+
 def cmd_extend_scope(province: Province, args) -> None:
     """Offline: the approved order (a superset of the scope) and the datasets seeded daily from their spec periods."""
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
@@ -642,6 +656,9 @@ def main(argv: list[str] | None = None) -> int:
                                   help="offline: user-approved, an answer saved before its day was published waits again")
         re_.add_argument("attempt", type=int)
         re_.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        rdisc = commands.add_parser("release-discovery", help="after review: a held dropdown discovery runs again")
+        rdisc.add_argument("dataset")
+        rdisc.add_argument("--approval", required=True, help="the user's approval, verbatim")
         es = commands.add_parser("extend-scope", help="offline: add a user-approved collection order and daily seeding")
         es.add_argument("--plan", required=True, type=lambda v: __import__("pathlib").Path(v),
                         help="JSON with order and seeded, e.g. provinces/<id>/full_year_scope.json")
@@ -711,7 +728,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-discovery", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -747,6 +764,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_release_denied(province, args)
             elif args.command == "release-early":
                 cmd_release_early(province, args)
+            elif args.command == "release-discovery":
+                cmd_release_discovery(province, args)
             elif args.command == "extend-scope":
                 cmd_extend_scope(province, args)
             elif args.command == "import-legacy-manifest":
