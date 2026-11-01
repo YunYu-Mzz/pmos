@@ -61,6 +61,10 @@ QUERY_TRANSPORTS = ("component", "native")
 QUERY_LAPSE_RECOVERIES_PER_HOUR = 3
 PAGE_RECOVERIES_PER_HOUR = 3
 DRIVER_LOSSES_TO_STOP = 3
+# A prime re-reads an already collected record so the page shows its own request (as the Anhui
+# legacy re-captures one after every restart); its answer is only a sample, never a task's result,
+# so it is not an identity that may be asked for once (Anhui 2026-11-01 13:23: a restart refused it).
+PRIME_SCOPE = "template_prime"
 # Page operations (menu, form, dropdown) failing in a row, across reports, stop the province.
 PAGE_FAILURES_TO_STOP = 3
 # The page was driven and answered; only a read's own check failed (Anhui 2026-11-01 12:32:
@@ -195,7 +199,7 @@ class Engine:
                 raise Fault("province_blocked", "local")
             if self.ledger.unsettled():
                 raise Fault("unsettled_attempt", "local")
-            if kind in BUDGET_KINDS and dataset is not None and period is not None:
+            if kind in BUDGET_KINDS and dataset is not None and period is not None and scope != PRIME_SCOPE:
                 if self.ledger.consumed(dataset, period, scope):
                     raise Fault("consumed_identity_requires_review", "unknown")
             if self.spacing_wait(kind, lane) > 0:
@@ -913,6 +917,15 @@ class Engine:
             if fault.code == "spacing_not_elapsed":
                 return 1
             current = task if "task" in locals() else None
+            if isinstance(current, dict) and current.get("prime"):
+                # A prime is no item (no period): never isolated; a site answer still decides for the
+                # province, anything else holds only this report (Anhui 13:23: KeyError 'period').
+                decision = decide(fault, "collect")
+                if fault.category in ("auth", "permission", "rate_limit", "network"):
+                    self.block(fault, decision, current["dataset"])
+                else:
+                    self.hold_dataset(current["dataset"], "prime_" + fault.code, "paused")
+                return 1
             if current is not None and (fault.code.startswith("preflight_deferred:") or fault.unsent):
                 # Like the Shanxi coordinator's deferred scope: no request was
                 # sent, the item stays pending, its dataset pauses for review
@@ -943,11 +956,11 @@ class Engine:
             self.block(Fault("internal_error", "local"), Decision("province", False))
             raise
 
-    def _hold_discovery(self, dataset: str, code: str) -> None:
+    def _hold_discovery(self, dataset: str, code: str, detail: dict | None = None) -> None:
         holds = self.state.read("discovery_holds", {}) or {}
-        holds[dataset] = {"reason": code, "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+        holds[dataset] = {"reason": code, "at": time.strftime("%Y-%m-%dT%H:%M:%S"), **(detail or {})}
         self.state.write("discovery_holds", holds)
-        self.state.event("options_discovery_held", dataset=dataset, reason=code)
+        self.state.event("options_discovery_held", dataset=dataset, reason=code, **(detail or {}))
 
     async def _discover_options(self, spec: DatasetSpec, period: str) -> dict:
         """The day's options of a one-dropdown report, read from the page (Anhui single-selector discovery).
@@ -994,7 +1007,7 @@ class Engine:
         prime = spec.request["prime"]
         try:
             result = await self.request("sample", {**prime["request"], "bootstrapping": True}, {"kind": "json"},
-                                        dataset=spec.id, period=prime["period"], scope="template_prime",
+                                        dataset=spec.id, period=prime["period"], scope=PRIME_SCOPE,
                                         lane=spec.source.get("lane"))
         except Fault as fault:
             if fault.code == "spacing_not_elapsed":
@@ -1005,7 +1018,7 @@ class Engine:
                 self._hold_unsent(spec.id, "prime_" + fault.code)
                 return 1
             raise
-        record = self.samples.store(spec.id, prime["period"], result.response.body, ".json", scope="template_prime",
+        record = self.samples.store(spec.id, prime["period"], result.response.body, ".json", scope=PRIME_SCOPE,
                                     acquisition="template_prime")
         self.state.event("template_primed", dataset=spec.id, period=prime["period"], sample_sha256=record["sha256"])
         return 0.2
@@ -1409,7 +1422,7 @@ class Engine:
                 # select_value_changed_by_reading stopped the province): only that
                 # report's discovery waits for review; its known options roll on.
                 # A login, permission, rate-limit or network answer is the site's and still stops it.
-                self._hold_discovery(command["dataset"], fault.code)
+                self._hold_discovery(command["dataset"], fault.code, fault.detail)
             else:
                 decision = decide(fault, "sample")
                 if decision.scope == "province":

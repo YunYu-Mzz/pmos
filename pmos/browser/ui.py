@@ -296,7 +296,7 @@ async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = 
     except Fault as fault:
         if state["leaf_clicked"] or fault.unsent:
             raise
-        raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True) from None
+        raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True, detail=fault.detail) from None
 
 
 async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, force: bool, state: dict) -> None:
@@ -329,7 +329,11 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
         await target.scroll_into_view_if_needed(timeout=timeout * 1000)
         point = await target.evaluate(_VISIBLE_POINT_JS)
         if point is None:
-            raise Fault("menu_label_not_visible", "local")
+            box = await target.evaluate("e => { const r = e.getBoundingClientRect(); return [Math.round(r.width),"
+                                        " Math.round(r.height), e.getClientRects().length]; }")
+            raise Fault("menu_label_not_visible", "local", detail={
+                "menu_depth": depth, "menu_label": labels[depth - 1], "menu_target": "label" if leaf else "expand_icon",
+                "box_width": box[0], "box_height": box[1], "box_rects": box[2]})
         state["leaf_clicked"] = state["leaf_clicked"] or leaf
         await target.click(position=point, timeout=timeout * 1000)
         loop = asyncio.get_running_loop()

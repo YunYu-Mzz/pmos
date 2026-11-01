@@ -30,7 +30,7 @@ CATEGORIES = ("auth", "permission", "rate_limit", "network", "unknown", "site_da
 
 class Fault(Exception):
     def __init__(self, code: str, category: str, *, http_status: int | None = None,
-                 business_status: str | None = None, unsent: bool = False):
+                 business_status: str | None = None, unsent: bool = False, detail: dict | None = None):
         if category not in CATEGORIES:
             raise ValueError("fault_category_invalid")
         super().__init__(code)
@@ -41,6 +41,8 @@ class Fault(Exception):
         # Proven by the transport: no business request of this operation
         # reached the network (the request gate passed none). Consumes nothing.
         self.unsent = unsent
+        # Page diagnostics only (a menu label, a depth, a box size): never values, addresses or tokens.
+        self.detail = detail or {}
 
 
 @dataclass(frozen=True)

@@ -845,7 +845,8 @@ class PageTransport:
                 await ui.fill(frame, field, self.timeout)
         except Fault as fault:
             # 查询 was never clicked: nothing of this operation was asked for.
-            raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True) from None
+            raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True,
+                        detail=fault.detail) from None
 
         def from_report(response) -> bool:
             req = response.request

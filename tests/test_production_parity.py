@@ -1196,6 +1196,23 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         self.clock.advance(2)
         await engine.tick()
         self.assertEqual(self.transport.sent[-1]["menu"], ["现货市场", "bb"], "the others go on")
+        # After the cool-down the same prime is asked for again: a prime is no consumable identity
+        # (Anhui 13:23: a restart's prime was refused, then KeyError 'period').
+        self.clock.advance(700)
+        sent = len(self.transport.sent)
+        self.transport.default = Response(200, "application/json", b'{"status":0,"data":[1]}')
+        for _ in range(3):
+            await engine.tick()
+            self.clock.advance(2)
+        self.assertIn(["现货市场", "aa"], [r.get("menu") for r in self.transport.sent[sent:]])
+        self.assertIsNone(engine.state.blocked())
+        self.transport.queue = [Fault("unexpected_answer", "unknown")]
+        engine._primed.clear()
+        self.transport.unready = {"/px-test/aa", "/px-test/bb"}
+        self.clock.advance(2)
+        await engine.tick()                        # an unknown fault of a prime: no crash, that report waits
+        self.assertIn(engine.state.read("dataset_holds").get("aa", {}).get("reason", ""),
+                      ("prime_unexpected_answer",))
 
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost

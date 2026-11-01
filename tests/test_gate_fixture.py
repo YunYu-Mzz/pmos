@@ -224,6 +224,20 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.page.locator(".el-tree-node.is-current").count(), 1)
         self.assertEqual(await self.page.locator(".menuBox.menuBoxExpanded").count(), 0, "the hover menu was left")
 
+    async def test_a_menu_label_with_no_visible_point_says_where_it_failed(self):
+        from pmos.browser import ui
+        await self.page.set_content("""<div class="el-tree"><div class="el-tree-node"><div class="el-tree-node__content">
+          <span class="el-tree-node__expand-icon" style="display:inline-block;width:0;height:0;overflow:hidden"></span>
+          <span class="el-tree-node__label">中长期市场</span></div>
+          <div class="el-tree-node__children" style="display:none"><div class="el-tree-node"><div class="el-tree-node__content">
+          <span class="el-tree-node__label">市场边界信息</span></div></div></div></div></div>""")
+        with self.assertRaises(Fault) as caught:
+            await ui.select_menu(self.page, ["中长期市场", "市场边界信息"], 1)
+        self.assertEqual(caught.exception.code, "menu_label_not_visible")
+        self.assertEqual({k: caught.exception.detail[k] for k in ("menu_depth", "menu_label", "menu_target", "box_width")},
+                         {"menu_depth": 1, "menu_label": "中长期市场", "menu_target": "expand_icon", "box_width": 0})
+        self.assertTrue(caught.exception.unsent)
+
     async def test_a_menu_step_that_fails_before_the_leaf_is_clicked_is_proven_unsent(self):
         from pmos.browser import ui
         await self.page.goto(self.origin + "/portal_page.html")
