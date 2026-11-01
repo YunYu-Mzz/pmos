@@ -1123,6 +1123,25 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(ledger.unsettled())
         self.assertFalse(ledger.consumed("load", TODAY))
 
+    async def test_a_failed_planned_recycle_keeps_the_login_renewed_and_names_its_cause(self):
+        """Anhui 2026-11-01 12:39: the portal was not found (portal_page_missing); the old page still worked."""
+        from pmos.browser.attach import AttachError
+        engine = self.engine()
+        engine.province.browser_config = lambda: {"page_recycle": {"max_age_seconds": 3600, "max_js_heap_mb": 768}}
+
+        async def page_health():
+            return {"age_seconds": 10, "js_heap_mb": 812}
+
+        async def recover_page():
+            raise AttachError("portal_page_missing")
+        self.transport.page_health, self.transport.recover_page = page_health, recover_page
+        await engine.tick()
+        block = engine.state.blocked()
+        self.assertEqual((block["reason"], block["keepalive_allowed"]), ("page_recovery_failed", True))
+        events = [json.loads(line) for line in (engine.state.root / "events.jsonl").read_text().splitlines()]
+        failed = [e for e in events if e["phase"] == "page_recovery_failed"]
+        self.assertEqual((failed[0]["code"], failed[0]["planned"]), ("portal_page_missing", True))
+
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost
         engine = self.engine()

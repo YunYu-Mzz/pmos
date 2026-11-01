@@ -311,3 +311,16 @@ PMOS 对照检查后补了三处：
 
   r6 验收时，5 张报表一打开下拉框就会自己选中一项，PMOS 比旧系统严，所以都报了"值变了"。r8 的 `ui.select_options` 照旧系统放行这两种情况，其余情况仍报 `select_value_changed_by_reading`；下拉框关不上报 `select_dropdown_not_closed`。发现从不点查询，所以选中项变了也不影响任何数据。夹具 `?pick=1`（读取时选中一个列出的选项）通过，`?change=1` 改成页面没列出的值，仍会报错。
 - 0f64（月度检修计划，2026-11）的发现报 `menu_label_not_visible`，记为未发出，这张报表的发现被暂停，它的采集照常。月份栏目的菜单以后再查。
+
+## 11-01 12:39 r8 一启动换页失败 → r9
+
+- **经过：**
+  - r7 跑了 attempt 10～16：actual_load 10-29 采到；3 次选项发现成功；3 次 `select_text_not_restored`（r8 已按旧系统规则放行）。
+  - 12:39:58 换上 r8。综合查询页 JS 堆 812 MB，超过 768 MB，按规则立即计划换页。
+  - 从门户重开时立刻报 AttachError，被封锁为 `page_recovery_failed`（keepalive_allowed=false），进程以 0 退出。
+- **原因：** 门户的真实地址是 `/?ACYxOEl1=…#/dashboard`（只读看过参数名），站点的动态参数夹在路径和 `#` 之间。PMOS 按子串 `/#/dashboard` 找门户，永远找不到（`portal_page_missing`）。测试夹具的地址里没有这个参数。
+- **r9：**
+  - `attach.work_page` 找门户时，用去掉查询参数后的地址比较。辽宁的 `open_from` 也是 `/#/dashboard`，同一个隐患一并消除。
+  - 计划换页失败时旧页面仍然可用，所以封锁但保活照常（`Decision("province", planned)`）。崩溃恢复失败照旧不保活。
+  - `page_recovery_failed` 事件记下 AttachError 的原因码（`code`）。
+  - 夹具在 `/?ACYxOEl1=…#/dashboard` 提供门户页，用生产配置 `/#/dashboard` 测试。全套 517 项（两个 venv）和真浏览器 20 项通过。

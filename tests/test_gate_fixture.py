@@ -37,6 +37,15 @@ class Site(http.server.SimpleHTTPRequestHandler):
     challenges = 0          # the next document answers of /pxf-settlement-outnetpub/ that are a 412 challenge
 
     def do_GET(self):
+        if self.path == "/" or self.path.startswith("/?"):
+            # The Anhui portal as on 2026-11-01: /?ACYxOEl1=…#/dashboard (a dynamic parameter before the hash).
+            body = (FIXTURES / "anhui_portal.html").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if self.path.startswith("/pxf-settlement-outnetpub/"):
             if Site.challenges > 0:
                 Site.challenges -= 1
@@ -278,6 +287,15 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         await opened.evaluate("() => { window.name = ''; }")       # as the legacy worker's own page
         self.assertIs(await work_page(self.browser, self.origin, config, timeout=10), opened, "adopted, no new tab")
         self.assertEqual(len(self.page.context.pages), 2)
+
+    async def test_the_portal_is_found_by_its_route_although_a_dynamic_parameter_precedes_the_hash(self):
+        from pmos.browser.attach import work_page
+        await self.page.goto(self.origin + "/?ACYxOEl1=abc123#/dashboard")
+        config = {"name": "pmos-anhui-work", "open_from": "/#/dashboard", "menu": ["信息披露", "综合查询"],
+                  "url_contains": "columnHomeLeftMenuNew"}           # the production value
+        opened = await work_page(self.browser, self.origin, config, timeout=10)
+        self.assertIn("columnHomeLeftMenuNew", opened.url)
+        self.assertEqual(await opened.evaluate("() => window.name"), "pmos-anhui-work")
 
     async def test_a_planned_recycle_through_a_412_challenge_settles_once_and_reopens_the_column(self):
         from pmos.browser.attach import work_page

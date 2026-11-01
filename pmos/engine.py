@@ -1039,8 +1039,13 @@ class Engine:
             self.block(fault, decide(fault, "collect"))
             return 5
         except Exception as exc:
-            self.state.event("page_recovery_failed", error=type(exc).__name__, planned=planned)
-            self.block(Fault("page_recovery_failed", "local"), Decision("province", False))
+            from .browser.attach import AttachError
+            # An AttachError carries a fixed code (portal_page_missing …); other messages may hold addresses.
+            self.state.event("page_recovery_failed", error=type(exc).__name__, planned=planned,
+                             **({"code": str(exc)[:80]} if isinstance(exc, AttachError) else {}))
+            # A planned recycle leaves the old page working: the login is still renewed meanwhile
+            # (Anhui 2026-11-01 12:39). A crashed page cannot renew anything.
+            self.block(Fault("page_recovery_failed", "local"), Decision("province", planned))
             return 5
         # The old page's request templates died with it: a whole-day lane may prime again at once
         # (Anhui 2026-11-01: a recycle about every 20 minutes while the whole-day lane runs).

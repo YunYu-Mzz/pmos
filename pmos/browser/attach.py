@@ -120,7 +120,9 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
         if kind:
             await kind[0].evaluate("name => { window.name = name; }", config["name"])
             return kind[0]
-    portals = [page for page in pages if config["open_from"] in page.url]
+    # Anhui 2026-11-01 12:39: the portal is /?ACYxOEl1=…#/dashboard (the site's dynamic parameter
+    # sits before the hash), so its address is matched without the query.
+    portals = [page for page in pages if config["open_from"] in _without_query(page.url)]
     if len(portals) != 1:
         raise AttachError("portal_page_not_unique" if portals else "portal_page_missing")
     portal = portals[0]
@@ -145,6 +147,12 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
     if await page.evaluate("() => window.name") != config["name"]:
         raise AttachError("work_page_name_lost")
     return page
+
+
+def _without_query(url: str) -> str:
+    from urllib.parse import urlsplit, urlunsplit
+    parts = urlsplit(url)
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, "", parts.fragment))
 
 
 async def _open_by_menu(portal, labels: list, timeout: float):
