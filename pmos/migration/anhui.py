@@ -30,6 +30,32 @@ BINDINGS = "data/2026/native_tables/_bindings"
 DATE_SELECTOR = "日期"
 # A legacy send that has not settled: freeze at a settled boundary first.
 IN_FLIGHT = {"attempting", "requesting"}
+# Days a report's day is held back before it is asked for (PMOS saves an empty
+# or partial answer for good). What happened during a day (actual, real-time,
+# execution, operating-day reports) waits 2 days: the legacy worker's 27
+# empties of 省间联络线输电情况 all came at 1 day and were there at 3
+# (2026-11-01). Everything else 1 day: the legacy worker never asked for the
+# running day (its first batch: at least 1 day, from its 10-23/24 backfill).
+PUBLISH_LAG_DAYS = {
+    "actual_load": 2, "generation_output_actual": 2, "hydro_storage_output_actual": 2,
+    "non_market_output_actual": 2, "system_reserve": 2,
+    "publication_1ade3e9512c04404": 2,   # 日前发电设备检修计划执行情况
+    "publication_54367a8737ed44c9": 2,   # 开停机不满最小约束时间机组名单
+    "publication_77a790459318559b": 2,   # 实际运行输电断面约束情况
+    "publication_d25c63c96933e7cf": 2,   # 省内关键输电断面可用容量日
+    "publication_f4a61b9f9aa8886c": 2,   # 日前输变电设备检修计划执行情况
+    "important_channel_transmission_actual": 2, "intertie_actual_huan_i": 2, "renewables_output_actual": 2,
+    "real_time_transmission_constraints": 2, "real_time_node_marginal_price": 2, "generation_types_energy_count": 2,
+    "publication_1404bce682303715": 2,   # 每个交易时段实际运行输电断面约束
+    "publication_22c779b5bdc2edc8": 2,   # 辅助服务市场申报出清信息
+    "publication_6d80c3d4514ccfc2": 2,   # 运行日各时段临时调用机组情况
+    "publication_9d35ad5e2d74c67c": 2,   # 重要线路与变压器平均潮流
+    "publication_9dda25255779e435": 2,   # 运行日各时段分类电源装机
+}
+
+
+def publish_lag(name: str) -> int:
+    return PUBLISH_LAG_DAYS.get(name, 1)
 
 
 def _declared(root: Path, relative: str) -> Path:
@@ -96,7 +122,8 @@ def build_specs(root: Path, ui_specs: dict[str, DatasetSpec]) -> dict:
                      "action": "query", "path": proof["endpoint_path"], "method": "POST"}
         value = {
             "id": name, "name": entry.get("title") or ui.name, "status": "verified",
-            "period": {"kind": "day", "start": ui.period.get("start", "2026-01-01"), "end": "today"},
+            "period": {"kind": "day", "start": ui.period.get("start", "2026-01-01"), "end": "today",
+                       "lag_days": publish_lag(name)},
             "request": {"transport": "fetch", "method": "POST", "path": proof["endpoint_path"],
                         "template_body_set": {field: "{date}"}, "bootstrap": bootstrap},
             "response": {"kind": "json"},

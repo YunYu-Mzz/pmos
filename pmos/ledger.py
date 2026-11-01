@@ -190,14 +190,20 @@ class Ledger:
                     " status='saved', artifact_sha256=excluded.artifact_sha256, updated_at=excluded.updated_at",
                     (dataset, period, scope, sha256, now, now))
 
-    def next_task(self, datasets: list[str]) -> sqlite3.Row | None:
-        """First pending task of the first dataset that has one; newest period first."""
+    def next_task(self, datasets: list[str], *, newest: str | None = None) -> sqlite3.Row | None:
+        """First pending task of the first dataset that has one; newest period first (none after ``newest``)."""
         for dataset in datasets:
             row = self.db.execute("SELECT * FROM tasks WHERE dataset=? AND status='pending'"
-                                  " ORDER BY period DESC, scope LIMIT 1", (dataset,)).fetchone()
+                                  + (" AND period<=?" if newest else "") + " ORDER BY period DESC, scope LIMIT 1",
+                                  (dataset, newest) if newest else (dataset,)).fetchone()
             if row is not None:
                 return row
         return None
+
+    def pending_after(self, dataset: str, newest: str) -> int:
+        """Pending tasks of days not yet due (they wait, nothing is consumed)."""
+        return self.db.execute("SELECT COUNT(*) FROM tasks WHERE dataset=? AND status='pending' AND period>?",
+                               (dataset, newest)).fetchone()[0]
 
     def settle_task(self, dataset: str, period: str, status: str, *, scope: str = "",
                     sha256: str | None = None, reason: str | None = None) -> None:
@@ -585,6 +591,36 @@ class Ledger:
             self.db.execute("ROLLBACK")
             raise
         return reopened
+
+    def release_early(self, attempt: int, approval: str) -> tuple:
+        """User-approved: an answer saved before its day was published (a partial or empty day) stops
+        consuming its item, which is pending again and waits for its day (``lag_days``).
+
+        Anhui 2026-11-01 11:31: 实际负荷 of the running day was saved with 46
+        real points and 50 zeros. The early original stays in the archive and
+        the attempt in the history.
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("release_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            row = self.db.execute("SELECT * FROM attempts WHERE id=?", (attempt,)).fetchone()
+            if row is None or (row["kind"], row["outcome"]) not in (("collect", "success"), ("collect", "empty")):
+                raise ValueError(f"attempt_{attempt}_is_not_a_saved_answer")
+            task = self.db.execute("SELECT status FROM tasks WHERE dataset=? AND period=? AND scope=?",
+                                   (row["dataset"], row["period"], row["scope"])).fetchone()
+            if task is None or task["status"] not in ("saved", "empty"):
+                raise ValueError(f"attempt_{attempt}_task_is_not_settled")
+            if self.db.execute("SELECT 1 FROM released_attempts WHERE attempt_id=?", (attempt,)).fetchone():
+                raise ValueError(f"attempt_{attempt}_already_released")
+            self.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, approval, self.clock()))
+            self.db.execute("UPDATE tasks SET status='pending', reason=?, updated_at=? WHERE dataset=? AND period=? AND scope=?",
+                            (f"released_early:{attempt}", self.clock(), row["dataset"], row["period"], row["scope"]))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+        return (attempt, row["dataset"], row["period"], row["scope"])
 
     def latest_denial(self, dataset: str, period: str) -> int | None:
         """The newest unreleased HTTP 200 + 40302 attempt of a period (any page)."""

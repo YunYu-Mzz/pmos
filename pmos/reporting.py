@@ -147,6 +147,8 @@ def headline(phase, block, business, now) -> dict:
         line = f"已暂停：{block.get('reason')}"
     elif phase in ("paused", "stopped_all", "idle"):
         line = f"已暂停（{phase}）"
+    elif phase in ("caught_up", "waiting_publication"):
+        line = "正常（已追平，等待新日期）"
     elif phase not in ("complete", "quiet_window") and stalled is not None and stalled >= STALLED_MINUTES:
         line = f"已停滞 {stalled} 分钟"
     else:

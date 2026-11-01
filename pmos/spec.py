@@ -212,6 +212,17 @@ class DatasetSpec:
                               lag_days=self.period.get("lag_days", 0),
                               complete_only=self.period.get("complete_only", False))
 
+    def newest_due(self, *, on=None) -> str | None:
+        """The newest day that may be asked for (``lag_days`` back), or None when nothing holds it back.
+
+        A task seeded before (a legacy owner's open candidate of the running
+        day) waits for it too: an empty or partial answer would be saved for good.
+        """
+        if self.period["kind"] != "day" or not self.period.get("lag_days"):
+            return None
+        from datetime import timedelta
+        return periods.value_of("day", (on or periods.today()) - timedelta(days=self.period["lag_days"]))
+
     # -- scopes: extra dimensions of one period (unit, node, section ...) ----
     def scope_items(self) -> list[tuple[str, dict]]:
         """(key, values) per task dimension; an unscoped dataset has one ("", {})."""

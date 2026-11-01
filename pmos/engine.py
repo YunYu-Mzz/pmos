@@ -339,10 +339,12 @@ class Engine:
                 for key, _ in spec.scope_items():
                     self.ledger.seed(spec.id, due, key)
                 self.state.event("options_rolled_forward", dataset=spec.id, periods=len(due), options=len(spec.scopes))
-            if spec.source.get("discover_options") and spec.source.get("ui_request"):
+            if (spec.source.get("discover_options") and spec.source.get("ui_request")
+                    and spec.id not in (self.state.read("discovery_holds", {}) or {})):
                 newest_due = (due or [newest])[-1]
                 queued = {(c.get("action"), c.get("dataset"), c.get("period")) for c in self.state.read("commands", []) or []}
-                if ("discover_options", spec.id, newest_due) not in queued:
+                if (("discover_options", spec.id, newest_due) not in queued
+                        and not self.ledger.consumed(spec.id, newest_due, "discover_options")):
                     self.enqueue({"action": "discover_options", "dataset": spec.id, "period": newest_due})
 
     def _cursor_task(self, enabled: list[DatasetSpec]):
@@ -363,7 +365,7 @@ class Engine:
             return cursor, set()
         missing = set()
         for spec in enabled:
-            task = self.ledger.next_task([spec.id])
+            task = self.ledger.next_task([spec.id], newest=spec.newest_due())
             if task is None:
                 continue
             if spec.request["transport"] == "fetch" and not task["scope"].startswith("f"):
@@ -375,6 +377,17 @@ class Engine:
                     continue
             return task, missing
         return None, missing
+
+    def _waiting_publication(self, enabled: list[DatasetSpec]) -> list[str]:
+        return sorted(spec.id for spec in enabled
+                      if (newest := spec.newest_due()) and self.ledger.pending_after(spec.id, newest))
+
+    def _grows_daily(self, enabled: list[DatasetSpec]) -> bool:
+        handoff = self.ledger.handoff()
+        if handoff is None:
+            return False
+        seeded = set(handoff["seeded"])
+        return any(spec.id in seeded or spec.source.get("roll_forward_options") for spec in enabled)
 
     def dataset_holds(self) -> dict:
         holds = self.state.read("dataset_holds", {}) or {}
@@ -802,6 +815,13 @@ class Engine:
                     # Held datasets keep pending items for review: not complete,
                     # so an acceptance run stays and keeps the login renewed.
                     self._status("waiting_holds", held=sorted(holds))
+                elif waiting := self._waiting_publication(enabled):
+                    # Days not yet published wait in the ledger: not complete either.
+                    self._status("waiting_publication", datasets=waiting)
+                elif self._grows_daily(enabled):
+                    # Caught up, but tomorrow brings new days: the worker stays (an
+                    # acceptance run ending here would leave its launchd unit stopped).
+                    self._status("caught_up")
                 else:
                     self._status("complete")
                 return 10
@@ -875,6 +895,12 @@ class Engine:
             # A bug of ours after any request was settled in the ledger.
             self.block(Fault("internal_error", "local"), Decision("province", False))
             raise
+
+    def _hold_discovery(self, dataset: str, code: str) -> None:
+        holds = self.state.read("discovery_holds", {}) or {}
+        holds[dataset] = {"reason": code, "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+        self.state.write("discovery_holds", holds)
+        self.state.event("options_discovery_held", dataset=dataset, reason=code)
 
     async def _discover_options(self, spec: DatasetSpec, period: str) -> dict:
         """The day's options of a one-dropdown report, read from the page (Anhui single-selector discovery).
@@ -1301,9 +1327,16 @@ class Engine:
                 raise ValueError("command_unknown")
         except Fault as fault:
             results[command["id"]] = {"ok": False, "reason": fault.code, "category": fault.category}
-            decision = decide(fault, "sample")
-            if decision.scope == "province":
-                self.block(fault, decision, command.get("dataset"))
+            if command.get("action") == "discover_options" and fault.category in ("local", "unknown"):
+                # Reading a dropdown sends no business request (Anhui 2026-11-01 11:31:
+                # select_value_changed_by_reading stopped the province): only that
+                # report's discovery waits for review; its known options roll on.
+                # A login, permission, rate-limit or network answer is the site's and still stops it.
+                self._hold_discovery(command["dataset"], fault.code)
+            else:
+                decision = decide(fault, "sample")
+                if decision.scope == "province":
+                    self.block(fault, decision, command.get("dataset"))
         except Exception as exc:
             results[command["id"]] = {"ok": False, "reason": type(exc).__name__}
         self.state.write("command_results", results)

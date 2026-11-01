@@ -5,7 +5,8 @@
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 2
   },
   "request": {
     "transport": "fetch",

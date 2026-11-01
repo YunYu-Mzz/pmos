@@ -91,6 +91,9 @@ class Handoff(unittest.IsolatedAsyncioTestCase):
         patcher = patch.dict(os.environ, {"PMOS_DATA": str(tmp.path / "data")})
         patcher.start()
         self.addCleanup(patcher.stop)
+        lag = patch.dict(migration.PUBLISH_LAG_DAYS, {"load": 0})   # a report published as the day runs
+        lag.start()
+        self.addCleanup(lag.stop)
         root = legacy_root(tmp.path)
         built = migration.build_specs(root, {"load": ui_spec("load")})
         directory = tmp.path / "provinces" / "anhui"
@@ -123,6 +126,37 @@ class Handoff(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(periods & set(DAY[1:]), "days the legacy worker captured are never sent again")
         self.assertEqual(len(transport.sent), 1, "only the one day the legacy worker never sent")
         self.assertEqual(transport.sent[0]["fields"][0]["value"], DAY[0])
+
+
+class PublishLag(unittest.IsolatedAsyncioTestCase):
+    """PMOS saves an empty or partial answer for good: a day is asked for only after its report's lag."""
+
+    def test_reports_of_what_happened_wait_two_days_and_the_rest_one(self):
+        built = migration.build_specs(legacy_root(TempDir().path), {"load": ui_spec("load")})
+        self.assertEqual(built["specs"]["load"]["period"]["lag_days"], 1, "never the running day")
+        self.assertEqual((migration.publish_lag("actual_load"), migration.publish_lag("intertie_actual_huan_i"),
+                          migration.publish_lag("queryRqxtfhyc")), (2, 2, 1))
+
+    async def test_a_seeded_task_of_a_day_not_yet_due_waits_without_being_sent(self):
+        from helpers import dataset, make_province
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        clock = Clock()
+        spec = dataset("load", start=DAY[3], response="json")
+        spec["period"]["lag_days"] = 2
+        province = make_province(tmp.path, [spec], policy={"response_interval_seconds": 1})
+        transport = FakeTransport(clock, default=Response(200, "application/json", b'{"status":0,"data":[1]}'))
+        engine = Engine(province, transport, instance=tmp.path / "var", clock=clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        engine.ledger.seed("load", [DAY[0], DAY[1]], "")      # as a legacy owner's open candidates
+        for _ in range(6):
+            await engine.tick()
+            clock.advance(2)
+        sent = [r["body"]["date"] for r in transport.sent]
+        self.assertEqual(sent, [DAY[2], DAY[3]], "due days only, newest first")
+        self.assertEqual({engine.ledger.task("load", d)["status"] for d in DAY[:2]}, {"pending"})
+        self.assertEqual(engine.state.read("status")["phase"], "waiting_publication")
 
 
 def migration_endpoint(province):

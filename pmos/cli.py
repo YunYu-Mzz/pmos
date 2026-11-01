@@ -398,6 +398,20 @@ def cmd_release_denied(province: Province, args) -> None:
     _print({"province": province.id, "released": len(reopened), "datasets": sorted({r[1] for r in reopened})})
 
 
+def cmd_release_early(province: Province, args) -> None:
+    """Offline, user-approved: an answer saved before its day was published waits for its day again."""
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        if ledger.unsettled():
+            raise ValueError("unsettled_attempt")
+        attempt, dataset, period, scope = ledger.release_early(args.attempt, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("early_answer_released", attempt=attempt, dataset=dataset,
+                                                    period=period, approval=args.approval)
+    _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
+
+
 def cmd_extend_scope(province: Province, args) -> None:
     """Offline: the approved order (a superset of the scope) and the datasets seeded daily from their spec periods."""
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
@@ -624,6 +638,10 @@ def main(argv: list[str] | None = None) -> int:
         rd.add_argument("attempts", help="attempt ids, e.g. 622-637 or 622,623")
         rd.add_argument("--defer", action="store_true", help="not yet published: the items wait for the next day")
         rd.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        re_ = commands.add_parser("release-early",
+                                  help="offline: user-approved, an answer saved before its day was published waits again")
+        re_.add_argument("attempt", type=int)
+        re_.add_argument("--approval", required=True, help="the user's approval, verbatim")
         es = commands.add_parser("extend-scope", help="offline: add a user-approved collection order and daily seeding")
         es.add_argument("--plan", required=True, type=lambda v: __import__("pathlib").Path(v),
                         help="JSON with order and seeded, e.g. provinces/<id>/full_year_scope.json")
@@ -693,7 +711,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -727,6 +745,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_queue_and_wait(province, args)
             elif args.command == "release-denied":
                 cmd_release_denied(province, args)
+            elif args.command == "release-early":
+                cmd_release_early(province, args)
             elif args.command == "extend-scope":
                 cmd_extend_scope(province, args)
             elif args.command == "import-legacy-manifest":

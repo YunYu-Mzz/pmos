@@ -86,6 +86,10 @@ class CombinedHandoff(unittest.IsolatedAsyncioTestCase):
         patcher = patch.dict(os.environ, {"PMOS_DATA": str(tmp.path / "data")})
         patcher.start()
         self.addCleanup(patcher.stop)
+        from pmos.migration import anhui as first
+        lag = patch.dict(first.PUBLISH_LAG_DAYS, {"load": 0})   # a report published as the day runs
+        lag.start()
+        self.addCleanup(lag.stop)
         root = add_sections(legacy_root(tmp.path))
         directory = tmp.path / "provinces" / "anhui"
         (directory / "datasets").mkdir(parents=True)
@@ -301,3 +305,66 @@ class Discovery(unittest.IsolatedAsyncioTestCase):
         self.assertIn({"断面名称": "丙线"}, again.province.datasets()["sections"].scopes, "kept across restarts")
         task = engine.ledger.db.execute("SELECT period FROM tasks WHERE dataset='sections'").fetchall()
         self.assertEqual([tuple(t) for t in task], [(DAY[1],)])
+
+
+class DiscoveryFailure(unittest.IsolatedAsyncioTestCase):
+    async def test_a_dropdown_that_could_not_be_read_holds_only_that_reports_discovery(self):
+        """Anhui 2026-11-01 11:31: select_value_changed_by_reading stopped the whole province."""
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        patcher = patch.dict(os.environ, {"PMOS_DATA": str(tmp.path / "data")})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        root = add_sections(legacy_root(tmp.path))
+        spec = multidim.build_specs(root, {"sections": section_ui()})["specs"]["sections"]
+        directory = tmp.path / "provinces" / "anhui"
+        (directory / "datasets").mkdir(parents=True)
+        (directory / "province.json").write_text(json.dumps({
+            "id": "anhui", "name": "安徽", "origin": "https://pmos.ah.sgcc.com.cn",
+            "policy": {"response_interval_seconds": 1, "renew_after_idle_seconds": 300, "probe_after_idle_seconds": 300},
+            "session": {"keepalive_dataset": None, "probe": None}}))
+        DatasetSpec(**{**spec, "status": "enabled"}).save(directory / "datasets" / "sections.json")
+        clock = Clock()
+        transport = FakeTransport(clock)
+        transport.queue = [Fault("select_value_changed_by_reading", "local")]
+        engine = Engine(Province.load("anhui", tmp.path / "provinces"), transport, instance=tmp.path / "var", clock=clock)
+        self.addCleanup(engine.ledger.close)
+        engine.enqueue({"action": "discover_options", "dataset": "sections", "period": DAY[1]})
+        self.assertTrue(await engine.run_command())
+        self.assertIsNone(engine.state.blocked(), "a page read sent nothing: the province goes on")
+        self.assertEqual(engine.state.read("discovery_holds")["sections"]["reason"], "select_value_changed_by_reading")
+        engine._roll_forward_options(set(), __import__("pmos.periods", fromlist=["today"]).today())
+        self.assertFalse([c for c in engine.state.read("commands", []) or [] if c.get("action") == "discover_options"],
+                         "no new discovery for the held report")
+        engine.state.write("discovery_holds", {})                 # reviewed and released
+        engine.enqueue({"action": "discover_options", "dataset": "sections", "period": DAY[1]})
+        clock.advance(5)
+        self.assertTrue(await engine.run_command())
+        self.assertIsNone(engine.state.blocked(), "the day's read was consumed: held again, never a province stop")
+        self.assertEqual(engine.state.read("discovery_holds")["sections"]["reason"], "consumed_identity_requires_review")
+        self.assertEqual(len(transport.sent), 1, "the consumed read is never sent again")
+
+
+class ReleaseEarly(unittest.TestCase):
+    def test_an_answer_saved_before_its_day_was_published_waits_again_only_with_approval(self):
+        from pmos.contracts import TaskIdentity
+        from pmos.ledger import Ledger
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        ledger = Ledger(tmp.path / "ledger.sqlite3")
+        self.addCleanup(ledger.close)
+        ledger.seed("load", [DAY[0]], "")
+        identity = TaskIdentity("anhui", "anhui-production", "load", {"kind": "day", "label": DAY[0]}, {"日期": DAY[0]},
+                                operation="query")
+        attempt = ledger.begin("collect", "load", DAY[0], "", identity=identity)
+        ledger.finish(attempt, "success", http_status=200, business_status="0")
+        ledger.settle_task("load", DAY[0], "saved", sha256="a" * 64)
+        self.assertTrue(ledger.consumed_identity(identity.key))
+        with self.assertRaises(ValueError):
+            ledger.release_early(attempt, " ")
+        self.assertEqual(ledger.release_early(attempt, "用户原话"), (attempt, "load", DAY[0], ""))
+        task = ledger.task("load", DAY[0])
+        self.assertEqual((task["status"], task["reason"]), ("pending", f"released_early:{attempt}"))
+        self.assertFalse(ledger.consumed_identity(identity.key), "the next send of that day is allowed")
+        with self.assertRaises(ValueError):
+            ledger.release_early(attempt, "用户原话")

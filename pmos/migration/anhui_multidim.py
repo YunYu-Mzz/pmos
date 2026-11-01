@@ -26,7 +26,7 @@ from ..engine import task_identity
 from ..faults import Fault
 from ..queue_compat import LegacyTask, QueueContext, read_json
 from ..spec import DatasetSpec, SpecError, scope_key
-from .anhui import BINDINGS, _declared
+from .anhui import BINDINGS, _declared, publish_lag
 
 PERIOD_LABELS = {"日期": "day", "月份": "month"}
 PERIOD_TOKEN = {"day": "{date}", "month": "{month}"}
@@ -204,9 +204,9 @@ def build_specs(root: Path, ui_specs: dict[str, DatasetSpec]) -> dict:
                                               for label, path in route["options"].items()}}
         spec = {
             "id": name, "name": (ui.name if ui else name), "status": "verified",
-            # As the legacy discovery: new days up to yesterday.
+            # The legacy discovery went up to yesterday; a report of what happened that day waits 2.
             "period": {"kind": kind, "start": "2026-01-01" if kind == "day" else "2026-01", "end": "today",
-                       **({"lag_days": 1} if kind == "day" else {})},
+                       **({"lag_days": publish_lag(name)} if kind == "day" else {})},
             "request": {"transport": "fetch", "method": "POST", "path": route["endpoint"], "template_body_set": body,
                         "bootstrap": bootstrap},
             "response": {"kind": "json", **({"echo": {route["echo"][label][0]: label for label in route["echo"]}}
