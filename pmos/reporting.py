@@ -74,7 +74,7 @@ def status_metrics(instance: Path, *, now: float | None = None) -> dict:
     """
     import json
     import time
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
     now = time.time() if now is None else now
     instance = Path(instance)
     root = instance / "original"
@@ -110,7 +110,7 @@ def status_metrics(instance: Path, *, now: float | None = None) -> dict:
         return datetime.fromtimestamp(seconds, timezone.utc).isoformat(timespec="seconds") if seconds else None
     status, block, holds = state("status") or {}, state("block"), state("dataset_holds") or {}
     ledger = ledger_snapshot(instance / "ledger.sqlite3")
-    business = renewal = None
+    business = renewal = since = None
     last_hour = 0
     if ledger["exists"]:
         with closing(sqlite3.connect((instance / "ledger.sqlite3").resolve().as_uri() + "?mode=ro", uri=True,
@@ -122,6 +122,13 @@ def status_metrics(instance: Path, *, now: float | None = None) -> dict:
                                  " AND outcome IN ('success','empty')").fetchone()[0]
             last_hour = db.execute("SELECT COUNT(*) FROM attempts WHERE kind IN ('collect','sample')"
                                    " AND started_at>=?", (now - 3600,)).fetchone()[0]
+            try:
+                granted = db.execute("SELECT granted_at FROM owner_handoff").fetchone()
+            except sqlite3.OperationalError:
+                granted = None
+            if granted and granted[0]:
+                # From when PMOS collects this province (the handoff), China time, for the mail's note.
+                since = datetime.fromtimestamp(granted[0], timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
     tasks = {}
     for counts in ledger["tasks"].values():
         for key, value in counts.items():
@@ -132,7 +139,7 @@ def status_metrics(instance: Path, *, now: float | None = None) -> dict:
             "status_updated_at": status.get("updated_at"), "worker_pid": status.get("pid"),
             "blocked": block is not None, "block_reason": (block or {}).get("reason"),
             "held_datasets": sorted(holds), "business_last_success_at": iso(business),
-            "keeper_last_success_at": iso(renewal), "generated_at": iso(now),
+            "keeper_last_success_at": iso(renewal), "generated_at": iso(now), "since": since,
             **headline(status.get("phase"), block, business, now)}
 
 

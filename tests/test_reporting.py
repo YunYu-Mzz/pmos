@@ -57,6 +57,19 @@ class StatusMetrics(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(headline("collecting", None, 1000, 1060)["headline"], "正常")
         self.assertEqual(headline("quiet_window", None, 1000, 1000 + 40 * 60)["headline"], "正常")
 
+    def test_since_is_the_handoff_time_in_china_time(self):
+        """The unified mail note starts with it: "2026-11-01 12:31起安徽由PMOS采集"."""
+        import sqlite3
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.assertIsNone(status_metrics(tmp.path)["since"])
+        with sqlite3.connect(tmp.path / "ledger.sqlite3") as db:
+            db.execute("CREATE TABLE tasks(dataset TEXT,status TEXT)")
+            db.execute("CREATE TABLE attempts(outcome TEXT,kind TEXT,started_at REAL,finished_at REAL)")
+            db.execute("CREATE TABLE owner_handoff(singleton INTEGER,receipt_json TEXT,receipt_sha256 TEXT,granted_at REAL)")
+            db.execute("INSERT INTO owner_handoff VALUES(1,'{}','x',?)", (1761971460.0,))  # 2025-11-01 04:31 UTC
+        self.assertEqual(status_metrics(tmp.path)["since"], "2025-11-01 12:31")
+
     def test_an_empty_instance_reports_zeros(self):
         tmp = TempDir()
         self.addCleanup(tmp.cleanup)
