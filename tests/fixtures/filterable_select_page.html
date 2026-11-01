@@ -3,7 +3,8 @@
      各类电源类型电量及台数): while the dropdown is open the input shows nothing
      and the selected label moves to the placeholder; after Escape the label
      comes back one tick later, as ElSelect's visible watcher does. The model
-     value never changes unless ?change=1 (a page that really changes it). -->
+     value never changes unless ?change=1 (a page that really changes it)
+     or ?reset=1 (the page resets the default after a new date). -->
 <html><head><meta charset="utf-8"><title>filterable select fixture</title>
 <style>.hidden { display: none; }</style></head>
 <body>
@@ -14,6 +15,11 @@
 <script>
 window.queries = 0;
 const change = location.search.includes('change=1');
+// ?reset=1: a new date makes the page reload the options and reset the default 400 ms later
+// (Anhui 2026-11-01 12:31), before anything is read.
+if (location.search.includes('reset=1'))
+  document.getElementById('date').addEventListener('change', () => setTimeout(() => {
+    vm.value = '水电'; document.getElementById('pick').value = '水电'; }, 400));
 const vm = {$options: {name: 'ElSelect'}, value: '火电'};
 document.getElementById('select').__vue__ = vm;
 const drop = document.getElementById('drop');

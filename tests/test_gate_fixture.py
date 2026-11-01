@@ -347,6 +347,10 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(Fault) as caught:
             await self.transport.send({**request, "frame": "/filterable_select_page.html?change=1"})
         self.assertEqual(caught.exception.code, "select_value_changed_by_reading", "a real change is still caught")
+        await self.page.goto(self.origin + "/filterable_select_page.html?reset=1")
+        response = await self.transport.send({**request, "frame": "/filterable_select_page.html?reset=1"})
+        self.assertEqual(len(json.loads(response.body)["data"]), 3, "read once the page's own reset has settled")
+        self.assertEqual(await self.page.input_value("#pick"), "水电")
         self.assertEqual(Site.received, [])
 
     async def test_a_template_outlives_its_frame_only_where_the_main_frame_fallback_is_on(self):

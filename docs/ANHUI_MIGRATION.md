@@ -289,3 +289,19 @@ PMOS 对照检查后补了三处：
   3. 在 r6 目录里运行 `tools/anhui_cutover.py plan`，再运行 `apply --approval "<用户原话>" --budget <N>`。apply 会把重新生成的规格写进 r6，并写 SHA256SUMS（即 code_sha）。之后把重新生成的规格提交 git。
   4. `launchctl bootstrap gui/501 /Users/yunyu/pmos-anhui/release-20261101-r6/deploy/launchd/com.yunyu.pmos.anhui.plist`。
 - 11-01 回滚后在旧系统运行中只读 plan：ready=true，plan_sha 仍是冻结时的 e5ee70df…（旧系统在等登录，还没采到新数据）。
+
+## 11-01 12:31 第二次切换（r6）与 r7
+
+- **第二次交接**（安徽会话执行；用户原话"登录后直接用 r5 验收"；r6 = r5 的代码）：
+  - 门户在 /#/dashboard，旧 worker 打开唯一的综合查询页并做了 96 点保活；
+  - 旧单元 bootout；r3 验收的实例改名保留；
+  - r6 plan 的 plan_sha 仍是 e5ee70df…；apply：code_sha a69cb99e…，预算 25，种入 6,801 条；
+  - 12:31:41 启动。
+- **验收结果：**
+  - 页面操作已正常（没有 45 秒超时）；actual_load 10-30 采到了（滞后 2 天，正确）；2 张报表的选项发现成功。
+  - 5 张报表读下拉框报 `select_value_changed_by_reading`，其中连续 3 次触发 `page_operations_failing`（12:32:24），之后保活照常、没有业务请求。
+- **r7：**
+  - `ui.select_options` 读之前要求选中状态稳定 1 秒（最多 5 秒，否则 `select_value_unsettled`）。日期一改，页面可能重新加载选项、重设默认值，之前 PMOS 在这之前就记下了"原值"。
+  - 读完后的核对区分两种情况：组件值变了（`select_value_changed_by_reading`）、只是文字没恢复（`select_text_not_restored`）。
+  - `engine.PAGE_ANSWERED_CODES`：页面能操作、只是读取核对没通过的，不计入"页面操作连续失败"。选项发现失败仍然只暂停那张报表的发现。
+  - 夹具 `?reset=1`：填日期 400 毫秒后页面重设默认值。全套 515 项（两个 venv）和真浏览器 19 项通过。

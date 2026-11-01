@@ -18,6 +18,7 @@ adapters/publication_listing.py, adapters/publications.py).
 from __future__ import annotations
 
 import asyncio
+import json
 import re
 
 from ..faults import Fault
@@ -428,7 +429,9 @@ async def select_options(frame, field: dict, timeout: float) -> list[dict]:
     every item's text and its ElOption value, close it with Escape.
     """
     locator = await _field(frame, field)
-    before = await locator.evaluate(_SELECT_STATE_JS)
+    # The date just set may make the page reload this select's options and reset its default
+    # (Anhui 2026-11-01 12:31, five reports): read only once its state has held for a second.
+    before = await _stable_state(locator, hold=1.0, limit=5.0)
     await locator.click()
     items = frame.locator(".el-select-dropdown__item:visible")
     deadline = asyncio.get_running_loop().time() + min(timeout, 10)
@@ -441,11 +444,27 @@ async def select_options(frame, field: dict, timeout: float) -> list[dict]:
     # A filterable ElSelect shows nothing while open and puts its label back a tick after
     # closing (Anhui 2026-11-01 11:31): read again until value and text are back (3 s).
     settle = asyncio.get_running_loop().time() + 3
-    while await items.count() or await locator.evaluate(_SELECT_STATE_JS) != before:
+    while await items.count() or (after := await locator.evaluate(_SELECT_STATE_JS)) != before:
         if asyncio.get_running_loop().time() > settle:
-            raise Fault("select_value_changed_by_reading", "local")
+            model_changed = json.loads(after)[0] != json.loads(before)[0] if not await items.count() else True
+            raise Fault("select_value_changed_by_reading" if model_changed else "select_text_not_restored", "local")
         await asyncio.sleep(0.1)
     return found
+
+
+async def _stable_state(locator, *, hold: float, limit: float) -> str:
+    loop = asyncio.get_running_loop()
+    start = loop.time()
+    state = await locator.evaluate(_SELECT_STATE_JS)
+    since = start
+    while loop.time() - since < hold:
+        if loop.time() - start > limit:
+            raise Fault("select_value_unsettled", "local")
+        await asyncio.sleep(0.25)
+        current = await locator.evaluate(_SELECT_STATE_JS)
+        if current != state:
+            state, since = current, loop.time()
+    return state
 
 
 async def button(frame, text: str):

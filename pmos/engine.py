@@ -63,6 +63,9 @@ PAGE_RECOVERIES_PER_HOUR = 3
 DRIVER_LOSSES_TO_STOP = 3
 # Page operations (menu, form, dropdown) failing in a row, across reports, stop the province.
 PAGE_FAILURES_TO_STOP = 3
+# The page was driven and answered; only a read's own check failed (Anhui 2026-11-01 12:32:
+# three dropdown reads in a row stopped a working page). Not counted as a failing page.
+PAGE_ANSWERED_CODES = frozenset({"select_value_changed_by_reading", "select_text_not_restored", "select_value_unsettled"})
 UNSENT_COOLDOWN_SECONDS = 600
 UNSENT_HOLDS_TO_STOP = 3
 LAPSE_RULE = ("用户原话：等它改完自动化再恢复（2026-10-31）：同一服务的查询在两个数据集上连续 HTTP 200 + 40302 "
@@ -215,7 +218,7 @@ class Engine:
             try:
                 response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request})
             except Fault as fault:
-                if request.get("transport") == "ui" and fault.category == "local":
+                if request.get("transport") == "ui" and fault.category == "local" and fault.code not in PAGE_ANSWERED_CODES:
                     self._page_operation_failed(fault, dataset)
                 if fault.unsent:
                     # The request gate proves nothing got out: the identity

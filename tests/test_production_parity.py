@@ -1086,6 +1086,14 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
                          "unsent: nothing isolated, nothing consumed")
         self.assertIsNone(engine.state.read("isolated_items"))
         self.assertEqual(engine.ledger.attempts_since_handoff(), 0, "no handoff here; see the ledger test for the budget")
+        engine.state.clear_block("page_operations_failing")
+        engine.state.write("page_operation_failures", [])
+        self.clock.advance(700)                    # the cooled-down reports come back
+        # A driven page whose read check failed is no failing page (Anhui 12:32: three dropdown reads).
+        self.transport.queue = [Fault("select_value_changed_by_reading", "local")]
+        await engine.tick()
+        self.assertEqual(engine.state.read("page_operation_failures"), [])
+        self.assertNotEqual((engine.state.blocked() or {}).get("reason"), "page_operations_failing")
 
     def test_reviewed_navigation_failures_and_one_stopped_mid_navigation_consume_nothing(self):
         from pmos.contracts import TaskIdentity
