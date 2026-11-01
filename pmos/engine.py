@@ -24,6 +24,7 @@ import inspect
 import os
 import time
 from dataclasses import dataclass
+from datetime import date
 
 from .archive import Archive
 from .contracts import TaskIdentity
@@ -77,6 +78,8 @@ UNSENT_HOLDS_TO_STOP = 3
 # Legacy-consumed items settled in one tick, without the spacing or a sleep (Liaoning 2026-11-01).
 SKIP_BATCH_SECONDS = 1.0
 SKIP_BATCH_ITEMS = 2000
+# A backfilled report's early days whose dropdown is read: every 7th, ~36 a year instead of ~250.
+BACKFILL_DISCOVERY_DAYS = 7
 LAPSE_RULE = ("用户原话：等它改完自动化再恢复（2026-10-31）：同一服务的查询在两个数据集上连续 HTTP 200 + 40302 "
               "视为查询权限失效，不记为拒绝；自动从门户菜单重新进入该报表，用一个查询验证")
 # Memory upkeep runs in waits of a second or more, and at least this often: at
@@ -347,7 +350,7 @@ class Engine:
         """
         legacy = None
         for spec in self.collection_specs():
-            if spec.id in seeded or not spec.source.get("roll_forward_options"):
+            if not spec.source.get("roll_forward_options"):
                 continue
             if legacy is None:
                 legacy = self.ledger.legacy_periods()
@@ -355,8 +358,9 @@ class Engine:
             if not known:
                 continue                      # nothing discovered yet: no options to roll
             newest = max(known)
+            # A seeded report got its days from seed(); its new options are still read from the page.
             due = [p for p in spec.periods_to_collect(on=day) if p > newest]
-            if due:
+            if due and spec.id not in seeded:
                 for key, _ in spec.scope_items():
                     self.ledger.seed(spec.id, due, key)
                 self.state.event("options_rolled_forward", dataset=spec.id, periods=len(due), options=len(spec.scopes))
@@ -380,17 +384,29 @@ class Engine:
         return row
 
     def _next_sendable(self, enabled: list[DatasetSpec]):
-        """(task, missing templates): the first pending task that can be sent now."""
+        """(task, missing templates): the first pending task that can be sent now.
+
+        Every report's newer days first; then the earlier days a backfill added
+        (``backfill_before``, cmd_backfill), the report with the fewest options first,
+        so that 47,000 early items of one report never keep another report's new day waiting.
+        """
         cursor = self._cursor_task(enabled)
         if cursor is not None:
             return cursor, set()
         missing = set()
-        for spec in enabled:
-            task = self.ledger.next_task([spec.id], newest=spec.newest_due())
+        backfill = self.state.read("backfill_before", {}) or {}
+        turns = [(spec, backfill.get(spec.id), False) for spec in enabled]
+        turns += [(spec, None, True) for spec in sorted((s for s in enabled if s.id in backfill), key=lambda s: len(s.scopes))]
+        for spec, oldest, early in turns:
+            task = self.ledger.next_task([spec.id], newest=spec.newest_due(), oldest=oldest)
             if task is None:
                 continue
             if spec.request["transport"] == "fetch" and not task["scope"].startswith("f"):
                 built = spec.build(task["period"], spec.scope_values(task["scope"]))
+                # An early day's dropdown may not list the option, or anything: its template comes from the newest day.
+                if (early and spec.request.get("bootstrap") and not spec.request.get("prime") and not self._ready(built)
+                        and self.clock() - self._primed.get(spec.id, float("-inf")) >= 600):
+                    self._prime_due[spec.id] = {"period": task["period"], "scope": task["scope"]}
                 if spec.id in self._prime_due:
                     if not self._ready(built):
                         return {"dataset": spec.id, "prime": True}, missing
@@ -915,6 +931,8 @@ class Engine:
                 if wait > 0:
                     return min(wait, 5)
                 return await self._prime_template(spec)
+            if self._backfill_discovery(spec, task):
+                return 0.2
             skipped = self._skip_consumed_batch(enabled, task)
             if skipped:
                 # Nothing was sent: the login is renewed meanwhile once it is due (renew_after_idle_seconds).
@@ -976,7 +994,7 @@ class Engine:
                 # Like the Shanxi coordinator's deferred scope: no request was
                 # sent, the item stays pending, its dataset pauses for review
                 # and the rest (keepalive included) continues.
-                if fault.unsent and self._option_prime(current, fault):
+                if fault.unsent and self._prime_listed_option(current, fault):
                     return 0.2
                 if fault.unsent:
                     self._hold_unsent(current["dataset"], fault.code, fault.detail)
@@ -1043,7 +1061,7 @@ class Engine:
                          not_text_valued=len(found) - len(usable))
         return {"dataset": spec.id, "period": period, "listed": len(found), "new": new}
 
-    def _option_prime(self, task: dict, fault: Fault) -> bool:
+    def _prime_listed_option(self, task: dict, fault: Fault) -> bool:
         """A bootstrap whose option today's dropdown does not list: prime the template with a listed one.
 
         Anhui 2026-11-01 14:49 (intertie_actual_huan_i, 国调.古泉换流站/1100kV.极11换流器): the
@@ -1064,11 +1082,30 @@ class Engine:
                          prime="first_listed_option", **(fault.detail or {}))
         return True
 
-    def _option_prime_request(self, spec: DatasetSpec, task: dict) -> dict:
-        """The task's bootstrap with every dropdown set to its first listed option instead."""
-        bootstrap = spec.build(task["period"], spec.scope_values(task["scope"]))["bootstrap"]
+    def _option_prime(self, spec: DatasetSpec, task: dict) -> dict:
+        """The task's bootstrap on the newest day that is due, with every dropdown set to its first listed option.
+
+        The template does not depend on the day, and an early day's dropdown may list nothing.
+        """
+        period = spec.newest_due() or task["period"]
+        bootstrap = spec.build(period, spec.scope_values(task["scope"]))["bootstrap"]
         fields = [{**f, "any_listed": True} if f.get("kind") == "select" else f for f in bootstrap.get("fields", [])]
-        return {**bootstrap, "fields": fields}
+        return {"period": period, "request": {**bootstrap, "fields": fields}}
+
+    def _backfill_discovery(self, spec: DatasetSpec, task) -> bool:
+        """An early day's dropdown is read once a week of days: options gone by now are only listed there.
+
+        A found option joins the report for its whole period (_discover_options, then the next daily seed).
+        """
+        boundary = (self.state.read("backfill_before", {}) or {}).get(spec.id)
+        if (not boundary or task["period"] >= boundary or spec.period["kind"] != "day"
+                or not spec.source.get("discover_options") or not spec.source.get("ui_request")
+                or date.fromisoformat(task["period"]).toordinal() % BACKFILL_DISCOVERY_DAYS
+                or spec.id in (self.state.read("discovery_holds", {}) or {})
+                or self.ledger.consumed(spec.id, task["period"], "discover_options")):
+            return False
+        self.enqueue({"action": "discover_options", "dataset": spec.id, "period": task["period"]})
+        return True
 
     async def _prime_template(self, spec: DatasetSpec) -> float:
         """``request.prime``: one page query of an already collected record shows the page's own request.
@@ -1078,12 +1115,12 @@ class Engine:
         covered record is fetched once through the page. Its answer is kept as
         a sample, never as a task's result; at most once per 10 minutes. A
         report whose task option is not listed primes with a listed one
-        (_option_prime).
+        (_prime_listed_option).
         """
         self._primed[spec.id] = self.clock()
         due = self._prime_due.pop(spec.id, None)
         if due is not None:
-            prime = {"period": due["period"], "request": self._option_prime_request(spec, due)}
+            prime = self._option_prime(spec, due)
         else:
             prime = spec.request["prime"]
         try:

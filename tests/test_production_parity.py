@@ -1326,7 +1326,7 @@ class UnlistedBootstrapOption(unittest.IsolatedAsyncioTestCase):
         bootstrap, prime, replay = self.transport.sent
         self.assertEqual(bootstrap["fields"][1]["value"], "国调.古泉换流站/1100kV.极11换流器")
         self.assertTrue(prime["fields"][1]["any_listed"], "the prime chooses whatever the dropdown lists")
-        self.assertEqual(prime["fields"][0]["value"], TODAY, "for the task's own day")
+        self.assertEqual(prime["fields"][0]["value"], TODAY, "the newest due day (no lag here: the task's own)")
         self.assertEqual(replay["transport"], "fetch")
         self.assertEqual(replay["template_body_set"], {"businessTime": TODAY, "genName": "国调.古泉换流站/1100kV.极11换流器"})
         self.assertEqual(engine.ledger.db.execute("SELECT status FROM tasks").fetchone()[0], "saved")

@@ -465,6 +465,55 @@ def cmd_prioritize(province: Province, args) -> None:
     _print({"province": province.id, "priority_datasets": entries})
 
 
+def cmd_backfill(province: Province, args) -> None:
+    """Offline: these reports also get the days before what they know, back to their spec start.
+
+    Anhui 2026-11-01: its handoff (legacy_pending_only) gave the per-option reports only the legacy
+    queue's open candidates and the new days, and the legacy worker, newest day first, had reached
+    September; the earlier months of 2026 were nobody's task. They become daily-seeded (what the legacy
+    owner completed stays out, seed()), and those days go after every report's newer ones
+    (``backfill_before``, _next_sendable). ``--dry-run`` writes nothing.
+    """
+    names = [name for name in args.datasets.split(",") if name]
+    specs = province.datasets()
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        handoff = ledger.handoff()
+        if handoff is None:
+            raise ValueError("backfill_requires_a_handoff")
+        outside = [name for name in names if name not in specs or name not in handoff["scope"]]
+        if not names or outside:
+            raise ValueError("backfill_datasets_outside_scope:" + ",".join(outside))
+        legacy = ledger.legacy_periods()
+        plan = {}
+        for name in names:
+            spec = specs[name]
+            if spec.period["kind"] != "day":
+                raise ValueError("backfill_day_reports_only:" + name)
+            known = [p for p in (ledger.oldest_task_period(name), min(legacy.get(name, {}) or [""]) or None) if p]
+            if not known:
+                raise ValueError("backfill_nothing_known:" + name)
+            before = min(known)
+            days = sum(p < before for p in spec.periods_to_collect())
+            options = len(spec.scope_items())
+            plan[name] = {"before": before, "days": days, "options": options, "requests_at_most": days * options}
+        result = {"province": province.id, "backfill": plan,
+                  "requests_at_most": sum(item["requests_at_most"] for item in plan.values()),
+                  "budget": ledger.request_budget(), "used": ledger.attempts_since_handoff()}
+        if args.dry_run:
+            _print({**result, "dry_run": True})
+            return
+        if not (args.approval or "").strip():
+            raise ValueError("backfill_approval_required")
+        ledger.extend_scope(handoff["scope"], handoff["seeded"] + [n for n in names if n not in handoff["seeded"]], args.approval)
+    finally:
+        ledger.close()
+    state = StateStore(province.instance() / "state")
+    state.write("backfill_before", {**(state.read("backfill_before", {}) or {}), **{n: plan[n]["before"] for n in names}})
+    state.event("backfill_granted", datasets=names, requests_at_most=result["requests_at_most"], approval=args.approval)
+    _print(result)
+
+
 def cmd_extend_scope(province: Province, args) -> None:
     """Offline: the approved order (a superset of the scope) and the datasets seeded daily from their spec periods."""
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
@@ -710,6 +759,10 @@ def main(argv: list[str] | None = None) -> int:
         es.add_argument("--plan", required=True, type=lambda v: __import__("pathlib").Path(v),
                         help="JSON with order and seeded, e.g. provinces/<id>/full_year_scope.json")
         es.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        bf = commands.add_parser("backfill", help="offline: the days before what these reports know, after every new day")
+        bf.add_argument("--datasets", required=True, help="comma separated")
+        bf.add_argument("--approval", help="the user's approval, verbatim")
+        bf.add_argument("--dry-run", action="store_true", help="only print the plan")
         im = commands.add_parser("import-legacy-manifest",
                                  help="offline: the legacy main archive manifest as consumed tombstones (after handoff)")
         im.add_argument("--manifest", required=True, type=lambda v: __import__("pathlib").Path(v))
@@ -774,7 +827,7 @@ def main(argv: list[str] | None = None) -> int:
             _print({k: report[k] for k in report if k not in {"source_views", "source_refs"}})
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
-                "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "pause", "resume", "skip-lapse",
+                "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "backfill", "pause", "resume", "skip-lapse",
                 "import-legacy-manifest", "release-denied", "release-early", "release-discovery", "review-unsent", "prioritize", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
@@ -819,6 +872,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_prioritize(province, args)
             elif args.command == "extend-scope":
                 cmd_extend_scope(province, args)
+            elif args.command == "backfill":
+                cmd_backfill(province, args)
             elif args.command == "import-legacy-manifest":
                 cmd_import_manifest(province, args)
             elif args.command == "extend-budget":

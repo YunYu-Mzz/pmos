@@ -193,12 +193,13 @@ class Ledger:
                     " status='saved', artifact_sha256=excluded.artifact_sha256, updated_at=excluded.updated_at",
                     (dataset, period, scope, sha256, now, now))
 
-    def next_task(self, datasets: list[str], *, newest: str | None = None) -> sqlite3.Row | None:
-        """First pending task of the first dataset that has one; newest period first (none after ``newest``)."""
+    def next_task(self, datasets: list[str], *, newest: str | None = None, oldest: str | None = None) -> sqlite3.Row | None:
+        """First pending task of the first dataset that has one; newest period first (none after ``newest`` or before ``oldest``)."""
         for dataset in datasets:
             row = self.db.execute("SELECT * FROM tasks WHERE dataset=? AND status='pending'"
-                                  + (" AND period<=?" if newest else "") + " ORDER BY period DESC, scope LIMIT 1",
-                                  (dataset, newest) if newest else (dataset,)).fetchone()
+                                  + (" AND period<=?" if newest else "") + (" AND period>=?" if oldest else "")
+                                  + " ORDER BY period DESC, scope LIMIT 1",
+                                  (dataset, *([newest] if newest else []), *([oldest] if oldest else []))).fetchone()
             if row is not None:
                 return row
         return None
@@ -410,6 +411,10 @@ class Ledger:
 
     def newest_task_period(self, dataset: str) -> str | None:
         row = self.db.execute("SELECT MAX(period) FROM tasks WHERE dataset=?", (dataset,)).fetchone()
+        return row[0] if row else None
+
+    def oldest_task_period(self, dataset: str) -> str | None:
+        row = self.db.execute("SELECT MIN(period) FROM tasks WHERE dataset=?", (dataset,)).fetchone()
         return row[0] if row else None
 
     def has_tasks(self, dataset: str) -> bool:
