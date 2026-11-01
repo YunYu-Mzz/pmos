@@ -109,13 +109,91 @@ def report_spec(source: dict, rule: dict, manifest_sha256: str) -> dict:
     }
 
 
+DIMENSION = "state/dimension_coverage_20261024"
+DIMENSION_RUNTIME = DIMENSION + "/runtime.json"
+DIMENSION_OPERATIONS = DIMENSION + "/operations"
+# The dimension lane asks each option of a day with exactly these two parameters (its issued jobs).
+DIMENSION_RULE = {"period_field": "mdate", "selection_field": "name"}
+
+
+def dimension_jobs(root: Path) -> tuple[list[tuple[dict, dict]], dict]:
+    """(job, outcome) of every business request of the dimension lane, read-only.
+
+    The lane (LNCrawler dimension_coverage) asks every option of a day for ten
+    sources, the node prices among them; each request left
+    ``operations/<key>/issued.json`` (dataset, period, stage, selection, key,
+    params) and its ``receipt.json``. Dictionary reads (stage ``dictionary``)
+    list a day's options and are no business data.
+    """
+    root = Path(root).resolve()
+    directory = root / DIMENSION_OPERATIONS
+    found, files = [], []
+    for path in sorted(directory.glob("*/issued.json")) if directory.is_dir() else []:
+        raw = path.read_bytes()
+        files.append(hashlib.sha256(raw).hexdigest())
+        issued = json.loads(raw)
+        if issued.get("stage") != "data" or not isinstance(issued.get("key"), str) or not isinstance(issued.get("params"), dict):
+            continue
+        receipt_path = path.parent / "receipt.json"
+        receipt = json.loads(receipt_path.read_bytes()) if receipt_path.is_file() else {}
+        outcome = receipt.get("outcome") if isinstance(receipt.get("outcome"), dict) else {}
+        # Sent (an issued job exists): without a settled outcome it is unknown, never asked again.
+        state = outcome.get("outcome") or ("unknown" if receipt.get("phase") != "completed" else "held")
+        # A parameter the lane left null (as the page's own init does, e.g. 1c01's ``name``) asks nothing:
+        # the lane's own identity is the day and its one selection.
+        params = {k: v for k, v in issued["params"].items() if v is not None}
+        job = {"key": issued["key"], "dataset": issued["dataset"], "params": params,
+               "period": issued.get("period"), "page": 1, "sent": True}
+        found.append((job, {**outcome, "outcome": state}))
+    ref = {"path": DIMENSION_OPERATIONS + "/*/issued.json", "files": len(files),
+           "sha256": hashlib.sha256("".join(files).encode()).hexdigest()}
+    return found, ref
+
+
+def dimension_options(root: Path, jobs: list[tuple[dict, dict]], rules: dict | None = None) -> dict[str, list[str]]:
+    """Every option the dimension lane asked or listed for a source (its scopes in PMOS).
+
+    The option is the source's own selection field (``name`` for most, ``type`` for 1c01).
+    """
+    root = Path(root).resolve()
+    options: dict[str, set] = {}
+    for job, _ in jobs:
+        field = ((rules or {}).get(job["dataset"]) or DIMENSION_RULE).get("selection_field")
+        name = job["params"].get(field)
+        if isinstance(name, str) and name:
+            options.setdefault(job["dataset"], set()).add(name)
+    try:
+        runtime, _ = read_json(_declared(root, DIMENSION_RUNTIME))
+    except FileNotFoundError:
+        runtime = {}
+    for dataset, source in (runtime.get("sources") or {}).items():
+        current = (source or {}).get("current") or {}
+        for name in current.get("options") or []:
+            if isinstance(name, str) and name:
+                options.setdefault(dataset, set()).add(name)
+    return {dataset: sorted(names) for dataset, names in options.items()}
+
+
 def build_specs(root: Path) -> dict:
     """Specs for the uniform report sources; every other source with its reason."""
     root = Path(root).resolve()
     manifest, manifest_sha = read_manifest(root)
     rules, code_refs = _source_rule_refs(root)
+    jobs, _ = dimension_jobs(root)
+    lane_params = {}
+    for job, _ in jobs:
+        lane_params.setdefault(job["dataset"], set()).add(tuple(sorted(job["params"])))
+    rules = dict(rules)
+    for name, shapes in lane_params.items():
+        # The lane's own two parameters where the code yields no rule (sitewide_0400 日前节点价格).
+        if name not in rules and shapes == {tuple(sorted(DIMENSION_RULE.values()))}:
+            rules[name] = dict(DIMENSION_RULE)
+    widened = dimension_options(root, jobs, rules)
     specs, deferred = {}, {}
     for name, source in manifest["sources"].items():
+        if name in widened and rules.get(name, {}).get("selection_field"):
+            # Every option the lane asked or listed, not only the one the manifest verified.
+            source = {**source, "selections": sorted(set(source.get("selections") or []) - {""} | set(widened[name]))}
         kind = source.get("kind")
         if name in manifest.get("excluded", {}):
             deferred[name] = "excluded_by_legacy_manifest"
@@ -134,7 +212,7 @@ def build_specs(root: Path) -> dict:
             except (ValueError, KeyError, SpecError) as exc:
                 deferred[name] = f"spec_rejected:{exc}"[:160]
     return {"manifest_sha256": manifest_sha, "code_refs": code_refs, "rules": rules,
-            "specs": specs, "deferred": deferred}
+            "specs": specs, "deferred": deferred, "dimension_sources": sorted(widened)}
 
 
 def legacy_rows(root: Path, account_alias: str, built: dict) -> tuple[list, list]:
@@ -157,6 +235,12 @@ def legacy_rows(root: Path, account_alias: str, built: dict) -> tuple[list, list
                          for name, spec in manifest["sources"].items() if isinstance(spec.get("prior_outcomes"), dict)}}
     rows += [(MANIFEST + "#prior_outcomes", row) for row in decode_liaoning(prior, context, period_kinds=kinds,
                                                                             source_contracts=built["rules"])]
+    jobs, dimension_ref = dimension_jobs(root)
+    refs.append(dimension_ref)
+    for job, outcome in jobs:
+        lane = {"sources": {job["dataset"]: {"pending": [job], "outcomes": {job["key"]: outcome}}}}
+        rows += [(DIMENSION_OPERATIONS, row) for row in decode_liaoning(lane, context, period_kinds=kinds,
+                                                                         source_contracts=built["rules"])]
     return rows, refs
 
 
@@ -198,6 +282,94 @@ def issued_identities(root: Path, account_alias: str, built: dict) -> tuple[dict
     return found, ref
 
 
+# An empty answer asked for less than this many days after its period ended is no tombstone: the
+# site had not published it yet (Liaoning 2026-11-01: of 54 daily empties 49 were asked the same
+# day and 5 the next, none later; e38351fe's 10-29/10-30 had 96 points when asked again). User,
+# via the Liaoning session: "10-31、11-01 这类当天或第二天采到的空结果，当作未采处理".
+EARLY_EMPTY_DAYS = 2
+
+
+def early_empty_keys(root: Path) -> set[str]:
+    """Legacy keys of the verified queue whose empty outcome came before its period was published."""
+    from datetime import datetime, timedelta, timezone
+    from ..periods import last_day
+    root = Path(root).resolve()
+    queue, _ = read_json(_declared(root, QUEUES[0]))
+    jobs = {}
+    directory = root / OPERATIONS
+    for path in sorted(directory.glob("*/issued.json")) if directory.is_dir() else []:
+        job = json.loads(path.read_bytes()).get("job")
+        if isinstance(job, dict) and isinstance(job.get("key"), str):
+            jobs.setdefault(job["key"], job)
+    china = timezone(timedelta(hours=8))
+    early = set()
+    for group in (queue.get("sources") or queue.get("datasets") or {}).values():
+        for key, outcome in (group.get("outcomes") or {}).items():
+            if not isinstance(outcome, dict) or outcome.get("outcome") != "empty" or key not in jobs:
+                continue
+            period = jobs[key].get("period")
+            kind = "day" if isinstance(period, str) and len(period) == 10 else "month" if isinstance(period, str) and len(period) == 7 else None
+            try:
+                asked = datetime.fromisoformat(str(outcome["finished_at"]).replace("Z", "+00:00")).astimezone(china).date()
+                published = last_day(kind, period) + timedelta(days=EARLY_EMPTY_DAYS) if kind else None
+            except (KeyError, ValueError, TypeError):
+                continue
+            if published is not None and asked < published:
+                early.add(key)
+    return early
+
+
+def _early_empty(row, early: set):
+    """A tombstone of an empty answer asked too early is imported as an unconsumed fact: PMOS asks again."""
+    from dataclasses import replace
+    if row.legacy_key in early and row.state == "empty" and row.consumed:
+        return replace(row, state="pending", consumed=False)
+    return row
+
+
+TASK_KEY_PREFIX = "liaoning:2026:expanded:"
+MANY_OPTIONS = 100
+
+
+def task_key_identities(rows, built: dict, account_alias: str) -> dict:
+    """legacy_key -> identity of records whose key alone names them (read-only, exact).
+
+    LNCrawler's ``expanded_adapters.task_key`` is ``liaoning:2026:expanded:<dataset>:`` plus the
+    sha256 of the semantic identity ``{"period", "selection"}`` (json, ensure_ascii=False,
+    sort_keys, compact separators; Liaoning session 11-01). For a record that kept neither its
+    query nor an issued job (e6a2's 10-16 prior outcome), every 2026 period of its kind and every
+    selection of its spec is hashed; exactly one preimage names it, else it stays unresolved.
+    """
+    from datetime import date, timedelta
+    context = QueueContext("liaoning", account_alias)
+    found = {}
+    for _, row in rows:
+        if row.identity is not None or not row.legacy_key.startswith(TASK_KEY_PREFIX + row.dataset + ":"):
+            continue
+        spec, rule = built["specs"].get(row.dataset), built["rules"].get(row.dataset) or {}
+        if spec is None or not rule.get("period_field"):
+            continue
+        digest_hex = row.legacy_key.rsplit(":", 1)[1]
+        field = rule.get("selection_field")
+        selections = [scope[field] for scope in spec.get("scopes", [])] if field else [""]
+        kind = spec["period"]["kind"]
+        periods = ([(date(2026, 1, 1) + timedelta(days=n)).isoformat() for n in range(365)] if kind == "day"
+                   else [f"2026-{m:02d}" for m in range(1, 13)])
+        matches = [(period, selection) for period in periods for selection in selections
+                   if hashlib.sha256(json.dumps({"period": period, "selection": selection}, ensure_ascii=False,
+                                                sort_keys=True, separators=(",", ":")).encode()).hexdigest() == digest_hex]
+        if len(matches) != 1:
+            continue
+        period, selection = matches[0]
+        job = {"key": row.legacy_key, "dataset": row.dataset, "period": period, "page": 1,
+               "params": {rule["period_field"]: period, **({field: selection} if field else {})}}
+        decoded = decode_liaoning({"sources": {row.dataset: {"pending": [job], "outcomes": {}}}}, context,
+                                  period_kinds={row.dataset: kind}, source_contracts=built["rules"])
+        if len(decoded) == 1 and decoded[0].identity is not None:
+            found[row.legacy_key] = decoded[0].identity
+    return found
+
+
 def bridged_identities(root: Path, account_alias: str) -> dict:
     """legacy_key -> identity recovered by the phase 5 exact identity bridges.
 
@@ -226,12 +398,17 @@ def parity(root: Path, *, account_alias: str = "liaoning-production", bridges: b
             # The bridges pin the legacy writer code and inputs; drift makes
             # them refuse, and those records then stay unresolved here too.
             bridge_status = f"refused:{exc}"
-    # The worker's own issued jobs first; a phase 5 bridge only where none was written.
+    # The worker's own issued jobs first; a phase 5 bridge only where none was written; the
+    # task key's own preimage for what neither resolves.
     bridged = {**bridged, **issued}
+    bridged = {**task_key_identities([(ref, r) for ref, r in rows if r.legacy_key not in bridged], built, account_alias),
+               **bridged}
     per = {name: Counter() for name in specs}
     out_of_scope = Counter()
     examples = {}
+    early = early_empty_keys(root)
     for source_ref, row in rows:
+        row = _early_empty(row, early)
         spec = specs.get(row.dataset)
         if spec is None:
             out_of_scope["consumed" if row.consumed else "unconsumed"] += 1
@@ -337,6 +514,10 @@ def plan_cutover(root: Path, *, account_alias: str = "liaoning-production", requ
             if blocker in SOURCE_BLOCKERS and row.dataset in report["per_source"]:
                 source_blocked.setdefault(row.dataset, set()).add(blocker)
     eligible = [name for name in report["eligible"] if name not in source_blocked]
+    # The scope order is the collection order: a source of hundreds of options a day (the node prices,
+    # ~1,324 a day) goes last, so every other report's new days come first.
+    many = {name for name, spec in built["specs"].items() if len(spec.get("scopes", [])) >= MANY_OPTIONS}
+    eligible = sorted(eligible, key=lambda name: (name in many, name))
     if requested is not None:
         unknown = sorted(set(requested) - set(eligible))
         if unknown:
@@ -380,13 +561,18 @@ def apply_cutover(root: Path, instance: Path, plan: dict, *, legacy_owner: dict,
     rows, refs = legacy_rows(root, plan["account_alias"], built)
     bridged = bridged_identities(root, plan["account_alias"]) if plan["identity_bridges"] == "applied" else {}
     bridged = {**bridged, **issued_identities(root, plan["account_alias"], built)[0]}
+    bridged = {**task_key_identities([(ref, r) for ref, r in rows if r.legacy_key not in bridged], built,
+                                     plan["account_alias"]), **bridged}
     from dataclasses import replace
+    early = early_empty_keys(root)
     by_source: dict[str, list] = {}
     for source_ref, row in rows:
         if row.identity is None and row.legacy_key in bridged:
             row = replace(row, identity=bridged[row.legacy_key])
-        by_source.setdefault(source_ref, []).append(row)
+        by_source.setdefault(source_ref, []).append(_early_empty(row, early))
     digests = {ref["path"]: ref["sha256"] for ref in refs if "sha256" in ref}
+    digests.setdefault(DIMENSION_OPERATIONS, next((ref["sha256"] for ref in refs
+                                                   if ref["path"] == DIMENSION_OPERATIONS + "/*/issued.json"), None))
     instance.mkdir(parents=True, mode=0o700)
     ledger = Ledger(instance / "ledger.sqlite3")
     snapshots = []

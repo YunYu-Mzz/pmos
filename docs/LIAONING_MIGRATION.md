@@ -121,3 +121,30 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 追平后进程不退出；
   - 驱动内存模块认可的 SHA。
 - **仍待用户决定：** 旧系统滞后 1 天采到的空结果作为墓碑导入，PMOS 不会重查。
+
+## 11-01 下午：节点电价和维度车道接入 PMOS（用户选"先不切，补完节点电价再切"）
+
+服务器上只读重算（13:40）时发现：PMOS 只能接 44 个报表类来源中的 37 个。节点电价、维度车道、报表引擎线、列表类等 81 个来源，冻结后都会停采。用户选择先补节点电价再切。
+
+- **维度车道导入（`migration/liaoning`）：**
+  - `dimension_jobs`：读 `state/dimension_coverage_20261024/operations/*/issued.json` 和 `receipt.json`，只取 stage=data 的业务请求，字典读取不导入。值为 null 的参数（1c01 的 name）不算查询参数。
+  - `dimension_options`：每个来源的选项，取它自己的选项字段（大多是 name，1c01 是 type），把维度请求里出现过的和 runtime 里当天的清单合在一起。
+  - `build_specs`：维度来源的规格按这些选项展开；0400 没有代码规则，按维度车道自己的两个参数（mdate、name）补上。
+  - `legacy_rows` 把维度请求作为旧记录导入，来源为 `DIMENSION_OPERATIONS`。
+- **只剩任务键的记录（`task_key_identities`）：** LNCrawler 的任务键是 `liaoning:2026:expanded:<数据集>:` 加语义身份 `{"period","selection"}` 的 sha256。一条既没有查询参数、也没有 issued 记录的旧记录（e6a2 的 10-16 prior outcome），在 2026 年的日期乘以规格选项的范围里，恰好有一个原像能对上，就用它；否则仍然不处理。
+- **采得太早的空结果（`early_empty_keys`）：** 用户原话（经辽宁会话转达）是"10-31、11-01 这类当天或第二天采到的空结果，当作未采处理"。按日的，采到时距日期不足 2 天；按月的，在月底后 2 天之前采到的：都作为未消费导入，PMOS 按滞后天数再采。10-23 那批：原键的空结果同样作为未消费导入；重查键的结果是 saved，算已消费，PMOS 不会重发。
+- **采集顺序：** 选项在 100 个以上的来源（两张节点电价，每天约 1,324 个节点）排在范围最后，其他报表每天的新日期先采。
+- **规格：** 维度来源写入全部选项：
+  - 两张节点电价各 1,324 个节点，实时等 2 天、日前等 1 天；
+  - 39c8 有 8 个选项，46fa 2 个，7d2f 9 个，931a 7 个，e6a2 2 个，1c01 2 个；
+  - 0400 和 e6a2 原来是候选规格，改为构建器生成的完整规格。
+- **服务器只读计划：** ready，范围 40 个来源。旧记录逐条身份相等：实时节点 6,535 条，日前节点 5,187 条，1c01 898 条，e6a2 610 条。只有两条报表引擎线（e38351fe、0353290a）按 legacy_source_hold 排除。
+- **仍然接不住、冻结后会停采的：**
+  - 三条报表引擎线（e38351fe、0353290a、033），因为没有 FineReport 会话处理；
+  - 电力日报和附件通道；
+  - 列表类 63 个、additional 11 个、member 3 个；
+  - 维度车道每天的字典读取：新出现的节点暂时不会补进来。
+- **存储：** 节点电价每条约 106 KB，剩约 79 万条，约 84 GB。PMOS 在剩余空间低于 2 GB 时会暂停整个省份。
+- **切换工具：** `tools/liaoning_cutover.py`。
+  - `plan` 只读；
+  - `apply` 要求 liaoning-crawler 已停、liaoning-browser-owner 还在运行；它建新台账，写 browser.json（指向浏览器属主的 profile，并开启进程核对）和 SHA256SUMS；保活用 system_load。

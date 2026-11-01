@@ -1,11 +1,12 @@
 {
   "id": "sitewide_e6a2dcfefa4e7391",
   "name": "集中式新能源总出力预测（周）",
-  "status": "candidate",
+  "status": "verified",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 1
   },
   "request": {
     "transport": "component",
@@ -13,22 +14,52 @@
     "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport007",
     "frame": "/pdbln/report/PdblnReport007",
     "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport007",
-    "component": "pdblnReport007",
-    "call": "initData",
-    "set": {
-      "queryParam.mdate": "{date}"
-    },
     "site_menu": {
       "source": "lnsnxh_w_xnyzclyc",
       "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport007"
+    },
+    "component": "pdblnReport007",
+    "call": "initData",
+    "set": {
+      "tableData": [],
+      "queryParam.mdate": "{date}",
+      "queryParam.name": "{scope[name]}"
     }
   },
   "response": {
     "kind": "json"
   },
+  "scopes": [
+    {
+      "name": "光伏"
+    },
+    {
+      "name": "风电"
+    }
+  ],
   "source": {
-    "legacy": "lncrawler/sitewide_specs.py",
-    "options_api": "pdblnReportDic007"
+    "legacy": "liaoning production manifest",
+    "manifest": "state/server_verified_expansion_20261023/active_manifest.json",
+    "manifest_sha256": "f3aec212764bdfad0cd10332b64c3b419cfb45978bcd2be1898ce6fa8eb1617b",
+    "legacy_kind": "report",
+    "number": "007",
+    "legacy_source": "lnsnxh_w_xnyzclyc",
+    "legacy_scope": "historical_native_query_dates_only_verified_selections",
+    "proof_sha256": [
+      "bc3019c6b1a84994ee90f739f4b9067e0ed0e1eb6aac9089f605aa47063773f6"
+    ],
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {
+        "queryParam.name": "name"
+      }
+    },
+    "note": "same component call as the legacy advanced/sitewide browser code"
   },
   "history": [
     {

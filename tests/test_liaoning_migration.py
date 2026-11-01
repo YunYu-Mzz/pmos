@@ -186,6 +186,94 @@ class PublishLag(unittest.TestCase):
         self.assertTrue(days and all(spec["period"]["lag_days"] in (1, 2) for spec in days))
 
 
+class EarlyEmpties(unittest.TestCase):
+    """User via the Liaoning session (11-01): an empty asked the same or the next day is no tombstone."""
+
+    def test_an_empty_asked_before_its_day_was_published_is_imported_unconsumed(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        root = legacy_root(tmp.path)
+        state = root / "state/server_verified_expansion_20261023"
+        queue = json.loads((state / "queue.json").read_text())
+        early_key, early_job = job("actual_load", DAY[2], {"mdate": DAY[2]})
+        late_key, late_job = job("actual_load", DAY[3], {"mdate": DAY[3]})
+        from datetime import date, timedelta
+        asked = {early_key: date.fromisoformat(DAY[2]) + timedelta(days=1),     # the next day: too early
+                 late_key: date.fromisoformat(DAY[3]) + timedelta(days=2)}      # 2 days later: a real empty
+        for key, value in ((early_key, early_job), (late_key, late_job)):
+            queue["sources"]["actual_load"]["outcomes"][key] = {
+                "outcome": "empty", "rows": 0, "sha256": "e" * 64, "directory": "x",
+                "finished_at": asked[key].isoformat() + "T08:00:00+08:00"}
+            (state / "operations" / key[-12:]).mkdir(parents=True)
+            (state / "operations" / key[-12:] / "issued.json").write_text(json.dumps({"job": value}, ensure_ascii=False))
+        (state / "queue.json").write_text(json.dumps(queue, ensure_ascii=False))
+        self.assertEqual(migration.early_empty_keys(root), {early_key})
+        rows = dict((row.legacy_key, migration._early_empty(row, {early_key}))
+                    for _, row in migration.legacy_rows(root, "liaoning-production", migration.build_specs(root))[0])
+        self.assertEqual((rows[early_key].state, rows[early_key].consumed), ("pending", False))
+        self.assertEqual((rows[late_key].state, rows[late_key].consumed), ("empty", True))
+
+
+def add_dimension_lane(root: Path, day: str, nodes: list, listed: list) -> None:
+    """The legacy dimension lane: one data operation per asked node, a dictionary read, today's list."""
+    lane = root / "state/dimension_coverage_20261024"
+    for index, node in enumerate(nodes):
+        directory = lane / "operations" / f"dimension_{index:04d}"
+        directory.mkdir(parents=True)
+        (directory / "issued.json").write_text(json.dumps({
+            "dataset": "node_price", "period": day, "stage": "data", "selection": node, "key": f"dimension_{index:04d}",
+            "params": {"mdate": day, "name": node}, "endpoint": "/x", "method": "POST"}, ensure_ascii=False))
+        (directory / "receipt.json").write_text(json.dumps({"phase": "completed", "outcome": {
+            "outcome": "saved", "sha256": "d" * 64, "params": {"mdate": day, "name": node}}}, ensure_ascii=False))
+    dictionary = lane / "operations" / "dimension_dict"
+    dictionary.mkdir(parents=True)
+    (dictionary / "issued.json").write_text(json.dumps({"dataset": "node_price", "period": day, "stage": "dictionary",
+                                                        "key": "dimension_dict", "params": ["mdate", "name"]}))
+    (dictionary / "receipt.json").write_text(json.dumps({"phase": "completed"}))
+    (lane / "runtime.json").write_text(json.dumps({"sources": {"node_price": {"current": {"period": day, "options": listed}}}},
+                                                  ensure_ascii=False))
+
+
+class DimensionLane(unittest.TestCase):
+    """Liaoning 2026-11-01: node prices and per-option sources are asked by the dimension lane, not the queue."""
+
+    def test_every_listed_option_becomes_a_scope_and_the_lanes_sends_are_identical_tombstones(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        root = legacy_root(tmp.path)
+        other, third = "辽宁.另一厂/220kV.一母母线", "辽宁.第三厂/500kV.二母母线"
+        add_dimension_lane(root, DAY[2], [other, NODE], [NODE, other, third])
+        built = migration.build_specs(root)
+        self.assertEqual({s["name"] for s in built["specs"]["node_price"]["scopes"]}, {NODE, other, third},
+                         "the manifest's one node, the asked ones and today's listed ones")
+        self.assertEqual(built["dimension_sources"], ["node_price"])
+        rows = [row for ref, row in migration.legacy_rows(root, "liaoning-production", built)[0]
+                if ref == migration.DIMENSION_OPERATIONS]
+        self.assertEqual(len(rows), 2, "the dictionary read is no business record")
+        self.assertTrue(all(row.consumed and row.state == "saved" for row in rows))
+        report = migration.parity(root, bridges=False)
+        tally = report["per_source"]["node_price"]
+        self.assertEqual(tally["records"], tally["matched"], "the lane's identities equal the engine's")
+
+    def test_a_record_with_only_its_task_key_is_named_by_the_keys_preimage(self):
+        import hashlib
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        root = legacy_root(tmp.path)
+        state = root / "state/server_verified_expansion_20261023"
+        manifest = json.loads((state / "active_manifest.json").read_text())
+        semantic = {"period": DAY[3], "selection": NODE}
+        key = migration.TASK_KEY_PREFIX + "node_price:" + hashlib.sha256(json.dumps(
+            semantic, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        manifest["sources"]["node_price"]["prior_outcomes"] = {key: {"outcome": "saved", "raw_sha256": "f" * 64}}
+        (state / "active_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False))
+        built = migration.build_specs(root)
+        rows = migration.legacy_rows(root, "liaoning-production", built)[0]
+        found = migration.task_key_identities(rows, built, "liaoning-production")
+        self.assertEqual((found[key].period["label"], found[key].dimensions), (DAY[3], {"name": NODE}))
+        self.assertEqual(migration.parity(root, bridges=False)["per_source"]["node_price"].get("unmapped_consumed", 0), 0)
+
+
 class Handoff(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         # Reports published as the day runs: these tests are about legacy tombstones, not publication lag.
