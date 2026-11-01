@@ -386,6 +386,8 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
                                        "fields": [{"kind": "date", "placeholder": "选择日期", "value": "2026-10-28"},
                                                   {"kind": "select", "label": "断面名称", "value": "不存在的线"}]})
         self.assertEqual((caught.exception.code, caught.exception.unsent), ("select_option_missing", True))
+        self.assertEqual({k: caught.exception.detail[k] for k in ("select_label", "select_option", "options_listed")},
+                         {"select_label": "断面名称", "select_option": "不存在的线", "options_listed": 3})
         self.assertEqual(await self.page.evaluate("window.queries"), 0, "查询 was never clicked")
 
     async def test_a_filterable_select_is_judged_by_its_value_after_it_has_settled(self):

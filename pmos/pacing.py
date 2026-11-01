@@ -13,7 +13,7 @@ from dataclasses import dataclass, field, fields
 MIN_RESPONSE_INTERVAL_SECONDS = 1
 # Item isolation is a per-province choice; a lost login, rate limiting or an
 # unknown network outcome always stops the province.
-ISOLATABLE = frozenset({"site_data", "unknown", "permission", "local"})
+ISOLATABLE = frozenset({"site_data", "unknown", "permission", "local", "network"})
 HOUR = 3600
 DAY = 86400
 

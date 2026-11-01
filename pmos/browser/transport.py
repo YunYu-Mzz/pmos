@@ -270,6 +270,7 @@ class Templates:
         self.origin = origin
         self.clock = clock
         self.items: dict[str, dict] = {}
+        self.shapes: dict[str, dict[str, dict]] = {}     # path -> body shape -> newest template of it
         self.sending = 0
         self.pending: set = set()
         self.max_items, self.ttl = max_items, ttl
@@ -319,11 +320,18 @@ class Templates:
         self._context = self._spawn = None
         self._always, self._windows = False, 0
         self.items.clear()
+        self.shapes.clear()
 
     def prune(self, *, keep_detached: bool = False) -> None:
         for path, template in list(self.items.items()):
             if self.clock() - template["at"] > self.ttl or (_frame_gone(template["frame"]) and not keep_detached):
                 self.items.pop(path, None)
+        for path, shapes in list(self.shapes.items()):
+            for shape, template in list(shapes.items()):
+                if self.clock() - template["at"] > self.ttl or (_frame_gone(template["frame"]) and not keep_detached):
+                    shapes.pop(shape, None)
+            if not shapes or path not in self.items:
+                self.shapes.pop(path, None)
         while len(self.items) > self.max_items:
             self.items.pop(min(self.items, key=lambda key: self.items[key]["at"]))
 
@@ -348,16 +356,33 @@ class Templates:
             except Exception:
                 text = None                       # a binary body: the template is kept, without one
             page_body = text if isinstance(text, str) and len(text) <= MAX_PAGE_BODY_CHARS else None
-            self.items[path] = {"frame": request.frame, "headers": headers, "method": request.method,
-                                "body": None, "page_body": page_body, "at": self.clock()}
+            template = {"frame": request.frame, "headers": headers, "method": request.method,
+                        "body": None, "page_body": page_body, "at": self.clock()}
+            self.items[path] = template
+            # Reports sharing an endpoint send different bodies (Anhui 2026-11-01 14:04: 6d80's replay found
+            # another report's body, template_body_field_missing): the newest of each body shape is kept too.
+            shape = _body_shape(page_body)
+            if shape is not None:
+                shapes = self.shapes.setdefault(path, {})
+                shapes.pop(shape, None)
+                shapes[shape] = template
+                while len(shapes) > MAX_BODY_SHAPES:
+                    shapes.pop(next(iter(shapes)))
             self.prune()
         except Exception:
             pass  # a vanished frame simply leaves no template
 
-    def get(self, path: str, max_age: float | None = None, *, fallback_frame=None) -> dict:
-        """``fallback_frame``: a template whose frame is gone is sent from it (its headers are the session's)."""
+    def get(self, path: str, max_age: float | None = None, *, fallback_frame=None, fields=None) -> dict:
+        """``fallback_frame``: a template whose frame is gone is sent from it (its headers are the session's).
+
+        ``fields`` (a template_body_set's dotted paths): the newest template of this path whose page body
+        has them all.
+        """
         self.prune(keep_detached=fallback_frame is not None)
         template = self.items.get(path)
+        if fields and template is not None and not _has_fields(template.get("page_body"), fields):
+            fitting = [t for t in self.shapes.get(path, {}).values() if _has_fields(t.get("page_body"), fields)]
+            template = max(fitting, key=lambda t: t["at"]) if fitting else template
         if template is None:
             raise Fault("request_template_missing", "local")
         if max_age is not None and self.clock() - template["at"] > max_age:
@@ -367,6 +392,31 @@ class Templates:
                 raise Fault("request_template_frame_detached", "local")
             return {**template, "frame": fallback_frame}
         return template
+
+
+MAX_BODY_SHAPES = 4
+
+
+def _body_shape(text):
+    try:
+        body = json.loads(text) if text else None
+    except ValueError:
+        return None
+    return ",".join(sorted(body)) if isinstance(body, dict) else None
+
+
+def _has_fields(text, fields) -> bool:
+    try:
+        body = json.loads(text) if text else None
+    except ValueError:
+        return False
+    for path in fields:
+        target = body
+        for key in path.split("."):
+            if not isinstance(target, dict) or key not in target:
+                return False
+            target = target[key]
+    return True
 
 
 def _frame_gone(frame) -> bool:
@@ -616,9 +666,17 @@ class PageTransport:
         """Could ``send`` run now without a local failure? Never sends anything."""
         if request["transport"] != "fetch":
             return True
-        template = self.templates.items.get(request.get("template", request["path"]))
+        path = request.get("template", request["path"])
+        template = self.templates.items.get(path)
         if template is None:
             return False
+        fields = list(request.get("template_body_set") or [])
+        if fields and not _has_fields(template.get("page_body"), fields):
+            # Only another report's body on this endpoint: not ready, the report's own page call bootstraps it.
+            fitting = [t for t in self.templates.shapes.get(path, {}).values() if _has_fields(t.get("page_body"), fields)]
+            if not fitting:
+                return False
+            template = max(fitting, key=lambda t: t["at"])
         max_age = request.get("max_template_age")
         if max_age is not None and self.templates.clock() - template["at"] > max_age:
             return False
@@ -645,7 +703,8 @@ class PageTransport:
 
     async def _fetch(self, request: dict) -> Response:
         template = self.templates.get(request.get("template", request["path"]), request.get("max_template_age"),
-                                      fallback_frame=self.page.main_frame if self.main_frame_fallback else None)
+                                      fallback_frame=self.page.main_frame if self.main_frame_fallback else None,
+                                      fields=list(request.get("template_body_set") or []))
         url = self.origin + request["path"]
         if request.get("query"):
             url += "?" + urlencode(request["query"])

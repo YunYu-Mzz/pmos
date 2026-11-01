@@ -406,7 +406,10 @@ async def fill(frame, field: dict, timeout: float) -> None:
         deadline = asyncio.get_running_loop().time() + min(timeout, 10)
         while await option.count() != 1:
             if asyncio.get_running_loop().time() > deadline:
-                raise Fault("select_option_missing", "local")
+                listed = await frame.locator(".el-select-dropdown__item:visible").count()
+                raise Fault("select_option_missing", "local", detail={
+                    "select_label": field.get("label") or field.get("placeholder"), "select_option": value,
+                    "options_listed": listed, "matches": await option.count()})
             await asyncio.sleep(0.1)
         await option.click()
     else:

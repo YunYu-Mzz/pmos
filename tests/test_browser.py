@@ -154,6 +154,33 @@ class ClosedPageTemplates(unittest.TestCase):
             templates.get("/p")
 
 
+class BodyShapedTemplates(unittest.TestCase):
+    def test_a_replay_takes_the_newest_template_whose_body_has_its_fields(self):
+        """Anhui 2026-11-01 14:04: another report on 6d80's endpoint left its body (template_body_field_missing)."""
+        from pmos.browser.transport import Templates
+
+        class Frame:
+            def is_detached(self):
+                return False
+
+        class Request:
+            def __init__(self, body):
+                self.post_data, self.method, self.frame = body, "POST", Frame()
+
+            async def all_headers(self):
+                return {}
+        templates = Templates("https://x.test")
+        import asyncio
+        asyncio.run(templates._capture(Request('{"businessTime":"2026-10-30","unitId":"u1","taskId":"t"}'), "/p"))
+        asyncio.run(templates._capture(Request('{"businessTime":"2026-10-30"}'), "/p"))
+        self.assertIn("unitId", templates.get("/p", fields=["businessTime", "unitId"])["page_body"])
+        self.assertNotIn("unitId", templates.get("/p")["page_body"], "a plain replay keeps the newest")
+        transport = PageTransport(Frame(), "https://x.test", templates, 5)
+        self.assertTrue(transport.ready({"transport": "fetch", "path": "/p", "template_body_set": {"unitId": "x"}}))
+        self.assertFalse(transport.ready({"transport": "fetch", "path": "/p", "template_body_set": {"genName": ""}}),
+                         "no body of this path has it: the report's own page call bootstraps it")
+
+
 class BringForward(unittest.IsolatedAsyncioTestCase):
     """Anhui 2026-11-01 12:07: page work in a hidden Edge tab waited out every timeout."""
 

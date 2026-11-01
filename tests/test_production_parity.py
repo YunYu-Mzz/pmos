@@ -1214,6 +1214,32 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         self.assertIn(engine.state.read("dataset_holds").get("aa", {}).get("reason", ""),
                       ("prime_unexpected_answer",))
 
+    async def test_one_network_fault_isolates_its_item_and_three_in_a_row_stop_the_province(self):
+        """Anhui 2026-11-01 14:00: one network_error stopped the province without keepalive."""
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        province = make_province(tmp.path, [dataset("aa", start=PREVIOUS_DAY)],
+                                 policy={"response_interval_seconds": 1, "isolate_items": ["unknown", "site_data", "network"]})
+        self.transport = FakeTransport(self.clock)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        self.transport.queue = [Fault("network_error", "network")]
+        for _ in range(3):
+            await engine.tick()
+            self.clock.advance(2)
+        self.assertIsNone(engine.state.blocked(), "one network fault: only that item")
+        self.assertEqual(engine.ledger.task("aa", TODAY)["reason"], "isolated:network_error")
+        self.assertEqual(engine.ledger.task("aa", PREVIOUS_DAY)["status"], "saved", "the next one went on")
+        engine.ledger.seed("aa", ["2026-10-01", "2026-10-02", "2026-10-03"], "")
+        self.transport.queue = [Fault("network_error", "network")] * 3
+        engine._network_streak = 0
+        for _ in range(4):
+            await engine.tick()
+            self.clock.advance(2)
+        self.assertEqual(engine.state.blocked()["reason"], "network_error", "three in a row are the connection's")
+
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost
         engine = self.engine()

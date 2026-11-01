@@ -67,6 +67,8 @@ DRIVER_LOSSES_TO_STOP = 3
 PRIME_SCOPE = "template_prime"
 # Page operations (menu, form, dropdown) failing in a row, across reports, stop the province.
 PAGE_FAILURES_TO_STOP = 3
+# Network faults in a row (any reports) before the province stops instead of isolating the item.
+NETWORK_FAULTS_TO_STOP = 3
 # The page was driven and answered; only a read's own check failed (Anhui 2026-11-01 12:32:
 # three dropdown reads in a row stopped a working page). Not counted as a failing page.
 PAGE_ANSWERED_CODES = frozenset({"select_value_changed_by_reading", "select_text_not_restored", "select_value_unsettled"})
@@ -127,6 +129,7 @@ class Engine:
         self.clock = clock
         self._recycle_checked = float("-inf")
         self._primed: dict[str, float] = {}
+        self._network_streak = 0
         self.decode_response = decode_response
         self.account_alias = account_alias
         self.instance = instance or province.instance()
@@ -263,6 +266,7 @@ class Engine:
                                          part_outcome.extension, scope=f"attempt_{attempt}.{number}")
             self.ledger.finish(attempt, "empty" if outcome.result == "empty" else "success",
                                http_status=response.status, business_status=outcome.business_status)
+            self._network_streak = 0
             if request.get("transport") == "ui" and self.state.read("page_operation_failures"):
                 self.state.write("page_operation_failures", [])
             if response.operation:
@@ -1196,6 +1200,12 @@ class Engine:
         """
         if fault.category not in self.policy.isolate_items or fault.code in GLOBAL_LOCAL_FAULTS:
             return False
+        if fault.category == "network":
+            # One network fault is that item's (Anhui 2026-11-01 14:00, the legacy isolates the date);
+            # NETWORK_FAULTS_TO_STOP in a row, any reports, are the connection's: the province stops.
+            self._network_streak += 1
+            if self._network_streak >= NETWORK_FAULTS_TO_STOP:
+                return False
         if fault.category == "permission" and not (fault.http_status == 200 and fault.business_status == "40302"):
             return False
         if fault.category == "permission" and self._query_lapse(task):

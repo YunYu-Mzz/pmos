@@ -53,9 +53,10 @@
     "probe_after_idle_seconds": 300,
     "isolate_items": [
       "unknown",
-      "site_data"
+      "site_data",
+      "network"
     ],
-    "note": "Anhui production (2026-10-31): one lane, 1 s after every response (user 23:40: 也改成1s的间隔吧; legacy adaptation_workflow_policy since 23:39); keepalive after 300 s idle; 401/403/40302/429 stop the province; a transient or unknown failure settles that item for review, never re-sent, other dates go on (3 in a row pause the report)",
+    "note": "Anhui production (2026-10-31): one lane, 1 s after every response (user 23:40: 也改成1s的间隔吧; legacy adaptation_workflow_policy since 23:39); keepalive after 300 s idle; 401/403/40302/429 stop the province; a transient or unknown failure settles that item for review, never re-sent, other dates go on (3 in a row pause the report); network (2026-11-01 14:00, as the legacy isolating the date): one network fault settles only that item, 3 in a row across reports stop the province",
     "quiet_windows": [
       "23:58-00:10"
     ]
