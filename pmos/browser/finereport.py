@@ -56,13 +56,17 @@ _PEEK_JS = """() => window.__pmosFrQueue.map(o => { const u = new URL(o.url || F
   return {path: u.pathname, method: (o.type || $.ajaxSettings.type || 'GET').toUpperCase(),
           op: d.op || u.searchParams.get('op'), cmd: d.cmd || u.searchParams.get('cmd')}; })"""
 
+_SET_JS = """fields => { const f = _g();
+  for (const [name, value] of Object.entries(fields)) f.parameterEl.getWidgetByName(name).setValue(value);
+  return true; }"""
+
 _COMMIT_JS = """fields => { const f = _g();
   for (const [name, value] of Object.entries(fields)) {
-    const w = f.parameterEl.getWidgetByName(name);
-    w.setValue(value);
-    if (w.getValue() !== value) throw new Error('date_not_applied');
+    if (f.parameterEl.getWidgetByName(name).getValue() !== value) throw new Error('date_not_applied');
   }
   f.parameterCommit(); return true; }"""
+
+_GOTO_JS = """number => { if (typeof contentPane.gotoPage !== 'function') throw new Error('no_goto_page'); contentPane.gotoPage(number); return true; }"""
 
 _PAGES_JS = "() => { const p = window.contentPane; return p && Number.isInteger(p.reportTotalPage) ? p.reportTotalPage : null; }"
 
@@ -318,7 +322,7 @@ async def _next_stage(frame, stage: tuple, timeout: float, *, first: bool, path:
             raise Fault("finereport_stage_missing", "local", unsent=first, detail={"stage": cmd})
         await asyncio.sleep(0.05)
     if queue != [{"path": path, "method": method, "op": op, "cmd": cmd}]:
-        raise Fault("finereport_stage_changed", "local", unsent=first, detail={"stage": cmd, "queued": len(queue)})
+        raise Fault("finereport_stage_changed", "local", unsent=first, detail={"stage": cmd or op, "queued": queue[:4]})
 
 
 def _is_stage(request, frame, stage: tuple, path: str = PATH) -> bool:
@@ -332,6 +336,47 @@ def _is_stage(request, frame, stage: tuple, path: str = PATH) -> bool:
     return sent.get("op", [None])[0] == op and (cmd is None or sent.get("cmd", [None])[0] == cmd)
 
 
+async def _settle_dropdowns(frame, timeout: float) -> None:
+    """A dropdown given a value first loads its options (op=widget), once per document: those go out before the day is asked."""
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    quiet = 0
+    while quiet < 3 and loop.time() < deadline:
+        queue = await frame.evaluate(_PEEK_JS)
+        if queue and queue[0].get("op") == "widget":
+            await frame.evaluate(_RELEASE_JS)
+            quiet = 0
+            await asyncio.sleep(STAGE_PAUSE_SECONDS)
+        elif queue:
+            return                                # anything else: the stage check says what it is
+        else:
+            quiet += 1
+            await asyncio.sleep(0.2)
+
+
+async def _next_pages(page, frame, stage: tuple, total: int, expect, timeout: float, last: dict, source: str, path: str) -> list[bytes]:
+    """Pages 2.. of a report: each asked by the page's own gotoPage, seen and released on its own. Page 1 was answered, so what fails is the report's."""
+    pages = []
+    for number in range(2, total + 1):
+        try:
+            await frame.evaluate(_GOTO_JS, number)
+            await _next_stage(frame, stage, timeout, first=False, path=path)
+            async with expect(page, "response", lambda r: _is_stage(r.request, frame, stage, path), timeout=timeout * 1000) as captured:
+                await frame.evaluate(_RELEASE_JS)
+            answer = await captured.value
+            raw = await answer.body()
+        except Exception as exc:
+            last.pop(source, None)
+            raise Fault("finereport_paging_failed", "site_data", detail={"page": number, "reason": getattr(exc, "code", type(exc).__name__)}) from None
+        last[source] = time.monotonic()
+        if answer.status != 200 or SESSION_END in raw:
+            last.pop(source, None)
+            raise Fault("finereport_paging_failed", "site_data", http_status=answer.status, detail={"page": number})
+        pages.append(raw)
+        await asyncio.sleep(STAGE_PAUSE_SECONDS)
+    return pages
+
+
 async def query_day(page, frame, fields: dict, expect, timeout: float, last: dict, source: str, *,
                     stages: tuple = STAGES, path: str = PATH) -> Response:
     """The stages of one day (``fields``: the form's widgets to set); the last answer, or the first that was no answer to go on from."""
@@ -339,6 +384,9 @@ async def query_day(page, frame, fields: dict, expect, timeout: float, last: dic
         last.pop(source, None)
         raise _unsent("finereport_queue_not_empty")
     try:
+        await frame.evaluate(_SET_JS, fields)
+        if len(fields) > 1:
+            await _settle_dropdowns(frame, timeout)
         await frame.evaluate(_COMMIT_JS, fields)
     except Exception:
         raise _unsent("finereport_date_not_applied") from None
@@ -377,7 +425,15 @@ async def query_day(page, frame, fields: dict, expect, timeout: float, last: dic
         elif op == "page_content":
             # The page takes its count of pages from this answer; a report of several must not pass as one.
             await asyncio.sleep(STAGE_PAUSE_SECONDS)
-            return Response(200, answer.headers.get("content-type", "application/json"), raw,
-                            operation={"report_total_pages": await frame.evaluate(_PAGES_JS)})
+            total = await frame.evaluate(_PAGES_JS)
+            kind = answer.headers.get("content-type", "application/json")
+            if not isinstance(total, int) or total <= 1:
+                return Response(200, kind, raw, operation={"report_total_pages": total})
+            rest = await _next_pages(page, frame, stage, total, expect, timeout, last, source, path)
+            try:
+                whole = {"report_pages": [json.loads(item) for item in (raw, *rest)]}
+            except ValueError:
+                raise Fault("finereport_paging_failed", "site_data", detail={"page": "not_json"}) from None
+            return Response(200, "application/json", json.dumps(whole, ensure_ascii=False).encode(), operation={"report_total_pages": total})
         await asyncio.sleep(STAGE_PAUSE_SECONDS)
     raise Fault("finereport_stage_missing", "local")

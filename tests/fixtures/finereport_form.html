@@ -14,7 +14,7 @@ let date = '2026-10-09';
 const unit = {getValue: () => new URLSearchParams(location.search).get('unit') || '单位:MW'};
 // lnsnxh_b has a dropdown that loads its options when opened.
 // The form's own image comes from the same path: only the queued request's answer is the dropdown's.
-const combo = {options: {type: 'combo'}, picked: '', getValue() { return this.picked; }, setValue(v) { this.picked = v; window.picked = v; }, onTriggerClick() { fetch(url + '?op=resource&resource=loading.gif'); FR.ajax({type: 'POST', data: {op: 'fr_dialog', cmd: 'combo_items', date}}); }};
+const combo = {options: {type: 'combo'}, picked: '', getValue() { return this.picked; }, setValue(v) { this.picked = v; window.picked = v; if (!this.loaded) { this.loaded = true; FR.ajax({type: 'POST', data: {op: 'widget', widgetname: 'x'}}); } }, onTriggerClick() { fetch(url + '?op=resource&resource=loading.gif'); FR.ajax({type: 'POST', data: {op: 'fr_dialog', cmd: 'combo_items', date}}); }};
 const widgets = location.search.includes('lnsnxh_b') ? {unit, 机组名称: combo} : {unit};
 const form = {parameterEl: {getWidgetByName: n => widgets[n] || (n.includes('日期') ? {setValue(v) { date = v; }, getValue: () => date} : null),
                             name_widgets: widgets},

@@ -20,7 +20,7 @@ from pathlib import Path
 from . import periods
 from .faults import Fault, decide
 from .province import PROVINCES, Province
-from .spec import DatasetSpec, SpecError
+from .spec import STATUSES, DatasetSpec, SpecError
 
 DATE_PATTERNS = (("day", re.compile(r"\d{4}-\d{2}-\d{2}"), "{date}"),
                  ("month", re.compile(r"\d{4}-\d{2}"), "{month}"),
@@ -133,7 +133,9 @@ async def sample(engine, spec: DatasetSpec, period: str, scope: str | None = Non
     except Fault as fault:
         decision = decide(fault, "sample")
         if decision.scope == "dataset":
-            spec.status = decision.dataset_status
+            # "paused" is a dataset's hold, no lifecycle state: such a report stays what it was (it once hid the fault as a SpecError).
+            if decision.dataset_status in STATUSES:
+                spec.status = decision.dataset_status
             spec.note("sample_failed", period=period, reason=fault.code, business_status=fault.business_status)
             spec.save()
         raise

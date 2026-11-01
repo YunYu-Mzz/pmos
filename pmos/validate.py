@@ -118,7 +118,7 @@ def evaluate(spec_response: dict, response: Response) -> Outcome:
         except ValueError as exc:
             raise Fault(str(exc), "site_data", http_status=response.status) from None
         pages = (response.operation or {}).get("report_total_pages")
-        if isinstance(pages, int) and pages > 1:
+        if isinstance(pages, int) and pages > 1 and "report_pages" not in body:
             raise Fault("finereport_table_more_pages", "site_data", http_status=response.status)
         return Outcome("saved" if rows else "empty", ".json")
     if response.media_type == "text/html":

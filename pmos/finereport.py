@@ -56,7 +56,9 @@ def html_rows(html: str) -> list[list[str]]:
 
 
 def page_rows(body) -> list[list[str]]:
-    """The rows of a .cpt report's page ({html, watermark, sheets, copyright}), [] for a blank one. ValueError: another answer."""
+    """The rows of a .cpt report's page ({html, watermark, sheets, copyright}) or of all its pages ({report_pages: [...]}), [] for a blank one. ValueError: another answer."""
+    if isinstance(body, dict) and isinstance(body.get("report_pages"), list):
+        return [row for page in body["report_pages"] for row in page_rows(page)]
     if not isinstance(body, dict) or not isinstance(body.get("html"), str):
         raise ValueError("finereport_page_changed")
     return html_rows(body["html"])

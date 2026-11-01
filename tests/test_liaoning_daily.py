@@ -608,7 +608,7 @@ class RealTrial(unittest.TestCase):
     def test_the_reports_on_trial_are_candidates_with_what_their_forms_ask(self):
         specs = REAL.datasets()
         for name in migration.TRIAL_LANE:
-            self.assertIn(specs[name].status, ("candidate", "sampled"), name)
+            self.assertIn(specs[name].status, ("candidate", "sampled", "quarantined"), name)
         self.assertEqual(specs["sitewide_5878dbf34cf4177a"].request["set"]["queryParam.date"], "{date}", "023 asks date, not mdate")
         self.assertEqual(specs["tie_line_intraday"].status, "sampled", "its 10-25 sample answered, r14 19:29")
         self.assertNotIn("complete_only", specs["sitewide_deb417edc0244802"].period, "or 2026 is never asked")
@@ -619,9 +619,11 @@ class RealTrial(unittest.TestCase):
 
     def test_the_fourteen_finereport_forms_are_candidates_to_probe(self):
         specs = [s for s in REAL.datasets().values() if s.request.get("transport") == "finereport" and s.status == "candidate"]
-        self.assertEqual(len(specs), self.FINEREPORT - 4, "4 answered their samples")
+        self.assertEqual(len(specs), self.FINEREPORT - 6 - 2, "6 answered their samples, 2 are the site's own errors")
         self.assertEqual({s.request["site_menu"]["route"] for s in specs}, {"spotgoodsSum"})
-        self.assertEqual(len([s for s in specs if s.response["kind"] == "finereport_page"]), 5, "the five .cpt")
+        every = REAL.datasets().values()
+        self.assertEqual(len([s for s in every if s.response["kind"] == "finereport_page"]), 5, "the five .cpt")
+        self.assertEqual(REAL.datasets()["sitewide_31308b59070354ef"].status, "candidate", "back from quarantine: pages are read now")
 
     def test_the_nine_per_option_reports_read_their_dictionary_without_a_selection(self):
         specs = REAL.datasets()
@@ -787,6 +789,20 @@ class Trial(unittest.IsolatedAsyncioTestCase):
         self.transport.queue.append(Response(200, "application/json", json.dumps({"status": 0, "data": []}).encode()))
         await engine._read_dictionary(spec, day(1))
         self.assertEqual(self.transport.sent[-1]["method"], "GET")
+
+    async def test_a_page_step_that_sent_nothing_keeps_the_report_as_it_was_and_tells_why(self):
+        """r18 23:07: a dataset's status "paused" is no lifecycle state; saving it hid the fault as a SpecError."""
+        from pmos.faults import Fault
+        engine = self.engine()
+        self.clock.advance(5)
+        self.transport.queue.append(Fault("finereport_stage_changed", "local", unsent=True, detail={"stage": "parameters_d", "queued": [{"op": "widget"}]}))
+        engine.enqueue({"action": "sample", "dataset": "tie_line_intraday", "period": day(3), "scope": None})
+        results = await self.run_commands(engine, 1)
+        result = next(iter(results.values()))
+        self.assertEqual((result["ok"], result["reason"]), (False, "finereport_stage_changed"))
+        self.assertEqual(result["detail"]["queued"], [{"op": "widget"}])
+        self.assertEqual(self.province.datasets()["tie_line_intraday"].status, "candidate")
+        self.assertIsNone(engine.state.blocked())
 
     async def test_a_candidate_is_not_seeded_until_its_sample_answers_and_that_day_is_not_asked_again(self):
         engine = self.engine()

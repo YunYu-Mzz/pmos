@@ -5,7 +5,7 @@
 <script>
 const url = '/px-basesystem-reportform/decision/view/report';
 window.$ = {ajaxSettings: {type: 'GET'}};
-window.contentPane = {reportTotalPage: 0};
+window.contentPane = {reportTotalPage: 0, gotoPage(n) { FR.ajax({type: 'GET', data: {op: 'page_content', pn: n}}); }};
 window.FR = {servletURL: url, ajax(o) {
   const d = o.data || {}, q = new URLSearchParams(d), get = o.type === 'GET';
   fetch(o.url || (get ? url + '?' + q : url), {method: get ? 'GET' : 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -16,7 +16,7 @@ const form = {parameterEl: {getWidgetByName: () => ({setValue(v) { date = v; }, 
   parameterCommit() {
     FR.ajax({url: '/px-basesystem-reportform/decision/url/elite/checkAssistantPermission', type: 'GET'});
     FR.ajax({type: 'POST', data: {op: 'fr_dialog', cmd: 'parameters_d', date}, success: () => {
-      FR.ajax({type: 'GET', data: {op: 'page_content'}, success: t => { window.contentPane.reportTotalPage = JSON.parse(t).testPages || 1; }});
+      FR.ajax({type: 'GET', data: {op: 'page_content'}, success: t => { const a = JSON.parse(t); window.contentPane.reportTotalPage = a.testPages || 1; if (a.testNoGoto) window.contentPane.gotoPage = undefined; }});
       FR.ajax({type: 'GET', data: {op: 'fr_watermark', cmd: 'get_watermark_attr'}});
       FR.ajax({type: 'GET', data: {op: 'fr_copyright', cmd: 'get_copyright_info'}});
     }});

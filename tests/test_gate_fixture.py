@@ -43,6 +43,7 @@ class Site(http.server.SimpleHTTPRequestHandler):
     finereport_blank = False
     finereport_denied: set = set()   # reports whose mapping answers 40302
     finereport_pages = 1             # how many pages a .cpt report says it has
+    finereport_no_goto = False       # ... and that it cannot turn them
 
     def finereport_answer(self, query: dict) -> None:
         from urllib.parse import parse_qs
@@ -98,7 +99,7 @@ class Site(http.server.SimpleHTTPRequestHandler):
         if self.path.startswith("/px-basesystem-reportform/decision/view/report?op="):
             Site.finereport.append(self.path.split("op=")[1].split("&")[0])
             return self.reply(json.dumps({"html": "<table><tr><td>断面</td><td>1</td></tr></table>", "watermark": {}, "sheets": [], "copyright": {},
-                                          "testPages": Site.finereport_pages}, ensure_ascii=False).encode(), "text/html;charset=UTF-8")
+                                          "testPages": Site.finereport_pages, "testNoGoto": Site.finereport_no_goto}, ensure_ascii=False).encode(), "text/html;charset=UTF-8")
         if self.path.startswith("/px-basesystem-reportform/decision/view/report"):
             return self.reply("<!doctype html><title>cpt</title><script>window.contentPane = {reportTotalPage: 1, currentPageIndex: 1};</script><table><tr><td>甲</td></tr></table>".encode(), "text/html;charset=UTF-8")
         if self.path.startswith("/px-basesystem-reportform/decision/view/form"):
@@ -620,15 +621,24 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(evaluate({"kind": "finereport_page"}, response).result, "saved")
         self.assertEqual(response.operation, {"report_total_pages": 1})
 
-    async def test_a_cpt_report_of_several_pages_is_not_saved_as_if_it_had_one(self):
+    async def test_a_cpt_report_of_several_pages_is_read_to_its_last_page(self):
+        from pmos.finereport import page_rows
         from pmos.validate import evaluate
         await self.finereport_page()
         Site.finereport_pages = 3
         self.addCleanup(lambda: setattr(Site, "finereport_pages", 1))
         response = await self.transport.send(self.report_request())
+        self.assertEqual(Site.finereport.count("page_content"), 3)
+        self.assertEqual(evaluate({"kind": "finereport_page"}, response).result, "saved")
+        self.assertEqual(len(page_rows(json.loads(response.body))), 3, "the rows of all three pages")
+
+    async def test_pages_that_cannot_be_read_fail_as_that_reports_problem(self):
+        await self.finereport_page()
+        Site.finereport_pages, Site.finereport_no_goto = 3, True
+        self.addCleanup(lambda: (setattr(Site, "finereport_pages", 1), setattr(Site, "finereport_no_goto", False)))
         with self.assertRaises(Fault) as caught:
-            evaluate({"kind": "finereport_page"}, response)
-        self.assertEqual((caught.exception.code, caught.exception.category), ("finereport_table_more_pages", "site_data"))
+            await self.transport.send(self.report_request())
+        self.assertEqual((caught.exception.code, caught.exception.category, caught.exception.unsent), ("finereport_paging_failed", "site_data", False))
 
     async def test_a_form_with_dropdowns_sets_each_of_them_before_it_asks(self):
         await self.finereport_page()
@@ -637,6 +647,9 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         await self.transport.send(request)
         frame = next(f for f in self.page.frames if "lnsnxh_b" in f.url)
         self.assertEqual(await frame.evaluate("window.picked"), "1号机")
+        self.assertEqual(Site.finereport[-3:], ["parameters_d", "load_content", "load_report_content"], "its options loaded first, then the day")
+        await self.transport.send({**request, "set": {**request["set"], "日期": "2026-10-26", "交易日期": "2026-10-26"}})
+        self.assertEqual(Site.finereport[-3:], ["parameters_d", "load_content", "load_report_content"], "the next day: no option load in the way")
 
     async def test_a_refused_mapping_is_the_probes_answer_and_no_fault(self):
         await self.finereport_page()

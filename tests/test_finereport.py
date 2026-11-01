@@ -115,6 +115,14 @@ class ReportPage(unittest.TestCase):
         self.assertEqual(self.evaluate({"html": "<table><tr><td>甲</td></tr></table>", "sheets": []}).result, "saved")
         self.assertEqual(self.evaluate({"html": "<table><tr><td></td></tr></table>", "sheets": []}).result, "empty")
 
+    def test_a_page_that_says_there_are_more_is_refused_unless_all_were_read(self):
+        page = {"html": "<table><tr><td>甲</td></tr></table>"}
+        with self.assertRaises(Fault) as caught:
+            self.evaluate(page, report_total_pages=3)
+        self.assertEqual(caught.exception.code, "finereport_table_more_pages")
+        self.assertEqual(self.evaluate({"report_pages": [page, page, page]}, report_total_pages=3).result, "saved")
+        self.assertEqual(self.evaluate({"report_pages": [{"html": ""}, {"html": ""}]}, report_total_pages=2).result, "empty")
+
     def test_anything_else_is_this_reports_answer_to_look_at_and_never_stops_the_province(self):
         for body in (b"<html>no</html>", {"errorCode": "x"}):
             with self.assertRaises(Fault) as caught:

@@ -1,7 +1,7 @@
 {
   "id": "sitewide_cba19932160b7c7b",
   "name": "结算总体情况及分类构成情况（日）",
-  "status": "candidate",
+  "status": "quarantined",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -33,7 +33,7 @@
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "jyjg_rjsdl",
-    "note": "followed 2026-10-25: parameters_d, then op=page_content answering {html, watermark, sheets, copyright}; its table's shape shows at the first try-report",
+    "note": "the site's own report fails: FineReport's error page, a database connection refused on its side (2026-11-01). Not collected until the site repairs it.",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -60,6 +60,18 @@
       "at": "2026-11-01T22:30:00+08:00",
       "event": "followed",
       "note": "r17 probe: stages known"
+    },
+    {
+      "at": "2026-11-01T23:07:19+08:00",
+      "event": "sample_failed",
+      "period": "2026-10-25",
+      "reason": "finereport_page_changed",
+      "business_status": null
+    },
+    {
+      "at": "2026-11-01T23:20:00+08:00",
+      "event": "site_error",
+      "note": "the site's own report fails: FineReport's error page, a database connection refused on its side (2026-11-01). Not collected until the site repairs it."
     }
   ]
 }

@@ -33,7 +33,7 @@
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "lnsnxh_ssscgsdcqddmysjzsqk",
-    "note": "followed 2026-10-25: parameters_d, then op=page_content answering {html, watermark, sheets, copyright}; its table's shape shows at the first try-report",
+    "note": "10-25: page 1 has 36 rows and the report says it has more: all pages are read now, stored together as {report_pages: [...]}",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -60,6 +60,18 @@
       "at": "2026-11-01T22:30:00+08:00",
       "event": "followed",
       "note": "r17 probe: stages known"
+    },
+    {
+      "at": "2026-11-01T23:06:56+08:00",
+      "event": "sample_failed",
+      "period": "2026-10-25",
+      "reason": "finereport_table_more_pages",
+      "business_status": null
+    },
+    {
+      "at": "2026-11-01T23:20:00+08:00",
+      "event": "paging_added",
+      "note": "back to candidate: its one sample was refused for its pages, not for its data"
     }
   ]
 }
