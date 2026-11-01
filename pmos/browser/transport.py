@@ -840,8 +840,12 @@ class PageTransport:
                 raise Fault("network_error", "network") from None
             return Response(200, "application/json",
                             json.dumps({"status": 0, "data": options}, ensure_ascii=False).encode())
-        for field in request.get("fields", []):
-            await ui.fill(frame, field, self.timeout)
+        try:
+            for field in request.get("fields", []):
+                await ui.fill(frame, field, self.timeout)
+        except Fault as fault:
+            # 查询 was never clicked: nothing of this operation was asked for.
+            raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True) from None
 
         def from_report(response) -> bool:
             req = response.request

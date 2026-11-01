@@ -364,6 +364,16 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(await self.page.locator(".el-select-dropdown__item").first.is_visible(), "closed again")
         self.assertEqual(Site.received, [])
 
+    async def test_a_query_whose_form_cannot_be_filled_is_unsent(self):
+        await self.page.goto(self.origin + "/select_page.html")
+        with self.assertRaises(Fault) as caught:
+            await self.transport.send({"transport": "ui", "action": "query", "frame": "/select_page.html",
+                                       "path": "/px-x/query", "method": "POST",
+                                       "fields": [{"kind": "date", "placeholder": "选择日期", "value": "2026-10-28"},
+                                                  {"kind": "select", "label": "断面名称", "value": "不存在的线"}]})
+        self.assertEqual((caught.exception.code, caught.exception.unsent), ("select_option_missing", True))
+        self.assertEqual(await self.page.evaluate("window.queries"), 0, "查询 was never clicked")
+
     async def test_a_filterable_select_is_judged_by_its_value_after_it_has_settled(self):
         """Anhui 2026-11-01 11:31: the input was blank for a tick after Escape (select_value_changed_by_reading)."""
         request = {"transport": "ui", "action": "options", "frame": "/filterable_select_page.html",

@@ -235,7 +235,8 @@ class WholeDay(unittest.IsolatedAsyncioTestCase):
             spec = built["specs"]["sections_whole_day"]
             self.assertEqual(spec["request"]["template_body_set"], {"businessTime": "{date}", "genName": ""})
             self.assertEqual(spec["request"]["prime"]["period"], DAY[2], "the newest collected record primes it")
-            self.assertEqual([f["value"] for f in spec["request"]["prime"]["request"]["fields"]], [DAY[2], "甲线"])
+            self.assertEqual([f["value"] for f in spec["request"]["prime"]["request"]["fields"]], [DAY[2]],
+                             "only the date: the page's defaults, no option to choose (a node is a tree, 11-01)")
             specs = {"sections_whole_day": DatasetSpec(**spec)}
             rows, _, _ = multidim.whole_day_rows(root, "anhui-production", ["sections_whole_day"])
             self.assertEqual(sorted((r.state, r.consumed) for _, r in rows), [("pending", False), ("saved", True)])

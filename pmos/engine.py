@@ -866,6 +866,11 @@ class Engine:
                 return 10
             spec = next(s for s in enabled if s.id == task["dataset"])
             if isinstance(task, dict) and task.get("prime"):
+                # Anhui 2026-11-01 13:14: a prime tried before the spacing elapsed was refused unsent,
+                # yet marked done, so that report was skipped for 10 minutes.
+                wait = self.spacing_wait("sample", spec.source.get("lane"))
+                if wait > 0:
+                    return min(wait, 5)
                 return await self._prime_template(spec)
             wait = self.spacing_wait("collect", spec.source.get("lane"))
             if wait > 0:
@@ -987,9 +992,19 @@ class Engine:
         """
         self._primed[spec.id] = self.clock()
         prime = spec.request["prime"]
-        result = await self.request("sample", {**prime["request"], "bootstrapping": True}, {"kind": "json"},
-                                    dataset=spec.id, period=prime["period"], scope="template_prime",
-                                    lane=spec.source.get("lane"))
+        try:
+            result = await self.request("sample", {**prime["request"], "bootstrapping": True}, {"kind": "json"},
+                                        dataset=spec.id, period=prime["period"], scope="template_prime",
+                                        lane=spec.source.get("lane"))
+        except Fault as fault:
+            if fault.code == "spacing_not_elapsed":
+                self._primed.pop(spec.id, None)      # nothing was tried
+            elif fault.category == "local":
+                # The page could not be driven (Anhui 13:14: select_option_missing): only this
+                # report cools down; the province goes on.
+                self._hold_unsent(spec.id, "prime_" + fault.code)
+                return 1
+            raise
         record = self.samples.store(spec.id, prime["period"], result.response.body, ".json", scope="template_prime",
                                     acquisition="template_prime")
         self.state.event("template_primed", dataset=spec.id, period=prime["period"], sample_sha256=record["sha256"])

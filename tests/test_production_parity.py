@@ -1162,6 +1162,41 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
                          "cc's one item first, then bb; cc's quota is used, so its other day waits its turn")
         self.assertEqual(engine.state.read("priority_datasets"), [{"dataset": "bb", "items": None}])
 
+    async def test_a_prime_waits_for_the_spacing_and_a_failed_one_only_cools_its_report_down(self):
+        """Anhui 2026-11-01 13:14: a prime refused by the spacing was marked done; a failed one stopped the province."""
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        def whole(name):
+            value = dataset(name, start=TODAY, response="json")
+            value["request"] = {"transport": "fetch", "method": "POST", "path": "/px-test/" + name,
+                                "template_body_set": {"businessTime": "{date}", "genName": ""},
+                                "prime": {"period": TODAY, "request": {
+                                    "transport": "ui", "frame": "infoCode=" + name, "action": "query",
+                                    "path": "/px-test/" + name, "menu": ["现货市场", name],
+                                    "fields": [{"kind": "date", "placeholder": "选择日期", "value": TODAY}]}}}
+            return value
+        province = make_province(tmp.path, [whole("aa"), whole("bb")], policy={"response_interval_seconds": 1})
+        self.transport = FakeTransport(self.clock)
+        self.transport.unready = {"/px-test/aa", "/px-test/bb"}
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        self.transport.queue = [Fault("select_option_missing", "local")]
+        engine.ledger.begin("collect", "aa", "2026-01-01", "")      # a request just ended: spacing not elapsed
+        engine.ledger.db.execute("UPDATE attempts SET outcome='success', finished_at=?", (self.clock(),))
+        engine.ledger.db.commit()
+        await engine.tick()
+        self.assertEqual(self.transport.sent, [], "waited for the spacing, nothing tried")
+        self.clock.advance(2)
+        await engine.tick()
+        self.assertEqual(self.transport.sent[0]["fields"][0]["value"], TODAY, "aa primes first, as listed")
+        self.assertIsNone(engine.state.blocked(), "a failed prime does not stop the province")
+        self.assertEqual(engine.state.read("dataset_holds")["aa"]["reason"], "unsent:prime_select_option_missing")
+        self.clock.advance(2)
+        await engine.tick()
+        self.assertEqual(self.transport.sent[-1]["menu"], ["现货市场", "bb"], "the others go on")
+
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost
         engine = self.engine()

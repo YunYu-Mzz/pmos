@@ -461,10 +461,11 @@ def build_whole_day_specs(root: Path, option_specs: dict) -> dict:
             deferred[whole_day_id(name)] = "no_collected_record_to_prime"
             continue
         period, key = captured[-1]
-        selectors = queue["jobs"][key]["identity"]["selectors"]
         bootstrap = option["request"]["bootstrap"]
-        fields = [{**f, "value": period} if f.get("kind") == "date" else {**f, "value": selectors[f["label"]]}
-                  for f in bootstrap["fields"]]
+        # Only the date: the whole-day request leaves the option blank anyway, and a node is chosen in
+        # a tree, not a dropdown (Anhui 2026-11-01 13:14: select_option_missing). The page's own query
+        # with its defaults shows the request to replay.
+        fields = [{**f, "value": period} for f in bootstrap["fields"] if f.get("kind") == "date"]
         body = {"businessTime": "{date}", "genName": "", **({"type": "{scope[" + TYPE_LABEL + "]}"} if rule["types"] else {})}
         spec = {
             "id": whole_day_id(name), "name": f"{option.get('name', name)}（整日）", "status": "verified",

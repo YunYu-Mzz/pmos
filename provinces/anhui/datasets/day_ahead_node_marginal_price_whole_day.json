@@ -35,16 +35,6 @@
             "kind": "date",
             "placeholder": "选择日期",
             "value": "2026-10-28"
-          },
-          {
-            "kind": "select",
-            "label": "数据类型",
-            "value": "阻塞价格"
-          },
-          {
-            "kind": "select",
-            "label": "节点名称",
-            "value": "安徽.窑河光伏/220kV.220kV母线"
           }
         ],
         "action": "query",
