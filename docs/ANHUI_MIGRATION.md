@@ -276,3 +276,16 @@ PMOS 对照检查后补了三处：
   - 新命令 `review-unsent <ids> --approval`（用户批准后才能用）：核实过的菜单导航失败（`NAVIGATION_CODES`、没有 HTTP 状态），以及进程被停时还在导航的 pending 尝试，改记为 not_sent，被隔离的任务回到待采。理由：某一天的请求只有在菜单走完、填好日期、点了"查询"之后才会发出，菜单失败时这一步还没到。
   - `release-discovery --all`：一次解除所有被暂停的选项发现。
 - 测试：前台检查；叶子之前失败即 unsent（真浏览器）；连续 3 次页面失败封锁全省，期间不隔离、不消耗；review-unsent 的接受条件与拒绝。全套 515 项（安徽 venv、山西 venv）和真浏览器 19 项通过。
+
+## 11-01 回滚后的状态与下次切换
+
+- **回滚**（用户选择"先回滚旧系统继续采"）：
+  - PMOS 已 stop-all，单元已 bootout；台账停在 17 次尝试，其中 attempt 17 仍是 pending。
+  - 旧系统三个单元已恢复。keeper 第一次保活报 `local_report_navigation_changed`，因为 PMOS 把侧栏留在了"省内现货市场 > 市场干预信息"。之后门户弹出"会话已注销"，正在等用户手动登录。
+  - 回滚经验：PMOS 跑过以后，侧栏停在它最后走到的地方，旧 keeper 会拒绝。回滚时要先关掉综合查询页，从门户菜单重开，再恢复旧单元。
+- **下次切换**，用 `release-20261101-r6`。它取自 git f7e4162（r5 的代码），另放入不提交的 6d80 生产规格，515 项测试通过。
+  1. 冻结旧系统，和第一次一样。
+  2. 把旧实例改名移开，不要删：`mv /Users/yunyu/pmos-anhui/data/anhui /Users/yunyu/pmos-anhui/data/anhui-acceptance-20261101`。apply 要求实例目录不存在。旧实例里的 17 次尝试和那份 11-01 部分原件作为证据保留。新台账按旧系统最新文件重建；11-01 的实际负荷按滞后 2 天，11-03 以后由新实例采。
+  3. 在 r6 目录里运行 `tools/anhui_cutover.py plan`，再运行 `apply --approval "<用户原话>" --budget <N>`。apply 会把重新生成的规格写进 r6，并写 SHA256SUMS（即 code_sha）。之后把重新生成的规格提交 git。
+  4. `launchctl bootstrap gui/501 /Users/yunyu/pmos-anhui/release-20261101-r6/deploy/launchd/com.yunyu.pmos.anhui.plist`。
+- 11-01 回滚后在旧系统运行中只读 plan：ready=true，plan_sha 仍是冻结时的 e5ee70df…（旧系统在等登录，还没采到新数据）。
