@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The 18 daily Liaoning reports join the PMOS handoff (offline; sends nothing).
+"""The 17 daily Liaoning reports join the PMOS handoff (offline; sends nothing).
 
 plan: what the legacy worker completed of them (read-only).
 apply --approval "...": their tombstones and the new collection order, with pmos-liaoning and the legacy

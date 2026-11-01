@@ -60,9 +60,13 @@ class Legacy:
 
 
 class RealSpecs(unittest.TestCase):
-    def test_all_eighteen_can_be_collected_with_the_lag_their_titles_call_for(self):
+    def test_033_is_not_in_this_lane_since_the_site_moved_it_to_finereport(self):
+        """2026-10-23, route spotgoodsSum: the legacy worker excluded it here; its originals end on 10-16."""
+        self.assertNotIn("nonmarket_generation_forecast", migration.DAILY_LANE)
+
+    def test_all_seventeen_can_be_collected_with_the_lag_their_titles_call_for(self):
         specs = REAL.datasets()
-        self.assertEqual(len(migration.DAILY_LANE), 18)
+        self.assertEqual(len(migration.DAILY_LANE), 17)
         for name in migration.DAILY_LANE:
             with self.subTest(name=name):
                 self.assertEqual(specs[name].status, "verified")

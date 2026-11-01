@@ -329,11 +329,12 @@ def _early_empty(row, early: set):
 
 # The daily reports the legacy worker ran on Crawlee queues, not in the verified queue the cutover read.
 # system_load first: it is the keepalive. Their originals are the proof; PMOS's identity is one report and one day.
+# Not nonmarket_generation_forecast (033): the site moved it to FineReport on 2026-10-23 (route spotgoodsSum), so
+# the legacy worker excluded it from this lane; its originals here end on 10-16. It belongs to the engine lane.
 DAILY_LANE = ("system_load", "centralized_solar_daily", "centralized_wind_daily", "distributed_solar",
               "distributed_solar_actual", "distributed_wind", "distributed_wind_actual", "generation_total_forecast",
               "generator_maintenance_capacity", "hydro_daily", "local_coal_forecast", "local_hydro_actual",
-              "local_hydro_plan", "must_run_stop_units", "nonmarket_generation_forecast", "nuclear_total",
-              "tie_line_dayahead", "tie_line_schedule")
+              "local_hydro_plan", "must_run_stop_units", "nuclear_total", "tie_line_dayahead", "tie_line_schedule")
 DAILY_QUEUES = "state/crawlee_daily_verified_20261014/request_queues"
 DAILY_ORIGINALS = "data/2026/original/power_reports"
 DAILY_ENGINE = "data/2026/original/report_engine"
