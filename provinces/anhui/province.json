@@ -21,7 +21,17 @@
     "page_recycle": {
       "max_age_seconds": 3600,
       "max_js_heap_mb": 768,
-      "note": "Anhui legacy page_recycle_control (2026-11-01 00:20): one 综合查询 page grew to 2.4 GB / 650% CPU and crashed about every 2.5 h"
+      "note": "Anhui legacy page_recycle_control (2026-11-01 00:20): one 综合查询 page grew to 2.4 GB / 650% CPU and crashed about every 2.5 h",
+      "challenge": {
+        "status": 412,
+        "settle_seconds": 45,
+        "window_seconds": 7200,
+        "path": "/pxf-settlement-outnetpub/",
+        "text": "安徽",
+        "url_contains": "columnHomeLeftMenuNew",
+        "verify_points": 96,
+        "note": "user 2026-11-01 10:5x (允许自动判断后继续), as the Anhui legacy planned_recycle_challenge: only a planned recycle whose new page got exactly one document 412; within 45 s it must load on the 综合查询 site with 安徽 and no login/security/rate-limit text; outside the 综合查询 column it is closed and reopened from the portal menu; then the keepalive report's archived day must come back with the same 96 points. At most once in 2 h; anything else stops the province for a person"
+      }
     },
     "renderer_alert": {
       "rss_mb": 1536,
@@ -44,7 +54,10 @@
       "unknown",
       "site_data"
     ],
-    "note": "Anhui production (2026-10-31): one lane, 1 s after every response (user 23:40: 也改成1s的间隔吧; legacy adaptation_workflow_policy since 23:39); keepalive after 300 s idle; 401/403/40302/429 stop the province; a transient or unknown failure settles that item for review, never re-sent, other dates go on (3 in a row pause the report)"
+    "note": "Anhui production (2026-10-31): one lane, 1 s after every response (user 23:40: 也改成1s的间隔吧; legacy adaptation_workflow_policy since 23:39); keepalive after 300 s idle; 401/403/40302/429 stop the province; a transient or unknown failure settles that item for review, never re-sent, other dates go on (3 in a row pause the report)",
+    "quiet_windows": [
+      "23:58-00:10"
+    ]
   },
   "session": {
     "keepalive_dataset": null,

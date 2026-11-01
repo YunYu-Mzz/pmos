@@ -43,10 +43,19 @@ class StatusMetrics(unittest.IsolatedAsyncioTestCase):
         """Shanxi's report_bridge runs `status --mail` from the newest release dir: never drop or rename a field."""
         tmp = TempDir()
         self.addCleanup(tmp.cleanup)
-        self.assertEqual(set(status_metrics(tmp.path)), {
+        self.assertLessEqual({
             "originals", "bytes", "last_hour_files_mtime", "missing_originals", "requests_last_hour", "tasks",
             "attempts", "phase", "current_dataset", "status_updated_at", "worker_pid", "blocked", "block_reason",
-            "held_datasets", "business_last_success_at", "keeper_last_success_at", "generated_at"})
+            "held_datasets", "business_last_success_at", "keeper_last_success_at", "generated_at"},
+            set(status_metrics(tmp.path)), "added fields are fine; none of these may go")
+
+    def test_the_headline_says_paused_or_stalled_at_first_sight(self):
+        from pmos.reporting import headline
+        self.assertEqual(headline("collecting", {"reason": "auth_expired"}, 1000, 2000)["headline"], "已暂停：auth_expired")
+        self.assertEqual(headline("paused", None, 1000, 1100)["headline"], "已暂停（paused）")
+        self.assertEqual(headline("waiting", None, 1000, 1000 + 45 * 60), {"stalled_minutes": 45, "headline": "已停滞 45 分钟"})
+        self.assertEqual(headline("collecting", None, 1000, 1060)["headline"], "正常")
+        self.assertEqual(headline("quiet_window", None, 1000, 1000 + 40 * 60)["headline"], "正常")
 
     def test_an_empty_instance_reports_zeros(self):
         tmp = TempDir()

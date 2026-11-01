@@ -52,6 +52,11 @@ class Policy:
     # has less than this free; it resumes by itself (Liaoning 2026-10-31: 5.6 GB
     # left, the node prices alone would need ~84 GB).
     min_free_disk_mb: int | None = None
+    # China-time windows "HH:MM-HH:MM" (may cross midnight) in which no business
+    # request or command starts; the login is still renewed. Liaoning 2026-11-01
+    # 00:03: the site's midnight SSO token refresh met a page operation, which
+    # its gate could not confirm and paused for an hour.
+    quiet_windows: tuple = ()
     extra: dict = field(default_factory=dict, compare=False)
 
     @classmethod
@@ -60,6 +65,8 @@ class Policy:
         known_values = {k: v for k, v in value.items() if k in known}
         if "isolate_items" in known_values:
             known_values["isolate_items"] = tuple(known_values["isolate_items"])
+        if "quiet_windows" in known_values:
+            known_values["quiet_windows"] = tuple(known_values["quiet_windows"])
         policy = cls(**known_values, extra={k: v for k, v in value.items() if k not in known})
         policy.check()
         return policy
@@ -89,6 +96,8 @@ class Policy:
         if self.unpublished_window_days is not None and (type(self.unpublished_window_days) is not int
                                                          or not 1 <= self.unpublished_window_days <= 31):
             raise PolicyError("unpublished_window_days must be null or 1..31")
+        if not all(isinstance(w, str) and quiet_bounds(w) for w in self.quiet_windows):
+            raise PolicyError("quiet_windows are \"HH:MM-HH:MM\" strings")
         if self.min_free_disk_mb is not None and (type(self.min_free_disk_mb) is not int or self.min_free_disk_mb < 1):
             raise PolicyError("min_free_disk_mb must be null or a positive integer")
         for name in ("isolation_streak", "denial_streak"):
@@ -114,3 +123,23 @@ def wait_seconds(policy: Policy, now: float, last_response_end: float,
             if len(recent) >= limit:
                 ready = max(ready, recent[-limit] + window + 1)
     return max(0.0, ready - now)
+
+
+def quiet_bounds(window: str) -> tuple[int, int] | None:
+    """Minutes after midnight of a "HH:MM-HH:MM" window (end exclusive), or None if malformed."""
+    import re
+    match = re.fullmatch(r"([01]\d|2[0-3]):([0-5]\d)-([01]\d|2[0-3]):([0-5]\d)", window)
+    if not match:
+        return None
+    start, end = int(match[1]) * 60 + int(match[2]), int(match[3]) * 60 + int(match[4])
+    return (start, end) if start != end else None
+
+
+def quiet_seconds_left(windows, minute_of_day: float) -> float:
+    """Seconds until the window containing ``minute_of_day`` ends (0: in none)."""
+    for window in windows:
+        start, end = quiet_bounds(window)
+        inside = start <= minute_of_day < end if start < end else (minute_of_day >= start or minute_of_day < end)
+        if inside:
+            return ((end - minute_of_day) % 1440) * 60
+    return 0.0

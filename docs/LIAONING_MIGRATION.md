@@ -90,3 +90,17 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
    - `keepalive_dataset="system_load"`。
 4. 启动 PMOS（`systemd-run … python -m pmos liaoning accept`），观察工作页的打开、报表通过菜单打开、每个请求和间隔。
 5. 验收通过后，另行批准更大的预算和持续运行。失败则 `stop-all`，再由辽宁会话按原方式恢复旧控制器（浏览器一直没停）。
+
+## 11-01 零点暂停后的改进（辽宁会话同步）
+
+00:03 网站零点刷新 SSO 令牌，正好碰上一个页面操作。闸门没等到确认，这个通道被暂停了 1 小时；实际上业务请求一个都没有发出。PMOS 照辽宁的修复补了三处，三省通用：
+
+- **零点静默窗口：** `policy.quiet_windows: ["23:58-00:10"]`，北京时间，可以跨午夜。窗口内不开始业务请求，也不执行排队的命令，只保活，每次最多等 60 秒再检查。辽宁、安徽、山西都已配置。
+- **没发出去的不长期暂停：** 闸门能证明没有业务请求发出（unsent）时，这一项不算消费，数据集冷却 10 分钟后自动重试；连续第 3 次才长期挂起，等人复核。一次成功会清零连续计数。确实发出过、结果不明的请求仍然永不重发，走的是另一条路径。
+- **邮件醒目提示：** `status --mail` 增加 `stalled_minutes` 和 `headline` 两个字段，原有字段一个不少。`headline` 的取值：
+  - "已暂停：<原因>"（有 block 时）；
+  - "已暂停（paused/stopped_all/idle）"；
+  - "已停滞 N 分钟"（超过 30 分钟没有业务答复）；
+  - "正常"。
+  
+  邮件桥可以把 `headline` 放进标题。

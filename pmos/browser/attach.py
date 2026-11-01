@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import re
+import stat
 from pathlib import Path
+
+from ..fsretry import eperm_retry
 
 
 class AttachError(RuntimeError):
@@ -19,13 +22,21 @@ def cdp_endpoint(browser: dict) -> str:
     profile = browser.get("profile_dir")
     if not profile:
         raise AttachError("browser.cdp_url or browser.profile_dir required")
-    active = Path(profile).expanduser() / "DevToolsActivePort"
-    if active.is_symlink() or not active.exists():
-        raise AttachError("devtools_active_port_missing")
-    lines = active.read_text(encoding="ascii").splitlines()
+    # Anhui's profile is under ~/Desktop, where macOS briefly refuses launchd processes (EPERM).
+    lines = eperm_retry(_active_port, Path(profile).expanduser() / "DevToolsActivePort")
     if len(lines) != 2 or not lines[0].isdigit() or not re.fullmatch(r"/devtools/browser/[A-Za-z0-9-]+", lines[1]):
         raise AttachError("devtools_active_port_invalid")
     return f"ws://127.0.0.1:{int(lines[0])}{lines[1]}"
+
+
+def _active_port(active: Path) -> list[str]:
+    # lstat, not exists()/is_file(): those can turn an EPERM into "missing" instead of raising it.
+    try:
+        if not stat.S_ISREG(active.lstat().st_mode):
+            raise AttachError("devtools_active_port_missing")
+        return active.read_text(encoding="ascii").splitlines()
+    except (FileNotFoundError, NotADirectoryError):
+        raise AttachError("devtools_active_port_missing") from None
 
 
 def select_page(browser, origin: str, contains: str | None = None):

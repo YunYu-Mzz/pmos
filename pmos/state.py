@@ -14,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .fsretry import eperm_retry
 from .periods import CHINA
 
 CODE = re.compile(r"[a-z][a-z0-9_]{0,79}")
@@ -43,12 +44,18 @@ class StateStore:
         return self.root / f"{name}.json"
 
     def read(self, name: str, default: Any = None) -> Any:
+        return eperm_retry(self._read, name, default)
+
+    def _read(self, name: str, default: Any) -> Any:
         path = self.path(name)
         if not path.exists():
             return default
         return json.loads(path.read_text(encoding="utf-8"))
 
     def write(self, name: str, value: Any) -> Any:
+        return eperm_retry(self._write, name, value)
+
+    def _write(self, name: str, value: Any) -> Any:
         payload = json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False).encode("utf-8")
         descriptor, temporary = tempfile.mkstemp(dir=self.root, prefix=f".{name}.")
         try:
@@ -63,18 +70,21 @@ class StateStore:
         return value
 
     def remove(self, name: str) -> None:
-        self.path(name).unlink(missing_ok=True)
+        eperm_retry(self.path(name).unlink, missing_ok=True)
 
     def event(self, phase: str, **fields: Any) -> dict:
         record = {"at": now_iso(), "phase": code(phase, "phase"), **fields}
         line = (json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
+        eperm_retry(self._append, line)
+        return record
+
+    def _append(self, line: bytes) -> None:
         descriptor = os.open(self.root / "events.jsonl", os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
         try:
             os.write(descriptor, line)
             os.fsync(descriptor)
         finally:
             os.close(descriptor)
-        return record
 
     # -- control: what the operator wants ---------------------------------
     def control(self) -> dict:

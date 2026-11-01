@@ -164,3 +164,55 @@
 - 山西和辽宁不开，因为从 main frame 发出时 Referer 和 Origin 会变，没有验证过。
 
 **还剩的（冻结时）**：用冻结后的文件重算计划，出发布目录，填好 plist，再给出整套切换和回滚命令。
+
+## 11-01 02:08 采集空停后的核对（安徽会话同步）
+
+安徽当时的情况有两点：
+- 附属 target 崩溃，导致 driver 整个退出；
+- 同一时刻 macOS 短暂拒绝 launchd 进程访问 ~/Desktop（EPERM），状态写不进去，任务卡在 running，没有人接手。
+
+PMOS 对照检查后补了三处：
+- **EPERM 重试**（`pmos/fsretry.py`）：状态文件的读、写、事件、删除，以及原件存档，遇到 `PermissionError` 且 errno 为 EPERM 时，每 0.5 秒重试一次，最多 30 次。EACCES 不重试。原件存档最要紧：此时答复只在内存里，而标识已经消费。
+- **任何位置的 driver 死亡都不写业务封锁：** 不只是受保护的页面调用，打开框架等其他环节出现 "Connection closed" 或 "Target … closed" 时，在途那一条同样记为 unknown（driver_lost）、永不重发，进程按 DriverLost 退出，由 launchd 重启。重启后新进程能正常启动，因为没有封锁。
+- **重启次数上限：** 与安徽"2 小时内最多 3 次"的预算一致，2 小时内第 3 次 driver 丢失时写入 `driver_lost_repeatedly` 封锁，交给人处理，不会无限重启。
+- **PMOS 没有"任务卡在 running"的问题：** PMOS 不存在单独的 job 状态。工作进程本身就是循环，在途请求在台账里先记录尝试，再发送。进程退出时，要么已经结算（unknown），要么在下次启动时以 `unsettled_attempt` 阻断并等人复核，不会默默空转。
+
+## 11-01 11:00 切换前核对（本机旧目录，只读）
+
+- **计划：** 39 个数据集，身份逐条相等；只因旧系统正在运行、有 1 条在途而显示 not ready，冻结后即可 ready。
+- **整日补采还没完，但不用等：** 日前节点电价剩 292 条（到 04-08）、实时节点电价剩 408 条（到 05-16），旧系统和多维度交替，近几小时每小时只完成 2～3 条。交接时这 700 条作为待采种入 PMOS 的整日规格，接着采。
+- **已修的启动阻断：** PMOS 的驱动内存模块只认审过的 Playwright 包。安徽 venv 的 1.63.0 打过 stray-reply 补丁，SHA 不同，驱动一启动就退出（`unreviewed_playwright_driver`）。补丁只改 CDP 回复分发里那一处断言，与本模块无关，已把补丁版 SHA 加入 `REVIEWED_SHAS`。安徽 venv 下全套 501 个测试、16 个真浏览器测试通过。
+- **DevToolsActivePort：** profile 在 ~/Desktop 下，读端口文件也走 EPERM 重试。
+- **切换后 PMOS 不采、旧系统还在采的：**
+  - 机组状态（f901）：旧系统正在采，待采 1,260 条（只覆盖 10-18～10-28），每小时 5～6 条。旧绑定只证明了日期，没有选项参数路径（分类、节点名称要走页面），PMOS 还不能重放。
+  - 辅助服务三张（580f、6c65、c726）约 37 条待采；通道可用容量两张（16755、4b6d）约 29 条，旧系统已 2 天没动。
+- **旧系统也已停更的（4～7 天没有新日期，切不切一样）：** 新能源总出力（风、光）、实时统一结算点电价、日前统一结算点电价、省系统负荷预测、分省可再生能源发电能力预测、新能源总出力预测（周）。公告列表类旧队列 1～8 天没动。
+- **发布位置建议：** 发布目录和实例（`PMOS_DATA`）放在 ~/Desktop 之外（例如 `~/pmos-anhui/`），避开 launchd 访问桌面的 EPERM；浏览器 profile 仍用原来的 Edge。
+
+## 11-01 计划换页遇 412 的自动判断（与旧系统 planned_recycle_challenge 对齐）
+
+安徽 06:59 的计划换页中，新页第一个 document 收到 412，之后浏览器自己过了网站挑战并重载，但落在信息披露“首页”栏目，没有现货市场树。用户 10:5x 决定“允许自动判断后继续”。PMOS 的做法：
+- **盯住新页的文档请求**（`pmos/browser/challenge.py` 的 `DocumentWatch`）：换页（崩溃恢复或计划换页）期间，站点任何顶层 document 返回 4xx/5xx 都记下。由点击打开的新标签页，其首个导航请求还没有 frame，同样算作新页自己的 document。以前 PMOS 不看 document 状态，412 后可能照常发送。
+- **只在一种情况下自动判断**（`browser.page_recycle.challenge`）：
+  - 必须是计划换页，且只有那一个 412；
+  - 2 小时内最多 1 次，尝试开始时就扣掉额度；
+  - 45 秒内页面必须在 `/pxf-settlement-outnetpub/` 加载完成，正文含“安徽”，且没有登录、安全、限流、权限字样（与旧系统 visible_reason 相同）。
+- **落在首页栏目时**：关掉这一页，从已登录的门户菜单“信息披露→综合查询”重开一次（安徽会话的经验）。重开时如果再有 document 失败，就停下。
+- **96 点验证**：通过前什么都不发（`recycle_challenge_pending` 存在 state 里，重启后照样先验）。用保活报表（系统负荷预测日）已存档的那天再查一次，答复里的数字必须与存档原件逐个相等，并且至少 96 个。
+- **其余情况**：一律全省封锁等人，原因 `security_verification`（http 412），或 `page_document_failed`、`recycle_challenge_check_mismatch`、`recycle_challenge_unverifiable`。崩溃恢复遇到 412 从不自动判断。
+- 测试：真浏览器夹具（412 挑战页自己重载到首页 → 从门户重开综合查询；额度用完、崩溃恢复、第二次失败都封锁），以及引擎测试（2 小时 1 次、先验 96 点再采、数字不同即封锁）。
+- 旧综合查询页在用户重新登录后弹“会话已注销”：PMOS 从不点弹窗，换页后只关闭旧页。
+
+## 11-01 辽宁经验 21（等待中的车道不得进入轮转）对照
+
+辽宁的问题：一个只能等待的车道仍被调度，一次空转让主循环按“无事可做”睡了 10 秒。PMOS 每个 tick 按顺序扫描全部数据集，被暂停的、在等模板的都在同一次扫描里跳过，只有没有任何数据集能发时才睡 10 秒，所以没有同类问题。已加回归测试（一个等模板、一个暂停、一个可发：可发的连续发送，没有空闲轮）。
+
+## 11-01 切换步骤（用户：现在就切吧）
+
+发布目录 `/Users/yunyu/pmos-anhui/release-20261101-r1`，数据目录 `/Users/yunyu/pmos-anhui/data`（都在 ~/Desktop 之外），Python 用 `anhui/.venv`（带 stray-reply 补丁的 Playwright 1.63）。
+1. **冻结**（安徽会话）：rollout control 设为 enabled=false，等当前任务结束；bootout worker、keeper、page-recovery 三个单元。Edge 不动，保留门户首页（地址含 `/#/dashboard`）和唯一一个综合查询页。
+2. **计划**：`tools/anhui_cutover.py plan`，必须 ready=true、legacy_frozen=true。
+3. **交接**：`tools/anhui_cutover.py apply --approval "<用户原话>" --budget 5`。它会重新生成多维度和整日规格（冻结时的选项、6d80 机组），重算计划，建新台账，写 browser.json 和 SHA256SUMS。离线干跑（旧目录只读）：39 个数据集，33,177 条旧记录作为墓碑，约 6,800 条待采种入。
+4. **验收**：`launchctl bootstrap gui/501 <发布目录>/deploy/launchd/com.yunyu.pmos.anhui.plist`。预算 5 用完后正常退出，保持停止。
+5. **持续运行**：用户批准后 `extend-budget --add <N> --approval "<原话>"`，再 `launchctl kickstart gui/501/com.yunyu.pmos.anhui`。
+6. **回滚**：`stop-all`，bootout PMOS 单元，确认只剩一个综合查询页，再恢复旧的三个单元。PMOS 已发过的身份要先告诉旧系统，不能重发。

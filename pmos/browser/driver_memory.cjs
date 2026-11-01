@@ -23,6 +23,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const SDK_SHA = '549070af3acabb3efcc4f55bfe6210f9f7c2fcf633cf7eaa59bfe60719969171';
+// The same 1.63.0 bundle with Anhui's stray-reply patch (anhui/deploy/patch_playwright_stray_reply_20261031.py):
+// a CDP reply to an already-dropped call is logged and dropped instead of asserting the whole driver down.
+// It changes only that branch of the CDP session dispatch, nothing this module touches.
+const REVIEWED_SHAS = new Set([SDK_SHA, '28cd08946d5dae6a74f3a04b51c050c78ff40d2f758185d4048d422cfa0878b9']);
 const KEY = Symbol.for('pmos.driver.memory.v1');
 const KEEP = 128, MIN_AGE_MS = 120000, SWEEP_MS = 60000, SETTLED_AGE_MS = 300000;
 const STATIC_TYPES = new Set(['document', 'stylesheet', 'image', 'media', 'font', 'script', 'texttrack', 'manifest']);
@@ -174,7 +178,7 @@ function install({state, bundle, existingConnections = []}) {
     return globalThis[KEY];
   }
   const sha = crypto.createHash('sha256').update(fs.readFileSync(bundle)).digest('hex');
-  if (sha !== SDK_SHA) throw Error('unreviewed_playwright_driver');
+  if (!REVIEWED_SHAS.has(sha)) throw Error('unreviewed_playwright_driver');
   const core = require(bundle);
   if (core.getPlaywrightVersion() !== '1.63.0') throw Error('unreviewed_playwright_version');
   if (!Array.isArray(existingConnections) || existingConnections.some(c => !(c instanceof core.server.DispatcherConnection)))
@@ -191,7 +195,7 @@ function install({state, bundle, existingConnections = []}) {
     return urls;
   };
   const lastSweep = new WeakMap();
-  const report = () => ({version: 1, sdkSha: SDK_SHA, pid: process.pid, parentPid: process.ppid, ...counters,
+  const report = () => ({version: 1, sdkSha: sha, pid: process.pid, parentPid: process.ppid, ...counters,
     businessUrls: urls ? urls.size : 0, memory: process.memoryUsage(), keepLatest: KEEP, minimumAgeMs: MIN_AGE_MS,
     stateAllowsRetirement: stateAllowsRetirement(state), browserOperations: 0, createdTimers: 0});
   const save = () => {
@@ -240,7 +244,7 @@ function install({state, bundle, existingConnections = []}) {
 }
 
 module.exports = {install, businessUrls, stateAllowsRetirement, compactRequest, eligibleRequest, sweep, sweepRoutes,
-  sweepTransient, sweepDetachedFrames, transientRequest, SDK_SHA, KEEP, MIN_AGE_MS, SWEEP_MS, SETTLED_AGE_MS};
+  sweepTransient, sweepDetachedFrames, transientRequest, SDK_SHA, REVIEWED_SHAS, KEEP, MIN_AGE_MS, SWEEP_MS, SETTLED_AGE_MS};
 
 // Loaded with NODE_OPTIONS=--require=<this file> (set by pmos.memory before the
 // Python binding starts its driver); only the driver process installs it.

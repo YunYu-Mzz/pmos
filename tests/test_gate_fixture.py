@@ -34,7 +34,23 @@ class Site(http.server.SimpleHTTPRequestHandler):
             body, kind = json.dumps({"status": 0, "data": {"list": [1]}}).encode(), "application/json"
         self.reply(body, kind)
 
+    challenges = 0          # the next document answers of /pxf-settlement-outnetpub/ that are a 412 challenge
+
     def do_GET(self):
+        if self.path.startswith("/pxf-settlement-outnetpub/"):
+            if Site.challenges > 0:
+                Site.challenges -= 1
+                # The challenge solves itself and reloads the plain address (the 首页 column).
+                body = b"<script>setTimeout(() => location.replace('/pxf-settlement-outnetpub/'), 300)</script>"
+                self.send_response(412)
+            else:
+                body = "<!doctype html><meta charset='utf-8'><title>x</title><p>安徽电力交易平台</p>".encode()
+                self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if not self.path.startswith(FILE_PATH):
             return super().do_GET()
         Site.received.append(self.path)
@@ -254,6 +270,42 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         await opened.evaluate("() => { window.name = ''; }")       # as the legacy worker's own page
         self.assertIs(await work_page(self.browser, self.origin, config, timeout=10), opened, "adopted, no new tab")
         self.assertEqual(len(self.page.context.pages), 2)
+
+    async def test_a_planned_recycle_through_a_412_challenge_settles_once_and_reopens_the_column(self):
+        from pmos.browser.attach import work_page
+        await self.page.goto(self.origin + "/anhui_challenge_portal.html#/dashboard")
+        config = {"name": "pmos-anhui-work", "open_from": "#/dashboard", "menu": ["信息披露", "综合查询"],
+                  "url_contains": "columnHomeLeftMenuNew"}
+        rule = {"status": 412, "settle_seconds": 10, "path": "/pxf-settlement-outnetpub/", "text": "安徽",
+                "url_contains": "columnHomeLeftMenuNew"}
+        browser, origin = self.browser, self.origin
+
+        async def reopen(old):
+            return await work_page(browser, origin, config, timeout=10, exclude=(old,))
+        work = await reopen(None)
+        self.transport.page, self.transport.reopen = work, reopen
+        spent = []
+        Site.challenges = 1
+        with self.assertRaises(Fault) as caught:          # a crash recovery (no rule) never judges by itself
+            await self.transport.recover_page()
+        self.assertEqual((caught.exception.code, caught.exception.http_status), ("security_verification", 412))
+        self.assertIs(self.transport.page, work, "the old page stays in use for a person to look at")
+        for page in [p for p in self.page.context.pages if p not in (self.page, work)]:
+            await page.close()
+        Site.challenges = 1
+        with self.assertRaises(Fault):                    # the window's one judgement is spent
+            await self.transport.recover_page(rule=rule, admit=lambda: False)
+        for page in [p for p in self.page.context.pages if p not in (self.page, work)]:
+            await page.close()
+        Site.challenges = 1
+        info = await self.transport.recover_page(rule=rule, admit=lambda: spent.append(1) or True)
+        self.assertEqual((info["challenge"]["status"], info["challenge"]["reopened_from_portal"], spent), (412, True, [1]))
+        self.assertIn("columnHomeLeftMenuNew", self.transport.page.url, "the 首页 page was replaced by the column")
+        self.assertTrue(work.is_closed())
+        self.assertEqual(len(self.page.context.pages), 2, "the portal and the one work page")
+        Site.challenges = 2                               # a second refused document: a person decides
+        with self.assertRaises(Fault):
+            await self.transport.recover_page(rule=rule, admit=lambda: True)
 
     async def test_page_health_reads_the_pages_age_and_js_heap_without_a_request(self):
         health = await self.transport.page_health()

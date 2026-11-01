@@ -27,7 +27,7 @@ from dataclasses import dataclass
 
 from .archive import Archive
 from .contracts import TaskIdentity
-from .faults import Decision, DriverLost, Fault, decide
+from .faults import Decision, DriverLost, Fault, decide, driver_gone
 from .ledger import BUDGET_KINDS, Ledger, validate_ledger_path
 from .pacing import DAY, wait_seconds
 from .periods import last_day, today
@@ -60,6 +60,9 @@ QUERY_LAPSE_DATASETS = 2
 QUERY_TRANSPORTS = ("component", "native")
 QUERY_LAPSE_RECOVERIES_PER_HOUR = 3
 PAGE_RECOVERIES_PER_HOUR = 3
+DRIVER_LOSSES_TO_STOP = 3
+UNSENT_COOLDOWN_SECONDS = 600
+UNSENT_HOLDS_TO_STOP = 3
 LAPSE_RULE = ("用户原话：等它改完自动化再恢复（2026-10-31）：同一服务的查询在两个数据集上连续 HTTP 200 + 40302 "
               "视为查询权限失效，不记为拒绝；自动从门户菜单重新进入该报表，用一个查询验证")
 # Memory upkeep runs in waits of a second or more, and at least this often: at
@@ -221,8 +224,12 @@ class Engine:
             except DriverLost:
                 self.ledger.finish(attempt, "unknown", reason="driver_lost")
                 raise
-            except Exception:
-                self.ledger.finish(attempt, "unknown", reason="transport_exception")
+            except Exception as exc:
+                self.ledger.finish(attempt, "unknown", reason="driver_lost" if driver_gone(exc) else "transport_exception")
+                if driver_gone(exc):
+                    # Died outside a guarded call (e.g. while opening a frame): no business
+                    # block, or the restarted worker would refuse to start (Anhui 02:08).
+                    raise DriverLost(str(exc)[:200]) from None
                 raise Fault("transport_exception", "network") from None
             try:
                 outcome = evaluate(response_spec, response)
@@ -370,7 +377,38 @@ class Engine:
         return None, missing
 
     def dataset_holds(self) -> dict:
-        return self.state.read("dataset_holds", {})
+        holds = self.state.read("dataset_holds", {}) or {}
+        now = self.clock()
+        expired = [name for name, hold in holds.items() if hold.get("until") is not None and hold["until"] <= now]
+        if expired:
+            # A preparation failure (nothing was sent) cools down and is tried again.
+            holds = {name: hold for name, hold in holds.items() if name not in expired}
+            self.state.write("dataset_holds", holds)
+            for name in expired:
+                self.state.event("dataset_hold_expired", dataset=name)
+        return holds
+
+    def _hold_unsent(self, dataset: str, code: str) -> None:
+        """Nothing got out (the gate proves it): the item stays unconsumed and the dataset cools down.
+
+        Liaoning 2026-11-01 00:03: a preparation that could not be confirmed
+        paused a lane for an hour although no request was sent. A cool-down of
+        UNSENT_COOLDOWN_SECONDS, then a fresh try; the UNSENT_HOLDS_TO_STOP-th
+        in a row stays held for review. A sent but unknown request is never
+        retried (that is not this path).
+        """
+        streaks = self.state.read("unsent_streaks", {}) or {}
+        streak = streaks.get(dataset, 0) + 1
+        self.state.write("unsent_streaks", {**streaks, dataset: streak})
+        holds = self.state.read("dataset_holds", {}) or {}
+        if dataset in holds:
+            return
+        until = None if streak >= UNSENT_HOLDS_TO_STOP else self.clock() + UNSENT_COOLDOWN_SECONDS
+        holds[dataset] = {"reason": "unsent:" + code, "status": "paused", "at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                          **({"until": until} if until else {}), "streak": streak}
+        self.state.write("dataset_holds", holds)
+        self.state.event("dataset_held", dataset=dataset, reason="unsent:" + code, status="paused",
+                         cooldown=until is not None, streak=streak)
 
     def hold_dataset(self, dataset: str, reason: str, status: str) -> None:
         holds = self.dataset_holds()
@@ -409,6 +447,9 @@ class Engine:
             whole_day_mismatch(spec, values, result.response.body)
             self.ledger.settle_task(spec.id, period, "saved", scope=scope, sha256=result.record["sha256"])
             self.state.write("empty_streaks", {**self.state.read("empty_streaks", {}), spec.id: 0})
+            streaks = self.state.read("unsent_streaks", {}) or {}
+            if streaks.get(spec.id):
+                self.state.write("unsent_streaks", {k: v for k, v in streaks.items() if k != spec.id})
         else:
             self.ledger.settle_task(spec.id, period, "empty", scope=scope, reason="verified_empty_response")
             if spec.scopes:
@@ -724,6 +765,18 @@ class Engine:
         if self.ledger.unsettled():
             self.state.block("unsettled_attempt", category="local", keepalive_allowed=False)
             return 5
+        pending = self.state.read("recycle_challenge_pending")
+        if pending is not None:
+            return await self._verify_after_challenge(pending)
+        quiet = self._quiet_left()
+        if quiet > 0:
+            try:
+                await self.keep_session()
+            except Fault as fault:
+                if fault.code != "spacing_not_elapsed":
+                    raise
+            self._status("quiet_window", seconds_left=round(quiet))
+            return min(quiet, 60)
         if await self.run_command():
             return 1
         control = self.state.control()
@@ -797,8 +850,10 @@ class Engine:
                 # Like the Shanxi coordinator's deferred scope: no request was
                 # sent, the item stays pending, its dataset pauses for review
                 # and the rest (keepalive included) continues.
-                self.hold_dataset(current["dataset"], fault.code if not fault.unsent else "unsent:" + fault.code,
-                                  "paused")
+                if fault.unsent:
+                    self._hold_unsent(current["dataset"], fault.code)
+                else:
+                    self.hold_dataset(current["dataset"], fault.code, "paused")
                 return 1
             if current is not None and self._isolate_item(fault, current):
                 return 1
@@ -811,9 +866,12 @@ class Engine:
             return 1
         except DriverLost as lost:
             # Not a business fault: no block; the supervisor restarts the worker.
-            self.state.event("driver_lost", error=str(lost)[:120])
+            self._driver_lost(str(lost))
             raise
-        except Exception:
+        except Exception as exc:
+            if driver_gone(exc):
+                self._driver_lost(str(exc))
+                raise DriverLost(str(exc)[:200]) from None
             # A bug of ours after any request was settled in the ledger.
             self.block(Fault("internal_error", "local"), Decision("province", False))
             raise
@@ -889,6 +947,19 @@ class Engine:
             self._recycle_reason = found
         return due
 
+    def _driver_lost(self, error: str) -> None:
+        """Record it; the DRIVER_LOSSES_TO_STOP-th within 2 h is blocked for a person (no restart loop).
+
+        As the Anhui worker resume budget (2026-11-01): at most 3 automatic
+        restarts in 2 hours.
+        """
+        now = self.clock()
+        losses = [t for t in self.state.read("driver_losses", []) or [] if now - t < 7200] + [now]
+        self.state.write("driver_losses", losses)
+        self.state.event("driver_lost", error=error[:120], in_two_hours=len(losses))
+        if len(losses) >= DRIVER_LOSSES_TO_STOP:
+            self.block(Fault("driver_lost_repeatedly", "local"), Decision("province", False))
+
     async def _recover_page(self, planned: bool = False) -> float:
         """A crashed page is replaced before anything else is sent; repeated crashes stop the province.
 
@@ -902,10 +973,19 @@ class Engine:
                 self.block(Fault("page_crashed_repeatedly", "local"), Decision("province", False))
                 return 5
             self.state.write("page_recoveries", recent + [now])
+        rule = (self.province.browser_config().get("page_recycle") or {}).get("challenge") if planned else None
         try:
-            info = await self.transport.recover_page()
+            if rule:
+                info = await self.transport.recover_page(rule=rule, admit=lambda: self._admit_challenge(rule))
+            else:
+                info = await self.transport.recover_page()
         except DriverLost:
             raise
+        except Fault as fault:
+            # The new page's document was refused (Anhui 412): as any security answer, a person decides.
+            self.state.event("page_recovery_failed", error=fault.code, http_status=fault.http_status, planned=planned)
+            self.block(fault, decide(fault, "collect"))
+            return 5
         except Exception as exc:
             self.state.event("page_recovery_failed", error=type(exc).__name__, planned=planned)
             self.block(Fault("page_recovery_failed", "local"), Decision("province", False))
@@ -913,11 +993,74 @@ class Engine:
         # The old page's request templates died with it: a whole-day lane may prime again at once
         # (Anhui 2026-11-01: a recycle about every 20 minutes while the whole-day lane runs).
         self._primed.clear()
+        info = dict(info or {})
+        settled = info.pop("challenge", None)
         if planned:
-            self.state.event("page_recycled", **(info or {}), **getattr(self, "_recycle_reason", {}))
+            self.state.event("page_recycled", **info, **getattr(self, "_recycle_reason", {}))
         else:
-            self.state.event("page_recovered", **(info or {}))
+            self.state.event("page_recovered", **info)
+        if settled is not None:
+            # Nothing else is sent before the check (also after a restart: it is kept in state).
+            self.state.write("recycle_challenge_pending", {**settled, "verify_points": rule.get("verify_points", 96)})
         return 1
+
+    def _admit_challenge(self, rule: dict) -> bool:
+        """At most one automatic judgement per ``window_seconds``; spent when the attempt starts."""
+        now = self.clock()
+        recent = [t for t in self.state.read("recycle_challenges", []) or [] if now - t < rule.get("window_seconds", 7200)]
+        if recent:
+            self.state.event("recycle_challenge_not_admitted", last_at=recent[-1])
+            return False
+        self.state.write("recycle_challenges", recent + [now])
+        return True
+
+    async def _verify_after_challenge(self, pending: dict) -> float:
+        """Anhui's keepalive check after a settled challenge: the keepalive report's archived day is
+        queried once more, and its numbers must equal the archived original (96 points), or nothing goes on."""
+        import json
+        from .browser.challenge import numeric_series
+        wait = self.spacing_wait("keepalive")
+        if wait > 0:
+            return wait
+        self.state.remove("recycle_challenge_pending")
+        settled = {k: v for k, v in pending.items() if k != "verify_points"}
+        spec = self._keepalive_spec()
+        period = (self._session().get("keepalive_period") or self.archive.latest_period(spec.id)) if spec else None
+        records = [r for r in self.archive.records(spec.id) if r["period"] == period] if period else []
+        request = self._sendable(spec.build(period)) if records else None
+        if request is None:
+            self.state.event("recycle_challenge_unverified", **settled, period=period)
+            self.block(Fault("recycle_challenge_unverifiable", "local"), Decision("province", False))
+            return 5
+        try:
+            result = await self.request("keepalive", request, spec.response, dataset=spec.id, period=period)
+        except Fault as fault:
+            self.state.event("recycle_challenge_unverified", **settled, period=period, reason=fault.code)
+            self.block(fault, decide(fault, "collect"))
+            return 5
+        archived = records[-1]
+        try:
+            expected = numeric_series(json.loads((self.archive.root / archived["path"]).read_bytes()))
+            found = numeric_series(json.loads(result.response.body))
+        except (OSError, ValueError):
+            expected, found = None, []
+        points = pending.get("verify_points", 96)
+        if not self.archive.verify(archived) or found != expected or len(found) < points:
+            self.state.event("recycle_challenge_unverified", **settled, period=period, points=len(found))
+            self.block(Fault("recycle_challenge_check_mismatch", "local"), Decision("province", False))
+            return 5
+        self.state.event("recycle_challenge_settled", **settled, dataset=spec.id, period=period, points=len(found),
+                         archived_sha256=archived["sha256"])
+        return 1
+
+    def _quiet_left(self) -> float:
+        if not self.policy.quiet_windows:
+            return 0.0
+        from datetime import datetime
+        from .pacing import quiet_seconds_left
+        from .periods import CHINA
+        now = datetime.fromtimestamp(self.clock(), CHINA)
+        return quiet_seconds_left(self.policy.quiet_windows, now.hour * 60 + now.minute + now.second / 60)
 
     def _disk_low(self) -> bool:
         if self.policy.min_free_disk_mb is None:

@@ -30,7 +30,10 @@
       "site_data",
       "permission"
     ],
-    "unpublished_window_days": 7
+    "unpublished_window_days": 7,
+    "quiet_windows": [
+      "23:58-00:10"
+    ]
   },
   "session": {
     "keepalive_dataset": null,

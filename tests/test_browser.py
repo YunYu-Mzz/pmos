@@ -2,6 +2,7 @@
 import asyncio
 import base64
 import unittest
+from pathlib import Path
 
 from pmos.browser.attach import AttachError, cdp_endpoint
 from pmos.browser.transport import PageTransport, Templates
@@ -135,6 +136,23 @@ class AttachTests(unittest.TestCase):
                 cdp_endpoint({"cdp_url": bad})
         with self.assertRaisesRegex(AttachError, "missing"):
             cdp_endpoint({"profile_dir": "/nonexistent/profile"})
+
+    def test_the_port_file_is_read_through_a_brief_eperm(self):
+        import errno
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as profile:
+            (Path(profile) / "DevToolsActivePort").write_text("9333\n/devtools/browser/ab-12\n", encoding="ascii")
+            real, refused = Path.lstat, []
+
+            def lstat(path):
+                if path.name == "DevToolsActivePort" and len(refused) < 2:
+                    refused.append(path)
+                    raise PermissionError(errno.EPERM, "Operation not permitted")
+                return real(path)
+            with patch.object(Path, "lstat", lstat), patch("pmos.fsretry.time.sleep"):
+                self.assertEqual(cdp_endpoint({"profile_dir": profile}), "ws://127.0.0.1:9333/devtools/browser/ab-12")
+            self.assertEqual(len(refused), 2)
 
 
 if __name__ == "__main__":

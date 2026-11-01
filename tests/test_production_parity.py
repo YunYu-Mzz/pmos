@@ -15,6 +15,7 @@ from pmos.validate import Response
 from helpers import Clock, FakeTransport, TempDir, dataset, envelope, excel, make_province
 
 TODAY = today().isoformat()
+PREVIOUS_DAY = periods_previous("day", TODAY)
 
 
 def native(dataset_id):
@@ -972,6 +973,92 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         events = [json.loads(line) for line in (engine.state.root / "events.jsonl").read_text().splitlines()]
         self.assertEqual(sum(e["phase"] == "page_recycled" for e in events), 6)
 
+    async def test_a_planned_recycle_challenge_is_judged_once_in_two_hours_and_checked_by_96_points(self):
+        """Anhui 2026-11-01 06:59 (user 10:5x 允许自动判断后继续): only a planned recycle's one document 412."""
+        from pmos.faults import Fault
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        province = make_province(tmp.path, [dataset("load", start=TODAY, keepalive=True, response="json")],
+                                 policy={"response_interval_seconds": 1})
+        self.transport = FakeTransport(self.clock)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        rule = {"status": 412, "window_seconds": 7200, "path": "/pxf-settlement-outnetpub/", "text": "安徽",
+                "verify_points": 96}
+        engine.province.browser_config = lambda: {"page_recycle": {"max_age_seconds": 3600, "challenge": rule}}
+        series = json.dumps({"status": 0, "data": [{"v": f"{n}.5"} for n in range(96)]}).encode()
+        engine.archive.store("load", TODAY, series, ".json")
+        health = {"age_seconds": 3700, "js_heap_mb": 100}
+        seen = []
+
+        async def page_health():
+            return dict(health)
+
+        async def recover_page(*, rule=None, admit=None):
+            seen.append(rule)
+            health.update(age_seconds=0)
+            if not admit():
+                raise Fault("security_verification", "auth", http_status=412)
+            return {"reopened": True, "frames_closed": 0, "challenge": {"status": 412, "settled_after_seconds": 3.0}}
+        self.transport.page_health, self.transport.recover_page = page_health, recover_page
+        self.transport.default = Response(200, "application/json", series)
+        await engine.tick()                      # the recycle meets the challenge and settles
+        self.assertEqual((seen, self.transport.sent), ([rule], []))
+        self.clock.advance(2)
+        await engine.tick()                      # the 96-point check comes before anything else
+        self.assertEqual(len(self.transport.sent), 1)
+        self.assertIsNone(engine.state.blocked())
+        self.assertIsNone(engine.state.read("recycle_challenge_pending"))
+        events = [json.loads(line) for line in (engine.state.root / "events.jsonl").read_text().splitlines()]
+        settled = [e for e in events if e["phase"] == "recycle_challenge_settled"]
+        self.assertEqual(len(settled), 1)
+        self.assertGreaterEqual(settled[0]["points"], 96, "every number of the answer, the 96 values among them")
+        health.update(age_seconds=3700)          # a second one within 2 h: a person decides
+        self.clock.advance(1200)
+        await engine.tick()
+        self.assertEqual((engine.state.blocked()["reason"], engine.state.blocked()["http_status"]),
+                         ("security_verification", 412))
+
+    async def test_a_settled_challenge_whose_check_differs_stops_the_province(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        province = make_province(tmp.path, [dataset("load", start=TODAY, keepalive=True, response="json")],
+                                 policy={"response_interval_seconds": 1})
+        self.transport = FakeTransport(self.clock)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        engine.archive.store("load", TODAY, json.dumps({"status": 0, "data": list(range(96))}).encode(), ".json")
+        engine.state.write("recycle_challenge_pending", {"status": 412, "verify_points": 96})
+        self.transport.default = Response(200, "application/json", json.dumps({"status": 0, "data": [0] * 96}).encode())
+        await engine.tick()
+        self.assertEqual(engine.state.blocked()["reason"], "recycle_challenge_check_mismatch")
+        self.assertEqual(len(self.transport.sent), 1, "only the check was sent")
+
+    async def test_a_report_that_can_only_wait_never_costs_the_others_an_idle_round(self):
+        """Liaoning 2026-11-01 lesson 21: an empty turn of a waiting lane slept the whole loop 10 s."""
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        province = make_province(tmp.path, [dataset("waits", start=TODAY), dataset("held", start=TODAY),
+                                            dataset("works", start=PREVIOUS_DAY)], policy={"response_interval_seconds": 1})
+        self.transport = FakeTransport(self.clock)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        self.transport.unready = {"/px-test/waits"}               # no template yet, no prime
+        engine.hold_dataset("held", "unsent:x", "paused")
+        sleeps = []
+        for _ in range(4):
+            sleeps.append(await engine.tick())
+            self.clock.advance(1)
+        self.assertEqual({r["path"] for r in self.transport.sent}, {"/px-test/works"})
+        self.assertEqual(len(self.transport.sent), 2, "both days of the working report, back to back")
+        self.assertLessEqual(max(sleeps[:2]), 1, "no idle round while one report can still send")
+
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost
         engine = self.engine()
@@ -984,12 +1071,76 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         events = [json.loads(line)["phase"] for line in (engine.state.root / "events.jsonl").read_text().splitlines()]
         self.assertIn("driver_lost", events)
 
+    async def test_a_driver_dying_outside_a_guarded_call_is_still_no_business_block(self):
+        from pmos.faults import DriverLost
+        engine = self.engine()
+        self.transport.queue = [RuntimeError("Target page, context or browser has been closed")]
+        with self.assertRaises(DriverLost):
+            await engine.tick()
+        self.assertIsNone(engine.state.blocked(), "the restarted worker must be able to start (Anhui 02:08)")
+        self.clock.advance(600)
+        engine._driver_lost("Connection closed while reading from the driver")
+        self.assertIsNone(engine.state.blocked())
+        self.clock.advance(600)
+        engine._driver_lost("Connection closed while reading from the driver")
+        self.assertEqual(engine.state.blocked()["reason"], "driver_lost_repeatedly",
+                         "the third loss within 2 h waits for a person, no restart loop")
+        self.assertEqual(tuple(engine.ledger.db.execute("SELECT outcome, reason FROM attempts").fetchone()),
+                         ("unknown", "driver_lost"))
+
     def test_a_closed_connection_is_a_lost_driver_not_a_network_outcome(self):
         from pmos.browser.transport import _lost_or_network
         from pmos.faults import DriverLost
         self.assertIsInstance(_lost_or_network(RuntimeError("Connection closed while reading from the driver")), DriverLost)
         self.assertIsInstance(_lost_or_network(RuntimeError("Target page, context or browser has been closed")), DriverLost)
         self.assertEqual(_lost_or_network(TimeoutError("timeout")).code, "network_error")
+
+
+class MidnightAndUnsent(unittest.IsolatedAsyncioTestCase):
+    """Liaoning 2026-11-01 00:03: the midnight SSO refresh met a page operation; nothing was sent, a lane paused 1 h."""
+
+    def engine(self, **policy):
+        from datetime import datetime
+        from pmos.periods import CHINA
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock(datetime(2026, 11, 1, 0, 3, tzinfo=CHINA).timestamp())
+        province = make_province(tmp.path, [dataset("load", start=TODAY)], policy={"response_interval_seconds": 1, **policy})
+        self.transport = FakeTransport(self.clock)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        return engine
+
+    async def test_no_business_request_starts_inside_the_midnight_window(self):
+        engine = self.engine(quiet_windows=["23:58-00:10"])
+        delay = await engine.tick()
+        self.assertEqual((self.transport.sent, engine.state.read("status")["phase"]), ([], "quiet_window"))
+        self.assertLessEqual(delay, 60)
+        self.clock.advance(7 * 60 + 1)           # 00:10:01
+        await engine.tick()
+        self.assertEqual(len(self.transport.sent), 1)
+
+    def test_windows_across_midnight_and_malformed_ones(self):
+        from pmos.pacing import quiet_seconds_left
+        self.assertEqual(quiet_seconds_left(["23:58-00:10"], 23 * 60 + 59), 11 * 60)
+        self.assertEqual(quiet_seconds_left(["23:58-00:10"], 5), 5 * 60)
+        self.assertEqual(quiet_seconds_left(["23:58-00:10"], 12 * 60), 0)
+        with self.assertRaises(PolicyError):
+            Policy.from_dict({"quiet_windows": ["24:00-01:00"]})
+
+    async def test_nothing_sent_cools_down_and_is_tried_again_the_third_in_a_row_stays_held(self):
+        engine = self.engine()
+        for round_ in range(3):
+            self.transport.queue = [Fault("page_sent_nothing", "local", unsent=True)]
+            await engine.tick()
+            hold = engine.dataset_holds()["load"]
+            self.assertEqual((hold["reason"], hold["streak"]), ("unsent:page_sent_nothing", round_ + 1))
+            self.clock.advance(601)
+        self.assertIn("load", engine.dataset_holds(), "the third preparation failure in a row waits for review")
+        self.assertNotIn("until", engine.dataset_holds()["load"])
+        task = engine.ledger.db.execute("SELECT status FROM tasks WHERE dataset='load'").fetchone()[0]
+        self.assertEqual(task, "pending", "never consumed: nothing was sent")
 
 
 class ExportBlankProbe(unittest.IsolatedAsyncioTestCase):

@@ -59,6 +59,15 @@ class DriverLost(RuntimeError):
     """
 
 
+# Playwright's messages once its driver or the browser connection is gone.
+DRIVER_GONE = ("Connection closed", "Target page, context or browser has been closed", "Browser has been closed",
+               "browser has disconnected")
+
+
+def driver_gone(exc: BaseException) -> bool:
+    return any(marker in str(exc) for marker in DRIVER_GONE)
+
+
 def decide(fault: Fault, phase: str, *, permission_scope: str = "province") -> Decision:
     """``phase`` is "collect" (enabled datasets) or "sample" (adaptation)."""
     if fault.category == "site_data":

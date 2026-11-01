@@ -19,6 +19,7 @@ import tempfile
 from pathlib import Path
 
 from .state import now_iso
+from .fsretry import eperm_retry
 
 EXTENSIONS = {".xlsx", ".xls", ".json", ".pdf", ".csv", ".html", ".txt", ".zip", ".bin",
               ".docx", ".doc", ".png", ".jpg"}
@@ -48,6 +49,13 @@ class Archive:
 
     def store(self, dataset: str, period: str, payload: bytes, extension: str, *, scope: str = "",
               acquisition: str = "browser_request", **receipt) -> dict:
+        # The answer exists only in memory here (its identity is already consumed): a transient
+        # EPERM is retried. Content-addressed, so a repeat writes the same file.
+        return eperm_retry(self._store, dataset, period, payload, extension, scope=scope, acquisition=acquisition,
+                           **receipt)
+
+    def _store(self, dataset: str, period: str, payload: bytes, extension: str, *, scope: str = "",
+               acquisition: str = "browser_request", **receipt) -> dict:
         if extension not in EXTENSIONS:
             raise ArchiveError("extension_unsupported")
         if not payload:

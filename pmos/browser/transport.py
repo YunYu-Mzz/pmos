@@ -41,9 +41,9 @@ from pathlib import Path
 from urllib.parse import urlencode, urlsplit
 
 from .. import platform
-from ..faults import DriverLost, Fault
+from ..faults import DriverLost, Fault, driver_gone
 from ..validate import CAPTURE_TYPE, Response
-from . import ui
+from . import challenge, ui
 
 MAX_RESPONSE_BYTES = 64 * 1024 * 1024
 
@@ -451,14 +451,9 @@ class _NoGate:
         return None
 
 
-# Playwright's messages once its driver or the browser connection is gone.
-_DRIVER_GONE = ("Connection closed", "Target page, context or browser has been closed", "Browser has been closed",
-                "browser has disconnected")
-
-
 def _lost_or_network(exc: Exception):
     """A dead driver is no network outcome: the worker must restart (DriverLost); anything else may have been sent."""
-    if any(marker in str(exc) for marker in _DRIVER_GONE):
+    if driver_gone(exc):
         return DriverLost(str(exc)[:200])
     return Fault("network_error", "network")
 
@@ -510,16 +505,32 @@ class PageTransport:
         except Exception:
             pass
 
-    async def recover_page(self) -> dict:
-        """After a renderer crash: a fresh page of the same role (Playwright never revives a crashed one).
+    async def recover_page(self, *, rule: dict | None = None, admit=None) -> dict:
+        """After a renderer crash or for a planned recycle: a fresh page of the same role (Playwright never
+        revives a crashed one).
 
         As the Anhui legacy did (a new page, then the keeper's check). The
         page's old request templates belong to dead frames and are not used.
+        A refused document of the new page raises its Fault, except the one
+        case ``rule`` (``page_recycle.challenge``) and ``admit`` allow.
         """
         if self.reopen is None:
             raise Fault("page_reopen_unavailable", "local")
         old = self.page
-        self.page = await self.reopen(old)
+        info = {}
+        # A replacement page whose document the site refused (Anhui 412) is never used silently.
+        with challenge.DocumentWatch(old.context, self.origin, ignore=(old,)) as watch:
+            try:
+                fresh = await self.reopen(old)
+            except Exception:
+                if not watch.failures or watch.failures[0]["page"] is None:
+                    if watch.failures:
+                        raise watch.fault() from None
+                    raise
+                fresh = watch.failures[0]["page"]   # the challenge's reload broke the open itself
+            if watch.failures:
+                fresh, info = await self._settle_challenge(old, fresh, watch, rule, admit)
+        self.page = fresh
         self.crashed = False
         self.opened_at = time.monotonic()
         self._watch(self.page)
@@ -527,7 +538,26 @@ class PageTransport:
             await old.close()
         except Exception:
             pass
-        return {"reopened": True, "frames_closed": await self.reset_frames()}
+        return {"reopened": True, "frames_closed": await self.reset_frames(), **info}
+
+    async def _settle_challenge(self, old, fresh, watch, rule, admit) -> tuple:
+        """Only a planned recycle (``admit``), only one ``rule["status"]`` document, and only once per
+        window (``admit()`` spends it): the page must settle on the site by itself; a page that settles
+        outside the work column is closed and the work page opened once more from the portal."""
+        if rule is None or admit is None or not watch.only(rule.get("status", 412)) or not admit():
+            raise watch.fault()
+        settled = await challenge.settle(fresh, watch, rule)
+        if settled is None:
+            raise watch.fault()
+        if rule.get("url_contains") and rule["url_contains"] not in fresh.url:
+            # Anhui 11-01: the reload landed on 首页 without the 现货市场 tree; the logged-in
+            # portal's own menu opens 综合查询 again.
+            await fresh.close()
+            fresh = await self.reopen(old)
+            if len(watch.failures) != 1 or rule["url_contains"] not in fresh.url:
+                raise watch.fault()
+            settled["reopened_from_portal"] = True
+        return fresh, {"challenge": settled}
 
     async def page_health(self) -> dict:
         """How long PMOS has used this page and its JS heap (in-page only, nothing is sent)."""

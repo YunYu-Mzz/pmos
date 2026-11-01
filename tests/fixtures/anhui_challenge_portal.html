@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- Offline stand-in for the Anhui portal as on 2026-11-01 06:59: 综合查询 opens
+     /pxf-settlement-outnetpub/ with the column in its hash; the site may answer
+     that document with a 412 challenge whose script reloads the plain address
+     (信息披露's 首页 column, no 现货市场 tree). -->
+<html><head><meta charset="utf-8"><title>anhui challenge portal fixture</title>
+<style>.hidden { display: none; }</style></head>
+<body>
+<div id="disclosure">信息披露</div>
+<div id="query" class="hidden">综合查询</div>
+<script>
+document.getElementById('disclosure').onclick = () => document.getElementById('query').classList.remove('hidden');
+document.getElementById('query').onclick = () =>
+  window.open('/pxf-settlement-outnetpub/?ts=' + Date.now() + '#/pxf-settlement-outnetpub/columnHomeLeftMenuNew');
+</script></body></html>

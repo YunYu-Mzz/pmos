@@ -132,4 +132,23 @@ def status_metrics(instance: Path, *, now: float | None = None) -> dict:
             "status_updated_at": status.get("updated_at"), "worker_pid": status.get("pid"),
             "blocked": block is not None, "block_reason": (block or {}).get("reason"),
             "held_datasets": sorted(holds), "business_last_success_at": iso(business),
-            "keeper_last_success_at": iso(renewal), "generated_at": iso(now)}
+            "keeper_last_success_at": iso(renewal), "generated_at": iso(now),
+            **headline(status.get("phase"), block, business, now)}
+
+
+# A collection without a business answer for this long is called stalled in the headline.
+STALLED_MINUTES = 30
+
+
+def headline(phase, block, business, now) -> dict:
+    """For a mail subject (Liaoning 2026-11-01: the user found a one-hour stop only by a missing mail)."""
+    stalled = round((now - business) / 60) if business else None
+    if block is not None:
+        line = f"已暂停：{block.get('reason')}"
+    elif phase in ("paused", "stopped_all", "idle"):
+        line = f"已暂停（{phase}）"
+    elif phase not in ("complete", "quiet_window") and stalled is not None and stalled >= STALLED_MINUTES:
+        line = f"已停滞 {stalled} 分钟"
+    else:
+        line = "正常"
+    return {"stalled_minutes": stalled, "headline": line}

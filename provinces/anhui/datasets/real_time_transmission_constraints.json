@@ -584,7 +584,7 @@
   ],
   "source": {
     "legacy": "anhui multidimensional candidates",
-    "binding_sha256": "feb415604820a8fbcab027f4d300fe344abb025e5e7a8f081fe50c383b2782da",
+    "binding_sha256": "ff40c57d4fdfa0eacc10225e4f6a6fdbe250e9d389531f1285c230ff65ec0fd6",
     "ui_request": {
       "transport": "ui",
       "frame": "infoCode=ssscsddmyjszkzqk",
@@ -626,9 +626,9 @@
   },
   "history": [
     {
-      "at": "2026-11-01T00:36:04+08:00",
+      "at": "2026-11-01T11:26:44+08:00",
       "event": "generated_from_legacy_native_binding",
-      "binding_sha256": "feb415604820a8fbcab027f4d300fe344abb025e5e7a8f081fe50c383b2782da"
+      "binding_sha256": "ff40c57d4fdfa0eacc10225e4f6a6fdbe250e9d389531f1285c230ff65ec0fd6"
     }
   ]
 }
