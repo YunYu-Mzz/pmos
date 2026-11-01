@@ -23,6 +23,9 @@ OUTCOMES = ("pending", "success", "empty", "failed", "unknown", "not_sent")
 BUSINESS_KINDS = ("collect", "sample", "keepalive")
 # Kinds charged to the collection budget (hour/day caps).
 BUDGET_KINDS = ("collect", "sample")
+# Page-menu failures raised before any report frame opened (ui.select_menu, ui.select_options).
+NAVIGATION_CODES = frozenset({"menu_navigation_timeout", "menu_label_not_unique", "menu_control_changed",
+                              "menu_label_not_visible", "menu_path_ambiguous", "select_options_missing"})
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tasks(
@@ -504,10 +507,11 @@ class Ledger:
 
     def attempts_since_handoff(self) -> int:
         # A handoff is granted on an attempt-free ledger, so every attempt in it
-        # counts against the budget (no clock comparison to get wrong).
+        # counts against the budget (no clock comparison to get wrong), except one
+        # proven never sent (not_sent): it reached no website.
         if self.db.execute("SELECT 1 FROM owner_handoff").fetchone() is None:
             return 0
-        return self.db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
+        return self.db.execute("SELECT COUNT(*) FROM attempts WHERE outcome IS NULL OR outcome!='not_sent'").fetchone()[0]
 
     def legacy_file_tombstone(self, file_key: str) -> bool:
         return self.db.execute("SELECT 1 FROM file_tombstones WHERE file_key=? AND source_ref NOT LIKE 'attempt:%'",
@@ -557,6 +561,43 @@ class Ledger:
         except BaseException:
             self.db.execute("ROLLBACK")
             raise
+
+    def review_unsent(self, attempts: list[int], approval: str) -> list[tuple]:
+        """User-approved, after review: page operations that never opened a report consume nothing.
+
+        Anhui 2026-11-01 12:07: in a hidden tab the site's menu never reached the
+        report (``NAVIGATION_CODES``, no HTTP status); one more was still
+        navigating when its worker was stopped (``pending``). Each becomes
+        ``not_sent``; a task isolated for it is pending again.
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("review_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            reopened = []
+            for attempt in attempts:
+                row = self.db.execute("SELECT * FROM attempts WHERE id=?", (attempt,)).fetchone()
+                if (row is None or row["kind"] not in ("collect", "sample") or row["http_status"] is not None
+                        or row["business_status"] is not None
+                        or not (row["outcome"] == "pending" or (row["outcome"] == "failed" and row["reason"] in NAVIGATION_CODES))):
+                    raise ValueError(f"attempt_{attempt}_is_not_an_unsent_navigation")
+                reason = "reviewed_not_sent:" + (row["reason"] or "stopped_while_navigating")
+                self.db.execute("UPDATE attempts SET outcome='not_sent', finished_at=COALESCE(finished_at, ?), reason=?"
+                                " WHERE id=?", (self.clock(), reason, attempt))
+                self.db.execute("DELETE FROM file_tombstones WHERE source_ref=?", (f"attempt:{attempt}",))
+                self.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, approval, self.clock()))
+                scope = re.sub(r"(^|\.)p\d{4}$", "", row["scope"])
+                task = self.db.execute("SELECT status, reason FROM tasks WHERE dataset=? AND period=? AND scope=?",
+                                       (row["dataset"], row["period"], scope)).fetchone()
+                if task is not None and task["status"] == "failed" and (task["reason"] or "").startswith("isolated:"):
+                    self.db.execute("UPDATE tasks SET status='pending', reason=NULL, updated_at=? WHERE dataset=? AND"
+                                    " period=? AND scope=?", (self.clock(), row["dataset"], row["period"], scope))
+                reopened.append((attempt, row["dataset"], row["period"], scope))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+        return reopened
 
     def release_denied(self, attempts: list[int], approval: str, *, defer: bool = False) -> list[tuple]:
         """User-approved: denied attempts (HTTP 200 + 40302) stop consuming their items, which return to pending.

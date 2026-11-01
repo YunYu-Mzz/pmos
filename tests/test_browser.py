@@ -128,6 +128,29 @@ class FetchTransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("xyz", str(caught.exception))
 
 
+class BringForward(unittest.IsolatedAsyncioTestCase):
+    """Anhui 2026-11-01 12:07: page work in a hidden Edge tab waited out every timeout."""
+
+    async def test_a_hidden_tab_comes_to_the_front_before_page_work_and_a_visible_one_is_left(self):
+        from pmos.browser.ui import bring_forward
+
+        class Page:
+            def __init__(self, state):
+                self.state, self.fronted = state, 0
+
+            async def evaluate(self, script):
+                if isinstance(self.state, Exception):
+                    raise self.state
+                return self.state
+
+            async def bring_to_front(self):
+                self.fronted += 1
+        for state, fronted in (("hidden", 1), ("visible", 0), (RuntimeError("navigating"), 1)):
+            page = Page(state)
+            await bring_forward(page)
+            self.assertEqual(page.fronted, fronted, state)
+
+
 class AttachTests(unittest.TestCase):
     def test_only_loopback_cdp(self):
         self.assertEqual(cdp_endpoint({"cdp_url": "http://127.0.0.1:9222"}), "http://127.0.0.1:9222")

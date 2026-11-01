@@ -203,6 +203,14 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(caught.exception.code, "portal_menu_route_missing")
         self.assertEqual(Site.received, [])
 
+    async def test_a_menu_step_that_fails_before_the_leaf_is_clicked_is_proven_unsent(self):
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/portal_page.html")
+        with self.assertRaises(Fault) as caught:
+            await ui.select_menu(self.page, ["信息披露", "现货日前信息", "不存在的报表"], 1)
+        self.assertEqual((caught.exception.code, caught.exception.unsent), ("menu_navigation_timeout", True))
+        self.assertEqual(Site.received, [])
+
     async def test_a_liaoning_report_opens_from_the_column_pages_own_menu(self):
         from pmos.browser import ui
         await self.page.goto(self.origin + "/column_page.html")

@@ -204,6 +204,21 @@ _SITE_MENU_JS = """x => {
 }"""
 
 
+async def bring_forward(page) -> None:
+    """A hidden tab first comes to the front (as the Anhui legacy ensure_visible).
+
+    Anhui 2026-11-01 12:07: in a background Edge tab the tree's expand and the
+    dropdown's transitions never finished; every menu step waited out its
+    timeout (menu_navigation_timeout, select_options_missing).
+    """
+    try:
+        state = await page.evaluate("document.visibilityState")
+    except Exception:
+        state = None                      # bring_to_front reports the real page error
+    if state != "visible":
+        await page.bring_to_front()
+
+
 async def ensure_frame(page, request: dict, timeout: float):
     needle = request["frame"]
     found = frames_matching(page, needle)
@@ -211,6 +226,7 @@ async def ensure_frame(page, request: dict, timeout: float):
         return found[0]
     if len(found) > 1:
         raise Fault("report_frame_ambiguous", "local")
+    await bring_forward(page)
     loop = asyncio.get_running_loop()
     if request.get("site_menu"):
         try:
@@ -269,7 +285,20 @@ async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = 
     """Open the menu leaf ``labels`` (root section first) in the site's left tree.
 
     ``force``: click the leaf even if it is the current one (a re-entry).
+    A failure before the leaf is clicked opened no report, so nothing of it was
+    sent (``unsent``); after that click the report's own requests may have run.
     """
+    await bring_forward(page)
+    state = {"leaf_clicked": False}
+    try:
+        await _select_menu(page, labels, timeout, hover_exit, force, state)
+    except Fault as fault:
+        if state["leaf_clicked"] or fault.unsent:
+            raise
+        raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True) from None
+
+
+async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, force: bool, state: dict) -> None:
     nodes = await page.locator(".el-tree-node").evaluate_all(_MENU_NODES_JS)
     if not any(n["path"] == labels[:1] and n["visible"] for n in nodes):
         # The root section is chosen in the horizontal top menu first.
@@ -297,6 +326,7 @@ async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = 
         point = await target.evaluate(_VISIBLE_POINT_JS)
         if point is None:
             raise Fault("menu_label_not_visible", "local")
+        state["leaf_clicked"] = state["leaf_clicked"] or leaf
         await target.click(position=point, timeout=timeout * 1000)
         loop = asyncio.get_running_loop()
         deadline = loop.time() + timeout

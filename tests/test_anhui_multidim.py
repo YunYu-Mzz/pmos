@@ -340,8 +340,8 @@ class DiscoveryFailure(unittest.IsolatedAsyncioTestCase):
         from argparse import Namespace
         from pmos import cli
         with self.assertRaises(ValueError):
-            cli.cmd_release_discovery(engine.province, Namespace(dataset="sections", approval=" "))
-        cli.cmd_release_discovery(engine.province, Namespace(dataset="sections", approval="用户原话"))   # reviewed
+            cli.cmd_release_discovery(engine.province, Namespace(dataset="sections", approval=" ", all=False))
+        cli.cmd_release_discovery(engine.province, Namespace(dataset=None, approval="用户原话", all=True))   # reviewed
         self.assertEqual(engine.state.read("discovery_holds"), {})
         engine.enqueue({"action": "discover_options", "dataset": "sections", "period": DAY[1]})
         clock.advance(5)

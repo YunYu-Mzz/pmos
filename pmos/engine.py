@@ -61,6 +61,8 @@ QUERY_TRANSPORTS = ("component", "native")
 QUERY_LAPSE_RECOVERIES_PER_HOUR = 3
 PAGE_RECOVERIES_PER_HOUR = 3
 DRIVER_LOSSES_TO_STOP = 3
+# Page operations (menu, form, dropdown) failing in a row, across reports, stop the province.
+PAGE_FAILURES_TO_STOP = 3
 UNSENT_COOLDOWN_SECONDS = 600
 UNSENT_HOLDS_TO_STOP = 3
 LAPSE_RULE = ("用户原话：等它改完自动化再恢复（2026-10-31）：同一服务的查询在两个数据集上连续 HTTP 200 + 40302 "
@@ -213,6 +215,8 @@ class Engine:
             try:
                 response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request})
             except Fault as fault:
+                if request.get("transport") == "ui" and fault.category == "local":
+                    self._page_operation_failed(fault, dataset)
                 if fault.unsent:
                     # The request gate proves nothing got out: the identity
                     # stays unconsumed, like a deferred preflight.
@@ -252,6 +256,8 @@ class Engine:
                                          part_outcome.extension, scope=f"attempt_{attempt}.{number}")
             self.ledger.finish(attempt, "empty" if outcome.result == "empty" else "success",
                                http_status=response.status, business_status=outcome.business_status)
+            if request.get("transport") == "ui" and self.state.read("page_operation_failures"):
+                self.state.write("page_operation_failures", [])
             if response.operation:
                 # Every request the page made during the call, as the gate decided it.
                 self.state.event("operation", attempt=attempt, dataset=dataset, **{
@@ -446,9 +452,11 @@ class Engine:
             result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=scope,
                                         identity=identity, lane=spec.source.get("lane"))
         except Fault as fault:
-            if request.get("bootstrapping") and fault.category == "local":
+            if request.get("bootstrapping") and fault.category == "local" and not fault.unsent:
                 # The page could not be driven: that report waits, the others go on.
                 raise Fault("bootstrap_" + fault.code, "site_data") from None
+            # Proven unsent (the menu never reached the report, Anhui 2026-11-01 12:07): no
+            # data fault, nothing consumed; the dataset cools down (_hold_unsent).
             raise
         if result.outcome.result == "saved":
             result.record = self.archive.store(spec.id, period, result.response.body, result.outcome.extension,
@@ -972,6 +980,21 @@ class Engine:
         if due:
             self._recycle_reason = found
         return due
+
+    def _page_operation_failed(self, fault: Fault, dataset: str | None) -> None:
+        """PAGE_FAILURES_TO_STOP page operations failing in a row (any reports) stop the province.
+
+        Anhui 2026-11-01 12:07: one hidden tab failed 15 operations in a row,
+        each after its 45 s timeout, and spent the whole acceptance budget. The
+        login is still renewed meanwhile (keepalive replays need no page work).
+        """
+        failures = (self.state.read("page_operation_failures", []) or [])[-(PAGE_FAILURES_TO_STOP - 1):] + [
+            {"dataset": dataset, "reason": fault.code, "at": time.strftime("%Y-%m-%dT%H:%M:%S")}]
+        self.state.write("page_operation_failures", failures)
+        if len(failures) >= PAGE_FAILURES_TO_STOP:
+            self.state.event("page_operations_failing", reasons=",".join(sorted({f["reason"] for f in failures})),
+                             datasets=",".join(sorted({f["dataset"] or "" for f in failures})))
+            self.block(Fault("page_operations_failing", "local"), Decision("province", True))
 
     def _driver_lost(self, error: str) -> None:
         """Record it; the DRIVER_LOSSES_TO_STOP-th within 2 h is blocked for a person (no restart loop).

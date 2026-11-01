@@ -259,3 +259,20 @@ PMOS 对照检查后补了三处：
 - **修复（`ui.select_options`）：** 按 ElSelect 组件自己的值和输入框文字一起判断，等下拉框收起、两者都恢复原样（最多 3 秒）才算读完；真的变了仍报这个错。夹具 `filterable_select_page.html` 模拟了"打开时清空、关闭后延迟恢复"和"真的改了值"两种情况。
 - **`release-discovery <dataset> --approval "<原话>"`：** 解除 r3 下被暂停的选项发现，从下一次按天滚动起重新读取。
 - 测试：全套 511 项（安徽 venv、山西 venv）和真浏览器 18 项通过。
+
+## 11-01 12:07 r3 验收：页面操作在后台标签页里全部超时 → r5
+
+- **经过**（安徽会话按用户"三项都同意，继续验收"执行 ack、release-early 1、extend-budget +20 之后，用 r3 启动；r4 的通知那时还在排队）：
+  - 12:07:42 起共 15 次尝试全部失败：选项发现 2 次 `select_options_missing`（约 11 秒），之后每次约 45 秒 `menu_navigation_timeout`；
+  - `actual_load` 10-28～10-30 三条被当成 site_data 隔离（`isolated:bootstrap_menu_navigation_timeout`），数据集被暂停；
+  - attempt 17（day_ahead_average_offer_price 10-31）在 12:18 bootout 时还在导航，台账里停在 pending；
+  - 没有 4xx，没有封锁，页面已登录、正常。
+- **原因：** 旧系统每次在页面上操作之前都会先 `ensure_visible`（如果不在前台就 `bring_to_front`），注释写明 Edge 的后台标签页会让页面上的操作检查一直等下去。PMOS 没有这一步。综合查询页在后台时，树节点展开和下拉框的过渡动画走不完，每一步都等满超时。11:31 那次是前台，所以成功了。
+- **r5 修复：**
+  - `ui.bring_forward`：UI 操作（`transport._ui`、`ensure_frame`、`select_menu`）开始前，页面不是 visible 就先 bring_to_front。
+  - `ui.select_menu`：点到菜单叶子之前失败的，标成 unsent（没有打开报表，什么都没发）。引导阶段的 unsent 失败不再包装成 site_data 隔离，按 `_hold_unsent` 冷却 600 秒，连续第 3 次才长期暂停。
+  - `engine._page_operation_failed`：UI 页面操作连续 3 次失败（不分报表）就封锁全省（`page_operations_failing`），保活照常，不再每次等 45 秒把预算耗光。
+  - `ledger.attempts_since_handoff`：已证明没发出（not_sent）的尝试不计入预算。
+  - 新命令 `review-unsent <ids> --approval`（用户批准后才能用）：核实过的菜单导航失败（`NAVIGATION_CODES`、没有 HTTP 状态），以及进程被停时还在导航的 pending 尝试，改记为 not_sent，被隔离的任务回到待采。理由：某一天的请求只有在菜单走完、填好日期、点了"查询"之后才会发出，菜单失败时这一步还没到。
+  - `release-discovery --all`：一次解除所有被暂停的选项发现。
+- 测试：前台检查；叶子之前失败即 unsent（真浏览器）；连续 3 次页面失败封锁全省，期间不隔离、不消耗；review-unsent 的接受条件与拒绝。全套 515 项（安徽 venv、山西 venv）和真浏览器 19 项通过。

@@ -807,6 +807,7 @@ class PageTransport:
         raise Fault(code, "local")
 
     async def _ui(self, request: dict) -> Response:
+        await ui.bring_forward(self.page)
         frame = await ui.ensure_frame(self.page, request, self.timeout)
         if request["action"] in ("list", "record"):
             try:

@@ -418,12 +418,33 @@ def cmd_release_discovery(province: Province, args) -> None:
         raise ValueError("approval_required")
     state = StateStore(province.instance() / "state")
     holds = state.read("discovery_holds", {}) or {}
-    if args.dataset not in holds:
+    names = sorted(holds) if getattr(args, "all", False) else [args.dataset]
+    if (getattr(args, "all", False) and args.dataset) or not names or any(n not in holds for n in names):
         raise ValueError("no_discovery_hold")
-    released = holds.pop(args.dataset)
+    released = {name: holds.pop(name)["reason"] for name in names}
     state.write("discovery_holds", holds)
-    state.event("options_discovery_released", dataset=args.dataset, reason=released["reason"], approval=args.approval)
-    _print({"province": province.id, "released": args.dataset, "reason": released["reason"]})
+    for name, reason in released.items():
+        state.event("options_discovery_released", dataset=name, reason=reason, approval=args.approval)
+    _print({"province": province.id, "released": released})
+
+
+def cmd_review_unsent(province: Province, args) -> None:
+    """Offline, user-approved: reviewed page-menu failures (and one stopped mid-navigation) consume nothing."""
+    ids = []
+    for part in args.attempts.split(","):
+        low, _, high = part.partition("-")
+        ids += list(range(int(low), int(high or low) + 1))
+    if not ids or len(ids) > 1000:
+        raise ValueError("attempt_range_invalid")
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        reopened = ledger.review_unsent(ids, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("navigation_reviewed_unsent", attempts=",".join(map(str, ids)),
+                                                    count=len(reopened), approval=args.approval)
+    _print({"province": province.id, "not_sent": [r[0] for r in reopened],
+            "tasks": [{"dataset": r[1], "period": r[2], "scope": r[3]} for r in reopened]})
 
 
 def cmd_extend_scope(province: Province, args) -> None:
@@ -656,8 +677,13 @@ def main(argv: list[str] | None = None) -> int:
                                   help="offline: user-approved, an answer saved before its day was published waits again")
         re_.add_argument("attempt", type=int)
         re_.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        ru = commands.add_parser("review-unsent",
+                                 help="offline: user-approved, reviewed page-menu failures (or one stopped mid-navigation) consume nothing")
+        ru.add_argument("attempts", help="attempt ids, e.g. 3-16 or 3,4,17")
+        ru.add_argument("--approval", required=True, help="the user's approval, verbatim")
         rdisc = commands.add_parser("release-discovery", help="after review: a held dropdown discovery runs again")
-        rdisc.add_argument("dataset")
+        rdisc.add_argument("dataset", nargs="?")
+        rdisc.add_argument("--all", action="store_true", help="every held discovery")
         rdisc.add_argument("--approval", required=True, help="the user's approval, verbatim")
         es = commands.add_parser("extend-scope", help="offline: add a user-approved collection order and daily seeding")
         es.add_argument("--plan", required=True, type=lambda v: __import__("pathlib").Path(v),
@@ -728,7 +754,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "release-discovery", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-discovery", "review-unsent", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -766,6 +792,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_release_early(province, args)
             elif args.command == "release-discovery":
                 cmd_release_discovery(province, args)
+            elif args.command == "review-unsent":
+                cmd_review_unsent(province, args)
             elif args.command == "extend-scope":
                 cmd_extend_scope(province, args)
             elif args.command == "import-legacy-manifest":

@@ -1059,6 +1059,62 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.transport.sent), 2, "both days of the working report, back to back")
         self.assertLessEqual(max(sleeps[:2]), 1, "no idle round while one report can still send")
 
+    async def test_page_operations_failing_in_a_row_stop_the_province_and_unsent_ones_cost_nothing(self):
+        """Anhui 2026-11-01 12:07: 15 menu timeouts of 45 s each spent the acceptance budget."""
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        def ui(name):
+            value = dataset(name, start=TODAY, response="json")
+            value["request"] = {"transport": "ui", "frame": "infoCode=" + name, "action": "query", "path": "/px-test/" + name,
+                                "fields": [{"kind": "date", "placeholder": "选择日期", "value": "{date}"}],
+                                "menu": ["现货市场", name]}
+            return value
+        province = make_province(tmp.path, [ui("aa"), ui("bb"), ui("cc")], policy={"response_interval_seconds": 1})
+        self.transport = FakeTransport(self.clock)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        self.transport.queue = [Fault("menu_navigation_timeout", "local", unsent=True) for _ in range(5)]
+        for _ in range(6):
+            await engine.tick()
+            self.clock.advance(2)
+        self.assertEqual(len(self.transport.sent), 3, "the third failure in a row stops it")
+        self.assertEqual(engine.state.blocked()["reason"], "page_operations_failing")
+        self.assertTrue(engine.state.blocked()["keepalive_allowed"], "the login is still renewed")
+        self.assertEqual({engine.ledger.task(n, TODAY)["status"] for n in ("aa", "bb", "cc")}, {"pending"},
+                         "unsent: nothing isolated, nothing consumed")
+        self.assertIsNone(engine.state.read("isolated_items"))
+        self.assertEqual(engine.ledger.attempts_since_handoff(), 0, "no handoff here; see the ledger test for the budget")
+
+    def test_reviewed_navigation_failures_and_one_stopped_mid_navigation_consume_nothing(self):
+        from pmos.contracts import TaskIdentity
+        from pmos.ledger import Ledger
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        ledger = Ledger(tmp.path / "ledger.sqlite3")
+        self.addCleanup(ledger.close)
+        ids = []
+        for day, outcome, reason in ((TODAY, "failed", "menu_navigation_timeout"), (PREVIOUS_DAY, None, None),
+                                     ("2026-10-01", "failed", "select_value_changed_by_reading")):
+            ledger.seed("load", [day], "")
+            identity = TaskIdentity("anhui", "anhui-production", "load", {"kind": "day", "label": day}, {"日期": day},
+                                    operation="query")
+            attempt = ledger.begin("collect", "load", day, "", identity=identity)
+            if outcome:
+                ledger.finish(attempt, outcome, reason=reason)
+                ledger.settle_task("load", day, "failed", reason="isolated:bootstrap_" + reason)
+            ids.append(attempt)
+        with self.assertRaises(ValueError):
+            ledger.review_unsent(ids, "用户原话")             # the third is no navigation failure: nothing changes
+        self.assertEqual(ledger.db.execute("SELECT outcome FROM attempts WHERE id=?", (ids[0],)).fetchone()[0], "failed")
+        self.assertEqual(len(ledger.review_unsent(ids[:2], "用户原话")), 2)
+        self.assertEqual([r[0] for r in ledger.db.execute("SELECT outcome FROM attempts ORDER BY id")],
+                         ["not_sent", "not_sent", "failed"])
+        self.assertEqual(ledger.task("load", TODAY)["status"], "pending")
+        self.assertFalse(ledger.unsettled())
+        self.assertFalse(ledger.consumed("load", TODAY))
+
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost
         engine = self.engine()
