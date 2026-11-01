@@ -390,6 +390,17 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
                          {"select_label": "断面名称", "select_option": "不存在的线", "options_listed": 3})
         self.assertEqual(await self.page.evaluate("window.queries"), 0, "查询 was never clicked")
 
+    async def test_a_template_prime_chooses_the_first_listed_option(self):
+        """Anhui 2026-11-01 14:49: the task's own option is not listed; any listed one shows the request."""
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/select_page.html")
+        await self.page.evaluate("document.getElementById('pick').value = ''")
+        await ui.fill(self.page.main_frame, {"kind": "select", "label": "断面名称", "value": "不存在的线",
+                                             "any_listed": True}, 5)
+        self.assertEqual(await self.page.input_value("#pick"), "甲线")
+        self.assertEqual(await self.page.evaluate("window.queries"), 0, "filling never queries")
+        self.assertEqual(Site.received, [])
+
     async def test_a_filterable_select_is_judged_by_its_value_after_it_has_settled(self):
         """Anhui 2026-11-01 11:31: the input was blank for a tick after Escape (select_value_changed_by_reading)."""
         request = {"transport": "ui", "action": "options", "frame": "/filterable_select_page.html",

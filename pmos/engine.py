@@ -129,6 +129,7 @@ class Engine:
         self.clock = clock
         self._recycle_checked = float("-inf")
         self._primed: dict[str, float] = {}
+        self._prime_due: dict[str, dict] = {}   # dataset -> the task whose bootstrap option is not listed
         self._network_streak = 0
         self.decode_response = decode_response
         self.account_alias = account_alias
@@ -387,6 +388,10 @@ class Engine:
                 continue
             if spec.request["transport"] == "fetch" and not task["scope"].startswith("f"):
                 built = spec.build(task["period"], spec.scope_values(task["scope"]))
+                if spec.id in self._prime_due:
+                    if not self._ready(built):
+                        return {"dataset": spec.id, "prime": True}, missing
+                    self._prime_due.pop(spec.id)
                 if self._sendable(built) is None:
                     if spec.request.get("prime") and self.clock() - self._primed.get(spec.id, float("-inf")) >= 600:
                         return {"dataset": spec.id, "prime": True}, missing
@@ -934,6 +939,8 @@ class Engine:
                 # Like the Shanxi coordinator's deferred scope: no request was
                 # sent, the item stays pending, its dataset pauses for review
                 # and the rest (keepalive included) continues.
+                if fault.unsent and self._option_prime(current, fault):
+                    return 0.2
                 if fault.unsent:
                     self._hold_unsent(current["dataset"], fault.code, fault.detail)
                 else:
@@ -999,16 +1006,49 @@ class Engine:
                          not_text_valued=len(found) - len(usable))
         return {"dataset": spec.id, "period": period, "listed": len(found), "new": new}
 
+    def _option_prime(self, task: dict, fault: Fault) -> bool:
+        """A bootstrap whose option today's dropdown does not list: prime the template with a listed one.
+
+        Anhui 2026-11-01 14:49 (intertie_actual_huan_i, 国调.古泉换流站/1100kV.极11换流器): the
+        page lists 15 of the report's 44 options, so the bootstrap of an old option can never
+        choose it, and the report cooled down until it stayed held. The legacy worker replays
+        such options by name from a template; PMOS now does the same: one page query with the
+        first listed option shows the page's own request (a sample, never the task's result),
+        then the task is replayed and its answer, empty included, is recorded as it is. At most
+        once per 10 minutes per report; otherwise the usual cool-down.
+        """
+        spec = self.province.datasets().get(task["dataset"])
+        if (fault.code != "select_option_missing" or spec is None or spec.request.get("transport") != "fetch"
+                or not spec.request.get("bootstrap") or spec.request.get("prime")
+                or self.clock() - self._primed.get(spec.id, float("-inf")) < 600):
+            return False
+        self._prime_due[spec.id] = {"period": task["period"], "scope": task["scope"]}
+        self.state.event("bootstrap_option_not_listed", dataset=spec.id, period=task["period"], scope=task["scope"],
+                         prime="first_listed_option", **(fault.detail or {}))
+        return True
+
+    def _option_prime_request(self, spec: DatasetSpec, task: dict) -> dict:
+        """The task's bootstrap with every dropdown set to its first listed option instead."""
+        bootstrap = spec.build(task["period"], spec.scope_values(task["scope"]))["bootstrap"]
+        fields = [{**f, "any_listed": True} if f.get("kind") == "select" else f for f in bootstrap.get("fields", [])]
+        return {**bootstrap, "fields": fields}
+
     async def _prime_template(self, spec: DatasetSpec) -> float:
         """``request.prime``: one page query of an already collected record shows the page's own request.
 
         A whole-day request (every option blank) has no UI of its own; as the
         Anhui legacy worker (_bootstrap_candidate / needs_template first), a
         covered record is fetched once through the page. Its answer is kept as
-        a sample, never as a task's result; at most once per 10 minutes.
+        a sample, never as a task's result; at most once per 10 minutes. A
+        report whose task option is not listed primes with a listed one
+        (_option_prime).
         """
         self._primed[spec.id] = self.clock()
-        prime = spec.request["prime"]
+        due = self._prime_due.pop(spec.id, None)
+        if due is not None:
+            prime = {"period": due["period"], "request": self._option_prime_request(spec, due)}
+        else:
+            prime = spec.request["prime"]
         try:
             result = await self.request("sample", {**prime["request"], "bootstrapping": True}, {"kind": "json"},
                                         dataset=spec.id, period=prime["period"], scope=PRIME_SCOPE,
@@ -1016,6 +1056,8 @@ class Engine:
         except Fault as fault:
             if fault.code == "spacing_not_elapsed":
                 self._primed.pop(spec.id, None)      # nothing was tried
+                if due is not None:
+                    self._prime_due[spec.id] = due
             elif fault.category == "local":
                 # The page could not be driven (Anhui 13:14: select_option_missing): only this
                 # report cools down; the province goes on.

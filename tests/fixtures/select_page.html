@@ -17,6 +17,7 @@ const drop = document.getElementById('drop');
 for (const [text, value] of options) {
   const item = document.createElement('div'); item.className = 'el-select-dropdown__item'; item.textContent = text;
   item.__vue__ = {value}; drop.append(item);
+  item.onclick = () => { pick.value = text; drop.classList.add('hidden'); };
 }
 const pick = document.getElementById('pick');
 pick.onclick = () => drop.classList.remove('hidden');

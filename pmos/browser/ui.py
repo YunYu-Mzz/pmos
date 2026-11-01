@@ -393,7 +393,7 @@ async def _field(frame, field: dict):
 async def fill(frame, field: dict, timeout: float) -> None:
     locator = await _field(frame, field)
     value = field["value"]
-    if await locator.input_value() == value:
+    if not field.get("any_listed") and await locator.input_value() == value:
         return
     if field.get("kind", "date") == "date":
         await locator.fill(value)
@@ -401,15 +401,24 @@ async def fill(frame, field: dict, timeout: float) -> None:
         await locator.press("Tab")
     elif field["kind"] == "select":
         await locator.click()
-        option = frame.locator(".el-select-dropdown__item:visible").filter(
-            has_text=re.compile(r"^\s*" + re.escape(value) + r"\s*$"))
+        listed = frame.locator(".el-select-dropdown__item:visible")
         deadline = asyncio.get_running_loop().time() + min(timeout, 10)
+        if field.get("any_listed"):
+            # A template prime (Anhui 2026-11-01 14:49): only the page's own request is wanted, and the
+            # task's option is not in today's list, so the first listed option serves.
+            while await listed.count() == 0 and asyncio.get_running_loop().time() <= deadline:
+                await asyncio.sleep(0.1)
+            value = ((await listed.first.text_content()) or "").strip() if await listed.count() else ""
+            if not value:
+                raise Fault("select_option_missing", "local", detail={
+                    "select_label": field.get("label") or field.get("placeholder"), "select_option": None,
+                    "options_listed": await listed.count(), "matches": 0})
+        option = listed.filter(has_text=re.compile(r"^\s*" + re.escape(value) + r"\s*$"))
         while await option.count() != 1:
             if asyncio.get_running_loop().time() > deadline:
-                listed = await frame.locator(".el-select-dropdown__item:visible").count()
                 raise Fault("select_option_missing", "local", detail={
                     "select_label": field.get("label") or field.get("placeholder"), "select_option": value,
-                    "options_listed": listed, "matches": await option.count()})
+                    "options_listed": await listed.count(), "matches": await option.count()})
             await asyncio.sleep(0.1)
         await option.click()
     else:

@@ -1277,6 +1277,76 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(_lost_or_network(TimeoutError("timeout")).code, "network_error")
 
 
+class UnlistedBootstrapOption(unittest.IsolatedAsyncioTestCase):
+    """Anhui 2026-11-01 14:49: intertie_actual_huan_i's old option is not in today's dropdown of 15."""
+
+    class Page(FakeTransport):
+        """The page lists other options only; a query with a listed one shows the request template."""
+        capture = True
+
+        async def send(self, request):
+            selects = [f for f in request.get("fields", []) if f.get("kind") == "select"]
+            if request["transport"] == "ui" and selects and not selects[0].get("any_listed"):
+                self.sent.append(request)
+                raise Fault("select_option_missing", "local", unsent=True, detail={
+                    "select_label": "联络线名称", "select_option": selects[0]["value"], "options_listed": 15, "matches": 0})
+            if request["transport"] == "ui" and self.capture:
+                self.unready = set()
+            return await super().send(request)
+
+    def engine(self, tmp):
+        self.clock = Clock()
+        value = dataset("lines", start=TODAY, response="json")
+        value["request"] = {"transport": "fetch", "method": "POST", "path": "/px-test/lines",
+                            "template_body_set": {"businessTime": "{date}", "genName": "{scope[联络线名称]}"},
+                            "bootstrap": {"transport": "ui", "frame": "infoCode=lines", "menu": ["现货市场", "lines"],
+                                          "action": "query", "path": "/px-test/lines", "method": "POST",
+                                          "fields": [{"kind": "date", "placeholder": "选择日期", "value": "{date}"},
+                                                     {"kind": "select", "label": "联络线名称", "value": "{scope[联络线名称]}"}]}}
+        value["scopes"] = [{"联络线名称": "国调.古泉换流站/1100kV.极11换流器"}]
+        province = make_province(tmp.path, [value], policy={"response_interval_seconds": 1})
+        answer = Response(200, "application/json", json.dumps({"status": 0, "data": [{"v": 1}]}).encode())
+        self.transport = self.Page(self.clock, default=answer)
+        self.transport.unready = {"/px-test/lines"}
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        return engine
+
+    async def ticks(self, engine, n):
+        for _ in range(n):
+            await engine.tick()
+            self.clock.advance(2)
+
+    async def test_a_listed_option_primes_the_template_then_the_task_is_replayed_by_name(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        engine = self.engine(tmp)
+        await self.ticks(engine, 3)
+        bootstrap, prime, replay = self.transport.sent
+        self.assertEqual(bootstrap["fields"][1]["value"], "国调.古泉换流站/1100kV.极11换流器")
+        self.assertTrue(prime["fields"][1]["any_listed"], "the prime chooses whatever the dropdown lists")
+        self.assertEqual(prime["fields"][0]["value"], TODAY, "for the task's own day")
+        self.assertEqual(replay["transport"], "fetch")
+        self.assertEqual(replay["template_body_set"], {"businessTime": TODAY, "genName": "国调.古泉换流站/1100kV.极11换流器"})
+        self.assertEqual(engine.ledger.db.execute("SELECT status FROM tasks").fetchone()[0], "saved")
+        self.assertEqual(engine.state.read("dataset_holds", {}) or {}, {}, "no cool-down")
+        self.assertIsNone(engine.state.blocked())
+        samples = engine.ledger.db.execute("SELECT kind, scope FROM attempts WHERE kind='sample'").fetchall()
+        self.assertEqual([tuple(r) for r in samples], [("sample", "template_prime")], "the prime is a sample, not the task")
+
+    async def test_a_prime_that_does_not_help_cools_the_report_down_as_before(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        engine = self.engine(tmp)
+        self.transport.capture = False
+        await self.ticks(engine, 4)
+        self.assertEqual(len(self.transport.sent), 3, "bootstrap, one prime, bootstrap again: no loop")
+        hold = engine.state.read("dataset_holds")["lines"]
+        self.assertEqual((hold["reason"], hold["streak"]), ("unsent:select_option_missing", 1))
+        self.assertEqual(engine.ledger.db.execute("SELECT status FROM tasks").fetchone()[0], "pending")
+
+
 class MidnightAndUnsent(unittest.IsolatedAsyncioTestCase):
     """Liaoning 2026-11-01 00:03: the midnight SSO refresh met a page operation; nothing was sent, a lane paused 1 h."""
 
