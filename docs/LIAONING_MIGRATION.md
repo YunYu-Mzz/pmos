@@ -148,3 +148,39 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
 - **切换工具：** `tools/liaoning_cutover.py`。
   - `plan` 只读；
   - `apply` 要求 liaoning-crawler 已停、liaoning-browser-owner 还在运行；它建新台账，写 browser.json（指向浏览器属主的 profile，并开启进程核对）和 SHA256SUMS；保活用 system_load。
+
+## 报表引擎三条线（后补；用户 11-01："先切 40 个来源，引擎后补"）
+
+旧系统的做法，由辽宁会话 11-01 只读核对，路径都相对于 `lncrawler/`。
+
+| 车道 | 数据集 | 名称 | 页面源 | 打开方式 |
+|---|---|---|---|---|
+| engine068 | sitewide_e38351fe661a034a | 非市场机组总出力 | lnsnxh_fschjzsjcl | 从门户打开 |
+| engine024 | sitewide_0353290a57044c3e | 除水电外非市场发电总加预测 | lnsnxh_csdwfscfdzjyc | 私有引擎，靠映射打开 |
+| engine033 | nonmarket_generation_forecast | 非市场机组总出力预测 | lnsnxh_fscjzzclyc | 私有引擎，靠映射打开（不在 manifest 里） |
+
+- **打开报表页：** 新开一页，共 3 次请求（文档、finereport.js、finereport.chart.js），两个脚本都核对 sha256（`engine_bootstrap_068.LIBRARIES`）。
+  - 068：目标地址由 `engine_bootstrap_contract.mapped_target` 根据菜单回执算出。
+  - 024/033：地址取自映射槽位 `window.__lnIsolatedEngineMappings20261029[source]`，要求 path 为 `/px-basesystem-reportform/decision/view/form`，查询参数只有 ref_c、ref_t、viewlet。
+  - 然后执行 BOOT（默认日期 2026-10-09，单位"单位:MW"），再执行 `server_engine_collection.INSTALL_QUEUE`：把 FR.ajax 改为排进队列；form_getsource、js_log、info/collect 不发出。
+- **映射（只有私有引擎）：** `engine_mapping_lane`。用 webpack 的 require 调原生 SDK `queryIpSpotgoodsInfoBytableName(source)`，发 1 次 POST 到 `/px-settlement-infpubquery/spotgoods/queryIpSpotgoodsInfoBytableName`；返回的地址只存在浏览器里。槽位已有地址时，映射会直接拒绝，所以重新映射前要先在本地删掉这个槽位（`DROP_MAPPING`）。
+- **取数（`EngineCollection.dispatch`）：** 一天 3 个阶段，每个阶段放行队列里恰好一个请求，path 都是 `/px-basesystem-reportform/decision/view/form`：
+  - parameters_d（fr_dialog，POST）：答复必须是 `{"status":"success"}`；
+  - load_content（fr_form，GET）：答复以 `{` 开头并含 `"elementCases"`；
+  - load_report_content（fr_form，POST）：`daily_values` 要求 currentPage=1、totalPage=1、htmlTag 是 12 行 16 列的表，得到 96 个点。表格只有 `[[''],['']]` 时是空白报表，属于还没发布，按"未采"处理。
+  - 发送前先设参数：`_g().parameterEl.getWidgetByName('日期').setValue(日期)`，再 `parameterCommit()`。
+- **会话结束：** parameters_d 返回 HTTP 200 的 FineReport 报错页（约 2.7 KB，含 `Dec-Session_Lifecycle_End`）。
+  - 同一会话里，闲置 11.5 分钟以内从没失败，65.7 分钟以上全部失败。
+  - 旧系统超过 600 秒没有请求就重开：先关旧页，私有引擎再重新映射，然后重新打开报表页。
+  - 兜底：不是期望的答复体就暂停。
+- **身份：** 一天一条。
+  - e38351fe、0353290a：键与普通队列相同，`liaoning:2026:expanded:<数据集>:<sha>`，参数 `{"mdate"}`。
+  - 033：`nonmarket_generation_forecast:engine_history:<日期>`。
+  - 结果记在 `state/server_engine_collection_20261023/<数据集>/queue.json` 的 outcomes 里。每个阶段有自己的操作目录，导入时按 issued.json 里的 `job.key` 归到同一天。
+- **033 和电力日报：** 033 与电力日报 power_reports 共用这个数据集，电力日报有 152 天（05-18～10-16），引擎有 153 天，合起来是全年。
+- **PMOS 实现要点：**
+  - 新开一个属于 PMOS 的引擎页；
+  - 用页面自己的 FR 排队，逐个放行三个阶段并核对答复；
+  - 闲置超过 10 分钟先重开；
+  - 导入旧引擎队列作为墓碑；
+  - 从 11-02 起补采。
