@@ -36,7 +36,7 @@
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_rqjzyjh_7_6",
-    "note": "probed 2026-11-01 19:2x: mapped, a form with 日期. Its 机组名称 stays blank: whether that means all units is what the trial shows. The table's shape is unknown until a try-report.",
+    "note": "a blank 机组名称 answers a blank page; the dropdown depends on memberId: 终计划 listed [] on 2026-11-01, 预计划's answer was mistaken for an image. If this account has no units, there is nothing to collect.",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -76,6 +76,11 @@
       "at": "2026-11-01T20:05:00+08:00",
       "event": "combos_to_read",
       "note": "a blank choice answers a blank page, or the form has dropdowns: read their options next"
+    },
+    {
+      "at": "2026-11-01T20:25:00+08:00",
+      "event": "probed",
+      "note": "dropdown depends on memberId"
     }
   ]
 }

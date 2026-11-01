@@ -621,11 +621,12 @@ class RealTrial(unittest.TestCase):
         specs = [s for s in REAL.datasets().values() if s.request.get("transport") == "finereport" and s.status == "candidate"]
         self.assertEqual(len(specs), self.FINEREPORT - 4, "4 answered their samples")
         self.assertEqual({s.request["site_menu"]["route"] for s in specs}, {"spotgoodsSum"})
-        self.assertEqual(len([s for s in specs if s.request.get("form")]), 3, "the three with dropdowns to read")
+        self.assertEqual(len([s for s in specs if (s.request.get("form") or {}).get("combos")]), 3, "the three with dropdowns to read")
+        self.assertEqual(len([s for s in specs if (s.request.get("form") or {}).get("follow_day")]), 6, "the five .cpt and 日前容量")
 
     def test_the_nine_per_option_reports_read_their_dictionary_without_a_selection(self):
         specs = REAL.datasets()
-        reading = {name for name, s in specs.items() if s.source.get("dictionary") and s.scopes}
+        reading = {name for name, s in specs.items() if s.source.get("dictionary") and s.scopes and s.status != "candidate"}
         self.assertEqual(reading, {"sitewide_7d2f4e6e4598aba8", "sitewide_39c86b17616d219e", "sitewide_1c01651cb1051d47",
                                    "sitewide_931ac1f25ce9e62a", "sitewide_46fa5856d5315e4e", "sitewide_e6a2dcfefa4e7391",
                                    "realtime_node_price", "sitewide_0400f0e45de22dcd", "dayahead_power_and_average_price"})

@@ -41,7 +41,7 @@
       ],
       "dimension_fields": {}
     },
-    "note": "three dimensions: date, unit, type (legacy cascading_061). Options first.",
+    "note": "its unit dictionary listed nothing on 2026-11-01: given up",
     "dictionary": {
       "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReportDicName061",
       "call": "initDataDicName",
@@ -56,6 +56,11 @@
       "at": "2026-11-01T19:20:00+08:00",
       "event": "prepared_for_trial",
       "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
+    },
+    {
+      "at": "2026-11-01T20:25:00+08:00",
+      "event": "given_up",
+      "note": "its unit dictionary listed nothing on 2026-11-01: given up"
     }
   ]
 }

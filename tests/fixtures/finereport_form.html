@@ -13,7 +13,8 @@ window.FR = {servletURL: url, ajax(o) {
 let date = '2026-10-09';
 const unit = {getValue: () => new URLSearchParams(location.search).get('unit') || '单位:MW'};
 // lnsnxh_b has a dropdown that loads its options when opened.
-const combo = {options: {type: 'combo'}, getValue: () => '', onTriggerClick() { FR.ajax({type: 'POST', data: {op: 'fr_dialog', cmd: 'combo_items', date}}); }};
+// The form's own image comes from the same path: only the queued request's answer is the dropdown's.
+const combo = {options: {type: 'combo'}, getValue: () => '', onTriggerClick() { fetch(url + '?op=resource&resource=loading.gif'); FR.ajax({type: 'POST', data: {op: 'fr_dialog', cmd: 'combo_items', date}}); }, setValue() {}};
 const widgets = location.search.includes('lnsnxh_b') ? {unit, 机组名称: combo} : {unit};
 const form = {parameterEl: {getWidgetByName: n => widgets[n] || (n.includes('日期') ? {setValue(v) { date = v; }, getValue: () => date} : null),
                             name_widgets: widgets},

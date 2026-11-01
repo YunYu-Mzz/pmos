@@ -45,6 +45,13 @@ class _Cells(HTMLParser):
             self.cell.append(data)
 
 
+def html_rows(html: str) -> list[list[str]]:
+    """The non-blank rows of a report page's HTML."""
+    parser = _Cells()
+    parser.feed(html)
+    return [row for row in parser.rows if any(row)]
+
+
 def table_rows(body) -> list[list[str]]:
     """The one page of a FineReport table, any shape: its non-blank rows, [] for the site's blank report.
 
@@ -55,9 +62,7 @@ def table_rows(body) -> list[list[str]]:
         raise ValueError("finereport_table_pagination_changed")
     if body["currentPage"] != 1 or body.get("totalPage") not in (0, 1):
         raise ValueError("finereport_table_more_pages")
-    parser = _Cells()
-    parser.feed(body["htmlTag"])
-    return [row for row in parser.rows if any(row)]
+    return html_rows(body["htmlTag"])
 
 
 def daily_values(body, *, text: bool = False) -> list[dict]:

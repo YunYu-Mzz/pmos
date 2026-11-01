@@ -12,7 +12,7 @@
     "transport": "finereport",
     "method": "POST",
     "path": "/px-basesystem-reportform/decision/view/form",
-    "frame": "sn_xhpl_dasm_corridor_7_7_1",
+    "frame": "sn_xhpl_dasm_corridor_7_7_1.frm",
     "site_menu": {
       "source": "sn_xhpl_dasm_corridor_7_7_1",
       "route": "spotgoodsSum"
@@ -22,13 +22,19 @@
     },
     "date_field": "queryParam.mdate",
     "form": {
-      "date_widget": "交易日期",
+      "date_widget": "日期",
       "unit": null,
       "combos": [
         "通道名称",
         "数据类型"
       ],
-      "probe_date": "2026-10-25"
+      "probe_date": "2026-10-25",
+      "follow_day": "2026-10-25",
+      "follow_fields": {
+        "交易日期": "2026-10-25",
+        "通道名称": "京津唐冀北",
+        "数据类型": "正向可用"
+      }
     }
   },
   "response": {
@@ -37,7 +43,7 @@
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_dasm_corridor_7_7_1",
-    "note": "denied 40302 on 2026-10-16. Its form is unknown: probe-report first; request and response here are placeholders."
+    "note": "probed 2026-11-01: two dates and two dropdowns (通道名称 many, 数据类型 two). One combination followed before any spec."
   },
   "history": [
     {
@@ -49,6 +55,11 @@
       "at": "2026-11-01T20:05:00+08:00",
       "event": "combos_to_read",
       "note": "a blank choice answers a blank page, or the form has dropdowns: read their options next"
+    },
+    {
+      "at": "2026-11-01T20:25:00+08:00",
+      "event": "probed",
+      "note": "dropdowns read"
     }
   ]
 }

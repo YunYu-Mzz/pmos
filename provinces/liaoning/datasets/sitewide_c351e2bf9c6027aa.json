@@ -5,7 +5,8 @@
   "period": {
     "kind": "day",
     "start": "2026-01-01",
-    "end": "today"
+    "end": "today",
+    "lag_days": 2
   },
   "request": {
     "transport": "component",
@@ -16,8 +17,9 @@
     "component": "pdblnReport075",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{date}",
-      "queryParam.mtype": "保供省间支援"
+      "queryParam.mtype": "{scope[mtype]}"
     },
     "site_menu": {
       "source": "lnsnxh_tfdlfjqk",
@@ -40,7 +42,19 @@
       "set": {},
       "method": "GET"
     },
-    "note": "the form's dictionary call posts {} (legacy component source), so it is not bound to a date"
+    "note": "options by its dictionary 2026-11-01 (3), asked by GET, not bound to a date.",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {
+        "queryParam.mtype": "mtype"
+      }
+    },
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -57,6 +71,22 @@
       "at": "2026-11-01T20:05:00+08:00",
       "event": "dictionary_method",
       "note": "r15: the page asked its dictionary by GET and the gate stopped it"
+    },
+    {
+      "at": "2026-11-01T20:25:00+08:00",
+      "event": "options_read",
+      "note": "三个选项 from the form's dictionary"
+    }
+  ],
+  "scopes": [
+    {
+      "mtype": "保供省间支援"
+    },
+    {
+      "mtype": "调峰省间支援"
+    },
+    {
+      "mtype": "辅助调峰跨省交易"
     }
   ]
 }

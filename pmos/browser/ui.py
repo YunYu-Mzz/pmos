@@ -187,6 +187,8 @@ def frames_matching(page, needle: str) -> list:
     return [frame for frame in page.frames if needle in frame.url and not getattr(frame, "is_detached", lambda: False)()]
 
 
+MENU_WAIT_SECONDS = 20
+
 # Liaoning: a report opens from the column page's own menu component, as the
 # legacy worker's OPEN_REPORT did (chAside.handleNodeClick on the decrypted
 # menu entry with this route, and infoCode when given); the page creates the frame itself.
@@ -231,11 +233,18 @@ async def ensure_frame(page, request: dict, timeout: float):
     await bring_forward(page)
     loop = asyncio.get_running_loop()
     if request.get("site_menu"):
-        try:
-            await page.evaluate(_SITE_MENU_JS, request["site_menu"])
-        except Exception as exc:
-            raise Fault("site_menu_entry_missing" if "site_menu_entry_missing" in str(exc) else "site_menu_missing",
-                        "local") from None
+        # A page just opened has no menu yet (Liaoning 2026-11-01 20:11:42: one second after a recycle a report
+        # was paused for a missing menu entry): it gets its time before an absent entry is believed.
+        menu_deadline = loop.time() + min(timeout, MENU_WAIT_SECONDS)
+        while True:
+            try:
+                await page.evaluate(_SITE_MENU_JS, request["site_menu"])
+                break
+            except Exception as exc:
+                if loop.time() >= menu_deadline:
+                    raise Fault("site_menu_entry_missing" if "site_menu_entry_missing" in str(exc) else "site_menu_missing",
+                                "local") from None
+                await asyncio.sleep(0.5)
         deadline = loop.time() + timeout
         while loop.time() < deadline:
             found = frames_matching(page, needle)

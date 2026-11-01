@@ -16,7 +16,7 @@ import time
 from urllib.parse import parse_qs, urlsplit
 
 from ..faults import Fault
-from ..finereport import MAPPING_PATH, PATH, SESSION_END, STAGES
+from ..finereport import MAPPING_PATH, PATH, SESSION_END, STAGES, html_rows
 from ..validate import Response
 from . import ui
 
@@ -91,6 +91,19 @@ _COMBO_JS = """x => { const f = _g(), date = x.date_widget && f.parameterEl.getW
   return methods; }"""
 
 
+# A probe's one day: every field set, then the form's own way of asking (a .cpt report may only have its button).
+_FILL_COMMIT_JS = """x => { const f = _g();
+  for (const [name, value] of Object.entries(x)) {
+    const w = f.parameterEl.getWidgetByName(name);
+    if (!w) throw new Error('widget_missing');
+    w.setValue(value);
+  }
+  if (typeof f.parameterCommit === 'function') { f.parameterCommit(); return 'parameterCommit'; }
+  const button = f.parameterEl.getWidgetByName('SEARCH');
+  if (button && button.fireEvent) { button.fireEvent('click'); return 'search_button'; }
+  throw new Error('no_way_to_ask'); }"""
+
+
 def _unsent(code: str, detail: dict | None = None) -> Fault:
     return Fault(code, "local", unsent=True, detail=detail)
 
@@ -146,6 +159,63 @@ async def open_report(page, request: dict, timeout: float, last: dict):
     return frame
 
 
+def _answers_stage(response, frame, stage: dict) -> bool:
+    """The answer to this very queued request: one path also serves the form's images and scripts (a GIF, 2026-11-01)."""
+    try:
+        request = response.request
+        if response.frame != frame or urlsplit(response.url).path != stage["path"] or request.method != stage["method"]:
+            return False
+        sent = {**parse_qs(urlsplit(response.url).query), **parse_qs(request.post_data or "")}
+    except Exception:
+        return False
+    return all(stage.get(key) is None or sent.get(key, [None])[0] == stage[key] for key in ("op", "cmd"))
+
+
+def _summary(raw: bytes) -> dict:
+    """What an answer looks like, for a person to write a spec from. Nothing here is saved as data."""
+    found = {"bytes": len(raw)}
+    try:
+        value = json.loads(raw)
+    except ValueError:
+        return {**found, "head": raw[:800].decode("utf-8", "replace")}
+    if not isinstance(value, dict):
+        return {**found, "json": type(value).__name__, "head": raw[:800].decode("utf-8", "replace")}
+    found.update(keys=list(value)[:12], currentPage=value.get("currentPage"), totalPage=value.get("totalPage"))
+    if isinstance(value.get("htmlTag"), str):
+        rows = html_rows(value["htmlTag"])
+        found.update(rows=len(rows), cols=sorted({len(r) for r in rows}), sample=[[c[:16] for c in r[:8]] for r in rows[:4]])
+    return found
+
+
+async def _follow(page, frame, form: dict, expect, timeout: float) -> dict:
+    """One day asked as the form asks it, each request seen and released on its own: its stages, and what the last one answers."""
+    fields = {form.get("date_widget", DATE_WIDGET): form["follow_day"], **(form.get("follow_fields") or {})}
+    try:
+        how = await frame.evaluate(_FILL_COMMIT_JS, fields)
+    except Exception as exc:
+        return {"error": str(exc)[:160]}
+    loop = asyncio.get_running_loop()
+    stages, last = [], None
+    while len(stages) < 8:
+        deadline = loop.time() + (timeout if not stages else 3)
+        while not (queue := await frame.evaluate(_PEEK_JS)) and loop.time() < deadline:
+            await asyncio.sleep(0.1)
+        if not queue:
+            break
+        stage = queue[0]
+        try:
+            async with expect(page, "response", lambda r, s=stage: _answers_stage(r, frame, s), timeout=timeout * 1000) as captured:
+                await frame.evaluate(_RELEASE_JS)
+            answer = await captured.value
+            raw = await answer.body()
+        except Exception as exc:
+            return {"how": how, "stages": stages, "error": type(exc).__name__, "at": stage}
+        last = _summary(raw)
+        stages.append({**stage, "http_status": answer.status, "bytes": len(raw)})
+        await asyncio.sleep(STAGE_PAUSE_SECONDS)
+    return {"how": how, "stages": stages, "last": last}
+
+
 async def _combo_items(page, frame, name: str, form: dict, expect, timeout: float) -> dict:
     """The options one dropdown loads, by its own request (one, read-only). The answer is reported as it came, cut short."""
     try:
@@ -160,13 +230,13 @@ async def _combo_items(page, frame, name: str, form: dict, expect, timeout: floa
     found = {"name": name, "methods": methods, "queued": queue[:3]}
     if not queue:
         return found
-    path = queue[0]["path"]
+    stage = queue[0]
     try:
-        async with expect(page, "response", lambda r: urlsplit(r.url).path == path and r.frame == frame, timeout=timeout * 1000) as captured:
+        async with expect(page, "response", lambda r: _answers_stage(r, frame, stage), timeout=timeout * 1000) as captured:
             await frame.evaluate(_RELEASE_JS)
         answer = await captured.value
         raw = await answer.body()
-        found.update(http_status=answer.status, bytes=len(raw), answer=raw[:6000].decode("utf-8", "replace"))
+        found.update(http_status=answer.status, bytes=len(raw), answer=raw[:30000].decode("utf-8", "replace"))
     except Exception as exc:
         found["error"] = type(exc).__name__
     await frame.evaluate("() => { window.__pmosFrQueue.length = 0; }")
@@ -217,6 +287,8 @@ async def probe(page, request: dict, expect, timeout: float) -> Response:
                 form = request.get("form") or {}
                 if form.get("combos"):
                     found["combos"] = [await _combo_items(page, frame, name, form, expect, timeout) for name in form["combos"]]
+                if form.get("follow_day"):
+                    found["follow"] = await _follow(page, frame, form, expect, timeout)
                 break
             except Exception:
                 await asyncio.sleep(0.2)

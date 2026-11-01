@@ -381,6 +381,17 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
             await ui.ensure_frame(self.page, {"frame": "/pdbln/report/PdblnReport098", "site_menu": {"route": "/x/pdbln/report/PdblnReport098"}}, 5)
         self.assertEqual(caught.exception.code, "site_menu_entry_missing")
 
+    async def test_a_menu_still_loading_gets_its_time_before_an_entry_is_believed_missing(self):
+        """Liaoning 20:11:42: one second after a recycle a report was paused for a missing menu entry."""
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/column_page.html")
+        await self.page.evaluate("""() => { const whole = header.menuBoxObj; header.menuBoxObj = {};
+                                            setTimeout(() => { header.menuBoxObj = whole; }, 1500); }""")
+        request = {"frame": "/pdbln/report/PdblnReport043",
+                   "site_menu": {"source": "lnsnxh_rqpjsbdj", "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport043"}}
+        frame = await ui.ensure_frame(self.page, request, 5)
+        self.assertTrue(frame.url.endswith("/pdbln/report/PdblnReport043"))
+
     async def test_the_work_page_opens_once_from_the_portal_and_is_found_by_its_name_after(self):
         from pmos.browser.attach import work_page
         await self.page.goto(self.origin + "/portal_page.html")
@@ -569,6 +580,17 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
                          ("/px-basesystem-reportform/decision/view/report", True, False))
         self.assertEqual(found["page"]["contentPane"], "object")
         self.assertEqual(found["page"]["reportTotalPage"], 1)
+
+    async def test_a_probe_can_follow_one_day_and_report_its_stages_and_table(self):
+        await self.finereport_page()
+        response = await self.transport.send({"transport": "finereport", "action": "probe", "frame": "lnsnxh_a",
+                                              "site_menu": {"source": "lnsnxh_a", "route": "spotgoodsSum"},
+                                              "form": {"follow_day": "2026-10-25"}})
+        follow = json.loads(response.body)["data"]["follow"]
+        self.assertEqual(follow["how"], "parameterCommit")
+        self.assertEqual([s["cmd"] for s in follow["stages"]], ["parameters_d", "load_content", "load_report_content"])
+        self.assertEqual((follow["last"]["rows"], follow["last"]["cols"], follow["last"]["totalPage"]), (12, [16], 1))
+        self.assertEqual(follow["last"]["sample"][0][0], "00:15")
 
     async def test_a_refused_mapping_is_the_probes_answer_and_no_fault(self):
         await self.finereport_page()
