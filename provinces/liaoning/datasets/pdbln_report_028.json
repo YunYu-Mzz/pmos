@@ -1,7 +1,7 @@
 {
   "id": "pdbln_report_028",
   "name": "发输变电设备检修计划（日）",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -39,7 +39,8 @@
       ],
       "dimension_fields": {}
     },
-    "note": "probed 2026-11-01: its queryParam is {mdate}, methods query and initData"
+    "note": "probed 2026-11-01: its queryParam is {mdate}, methods query and initData",
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -51,6 +52,18 @@
       "at": "2026-11-01T19:40:00+08:00",
       "event": "probed",
       "note": "query fields read"
+    },
+    {
+      "at": "2026-11-01T19:55:19+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "saved",
+      "sha256": "8e8730b4597a7049755c0c2a235d35c033d2c8f4b26a9731980263e5bfe3137c"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "empty_limit",
+      "note": "30 empty periods in a row before it pauses: a day report: a day without maintenance answers nothing"
     }
   ]
 }

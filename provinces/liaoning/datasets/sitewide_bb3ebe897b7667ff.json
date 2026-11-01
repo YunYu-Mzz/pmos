@@ -23,7 +23,11 @@
     "date_field": "queryParam.mdate",
     "form": {
       "date_widget": "日期",
-      "unit": null
+      "unit": null,
+      "combos": [
+        "机组名称"
+      ],
+      "probe_date": "2026-10-25"
     }
   },
   "response": {
@@ -53,6 +57,25 @@
       "at": "2026-11-01T19:40:00+08:00",
       "event": "probed",
       "note": "mapping 0, form ready"
+    },
+    {
+      "at": "2026-11-01T19:54:37+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "empty",
+      "sha256": null
+    },
+    {
+      "at": "2026-11-01T19:54:44+08:00",
+      "event": "sample_ok",
+      "period": "2026-06-15",
+      "result": "empty",
+      "sha256": null
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "combos_to_read",
+      "note": "a blank choice answers a blank page, or the form has dropdowns: read their options next"
     }
   ]
 }

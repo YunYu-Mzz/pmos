@@ -81,6 +81,16 @@ _PAGE_JS = """() => { const p = window.contentPane, out = {FR: typeof FR, g: typ
   return out; }"""
 
 
+# Opens one dropdown as a person would: with the queue installed its load waits to be seen, and is released on its own.
+_COMBO_JS = """x => { const f = _g(), date = x.date_widget && f.parameterEl.getWidgetByName(x.date_widget);
+  if (date && x.date) date.setValue(x.date);
+  const w = f.parameterEl.getWidgetByName(x.name);
+  if (!w) throw new Error('combo_missing');
+  const methods = ['onTriggerClick', 'doClick', 'loadData', 'reload'].filter(m => typeof w[m] === 'function');
+  if (typeof w.onTriggerClick === 'function') w.onTriggerClick();
+  return methods; }"""
+
+
 def _unsent(code: str, detail: dict | None = None) -> Fault:
     return Fault(code, "local", unsent=True, detail=detail)
 
@@ -136,6 +146,33 @@ async def open_report(page, request: dict, timeout: float, last: dict):
     return frame
 
 
+async def _combo_items(page, frame, name: str, form: dict, expect, timeout: float) -> dict:
+    """The options one dropdown loads, by its own request (one, read-only). The answer is reported as it came, cut short."""
+    try:
+        methods = await frame.evaluate(_COMBO_JS, {"name": name, "date_widget": form.get("date_widget", DATE_WIDGET), "date": form.get("probe_date")})
+    except Exception as exc:
+        return {"name": name, "error": str(exc)[:120]}
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + min(timeout, 5)
+    queue = []
+    while not (queue := await frame.evaluate(_PEEK_JS)) and loop.time() < deadline:
+        await asyncio.sleep(0.1)
+    found = {"name": name, "methods": methods, "queued": queue[:3]}
+    if not queue:
+        return found
+    path = queue[0]["path"]
+    try:
+        async with expect(page, "response", lambda r: urlsplit(r.url).path == path and r.frame == frame, timeout=timeout * 1000) as captured:
+            await frame.evaluate(_RELEASE_JS)
+        answer = await captured.value
+        raw = await answer.body()
+        found.update(http_status=answer.status, bytes=len(raw), answer=raw[:6000].decode("utf-8", "replace"))
+    except Exception as exc:
+        found["error"] = type(exc).__name__
+    await frame.evaluate("() => { window.__pmosFrQueue.length = 0; }")
+    return found
+
+
 async def probe(page, request: dict, expect, timeout: float) -> Response:
     """What a report's form asks for, without asking it: the mapping's answer and the form's widgets. No data request.
 
@@ -162,28 +199,32 @@ async def probe(page, request: dict, expect, timeout: float) -> Response:
     if url:
         viewlet = parse_qs(urlsplit(url).query).get("viewlet", [None])[0]
         found["viewlet"] = viewlet
+        found["path"] = urlsplit(url).path     # a .cpt report is not served from the form's path
         loop = asyncio.get_running_loop()
         deadline = loop.time() + timeout
         frame = None
         while frame is None and loop.time() < deadline:
-            frame = next((f for f in page.frames if urlsplit(f.url).path == PATH
-                          and parse_qs(urlsplit(f.url).query).get("viewlet", [None])[0] == viewlet), None)
+            frame = next((f for f in page.frames if parse_qs(urlsplit(f.url).query).get("viewlet", [None])[0] == viewlet), None)
             if frame is None:
                 await asyncio.sleep(0.2)
+        found["frame_found"] = frame is not None
         found["form_ready"] = False
         while frame is not None and loop.time() < deadline:
             try:
                 await frame.evaluate(_INSTALL_JS)
                 found["widgets"] = await frame.evaluate(_WIDGETS_JS)
                 found["form_ready"] = True
+                form = request.get("form") or {}
+                if form.get("combos"):
+                    found["combos"] = [await _combo_items(page, frame, name, form, expect, timeout) for name in form["combos"]]
                 break
             except Exception:
                 await asyncio.sleep(0.2)
         if frame is not None and not found["form_ready"]:
             try:
                 found["page"] = await frame.evaluate(_PAGE_JS)
-            except Exception:
-                found["page"] = None
+            except Exception as exc:
+                found["page"] = {"error": type(exc).__name__}
     return Response(200, "application/json", json.dumps({"status": 0, "data": found}, ensure_ascii=False).encode())
 
 

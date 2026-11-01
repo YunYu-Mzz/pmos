@@ -119,7 +119,7 @@ def evaluate(spec_response: dict, response: Response) -> Outcome:
             raise Fault("json_expected", "unknown", http_status=response.status)
         from .finereport import daily_values
         try:
-            values = daily_values(body)
+            values = daily_values(body, text=bool(spec_response.get("text_values")))
         except ValueError as exc:
             raise Fault(str(exc), "site_data", http_status=response.status) from None
         return Outcome("saved" if any(item["value"] is not None for item in values) else "empty", ".json")

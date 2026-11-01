@@ -20,7 +20,16 @@
     "set": {
       "queryParam.mdate": "{date}"
     },
-    "date_field": "queryParam.mdate"
+    "date_field": "queryParam.mdate",
+    "form": {
+      "date_widget": "交易日期",
+      "unit": null,
+      "combos": [
+        "通道名称",
+        "数据类型"
+      ],
+      "probe_date": "2026-10-25"
+    }
   },
   "response": {
     "kind": "finereport_daily"
@@ -35,6 +44,11 @@
       "at": "2026-11-01T19:20:00+08:00",
       "event": "prepared_for_probe",
       "note": "user 2026-11-01: \"都按你建议的来\""
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "combos_to_read",
+      "note": "a blank choice answers a blank page, or the form has dropdowns: read their options next"
     }
   ]
 }

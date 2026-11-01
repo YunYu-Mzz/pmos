@@ -1,7 +1,7 @@
 {
   "id": "sitewide_e87a7708ade1e187",
   "name": "省间联络线输电曲线预测",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -27,12 +27,12 @@
     }
   },
   "response": {
-    "kind": "finereport_table"
+    "kind": "finereport_daily"
   },
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "lnsnxh_rnxtjllxqxyc",
-    "note": "probed 2026-11-01 19:2x: mapped, a form with 日期. The table's shape is unknown until a try-report.",
+    "note": "sample 2026-10-25: 12 x 16, 96 times to 24:00; 96 numeric values",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -41,7 +41,8 @@
         "queryParam.mdate"
       ],
       "dimension_fields": {}
-    }
+    },
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -53,6 +54,18 @@
       "at": "2026-11-01T19:40:00+08:00",
       "event": "probed",
       "note": "mapping 0, form ready"
+    },
+    {
+      "at": "2026-11-01T19:54:15+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "saved",
+      "sha256": "58e8195bed118e3948114e22e4f635cd4ea2ea2c24fe91ef81d427f14811e021"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "shape_read",
+      "note": "the grid of the sample original; the response kind holds every later day to it"
     }
   ]
 }

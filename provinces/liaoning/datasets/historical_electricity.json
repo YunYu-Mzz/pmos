@@ -39,13 +39,32 @@
   },
   "source": {
     "legacy": "lncrawler/expanded_adapters.py, advanced_browser.py",
-    "note": "legacy 2026-10-16: 09 empty; 08 answered business 5040 after 161 s, so this waits 240 s. The user held it then; one or two samples now (user 2026-11-01), then given up if still nothing."
+    "note": "legacy 2026-10-16: 09 empty; 08 answered business 5040 after 161 s, so this waits 240 s. The user held it then; one or two samples now (user 2026-11-01), then given up if still nothing.. Tried 2026-11-01: 2026-07 and 2026-06 answered nothing; given up as agreed (user 2026-11-01)."
   },
   "history": [
     {
       "at": "2026-11-01T19:20:00+08:00",
       "event": "prepared_for_trial",
       "note": "user 2026-11-01: \"都按你建议的来\""
+    },
+    {
+      "at": "2026-11-01T19:56:07+08:00",
+      "event": "sample_ok",
+      "period": "2026-07",
+      "result": "empty",
+      "sha256": null
+    },
+    {
+      "at": "2026-11-01T19:57:06+08:00",
+      "event": "sample_ok",
+      "period": "2026-06",
+      "result": "empty",
+      "sha256": null
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "given_up",
+      "note": "2026-07 and 2026-06 answered nothing; given up as agreed (user 2026-11-01)"
     }
   ]
 }

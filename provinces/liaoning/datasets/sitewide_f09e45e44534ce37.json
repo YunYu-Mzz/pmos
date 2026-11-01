@@ -1,7 +1,7 @@
 {
   "id": "sitewide_f09e45e44534ce37",
   "name": "发输变电设备检修计划（月）（新）",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "month",
     "start": "2026-01",
@@ -42,7 +42,8 @@
         "queryParam.mdate"
       ],
       "dimension_fields": {}
-    }
+    },
+    "max_consecutive_empty": 6
   },
   "history": [
     {
@@ -54,6 +55,25 @@
       "at": "2026-11-01T19:20:00+08:00",
       "event": "prepared_for_trial",
       "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
+    },
+    {
+      "at": "2026-11-01T19:55:04+08:00",
+      "event": "sample_ok",
+      "period": "2026-09",
+      "result": "empty",
+      "sha256": null
+    },
+    {
+      "at": "2026-11-01T19:55:08+08:00",
+      "event": "sample_ok",
+      "period": "2026-06",
+      "result": "saved",
+      "sha256": "516d5dc8381716102f47538355316ef7cafa136a3d20696bba3584e289fab02a"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "empty_limit",
+      "note": "6 empty periods in a row before it pauses: a month report: 2026-09 answered nothing, 2026-06 53 rows"
     }
   ]
 }

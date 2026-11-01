@@ -60,8 +60,11 @@ def table_rows(body) -> list[list[str]]:
     return [row for row in parser.rows if any(row)]
 
 
-def daily_values(body) -> list[dict]:
-    """The day's 96 {time, value} (value None when blank), [] for the site's blank report. ValueError: a changed table."""
+def daily_values(body, *, text: bool = False) -> list[dict]:
+    """The day's 96 {time, value} (value None when blank), [] for the site's blank report. ValueError: a changed table.
+
+    ``text``: the values are words (平衡紧张, 弃风), so only the grid and its times are checked.
+    """
     if (not isinstance(body, dict) or type(body.get("currentPage")) is not int or body["currentPage"] != 1
             or body.get("totalPage") != 1 or not isinstance(body.get("htmlTag"), str)):
         raise ValueError("finereport_table_pagination_changed")
@@ -82,6 +85,9 @@ def daily_values(body) -> list[dict]:
     for time, value in pairs:
         if value == "":
             values.append({"time": time, "value": None})
+            continue
+        if text:
+            values.append({"time": time, "value": value})
             continue
         try:
             number = Decimal(value)

@@ -1,7 +1,7 @@
 {
   "id": "sitewide_bd2561ac7f825385",
   "name": "可再生能源富余程度",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -27,12 +27,13 @@
     }
   },
   "response": {
-    "kind": "finereport_table"
+    "kind": "finereport_daily",
+    "text_values": true
   },
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_rqkzsfy_7_5",
-    "note": "probed 2026-11-01 19:2x: mapped, a form with 日期. The table's shape is unknown until a try-report.",
+    "note": "sample 2026-10-25: 12 x 16, 96 times to 24:00; the values are words",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -41,7 +42,8 @@
         "queryParam.mdate"
       ],
       "dimension_fields": {}
-    }
+    },
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -53,6 +55,18 @@
       "at": "2026-11-01T19:40:00+08:00",
       "event": "probed",
       "note": "mapping 0, form ready"
+    },
+    {
+      "at": "2026-11-01T19:53:59+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "saved",
+      "sha256": "b5316471ee7129b90bad3d59f8db19e5cff17d279a48ece71456b973682a3ad3"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "shape_read",
+      "note": "the grid of the sample original; the response kind holds every later day to it"
     }
   ]
 }

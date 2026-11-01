@@ -51,6 +51,8 @@ class Site(http.server.SimpleHTTPRequestHandler):
             self.reply(b"<html>Dec-Session_Lifecycle_End</html>", "text/html;charset=UTF-8")
         elif cmd == "parameters_d":
             self.reply(b'{"status":"success"}', "application/json")
+        elif cmd == "combo_items":
+            self.reply(json.dumps([{"text": "1号机", "value": "1号机"}, {"text": "2号机", "value": "2号机"}], ensure_ascii=False).encode(), "application/json")
         elif cmd == "load_content":
             self.reply(b'{"elementCases":[]}', "application/json")
         else:
@@ -67,6 +69,8 @@ class Site(http.server.SimpleHTTPRequestHandler):
             if source in Site.finereport_denied:
                 return self.reply(json.dumps({"status": 40302, "message": "无权限"}).encode(), "application/json")
             url = f"/px-basesystem-reportform/decision/view/form?ref_t={len(Site.finereport)}&viewlet=dir%2F{source}.frm"
+            if source == "lnsnxh_c":        # a .cpt report is served from another path, with no form of its own
+                url = f"/px-basesystem-reportform/decision/view/report?viewlet=dir%2F{source}.cpt"
             return self.reply(json.dumps({"status": 0, "data": {"url": url}}).encode(), "application/json")
         if self.path == "/px-basesystem-reportform/decision/view/form":
             return self.finereport_answer(parse_qs(Site.bodies[-1].decode()))
@@ -81,6 +85,8 @@ class Site(http.server.SimpleHTTPRequestHandler):
     challenges = 0          # the next document answers of /pxf-settlement-outnetpub/ that are a 412 challenge
 
     def do_GET(self):
+        if self.path.startswith("/px-basesystem-reportform/decision/view/report"):
+            return self.reply("<!doctype html><title>cpt</title><script>window.contentPane = {reportTotalPage: 1, currentPageIndex: 1};</script><table><tr><td>甲</td></tr></table>".encode(), "text/html;charset=UTF-8")
         if self.path.startswith("/px-basesystem-reportform/decision/view/form"):
             from urllib.parse import parse_qs, urlsplit
             query = parse_qs(urlsplit(self.path).query)
@@ -540,6 +546,29 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(found["form_ready"])
         self.assertEqual([(w["name"], w["value"]) for w in found["widgets"]], [("unit", "单位:MW")])
         self.assertEqual([c for c in Site.finereport if c in ("parameters_d", "load_content", "load_report_content")], [], "no stage")
+
+    async def test_a_probe_opens_a_dropdown_once_and_reports_what_it_loads(self):
+        await self.finereport_page()
+        response = await self.transport.send({"transport": "finereport", "action": "probe", "frame": "lnsnxh_b",
+                                              "site_menu": {"source": "lnsnxh_b", "route": "spotgoodsSum"},
+                                              "form": {"combos": ["机组名称", "没有这个"], "probe_date": "2026-10-25"}})
+        combos = json.loads(response.body)["data"]["combos"]
+        self.assertEqual(combos[0]["queued"][0]["cmd"], "combo_items")
+        self.assertIn("1号机", combos[0]["answer"])
+        self.assertIn("combo_missing", combos[1]["error"])
+        self.assertEqual([c for c in Site.finereport if c in ("parameters_d", "load_report_content")], [], "no data asked")
+        self.assertEqual(await self.page.frames[-1].evaluate("window.__pmosFrQueue.length"), 0)
+
+    async def test_a_report_with_no_form_shows_what_it_has_instead(self):
+        await self.finereport_page()
+        self.transport.timeout = 1
+        response = await self.transport.send({"transport": "finereport", "action": "probe", "frame": "lnsnxh_c",
+                                              "site_menu": {"source": "lnsnxh_c", "route": "spotgoodsSum"}})
+        found = json.loads(response.body)["data"]
+        self.assertEqual((found["path"], found["frame_found"], found["form_ready"]),
+                         ("/px-basesystem-reportform/decision/view/report", True, False))
+        self.assertEqual(found["page"]["contentPane"], "object")
+        self.assertEqual(found["page"]["reportTotalPage"], 1)
 
     async def test_a_refused_mapping_is_the_probes_answer_and_no_fault(self):
         await self.finereport_page()

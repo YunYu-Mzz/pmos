@@ -42,7 +42,8 @@
         "queryParam.mdate"
       ],
       "dimension_fields": {}
-    }
+    },
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -61,6 +62,11 @@
       "period": "2026-10-25",
       "result": "saved",
       "sha256": "2f72b36ec4a2c4baedfcd23b2fbf46bb4f3c25e85e678bd6c7975943021b373e"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "empty_limit",
+      "note": "30 empty periods in a row before it pauses: a day report"
     }
   ]
 }

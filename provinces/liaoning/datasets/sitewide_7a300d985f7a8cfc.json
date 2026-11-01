@@ -36,7 +36,8 @@
       "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReportDic026",
       "call": "initDataDic",
       "field": "name",
-      "set": {}
+      "set": {},
+      "method": "GET"
     },
     "note": "the form's dictionary call posts {} (legacy component source), so it is not bound to a date"
   },
@@ -50,6 +51,11 @@
       "at": "2026-11-01T19:20:00+08:00",
       "event": "prepared_for_trial",
       "note": "options first, by read-dictionary"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "dictionary_method",
+      "note": "r15: the page asked its dictionary by GET and the gate stopped it"
     }
   ]
 }

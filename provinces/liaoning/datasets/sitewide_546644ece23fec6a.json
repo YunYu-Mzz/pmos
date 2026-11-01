@@ -1,7 +1,7 @@
 {
   "id": "sitewide_546644ece23fec6a",
   "name": "火电富余电力",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -27,12 +27,12 @@
     }
   },
   "response": {
-    "kind": "finereport_table"
+    "kind": "finereport_daily"
   },
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_hdfydl_7_7",
-    "note": "probed 2026-11-01 19:2x: mapped, a form with 日期. The table's shape is unknown until a try-report.",
+    "note": "sample 2026-10-25: 12 x 16, 96 times to 24:00; 96 numeric values",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -41,7 +41,8 @@
         "queryParam.mdate"
       ],
       "dimension_fields": {}
-    }
+    },
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -53,6 +54,18 @@
       "at": "2026-11-01T19:40:00+08:00",
       "event": "probed",
       "note": "mapping 0, form ready"
+    },
+    {
+      "at": "2026-11-01T19:54:07+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "saved",
+      "sha256": "a7158548a32f890b40b944aafb86a3728ed389eaacfbc33c17d97565b5351cd8"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "shape_read",
+      "note": "the grid of the sample original; the response kind holds every later day to it"
     }
   ]
 }

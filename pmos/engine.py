@@ -408,6 +408,8 @@ class Engine:
                                                       "prepare", "method") if key in spec.request}
         request.update(path=config["path"], call=config["call"], args=config.get("args", []),
                        set=render(config.get("set", {}), _periods.variables("day", period)))
+        if config.get("method"):
+            request["method"] = config["method"]    # 026 and 075 list their options by GET
         result = await self.request("probe", request, {"kind": "json"}, dataset=spec.id, period=period, scope="dictionary",
                                     lane=spec.source.get("lane"))
         rows = json.loads(result.response.body).get("data") or []
@@ -432,7 +434,8 @@ class Engine:
         """What a report's form asks for (a FineReport mapping and its widgets, a component's query fields). No data request."""
         import json
         if spec.request.get("transport") == "finereport":
-            request = {"transport": "finereport", "action": "probe", "site_menu": spec.request["site_menu"], "frame": spec.request["frame"]}
+            request = {"transport": "finereport", "action": "probe", "site_menu": spec.request["site_menu"], "frame": spec.request["frame"],
+                       "form": spec.request.get("form") or {}}
         elif spec.request.get("transport") == "component":
             request = {key: spec.request[key] for key in ("transport", "frame", "open_url", "site_menu", "component", "match", "prepare")
                        if key in spec.request}
@@ -616,7 +619,7 @@ class Engine:
             streaks = self.state.read("empty_streaks", {})
             streaks[spec.id] = streaks.get(spec.id, 0) + 1
             self.state.write("empty_streaks", streaks)
-            if streaks[spec.id] >= self.policy.max_consecutive_empty:
+            if streaks[spec.id] >= spec.source.get("max_consecutive_empty", self.policy.max_consecutive_empty):
                 self.hold_dataset(spec.id, "consecutive_empty_periods", "paused")
         return result
 
@@ -939,6 +942,11 @@ class Engine:
 
     # -- the loop ---------------------------------------------------------
     def block(self, fault: Fault, decision: Decision, dataset: str | None = None) -> None:
+        if fault.code == "stop_all_requested":
+            # A request refused because a person asked to stop: nothing went out and nothing needs review
+            # (Liaoning r15 19:45:44: stop-all met a request's check, and the next start was refused until an ack).
+            self.state.event("stopped_before_request", dataset=dataset)
+            return
         # A block's reason is a plain code; a composed one ("preflight_deferred:...") must not take the worker down with it.
         self.state.block(re.sub(r"[^a-z0-9_]", "_", fault.code.lower())[:80] or "unknown", category=fault.category, dataset=dataset,
                          keepalive_allowed=decision.keepalive, http_status=fault.http_status,

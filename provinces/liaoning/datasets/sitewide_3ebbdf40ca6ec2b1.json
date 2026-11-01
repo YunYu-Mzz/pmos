@@ -1,7 +1,7 @@
 {
   "id": "sitewide_3ebbdf40ca6ec2b1",
   "name": "省内电力平衡裕度",
-  "status": "candidate",
+  "status": "sampled",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -27,12 +27,13 @@
     }
   },
   "response": {
-    "kind": "finereport_table"
+    "kind": "finereport_daily",
+    "text_values": true
   },
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_dlphyd_7_4",
-    "note": "probed 2026-11-01 19:2x: mapped, a form with 日期. The table's shape is unknown until a try-report.",
+    "note": "sample 2026-10-25: 12 x 16, 96 times to 24:00; the values are words",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -41,7 +42,8 @@
         "queryParam.mdate"
       ],
       "dimension_fields": {}
-    }
+    },
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -53,6 +55,18 @@
       "at": "2026-11-01T19:40:00+08:00",
       "event": "probed",
       "note": "mapping 0, form ready"
+    },
+    {
+      "at": "2026-11-01T19:53:50+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "saved",
+      "sha256": "7b8d2ef8cc9b2a7f38978d6caefb36c07222b2097cf0c2cf5410987426cdf7d7"
+    },
+    {
+      "at": "2026-11-01T20:05:00+08:00",
+      "event": "shape_read",
+      "note": "the grid of the sample original; the response kind holds every later day to it"
     }
   ]
 }

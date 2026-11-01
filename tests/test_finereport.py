@@ -80,6 +80,31 @@ class Specs(unittest.TestCase):
                 check_request("t", {**good, **broken})
 
 
+class TextGrid(unittest.TestCase):
+    def grid(self, value):
+        times = [f"{i // 4:02d}:{i % 4 * 15:02d}" for i in range(1, 97)]
+        rows = []
+        for start in range(0, 96, 16):
+            rows.append("<tr>" + "".join(f"<td>{t}</td>" for t in times[start:start + 16]) + "</tr>")
+            rows.append("<tr>" + "".join(f"<td>{value}</td>" for _ in range(16)) + "</tr>")
+        return {"currentPage": 1, "totalPage": 1, "htmlTag": "<table>" + "".join(rows) + "</table>"}
+
+    def test_a_grid_of_words_keeps_its_times_checked(self):
+        """平衡裕度 and 可再生能源富余 answer words in the same 96-point grid (samples of 2026-10-25)."""
+        from pmos.validate import Response, evaluate
+        def run(body, **spec):
+            return evaluate({"kind": "finereport_daily", **spec}, Response(200, "application/json", json.dumps(body, ensure_ascii=False).encode()))
+        self.assertEqual(run(self.grid("平衡紧张"), text_values=True).result, "saved")
+        with self.assertRaises(Fault) as caught:
+            run(self.grid("平衡紧张"))
+        self.assertEqual(caught.exception.code, "finereport_value_not_numeric")
+        cut = self.grid("弃风")
+        cut["htmlTag"] = cut["htmlTag"].replace("<td>00:15</td>", "<td>00:20</td>")
+        with self.assertRaises(Fault) as caught:
+            run(cut, text_values=True)
+        self.assertEqual(caught.exception.code, "finereport_daily_times_changed")
+
+
 class Table(unittest.TestCase):
     def evaluate(self, body):
         from pmos.validate import Response, evaluate

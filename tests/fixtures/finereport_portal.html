@@ -12,7 +12,7 @@ const spot = {$options: {name: 'spotgoods'}, infoCode: null, _src: '', $children
     return fetch('/px-settlement-infpubquery/spotgoods/queryIpSpotgoodsInfoBytableName', {method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({tableName: this.infoCode})}).then(r => r.json()).then(b => { this.src = b.data.url; });
   }};
-const entries = ['lnsnxh_a', 'lnsnxh_b'].map(s => ({viewname: 'spotgoodsSum', infoCode: s, guid: 'g-' + s, children: []}));
+const entries = ['lnsnxh_a', 'lnsnxh_b', 'lnsnxh_c'].map(s => ({viewname: 'spotgoodsSum', infoCode: s, guid: 'g-' + s, children: []}));
 const aside = {$options: {name: 'chAside'}, $children: [], $refs: {}, decryData: d => d,
   handleNodeClick(n) { const changed = spot.infoCode !== n.infoCode; spot.infoCode = n.infoCode; if (changed) spot.queryIpSpotgoodsInfoBytableName(); }};
 document.getElementById('aside').__vue__ = aside;

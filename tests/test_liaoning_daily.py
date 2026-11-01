@@ -619,11 +619,9 @@ class RealTrial(unittest.TestCase):
 
     def test_the_fourteen_finereport_forms_are_candidates_to_probe(self):
         specs = [s for s in REAL.datasets().values() if s.request.get("transport") == "finereport" and s.status == "candidate"]
-        self.assertEqual(len(specs), self.FINEREPORT)
+        self.assertEqual(len(specs), self.FINEREPORT - 4, "4 answered their samples")
         self.assertEqual({s.request["site_menu"]["route"] for s in specs}, {"spotgoodsSum"})
-        ready = [s for s in specs if s.response["kind"] == "finereport_table"]
-        self.assertEqual({s.id for s in ready} - set(migration.TRIAL_LANE), set(), "what can be tried can join")
-        self.assertEqual(len(ready), 6)
+        self.assertEqual(len([s for s in specs if s.request.get("form")]), 3, "the three with dropdowns to read")
 
     def test_the_nine_per_option_reports_read_their_dictionary_without_a_selection(self):
         specs = REAL.datasets()
@@ -638,6 +636,15 @@ class RealTrial(unittest.TestCase):
                 self.assertIn("{date}", config["set"].values())
                 self.assertIn(None, config["set"].values(), "no option selected: the form's own first read")
                 self.assertTrue(config["path"].rsplit("/", 1)[1].startswith("pdblnReport"))
+
+    def test_the_four_finereport_grids_are_held_to_their_shape(self):
+        specs = REAL.datasets()
+        for name, text in (("sitewide_546644ece23fec6a", False), ("sitewide_e87a7708ade1e187", False),
+                           ("sitewide_3ebbdf40ca6ec2b1", True), ("sitewide_bd2561ac7f825385", True)):
+            with self.subTest(name=name):
+                self.assertEqual(specs[name].status, "sampled")
+                self.assertEqual(specs[name].response["kind"], "finereport_daily")
+                self.assertEqual(bool(specs[name].response.get("text_values")), text)
 
     def test_the_aliases_are_retired(self):
         specs = REAL.datasets()
@@ -729,6 +736,49 @@ class Trial(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.transport.sent, [], "nothing went out")
         engine.block(Fault("preflight_deferred:x", "local"), Decision("province", False))
         self.assertEqual(engine.state.blocked()["reason"], "preflight_deferred_x", "a composed code can never take the worker down")
+
+    async def test_stop_all_meeting_a_request_is_no_block_and_the_next_start_is_not_refused(self):
+        """Liaoning r15 19:45:44: stop-all met a request's own check, and the next accept was refused until an ack."""
+        from pmos.faults import Fault
+        engine = self.engine()
+        engine.state.set_control(collect=True)
+        with patch.object(engine, "collect", side_effect=Fault("stop_all_requested", "local")):
+            engine.seed()
+            engine.ledger.seed("sitewide_46fa5856d5315e4e", [day(2)], next(iter(self.province.datasets()["sitewide_46fa5856d5315e4e"].scope_items()))[0])
+            for _ in range(3):
+                self.clock.advance(5)
+                await engine.tick()
+        self.assertIsNone(engine.state.blocked())
+        self.assertEqual(engine.dataset_holds(), {})
+
+    async def test_a_report_can_allow_more_empty_periods_in_a_row_before_it_pauses(self):
+        """A report that starts mid-year: asked newest first, two blank days at its start are no fault of the site's."""
+        engine = self.engine()
+        name = "tie_line_intraday"
+        spec = self.province.datasets()[name]
+        spec.source["max_consecutive_empty"] = 3
+        spec.status = "sampled"
+        blank = Response(200, "application/json", json.dumps({"status": 0, "data": []}).encode())
+        for n in (3, 4):
+            engine.ledger.seed(name, [day(n)])
+            self.clock.advance(5)
+            self.transport.queue.append(blank)
+            await engine.collect(spec, day(n), "")
+        self.assertEqual(engine.dataset_holds(), {}, "two empty days: the policy's 2 would have paused it")
+        engine.ledger.seed(name, [day(5)])
+        self.clock.advance(5)
+        self.transport.queue.append(blank)
+        await engine.collect(spec, day(5), "")
+        self.assertEqual(engine.dataset_holds()[name]["reason"], "consecutive_empty_periods")
+
+    async def test_a_dictionary_can_be_asked_by_get(self):
+        engine = self.engine()
+        spec = self.province.datasets()["sitewide_46fa5856d5315e4e"]
+        spec.source["dictionary"] = {**spec.source["dictionary"], "method": "GET", "set": {}}
+        self.clock.advance(5)
+        self.transport.queue.append(Response(200, "application/json", json.dumps({"status": 0, "data": []}).encode()))
+        await engine._read_dictionary(spec, day(1))
+        self.assertEqual(self.transport.sent[-1]["method"], "GET")
 
     async def test_a_candidate_is_not_seeded_until_its_sample_answers_and_that_day_is_not_asked_again(self):
         engine = self.engine()
