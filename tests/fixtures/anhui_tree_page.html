@@ -1,0 +1,62 @@
+<!doctype html>
+<!-- Offline stand-in for the Anhui 综合查询 column (2026-11-01, 月度输变电设备检修计划): the
+     left tree shows 现货市场; the top menu's 中长期市场 switches it, and while the pointer stays
+     on the top bar the site's hover menu (.menuBox.menuBoxExpanded) covers the tree, as the
+     legacy's clear_hover_menu handles. -->
+<html><head><meta charset="utf-8"><title>anhui tree fixture</title>
+<style>
+  body { margin: 0; }
+  #top { height: 40px; display: flex; gap: 20px; }
+  #top .el-menu-item { padding: 10px; cursor: pointer; }
+  .menuBox { position: fixed; top: 40px; left: 0; width: 100%; height: 400px; background: #eee; z-index: 10; display: none; }
+  .menuBox.menuBoxExpanded { display: block; }
+  #tree { margin-top: 20px; }
+  .el-tree-node__children { padding-left: 16px; }
+  .el-tree-node:not(.is-expanded) > .el-tree-node__children { display: none; }
+</style></head>
+<body>
+<div id="top"><div class="el-menu-item is-active">现货市场</div><div class="el-menu-item">中长期市场</div></div>
+<div class="menuBox" id="box"></div>
+<div class="el-tree" id="tree"></div>
+<div id="frames"></div>
+<script>
+const trees = {
+  '现货市场': [{name: '现货市场', nextNode: [{currentNode: {name: '系统负荷预测日', url: '/pxf-x/load'}}]}],
+  '中长期市场': [{name: '中长期市场', nextNode: [{name: '市场边界信息', nextNode: [
+    {currentNode: {name: '月度输变电设备检修计划', url: '/pxf-x/month'}}]}]}]};
+function node(data) {
+  const el = document.createElement('div'); el.className = 'el-tree-node';
+  const content = document.createElement('div'); content.className = 'el-tree-node__content';
+  const children = data.nextNode || [];
+  if (children.length) {
+    const icon = document.createElement('span'); icon.className = 'el-tree-node__expand-icon'; icon.textContent = '▸';
+    icon.onclick = () => el.classList.toggle('is-expanded'); content.append(icon);
+  }
+  const label = document.createElement('span'); label.className = 'el-tree-node__label';
+  label.textContent = data.name || data.currentNode.name;
+  if (!children.length) label.onclick = () => {
+    document.querySelectorAll('.is-current').forEach(n => n.classList.remove('is-current'));
+    el.classList.add('is-current');
+    const frame = document.createElement('iframe'); frame.src = '/component_page.html#' + data.currentNode.url;
+    document.getElementById('frames').append(frame);
+  };
+  content.append(label); el.append(content);
+  if (children.length) {
+    const box = document.createElement('div'); box.className = 'el-tree-node__children';
+    children.forEach(c => box.append(node(c))); el.append(box);
+  }
+  return el;
+}
+function show(section) {
+  const tree = document.getElementById('tree'); tree.innerHTML = '';
+  trees[section].forEach(m => tree.append(node(m)));
+}
+const box = document.getElementById('box');
+document.querySelectorAll('#top .el-menu-item').forEach(item => item.onclick = () => {
+  document.querySelectorAll('#top .is-active').forEach(i => i.classList.remove('is-active'));
+  item.classList.add('is-active'); show(item.textContent); box.classList.add('menuBoxExpanded');
+});
+// The hover menu closes once the pointer leaves the top bar and the box.
+document.addEventListener('mousemove', e => { if (e.clientY > 440 || e.clientX > innerWidth - 8) box.classList.remove('menuBoxExpanded'); });
+show('现货市场');
+</script></body></html>

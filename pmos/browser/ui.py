@@ -309,6 +309,9 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
             raise Fault("menu_label_not_unique", "local")
         await top.click(timeout=timeout * 1000)
         await asyncio.sleep(0.3)
+        # The pointer now rests on the top bar, whose hover menu may cover the tree: as the Anhui
+        # legacy (clear_hover_menu) it is moved off first (月度输变电设备检修计划, 中长期市场, 11-01).
+        hover_exit = True
     if hover_exit:
         await _leave_hover_menu(page)
     for depth in range(1, len(labels) + 1):

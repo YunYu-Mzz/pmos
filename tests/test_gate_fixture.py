@@ -214,6 +214,16 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(caught.exception.code, "portal_menu_route_missing")
         self.assertEqual(Site.received, [])
 
+    async def test_a_section_switched_in_the_top_menu_leaves_its_hover_menu_before_the_tree(self):
+        """Anhui 2026-11-01: 月度输变电设备检修计划 (中长期市场) failed menu_label_not_visible; the legacy
+        moves the pointer off the hover menu after a top-menu click (clear_hover_menu)."""
+        from pmos.browser import ui
+        await self.page.set_viewport_size({"width": 1000, "height": 700})
+        await self.page.goto(self.origin + "/anhui_tree_page.html")
+        await ui.select_menu(self.page, ["中长期市场", "市场边界信息", "月度输变电设备检修计划"], 5)
+        self.assertEqual(await self.page.locator(".el-tree-node.is-current").count(), 1)
+        self.assertEqual(await self.page.locator(".menuBox.menuBoxExpanded").count(), 0, "the hover menu was left")
+
     async def test_a_menu_step_that_fails_before_the_leaf_is_clicked_is_proven_unsent(self):
         from pmos.browser import ui
         await self.page.goto(self.origin + "/portal_page.html")
