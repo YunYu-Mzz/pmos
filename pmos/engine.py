@@ -74,6 +74,9 @@ NETWORK_FAULTS_TO_STOP = 3
 PAGE_ANSWERED_CODES = frozenset({"select_value_changed_by_reading", "select_text_not_restored", "select_value_unsettled"})
 UNSENT_COOLDOWN_SECONDS = 600
 UNSENT_HOLDS_TO_STOP = 3
+# Legacy-consumed items settled in one tick, without the spacing or a sleep (Liaoning 2026-11-01).
+SKIP_BATCH_SECONDS = 1.0
+SKIP_BATCH_ITEMS = 2000
 LAPSE_RULE = ("用户原话：等它改完自动化再恢复（2026-10-31）：同一服务的查询在两个数据集上连续 HTTP 200 + 40302 "
               "视为查询权限失效，不记为拒绝；自动从门户菜单重新进入该报表，用一个查询验证")
 # Memory upkeep runs in waits of a second or more, and at least this often: at
@@ -528,6 +531,33 @@ class Engine:
                 self.hold_dataset(spec.id, "consecutive_empty_periods", "paused")
         return result
 
+    def _skip_consumed_batch(self, enabled: list[DatasetSpec], task) -> int:
+        """Settle the next tasks the legacy owner consumed, in a row, without the spacing or a sleep.
+
+        Liaoning 2026-11-01 14:51: after the cutover each skip took a whole tick
+        (spacing check, 0.2 s), 3.6 a second, so ~37 sources x 305 days of
+        consumed items would have kept the lane from any request for an hour or
+        two. Nothing is sent here; it stops at the first item that is not a plain
+        consumed one (a page cursor, a listed document, a prime, a month still
+        running), which then takes the normal path. At most SKIP_BATCH_SECONDS
+        or SKIP_BATCH_ITEMS per tick.
+        """
+        skipped = 0
+        deadline = time.monotonic() + SKIP_BATCH_SECONDS
+        while task is not None and not (isinstance(task, dict) and task.get("prime")) and skipped < SKIP_BATCH_ITEMS:
+            spec = next((s for s in enabled if s.id == task["dataset"]), None)
+            if (spec is None or "pagination" in spec.request or (spec.documents is not None and task["scope"])
+                    or (spec.period["kind"] in ("month", "year") and last_day(spec.period["kind"], task["period"]) >= today())):
+                break
+            if not self._skip_consumed(spec, task["period"], task["scope"], self.task_identity(spec, task["period"], task["scope"])):
+                break
+            skipped += 1
+            self._priority_taken(spec.id)
+            if time.monotonic() >= deadline:
+                break
+            task, _ = self._next_sendable(enabled)
+        return skipped
+
     def _skip_consumed(self, spec: DatasetSpec, period: str, scope: str, identity) -> bool:
         """A task the legacy owner already consumed is never sent: it settles as
         skipped with the legacy states. Only legacy tombstones are expected
@@ -885,6 +915,13 @@ class Engine:
                 if wait > 0:
                     return min(wait, 5)
                 return await self._prime_template(spec)
+            skipped = self._skip_consumed_batch(enabled, task)
+            if skipped:
+                # Nothing was sent: the login is renewed meanwhile once it is due (renew_after_idle_seconds).
+                if await self._renew(spec.source.get("lane")) is None:
+                    return 1
+                self._status("skipping_consumed", skipped=skipped, last_dataset=spec.id)
+                return 0.05
             wait = self.spacing_wait("collect", spec.source.get("lane"))
             if wait > 0:
                 if await self._renew(None) is None:

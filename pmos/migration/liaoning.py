@@ -550,8 +550,10 @@ def apply_cutover(root: Path, instance: Path, plan: dict, *, legacy_owner: dict,
     from ..queue_compat import import_shadow
     if not plan.get("ready"):
         raise ValueError("cutover_plan_not_ready")
+    # Asked for the bridges as the plan did: a refused request is still a request (Liaoning 2026-11-01
+    # 14:4x: "refused:…" recomputed as "not_requested" changed only that field and refused the apply).
     fresh = plan_cutover(root, account_alias=plan["account_alias"], requested=plan["scope"],
-                         bridges=plan["identity_bridges"] == "applied")
+                         bridges=plan["identity_bridges"] != "not_requested")
     if fresh["plan_sha256"] != plan["plan_sha256"]:
         raise ValueError("legacy_root_changed_since_plan")
     instance = Path(instance)

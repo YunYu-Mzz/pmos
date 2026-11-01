@@ -356,6 +356,23 @@ class Handoff(unittest.IsolatedAsyncioTestCase):
                                  period=MONTH)
         self.assertIsNone(engine.state.blocked())
 
+    async def test_consumed_items_settle_in_one_tick_without_the_spacing(self):
+        """Liaoning 2026-11-01 14:51: one skip per tick (3.6 a second) kept the lane from any request for hours."""
+        from unittest.mock import AsyncMock, patch
+        engine = self.engine()
+        engine.state.set_control(collect=True)
+        renew = AsyncMock(wraps=engine._renew)
+        with patch.object(engine, "_renew", renew):
+            delay = await engine.tick()
+        renew.assert_awaited_once()      # the login is renewed meanwhile once it is due (keep_session decides)
+        self.assertEqual(self.transport.sent, [], "only legacy-consumed items so far: nothing is sent for them")
+        self.assertEqual(engine.ledger.task("actual_load", DAY[0])["reason"], "legacy_consumed:unknown")
+        self.assertEqual(engine.ledger.task("actual_load", DAY[1])["reason"], "legacy_consumed:denied")
+        self.assertLess(delay, 0.2, "no sleep between batches of skips")
+        self.assertEqual(engine.state.read("status")["phase"], "skipping_consumed")
+        await engine.tick()
+        self.assertEqual(self.transport.sent[0]["set"].get("queryParam.mdate"), DAY[2], "the next tick sends new work")
+
     async def test_request_budget_is_a_hard_stop_and_stop_all_sends_nothing(self):
         engine = self.engine(budget=2)
         engine.state.set_control(collect=True)
@@ -371,6 +388,14 @@ class Handoff(unittest.IsolatedAsyncioTestCase):
         await self.run_ticks(engine, 5)
         self.assertEqual(self.transport.sent, [])
         self.assertEqual(engine.state.read("status")["phase"], "stopped_all")
+
+    def test_a_plan_whose_bridges_were_refused_still_applies(self):
+        """Liaoning 2026-11-01: the default plan asked for the bridges and got "refused:…"; apply asked for none."""
+        plan = migration.plan_cutover(self.root, requested=["actual_load", "node_price"])
+        self.assertNotEqual(plan["identity_bridges"], "not_requested")
+        result = migration.apply_cutover(self.root, self.instance, plan, legacy_owner=OWNER, code_sha="c" * 40,
+                                         approval="fixture approval", request_budget=3)
+        self.assertEqual(result["receipt"]["scope"], plan["scope"])
 
     def test_apply_refuses_a_changed_legacy_root_and_an_existing_instance(self):
         queue = self.root / "state/server_verified_expansion_20261023/queue.json"
