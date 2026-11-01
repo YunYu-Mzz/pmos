@@ -324,3 +324,18 @@ PMOS 对照检查后补了三处：
   - 计划换页失败时旧页面仍然可用，所以封锁但保活照常（`Decision("province", planned)`）。崩溃恢复失败照旧不保活。
   - `page_recovery_failed` 事件记下 AttachError 的原因码（`code`）。
   - 夹具在 `/?ACYxOEl1=…#/dashboard` 提供门户页，用生产配置 `/#/dashboard` 测试。全套 517 项（两个 venv）和真浏览器 20 项通过。
+
+## 11-01 12:49 r9 验收结果 → r10
+
+- **r9 结果**（预算用完后正常退出，没有封锁、没有 4xx）：
+  - 12:49:24 计划换页成功（堆 831 MB），新页 6D4398D9，旧页已关；
+  - 选项发现 6 次成功（9d35、9dda 也读通了），1 次 `form_field_changed`（queryRqscjjcqfslj），0f64 月报 `menu_label_not_visible`（未发出）；
+  - actual_load 10-27、10-28 和 day_ahead_average_offer_price 10-31 采到；
+  - actual_load 10-26 报 `template_body_not_json`（未发出，冷却）。
+- **严重问题：模板不保存请求体。** `Templates._capture` 为了不持有驱动缓冲，一直把 body 记为 None。`template_body_set` 的回放要在页面自己的请求体上改字段，没有请求体就只能报 `template_body_not_json`。也就是说，安徽的模板回放在真实页面上从来没成功过：采到的都是经由页面操作完成的，一旦截到模板，下一次回放就失败。整日和多维度这两块主要工作量都靠回放，所以都跑不起来。测试没发现，因为单元测试用的是假的传输层或直接给出 body，真浏览器测试也没覆盖这条路径。
+- **r10：**
+  - `_capture` 保存页面原请求体的短文本副本 `page_body`（POST，最多 64 KB），只给 `template_body_set` 用；不带 body 的回放仍然不发 body（山西、辽宁的行为不变）。
+  - `ui._field`：报表的表单可能还在渲染，最多等 10 秒，等不到或出现两个才报 `form_field_changed`。
+  - `_status`：非封锁状态下清掉残留的 `block` 和 `hold_keepalive`。之前封锁解除后 status 里还留着旧原因。
+  - 真浏览器测试：页面自己 POST 一个 JSON 体，回放时只改日期，服务器收到的其余字段原样。全套 518 项（两个 venv）和真浏览器 21 项通过。
+- **持续运行之前：** 整日和多维度逐选项还没在真实页面上回放过。建议先专门验收：加一点预算（需要用户批准），用 `collect-one` 让正在运行的进程各取一条，覆盖两个节点电价整日、1404 整日、重要通道、联络线、6d80、实时断面约束。

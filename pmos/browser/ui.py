@@ -373,7 +373,12 @@ async def _field(frame, field: dict):
     else:
         item = frame.locator(".el-form-item").filter(has=frame.get_by_text(field["label"], exact=True))
         locator = item.locator("input")
-    if await locator.count() != 1:
+    # A report's form may still be rendering just after its frame opened (Anhui 2026-11-01 12:5x,
+    # queryRqscjjcqfslj): wait for the field; two of them is a changed form at once.
+    deadline = asyncio.get_running_loop().time() + 10
+    while (count := await locator.count()) == 0 and asyncio.get_running_loop().time() < deadline:
+        await asyncio.sleep(0.2)
+    if count != 1:
         raise Fault("form_field_changed", "local")
     return locator
 

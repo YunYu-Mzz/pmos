@@ -1551,6 +1551,9 @@ class Engine:
         return 5
 
     def _status(self, phase: str, **fields) -> None:
+        if phase != "blocked":
+            # status merges into the last one: a cleared block must not linger there.
+            fields = {"block": None, "hold_keepalive": None, **fields}
         self.state.status(phase=phase, province=self.province.id, **fields)
 
     async def run(self, stopped: asyncio.Event, sleep=asyncio.sleep, stop_when=None, between=None) -> None:

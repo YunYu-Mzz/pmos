@@ -340,9 +340,13 @@ class Templates:
         try:
             headers = {k.lower(): v for k, v in (await request.all_headers()).items()
                        if k.lower() in platform.REPLAY_HEADERS}
+            # Do not retain request objects or their driver backing buffers. The page's own JSON body
+            # is kept as a short text copy for a template_body_set replay (Anhui: the date and options
+            # change, the page's other fields stay); a replay without it never sends one ("body").
+            text = request.post_data if request.method == "POST" else None
+            page_body = text if isinstance(text, str) and len(text) <= MAX_PAGE_BODY_CHARS else None
             self.items[path] = {"frame": request.frame, "headers": headers, "method": request.method,
-                                "body": None, "at": self.clock()}
-            # Do not retain request bodies / their driver backing buffers.
+                                "body": None, "page_body": page_body, "at": self.clock()}
             self.prune()
         except Exception:
             pass  # a vanished frame simply leaves no template
@@ -474,6 +478,8 @@ def _template_body(raw, changes: dict) -> str:
     return json.dumps(body, ensure_ascii=False, separators=(",", ":"))
 
 
+# A page's own request body kept for a template_body_set replay (Anhui bodies are a few hundred bytes).
+MAX_PAGE_BODY_CHARS = 65536
 # After a portal re-entry the page finishes its own load requests (SSO token exchange) first.
 PORTAL_REENTRY_SETTLE_SECONDS = 8
 
@@ -633,7 +639,7 @@ class PageTransport:
         elif "template_body_set" in request:
             # The page's own body with only these fields changed (Anhui legacy
             # replay: the date, never the page's other fixed values).
-            body = _template_body(template.get("body"), request["template_body_set"])
+            body = _template_body(template.get("page_body"), request["template_body_set"])
         else:
             body = template["body"] if request["method"] == "POST" else None
         self.templates.sending += 1

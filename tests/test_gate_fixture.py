@@ -23,9 +23,11 @@ class Site(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *args):
         pass
 
+    bodies: list = []
+
     def do_POST(self):
         Site.received.append(self.path)
-        self.rfile.read(int(self.headers.get("Content-Length") or 0))
+        Site.bodies.append(self.rfile.read(int(self.headers.get("Content-Length") or 0)))
         if self.path == "/px-x/export":
             body, kind = EXPORT, "application/vnd.ms-excel;charset=UTF-8"
         elif self.path == "/px-x/deniedExport":
@@ -373,6 +375,23 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(json.loads(response.body)["data"]), 3, "read once the page's own reset has settled")
         self.assertEqual(await self.page.input_value("#pick"), "水电")
         self.assertEqual(Site.received, [])
+
+    async def test_a_template_body_replay_sends_the_pages_own_body_with_only_the_date_changed(self):
+        """Anhui 2026-11-01 12:5x: templates kept no body, so every template_body_set replay failed unsent."""
+        import asyncio
+        await self.page.goto(self.origin + "/component_page.html")
+        page_body = {"businessTime": "2026-10-28", "taskId": "t-9", "genName": "甲线"}
+        with self.transport.templates.window():
+            await self.page.evaluate("b => fetch('/px-x/query', {method: 'POST', body: JSON.stringify(b)})", page_body)
+            await asyncio.sleep(0.5)
+        Site.received.clear()
+        Site.bodies.clear()
+        response = await self.transport.send({"transport": "fetch", "method": "POST", "path": "/px-x/query",
+                                              "template_body_set": {"businessTime": "2026-10-26"}})
+        self.assertEqual(json.loads(response.body)["status"], 0)
+        self.assertEqual(Site.received, ["/px-x/query"])
+        self.assertEqual(json.loads(Site.bodies[0]), {**page_body, "businessTime": "2026-10-26"})
+        self.assertIsNone(self.transport.templates.items["/px-x/query"]["body"], "a plain replay still sends none")
 
     async def test_a_template_outlives_its_frame_only_where_the_main_frame_fallback_is_on(self):
         await self.page.goto(self.origin + "/portal_page.html")
