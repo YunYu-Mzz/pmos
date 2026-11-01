@@ -232,7 +232,10 @@ class Engine:
             try:
                 response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request})
             except Fault as fault:
-                if request.get("transport") == "ui" and fault.category == "local" and fault.code not in PAGE_ANSWERED_CODES:
+                if (request.get("transport") == "ui" and fault.category == "local" and fault.code not in PAGE_ANSWERED_CODES
+                        # A dropdown that lists others, only not this option (an old one): the page works
+                        # (Anhui r19 2026-11-01 15:48:33: two such bootstraps and a prime stopped the province).
+                        and not (fault.code == "select_option_missing" and (fault.detail or {}).get("options_listed"))):
                     self._page_operation_failed(fault, dataset)
                 if fault.unsent:
                     # The request gate proves nothing got out: the identity
@@ -1135,7 +1138,7 @@ class Engine:
             elif fault.category == "local":
                 # The page could not be driven (Anhui 13:14: select_option_missing): only this
                 # report cools down; the province goes on.
-                self._hold_unsent(spec.id, "prime_" + fault.code)
+                self._hold_unsent(spec.id, "prime_" + fault.code, fault.detail)
                 return 1
             raise
         record = self.samples.store(spec.id, prime["period"], result.response.body, ".json", scope=PRIME_SCOPE,

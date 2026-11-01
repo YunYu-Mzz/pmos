@@ -17,9 +17,15 @@ const drop = document.getElementById('drop');
 for (const [text, value] of options) {
   const item = document.createElement('div'); item.className = 'el-select-dropdown__item'; item.textContent = text;
   item.__vue__ = {value}; drop.append(item);
-  item.onclick = () => { pick.value = text; drop.classList.add('hidden'); };
+  item.onclick = () => { if (drop.dataset.fading) return; pick.value = text; drop.classList.add('hidden'); };
 }
 const pick = document.getElementById('pick');
-pick.onclick = () => drop.classList.remove('hidden');
+// ?toggle: as Element UI's select, a click on the open dropdown closes it, and its items stay visible while it fades
+// out, not answering clicks (Anhui r19 15:48:20, form_value_not_committed after a failed bootstrap left it open).
+pick.onclick = () => {
+  if (!location.search.includes('toggle')) return drop.classList.remove('hidden');
+  if (drop.classList.contains('hidden')) { drop.dataset.fading = ''; return drop.classList.remove('hidden'); }
+  drop.dataset.fading = '1'; setTimeout(() => { drop.classList.add('hidden'); drop.dataset.fading = ''; }, 300);
+};
 pick.onkeydown = e => { if (e.key === 'Escape') drop.classList.add('hidden'); };
 </script></body></html>

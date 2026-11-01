@@ -409,6 +409,35 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await self.page.evaluate("window.queries"), 0, "filling never queries")
         self.assertEqual(Site.received, [])
 
+    async def test_a_failed_choice_leaves_the_dropdown_closed_so_the_next_one_can_work(self):
+        """Anhui r19 15:48:20: the bootstrap's missing option left it open; the prime's click closed it instead."""
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/select_page.html?toggle=1")
+        frame = self.page.main_frame
+        with self.assertRaises(Fault) as caught:
+            await ui.fill(frame, {"kind": "select", "label": "断面名称", "value": "不存在的线"}, 1)
+        self.assertEqual(caught.exception.code, "select_option_missing")
+        await self.page.evaluate("document.getElementById('pick').value = ''")
+        await ui.fill(frame, {"kind": "select", "label": "断面名称", "value": "不存在的线", "any_listed": True}, 5)
+        self.assertEqual(await self.page.input_value("#pick"), "甲线")
+        self.assertEqual(await self.page.evaluate("window.queries"), 0)
+
+    async def test_a_dropdown_something_else_left_open_is_closed_first(self):
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/select_page.html?toggle=1")
+        await self.page.click("#pick")
+        await ui.fill(self.page.main_frame, {"kind": "select", "label": "断面名称", "value": "乙线"}, 5)
+        self.assertEqual(await self.page.input_value("#pick"), "乙线")
+
+    async def test_a_value_that_never_commits_says_which_field_and_what_it_holds(self):
+        from pmos.browser import ui
+        await self.page.goto(self.origin + "/select_page.html")
+        await self.page.evaluate("document.querySelectorAll('.el-select-dropdown__item').forEach(i => i.onclick = () => {})")
+        with self.assertRaises(Fault) as caught:
+            await ui.fill(self.page.main_frame, {"kind": "select", "label": "断面名称", "value": "乙线"}, 1)
+        self.assertEqual(caught.exception.code, "form_value_not_committed")
+        self.assertEqual(caught.exception.detail, {"field": "断面名称", "wanted": "乙线", "got": "甲线"})
+
     async def test_a_filterable_select_is_judged_by_its_value_after_it_has_settled(self):
         """Anhui 2026-11-01 11:31: the input was blank for a tick after Escape (select_value_changed_by_reading)."""
         request = {"transport": "ui", "action": "options", "frame": "/filterable_select_page.html",

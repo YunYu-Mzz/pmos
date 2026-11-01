@@ -396,6 +396,15 @@ async def _field(frame, field: dict):
     return locator
 
 
+async def _close_dropdown(locator, listed) -> None:
+    """Leave no select open (Anhui r19 2026-11-01 15:48:20): the next click on it would close it, not open it,
+    and its items, still visible while it fades out, would not answer."""
+    await locator.press("Escape")
+    deadline = asyncio.get_running_loop().time() + 2
+    while await listed.count() and asyncio.get_running_loop().time() < deadline:
+        await asyncio.sleep(0.1)
+
+
 async def fill(frame, field: dict, timeout: float) -> None:
     locator = await _field(frame, field)
     value = field["value"]
@@ -406,8 +415,10 @@ async def fill(frame, field: dict, timeout: float) -> None:
         await locator.press("Enter")
         await locator.press("Tab")
     elif field["kind"] == "select":
-        await locator.click()
         listed = frame.locator(".el-select-dropdown__item:visible")
+        if await listed.count():
+            await _close_dropdown(locator, listed)        # a click would only close what is open
+        await locator.click()
         deadline = asyncio.get_running_loop().time() + min(timeout, 10)
         if field.get("any_listed"):
             # A template prime (Anhui 2026-11-01 14:49): only the page's own request is wanted, and the
@@ -416,22 +427,29 @@ async def fill(frame, field: dict, timeout: float) -> None:
                 await asyncio.sleep(0.1)
             value = ((await listed.first.text_content()) or "").strip() if await listed.count() else ""
             if not value:
-                raise Fault("select_option_missing", "local", detail={
-                    "select_label": field.get("label") or field.get("placeholder"), "select_option": None,
-                    "options_listed": await listed.count(), "matches": 0})
+                detail = {"select_label": field.get("label") or field.get("placeholder"), "select_option": None,
+                          "options_listed": await listed.count(), "matches": 0}
+                await _close_dropdown(locator, listed)
+                raise Fault("select_option_missing", "local", detail=detail)
         option = listed.filter(has_text=re.compile(r"^\s*" + re.escape(value) + r"\s*$"))
         while await option.count() != 1:
             if asyncio.get_running_loop().time() > deadline:
-                raise Fault("select_option_missing", "local", detail={
-                    "select_label": field.get("label") or field.get("placeholder"), "select_option": value,
-                    "options_listed": await listed.count(), "matches": await option.count()})
+                detail = {"select_label": field.get("label") or field.get("placeholder"), "select_option": value,
+                          "options_listed": await listed.count(), "matches": await option.count()}
+                await _close_dropdown(locator, listed)
+                raise Fault("select_option_missing", "local", detail=detail)
             await asyncio.sleep(0.1)
         await option.click()
     else:
         raise Fault("form_field_kind_unknown", "local")
     await settled(frame, timeout)
-    if await locator.input_value() != value:
-        raise Fault("form_value_not_committed", "local")
+    loop = asyncio.get_running_loop()
+    commit = loop.time() + min(timeout, 3)
+    while (current := await locator.input_value()) != value:
+        if loop.time() > commit:
+            raise Fault("form_value_not_committed", "local", detail={
+                "field": field.get("label") or field.get("placeholder"), "wanted": value, "got": current})
+        await asyncio.sleep(0.1)
 
 
 _OPTION_ITEMS_JS = """items => items.map(e => {

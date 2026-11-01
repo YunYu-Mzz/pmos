@@ -1335,6 +1335,33 @@ class UnlistedBootstrapOption(unittest.IsolatedAsyncioTestCase):
         samples = engine.ledger.db.execute("SELECT kind, scope FROM attempts WHERE kind='sample'").fetchall()
         self.assertEqual([tuple(r) for r in samples], [("sample", "template_prime")], "the prime is a sample, not the task")
 
+    async def test_options_the_dropdown_does_not_list_never_stop_the_province(self):
+        """Anhui r19 15:48:33: three reports' old options in a row counted as a failing page and blocked everything."""
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        engine = self.engine(tmp)
+        self.transport.capture = False
+        for _ in range(4):
+            with self.assertRaises(Fault):
+                await engine.request("collect", {"transport": "ui", "frame": "infoCode=lines", "action": "query",
+                                                  "path": "/px-test/lines", "method": "POST",
+                                                  "fields": [{"kind": "select", "label": "联络线名称", "value": "旧"}]},
+                                     {"kind": "json"}, dataset="lines", period=TODAY, scope="")
+            self.clock.advance(5)
+        self.assertIsNone(engine.state.blocked())
+        self.assertFalse(engine.state.read("page_operation_failures"))
+
+    async def test_a_dropdown_listing_nothing_still_counts_as_a_failing_page(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        engine = self.engine(tmp)
+        self.transport.queue = [Fault("select_option_missing", "local", unsent=True, detail={"options_listed": 0})]
+        self.transport.send = FakeTransport.send.__get__(self.transport)
+        with self.assertRaises(Fault):
+            await engine.request("collect", {"transport": "ui", "frame": "x", "action": "query", "path": "/px-test/lines",
+                                              "method": "POST", "fields": []}, {"kind": "json"}, dataset="lines", period=TODAY, scope="")
+        self.assertEqual(len(engine.state.read("page_operation_failures")), 1)
+
     async def test_a_prime_that_does_not_help_cools_the_report_down_as_before(self):
         tmp = TempDir()
         self.addCleanup(tmp.cleanup)
