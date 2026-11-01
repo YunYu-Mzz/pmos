@@ -54,6 +54,17 @@ def read_manifest(root: Path) -> tuple[dict, str]:
     return manifest, digest
 
 
+def publish_lag(title: str) -> int:
+    """Days a report's day is held back before it is asked for (PMOS saves an empty or partial answer for good).
+
+    As Anhui (2026-11-01) and Liaoning's lesson 22: an actual report is published the next day (非市场机组总出力
+    10-29/10-30 were empty the same day, 96 points later). What looks ahead (预测, 日前, a 计划 that is not its
+    执行情况) waits 1 day, never the running one; everything else waits 2.
+    """
+    ahead = "预测" in title or "日前" in title or ("计划" in title and "执行" not in title)
+    return 1 if ahead else 2
+
+
 def report_spec(source: dict, rule: dict, manifest_sha256: str) -> dict:
     """One legacy report source as a PMOS spec (never enabled here)."""
     kind, number, dataset = source.get("period"), source.get("number"), source["dataset"]
@@ -82,7 +93,8 @@ def report_spec(source: dict, rule: dict, manifest_sha256: str) -> dict:
     return {
         "id": dataset, "name": source.get("title") or dataset,
         "status": "verified" if proofs else "candidate",
-        "period": {"kind": kind, "start": PERIOD_START[kind], "end": "today"},
+        "period": {"kind": kind, "start": PERIOD_START[kind], "end": "today",
+                   **({"lag_days": publish_lag(source.get("title") or dataset)} if kind == "day" else {})},
         "request": {"transport": "component", "method": source.get("method", "POST"), "path": endpoint,
                     "frame": f"/pdbln/report/PdblnReport{number}", "open_url": f"{APP}/#{route}",
                     **({"site_menu": {"source": source["source"], "route": route}} if source.get("source") else {}),

@@ -171,8 +171,28 @@ class GeneratedSpecs(unittest.TestCase):
         self.assertEqual(held["excluded"]["node_price"], ["legacy_source_hold"])
 
 
+class PublishLag(unittest.TestCase):
+    """Liaoning lesson 22 / Anhui 2026-11-01: an empty or partial running day would be saved for good."""
+
+    def test_actual_reports_wait_two_days_and_forward_looking_ones_one(self):
+        lag = migration.publish_lag
+        self.assertEqual([lag("非市场机组总出力"), lag("实际负荷"), lag("发输变电设备检修计划执行情况（日）")], [2, 2, 2])
+        self.assertEqual([lag("非市场机组总出力预测"), lag("日前各时段出清电力及平均电价"), lag("发输变电设备检修计划（日）")],
+                         [1, 1, 1])
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        built = migration.build_specs(legacy_root(tmp.path))
+        days = [spec for spec in built["specs"].values() if spec["period"]["kind"] == "day"]
+        self.assertTrue(days and all(spec["period"]["lag_days"] in (1, 2) for spec in days))
+
+
 class Handoff(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
+        # Reports published as the day runs: these tests are about legacy tombstones, not publication lag.
+        from unittest.mock import patch
+        lag = patch.object(migration, "publish_lag", lambda title: 0)
+        lag.start()
+        self.addCleanup(lag.stop)
         self.tmp = TempDir()
         self.addCleanup(self.tmp.cleanup)
         self.clock = Clock()
