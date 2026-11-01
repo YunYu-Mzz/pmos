@@ -113,6 +113,21 @@ class ExtractTests(unittest.TestCase):
         self.assertFalse(kept("2026年公告", "2026年a.pdf", fyear="2025", businessYear="2025"))
         self.assertTrue(kept("2026年公告", "2026年a.pdf", fyear="2025", businessYear="2026"))
         self.assertEqual(len(documents.extract([record("g", "公告", ["a"], fyear="2025")], DOCUMENTS)), 1, "no rule, no filter")
+
+    def test_a_record_naming_no_year_goes_by_its_publication_date_when_the_column_says_so(self):
+        """Liaoning, user 2026-11-01: "161 个要取". 1_790_000_000_000 ms is 2026-09-21; 1_700_000_000_000 is 2023-11-15."""
+        block = {**DOCUMENTS, "business_year": 2026, "undated_by_published": True}
+        def kept(title, operate=1_790_000_000_000, **fields):
+            return bool(documents.extract([record("g", title, ["a"], operate=operate, **fields)], block))
+        self.assertTrue(kept("市场干预情况原始日志"))
+        self.assertFalse(kept("市场干预情况原始日志", operate=1_700_000_000_000), "published in another year")
+        self.assertFalse(kept("2025年公告"), "a year is named: the date does not override it")
+        self.assertFalse(kept("公告", fyear="2025"))
+        self.assertTrue(kept("公告", fyear="2026", operate=1_700_000_000_000))
+        self.assertFalse(bool(documents.extract([record("g", "市场干预情况原始日志", ["a"])],
+                                                {**DOCUMENTS, "business_year": 2026})), "without the key it stays out")
+        with self.assertRaisesRegex(documents.DocumentError, "undated_by_published"):
+            documents.check({**DOCUMENTS, "undated_by_published": "yes"})
         with self.assertRaisesRegex(documents.DocumentError, "business_year"):
             documents.check({**DOCUMENTS, "business_year": "2026"})
 

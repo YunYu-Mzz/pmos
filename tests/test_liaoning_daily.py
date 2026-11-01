@@ -377,6 +377,8 @@ class RealColumns(unittest.TestCase):
                 self.assertIn(spec.status, ("sampled", "verified"))
                 self.assertIs(spec.period["daily"], True)
                 self.assertEqual(spec.documents["business_year"], 2026)
+                self.assertIs(spec.documents["undated_by_published"], True)
+                self.assertIs(spec.documents["empty_file_settles"], True)
                 self.assertIs(spec.documents["stop_at_known"], True)
 
     def test_the_three_member_lists_are_listed_every_day_with_their_member_type(self):
@@ -516,6 +518,52 @@ class Columns(unittest.IsolatedAsyncioTestCase):
         path.write_text(json.dumps({**json.loads(path.read_text()), "active": {"key": "x"}}))
         with self.assertRaisesRegex(ValueError, "not_settled"):
             migration.list_lane(root, self.province.datasets())
+
+    def test_the_plan_counts_files_the_rule_takes_beyond_the_legacy_queue(self):
+        root = self.queue(outcomes=["f1"])
+        listed = root / migration.NATIVE_LISTS / self.LEGACY / "2026-11-01" / "1" / "abc" / "response.json"
+        listed.write_text(json.dumps({"status": 0, "data": {"list": [row("g1", "2026年公告", "f1"), row("g2", "市场日志", "f9"),
+                                                                       row("g3", "2025年公告", "f8")]}}))
+        lane = migration.list_lane(root, self.province.datasets())
+        self.assertEqual(lane["files_beyond_the_legacy_queue"], {self.NAME: 1}, "f9 only: f1 is saved, f8 is another year")
+        self.assertEqual(lane["will_be_asked"], lane["first_listing_pages"] + 1)
+        self.assertEqual(migration.list_lane(root, self.province.datasets(), only=["pub_jyjgJbxx"])["files_beyond_the_legacy_queue"], {})
+
+    async def test_a_zero_byte_file_settles_alone_and_the_column_goes_on(self):
+        root = self.queue(queued=["f1", "f2"])
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        migration.apply_daily_lane(ledger, migration.list_lane(root, self.province.datasets(), only=[self.NAME]), "同意",
+                                   source_id="liaoning-lists-lane")
+        ledger.close()
+        engine = self.engine()
+        self.transport.queue += [page([row("g2", "2026年9月公告", "f1", "f2")]), Response(200, "application/pdf", b""),
+                                 Response(200, "application/pdf", PDF)]
+        for _ in range(8):
+            await engine.tick()
+            self.clock.advance(3)
+        from pmos.documents import item_scope
+        statuses = sorted((row_["status"], row_["reason"]) for row_ in engine.ledger.db.execute(
+            "SELECT status, reason FROM tasks WHERE dataset=? AND scope IN (?, ?)", (self.NAME, item_scope("f1"), item_scope("f2"))))
+        self.assertEqual(statuses, [("empty", "empty_file"), ("saved", None)])
+        self.assertEqual(engine.dataset_holds(), {})
+        self.assertIsNone(engine.state.blocked())
+        self.assertEqual([item["reason"] for item in engine.state.read("isolated_items")], ["empty_file"], "listed for review")
+
+    async def test_a_file_with_the_wrong_bytes_still_holds_the_column(self):
+        root = self.queue(queued=["f1", "f2"])
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        migration.apply_daily_lane(ledger, migration.list_lane(root, self.province.datasets(), only=[self.NAME]), "同意",
+                                   source_id="liaoning-lists-lane")
+        ledger.close()
+        engine = self.engine()
+        self.transport.queue += [page([row("g2", "2026年9月公告", "f1", "f2")]), Response(200, "text/html", b"<html>")]
+        for _ in range(4):
+            try:
+                await engine.tick()
+            except Exception:
+                pass
+            self.clock.advance(3)
+        self.assertIn(self.NAME, {**engine.dataset_holds(), **({engine.state.blocked()["dataset"]: 1} if engine.state.blocked() else {})})
 
     async def test_only_the_files_left_are_asked_and_the_column_is_listed_again_tomorrow(self):
         root = self.queue(outcomes=["f1"], queued=["f2"], empty=["f3"])

@@ -27,6 +27,7 @@ from collections import Counter
 from pathlib import Path
 
 from ..contracts import canonical
+from ..documents import extract as extract_documents
 from ..engine import document_identity, task_identity
 from ..faults import Fault
 from ..queue_audit import _source_rule_refs
@@ -539,11 +540,23 @@ def list_lane(root: Path, specs: dict, account_alias: str = "liaoning-production
     if only is not None and len(datasets) != len(set(only)):
         raise ValueError("list_lane_only_unknown:" + ",".join(sorted(set(only) - set(names))))
     asked_pages, asked_files = sum(pages[name] for name in datasets), sum(left[name] for name in datasets)
+    # Files the columns' own rule takes that the legacy queue never held (no year named, published this year), as listed so far.
+    held = {job["attachment_id"] for job in (*queue["outcomes"].values(), *queue["pending"].values())}
+    beyond = Counter()
+    for name in datasets:
+        if specs[name].documents is not None:
+            found = set()
+            for path in (root / NATIVE_LISTS / specs[name].source["legacy_dataset"]).glob("*/*/*/response.json"):
+                page = (json.loads(path.read_bytes()).get("data") or {}).get("list") or []
+                found |= {item["attachment"]["id"] for item in extract_documents(page, specs[name].documents)}
+            if found - held:
+                beyond[name] = len(found - held)
     return {"rows": rows, "states": states, "per_dataset": {name: dict(tally) for name, tally in report.items() if tally},
             "datasets": datasets, "columns": len(names), "answered_without_a_file": answered, "resend_empty": resend_empty,
             "withheld_year_conflict": withheld, "first_listing_pages": asked_pages, "files_left_to_download": asked_files,
             "first_listing_pages_all_columns": sum(pages.values()), "files_left_to_download_all_columns": sum(left.values()),
-            "one_snapshot": True, "will_be_asked": asked_pages + asked_files,
+            "files_beyond_the_legacy_queue": dict(beyond),
+            "one_snapshot": True, "will_be_asked": asked_pages + asked_files + sum(beyond.values()),
             "snapshot_sha256": digest([[key, value.key, states.get(key, "saved")] for key, value in rows])}
 
 

@@ -706,9 +706,21 @@ class Engine:
         identity = self.document_identity(spec, item)
         if self._skip_consumed(spec, period, scope, identity):
             return None
-        result = await self.request("collect", spec.build_download(item), response_spec,
-                                    dataset=spec.id, period=period, scope=scope, identity=identity,
-                                    lane=spec.source.get("lane"))
+        try:
+            result = await self.request("collect", spec.build_download(item), response_spec,
+                                        dataset=spec.id, period=period, scope=scope, identity=identity,
+                                        lane=spec.source.get("lane"))
+        except Fault as fault:
+            if fault.code != "empty_file" or not spec.documents.get("empty_file_settles"):
+                raise
+            # The site answered this one file with nothing (Liaoning: three of its July files, on 10-29 and again 11-01).
+            # Never asked again by itself, listed for review; the column's other files and new listings go on.
+            self.ledger.settle_task(spec.id, period, "empty", scope=scope, reason="empty_file")
+            entry = {"dataset": spec.id, "period": period, "scope": scope, "reason": "empty_file", "category": fault.category,
+                     "http_status": fault.http_status, "file": item["attachment"].get("name"), "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+            self.state.write("isolated_items", (self.state.read("isolated_items", []) or [])[-999:] + [entry])
+            self.state.event("document_empty_file", **{k: v for k, v in entry.items() if v is not None})
+            return None
         if result.outcome.result != "saved":
             self.ledger.settle_task(spec.id, period, "empty", scope=scope, reason="verified_empty_response")
             return result

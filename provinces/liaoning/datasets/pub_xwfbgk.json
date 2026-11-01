@@ -150,7 +150,9 @@
     "download_response": {
       "kind": "document"
     },
-    "business_year": 2026
+    "business_year": 2026,
+    "undated_by_published": true,
+    "empty_file_settles": true
   },
   "source": {
     "legacy": "liaoning/state/local_adaptation_20261020/adapters",
@@ -174,6 +176,11 @@
       "at": "2026-11-01T17:00:00+08:00",
       "event": "sampled_by_legacy_owner",
       "note": "the legacy collector listed this column to its end every day up to 2026-11-01 (active_manifest proof nonempty, queue saved)"
+    },
+    {
+      "at": "2026-11-01T17:40:00+08:00",
+      "event": "files_scope_widened",
+      "note": "user 2026-11-01: \"3 个文件重发，161 个要取\": records naming no year go by their publication date; a 0-byte file settles alone"
     }
   ]
 }

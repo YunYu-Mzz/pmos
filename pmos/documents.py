@@ -16,6 +16,8 @@ fmonth, fday, ...}``. A documents spec keeps the list call in ``request``
                  {"title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月", "kind": "month"}],
       "stop_at_known": true,                       # stop listing at a page of known records
       "business_year": 2026,                       # download only this year's files (see _year_admits)
+      "undated_by_published": true,                # ... and files of records naming no year, published in it
+      "empty_file_settles": true,                  # a 0-byte answer settles that one file; the column goes on
       "download": {"transport": "fetch", "method": "GET",
                    "path": "/px-settlement-infpubmeex/fileService/download",
                    "query": {"fileId": "{attachment[id]}"}},
@@ -39,7 +41,7 @@ from .periods import CHINA
 # week_of_day: the ISO week of a matched date (a weekly report titled by its date range).
 TITLE_KINDS = ("day", "month", "year", "week", "quarter", "week_of_day")
 KEYS = {"fields", "published_format", "filter", "expect", "attachments", "period", "stop_at_known",
-        "download", "download_response", "record_only", "business_year"}
+        "download", "download_response", "record_only", "business_year", "undated_by_published", "empty_file_settles"}
 YEAR_IN_TEXT = re.compile(r"(?<!\d)(20\d{2})\s*年")
 
 
@@ -57,6 +59,9 @@ def check(block: dict) -> None:
         raise DocumentError("documents.download must be a request with a transport")
     if "business_year" in block and (type(block["business_year"]) is not int or not 2000 <= block["business_year"] <= 2099):
         raise DocumentError("documents.business_year must be a year")
+    for key in ("undated_by_published", "empty_file_settles"):
+        if key in block and type(block[key]) is not bool:
+            raise DocumentError(f"documents.{key} must be true or false")
     for rule in block.get("period", []):
         if not isinstance(rule, dict) or not ({"fields", "title_regex"} & set(rule)):
             raise DocumentError("each documents.period rule needs fields or title_regex")
@@ -144,14 +149,15 @@ def _attachments(record: dict, spec: dict) -> list[dict]:
     return out
 
 
-def _year_admits(record: dict, title: str, name: str, year: int) -> bool:
+def _year_admits(record: dict, title: str, name: str, year: int, undated_published: str | None = None) -> bool:
     """Is this file of the business year? The rule the Liaoning legacy collector kept (attachment_dimensions.expand_records).
 
     The year is ``fyear``, else ``businessYear``, else the first year in the title; never the publication date, and a
     record that names none is out. A title naming another year is out whatever the fields say: the legacy collector
     held those for review and never asked them. ``fyear`` can be the year a record was published instead: such a record
     is still in when the title names only this year, ``businessYear`` does not disagree, and this file's own name names
-    only it too.
+    only it too. ``undated_published``: the publication date of a record naming no year at all, when the column takes
+    those by it (Liaoning, user 2026-11-01: market intervention logs and notices carry no year).
     """
     target = str(year)
     title_years = set(YEAR_IN_TEXT.findall(title))
@@ -165,6 +171,8 @@ def _year_admits(record: dict, title: str, name: str, year: int) -> bool:
         selected = next(iter(title_years), None)
     if str(selected) == target:
         return True
+    if selected is None and undated_published:
+        return undated_published[:4] == target
     return (title_years == {target} and str(record.get("businessYear") or "") in ("", target)
             and set(YEAR_IN_TEXT.findall(name)) == {target})
 
@@ -191,7 +199,9 @@ def extract(records: list | None, block: dict) -> list[dict]:
         attachments = [{"id": f"record:{record_id}", "name": ""}] if block.get("record_only") else \
             _attachments(record, block.get("attachments", {}))
         for attachment in attachments:
-            if "business_year" in block and not _year_admits(record, title, attachment["name"], block["business_year"]):
+            if "business_year" in block and not _year_admits(
+                    record, title, attachment["name"], block["business_year"],
+                    published if block.get("undated_by_published") else None):
                 continue
             period, basis = derive_period(record, title, block.get("period", []), published, attachment["name"])
             items.append({"record_id": str(record_id), "title": title, "published": published,
