@@ -60,7 +60,7 @@ class Legacy:
 
 
 class RealSpecs(unittest.TestCase):
-    def test_the_engine_lane_counts_days_nobody_ever_asked(self):
+    def test_the_engine_lane_counts_days_without_any_original(self):
         """033's originals: power_reports and report_engine together; what neither has is asked too."""
         import tempfile
         with tempfile.TemporaryDirectory() as directory:
@@ -69,9 +69,9 @@ class RealSpecs(unittest.TestCase):
             legacy.engine(name, day(3), 96)
             result = migration.daily_lane(legacy.root, REAL.datasets(), names=(name,))
         self.assertEqual(result["per_dataset"][name]["consumed"], 1)
-        self.assertIn(day(4), result["per_dataset"][name]["never_asked"])
-        self.assertNotIn(day(3), result["per_dataset"][name]["never_asked"])
-        self.assertEqual(result["will_be_asked"], len(result["per_dataset"][name]["never_asked"]))
+        self.assertIn(day(4), result["per_dataset"][name]["no_original"])
+        self.assertNotIn(day(3), result["per_dataset"][name]["no_original"])
+        self.assertEqual(result["will_be_asked"], len(result["per_dataset"][name]["no_original"]))
 
     def test_033_is_not_in_this_lane_since_the_site_moved_it_to_finereport(self):
         """2026-10-23, route spotgoodsSum: the legacy worker excluded it here; its originals end on 10-16."""
@@ -121,7 +121,7 @@ class Classification(unittest.TestCase):
         self.legacy.queue(name, day(3), handled=False)
         default = migration.daily_lane(self.legacy.root, REAL.datasets(), names=(name,))
         chosen = migration.daily_lane(self.legacy.root, REAL.datasets(), names=(name,), early_empty_consumed=True)
-        never = len(default["per_dataset"][name]["never_asked"])
+        never = len(default["per_dataset"][name]["no_original"])
         self.assertEqual((len(default["rows"]), default["will_be_asked"] - never, default["states"]), (1, 2, {}))
         self.assertEqual((len(chosen["rows"]), chosen["will_be_asked"] - never), (2, 1), "the day never answered is still asked")
         self.assertEqual(chosen["states"], {f"daily:{name}:{day(2)}": "empty"})
@@ -242,7 +242,7 @@ class Handoff(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(dates[solar], [day(2)], "its same-day empty answer is asked again, once published (lag 2)")
         self.assertIsNone(engine.state.blocked())
 
-    async def test_an_early_empty_day_the_user_chose_to_keep_is_never_asked_and_says_it_was_empty(self):
+    async def test_an_early_empty_day_the_user_chose_to_keep_is_no_original_and_says_it_was_empty(self):
         ledger = Ledger(self.province.instance() / "ledger.sqlite3")
         spec = self.province.datasets()["hydro_daily"]
         from pmos.engine import task_identity

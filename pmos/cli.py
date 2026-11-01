@@ -412,6 +412,20 @@ def cmd_release_early(province: Province, args) -> None:
     _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
 
 
+def cmd_release_interrupted(province: Province, args) -> None:
+    """Offline, user-approved: an answer lost when the worker was stopped; its item may be asked once more."""
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        if ledger.unsettled():
+            raise ValueError("unsettled_attempt")
+        attempt, dataset, period, scope = ledger.release_interrupted(args.attempt, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("interrupted_answer_released", attempt=attempt, dataset=dataset,
+                                                    period=period, scope=scope, approval=args.approval)
+    _print({"province": province.id, "released": attempt, "dataset": dataset, "period": period, "scope": scope})
+
+
 def cmd_release_discovery(province: Province, args) -> None:
     """After review: a report whose dropdown discovery was held reads its options again (next day's roll-forward)."""
     if not args.approval.strip():
@@ -751,6 +765,9 @@ def main(argv: list[str] | None = None) -> int:
                                  help="offline: user-approved, reviewed page-menu failures (or one stopped mid-navigation) consume nothing")
         ru.add_argument("attempts", help="attempt ids, e.g. 3-16 or 3,4,17")
         ru.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        ri = commands.add_parser("release-interrupted", help="offline: an answer lost when the worker was stopped may be asked once more")
+        ri.add_argument("attempt", type=int)
+        ri.add_argument("--approval", required=True, help="the user's approval, verbatim")
         rdisc = commands.add_parser("release-discovery", help="after review: a held dropdown discovery runs again")
         rdisc.add_argument("dataset", nargs="?")
         rdisc.add_argument("--all", action="store_true", help="every held discovery")
@@ -828,7 +845,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "backfill", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "release-discovery", "review-unsent", "prioritize", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-discovery", "review-unsent", "prioritize", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -866,6 +883,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_release_early(province, args)
             elif args.command == "release-discovery":
                 cmd_release_discovery(province, args)
+            elif args.command == "release-interrupted":
+                cmd_release_interrupted(province, args)
             elif args.command == "review-unsent":
                 cmd_review_unsent(province, args)
             elif args.command == "prioritize":

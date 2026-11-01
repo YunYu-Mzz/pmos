@@ -435,12 +435,14 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
             states.update({f"daily:{name}:{day}": "empty" for day in early})
             consumed = sorted(consumed + early)
         rows += [(f"daily:{name}:{day}", task_identity("liaoning", account_alias, spec, day, "")) for day in consumed]
+        # No original and no daily queue entry. It may still have been asked and interrupted: the engine queues'
+        # isolated_active_reviews say so of 09-10 and 09-13, which this report does not read.
         never = [day for day in spec.periods_to_collect() if day not in known]
         report[name] = {"consumed": len(consumed), "early_empty": early, "open": opened, "handled_without_original": failed,
-                        "never_asked": never}
+                        "no_original": never}
     return {"rows": rows, "states": states, "per_dataset": report, "datasets": list(names),
             "early_empty_consumed": early_empty_consumed,
-            "will_be_asked": sum(len(item["open"]) + len(item["never_asked"]) + (0 if early_empty_consumed else len(item["early_empty"]))
+            "will_be_asked": sum(len(item["open"]) + len(item["no_original"]) + (0 if early_empty_consumed else len(item["early_empty"]))
                                  for item in report.values()),
             "snapshot_sha256": digest([[key, identity.key, states.get(key, "saved")] for key, identity in rows])}
 

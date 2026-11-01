@@ -13,6 +13,9 @@ Environment=PMOS_DATA=/home/pmos/pmos-data
 ExecStart=/home/pmos/pmos/.venv/bin/python -m pmos %i run
 Restart=no
 KillSignal=SIGTERM
+# Only the worker: it finishes the request in flight. The whole cgroup would kill its Playwright driver too, and the answer
+# would be lost (Liaoning 2026-11-01 16:21: a 0.4 s query waited out 45 s as network_error and blocked the province).
+KillMode=mixed
 TimeoutStopSec=60
 
 [Install]

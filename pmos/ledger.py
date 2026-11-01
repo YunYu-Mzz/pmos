@@ -644,6 +644,37 @@ class Ledger:
             raise
         return reopened
 
+    def release_interrupted(self, attempt: int, approval: str) -> tuple:
+        """User-approved: an answer lost when the worker itself was stopped may be asked once more.
+
+        Liaoning 2026-11-01 16:21: ``systemctl stop`` also killed the Playwright driver, so a 0.4 s query waited
+        out its 45 s and was recorded unknown / network_error, with no HTTP status. Whether the site saw it cannot
+        be proven, so it was never ``not_sent``: the attempt keeps its outcome in the history and only stops
+        consuming its item, which is pending again (also if it was already isolated for it).
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("release_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            row = self.db.execute("SELECT * FROM attempts WHERE id=?", (attempt,)).fetchone()
+            if (row is None or row["kind"] != "collect" or row["outcome"] != "unknown" or row["http_status"] is not None
+                    or row["business_status"] is not None or row["reason"] not in ("network_error", "driver_lost", "interrupted")):
+                raise ValueError(f"attempt_{attempt}_is_not_an_interrupted_answer")
+            if self.db.execute("SELECT 1 FROM released_attempts WHERE attempt_id=?", (attempt,)).fetchone():
+                raise ValueError(f"attempt_{attempt}_already_released")
+            task = self.db.execute("SELECT status, reason FROM tasks WHERE dataset=? AND period=? AND scope=?",
+                                   (row["dataset"], row["period"], row["scope"])).fetchone()
+            if task is None or task["status"] not in ("pending", "failed"):
+                raise ValueError(f"attempt_{attempt}_task_is_settled")
+            self.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, approval, self.clock()))
+            self.db.execute("UPDATE tasks SET status='pending', reason=?, updated_at=? WHERE dataset=? AND period=? AND scope=?",
+                            (f"released_interrupted:{attempt}", self.clock(), row["dataset"], row["period"], row["scope"]))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+        return (attempt, row["dataset"], row["period"], row["scope"])
+
     def release_early(self, attempt: int, approval: str) -> tuple:
         """User-approved: an answer saved before its day was published (a partial or empty day) stops
         consuming its item, which is pending again and waits for its day (``lag_days``).

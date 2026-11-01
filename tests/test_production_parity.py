@@ -1374,6 +1374,58 @@ class UnlistedBootstrapOption(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(engine.ledger.db.execute("SELECT status FROM tasks").fetchone()[0], "pending")
 
 
+class InterruptedAnswer(unittest.IsolatedAsyncioTestCase):
+    """Liaoning 2026-11-01 16:21: systemctl stop killed the driver too; a 0.4 s query waited out 45 s as network_error."""
+
+    async def asyncSetUp(self):
+        self.tmp = TempDir()
+        self.addCleanup(self.tmp.cleanup)
+        self.clock = Clock()
+        province = make_province(self.tmp.path, [dataset("load", start=TODAY, response="json")],
+                                 policy={"response_interval_seconds": 1, "isolate_items": ["unknown"], "isolation_streak": 1})
+        answer = Response(200, "application/json", json.dumps({"status": 0, "data": [{"v": 1}]}).encode())
+        self.transport = FakeTransport(self.clock, default=answer)
+        self.transport.queue = [Fault("network_error", "network")]
+        self.engine = Engine(province, self.transport, instance=self.tmp.path / "var", clock=self.clock)
+        self.addCleanup(self.engine.ledger.close)
+        self.engine.state.set_control(collect=True)
+        await self.engine.tick()
+        self.assertEqual(self.engine.state.blocked()["reason"], "network_error")
+        self.attempt = self.engine.ledger.db.execute("SELECT MAX(id) FROM attempts").fetchone()[0]
+        self.engine.state.clear_block("network_error")
+        self.clock.advance(5)
+
+    async def test_without_a_release_the_item_is_isolated_and_its_report_paused(self):
+        await self.engine.tick()
+        self.assertEqual(len(self.transport.sent), 1, "never sent again")
+        self.assertEqual(self.engine.ledger.task("load", TODAY)["reason"], "isolated:consumed_identity_requires_review")
+        self.assertIn("load", self.engine.state.read("dataset_holds"))
+
+    async def test_released_it_is_asked_once_more_and_saved(self):
+        self.engine.ledger.release_interrupted(self.attempt, "同意")
+        await self.engine.tick()
+        self.assertEqual(len(self.transport.sent), 2)
+        self.assertEqual(self.engine.ledger.task("load", TODAY)["status"], "saved")
+        self.assertFalse(self.engine.state.read("dataset_holds", {}) or {})
+        row = self.engine.ledger.db.execute("SELECT outcome, reason FROM attempts WHERE id=?", (self.attempt,)).fetchone()
+        self.assertEqual(tuple(row), ("unknown", "network_error"), "the history keeps what was recorded")
+
+    async def test_an_item_already_isolated_for_it_can_still_be_released(self):
+        await self.engine.tick()
+        self.engine.ledger.release_interrupted(self.attempt, "同意")
+        self.assertEqual(self.engine.ledger.task("load", TODAY)["status"], "pending")
+
+    def test_only_an_answer_lost_with_no_status_can_be_released_once_with_the_users_words(self):
+        ledger = self.engine.ledger
+        with self.assertRaisesRegex(ValueError, "approval_required"):
+            ledger.release_interrupted(self.attempt, " ")
+        ledger.release_interrupted(self.attempt, "同意")
+        with self.assertRaisesRegex(ValueError, "already_released"):
+            ledger.release_interrupted(self.attempt, "同意")
+        with self.assertRaisesRegex(ValueError, "not_an_interrupted_answer"):
+            ledger.release_interrupted(999, "同意")
+
+
 class MidnightAndUnsent(unittest.IsolatedAsyncioTestCase):
     """Liaoning 2026-11-01 00:03: the midnight SSO refresh met a page operation; nothing was sent, a lane paused 1 h."""
 

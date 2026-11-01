@@ -185,6 +185,15 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r8：stop 打断在途请求（2026-11-01）
+
+16:21 第 A 步停 r6 时，`systemctl stop` 把 SIGTERM 发给整个 cgroup（KillMode 默认值），Playwright 驱动被杀，一条 0.4 秒的查询等满 45 秒，记成 `unknown / network_error`。辽宁不隔离 network 类故障，于是全省被封锁。
+
+- **以后怎么停：** `pmos liaoning stop-all`，等 unit 自己退出。`systemd-run` 和 `deploy/pmos@.service` 用 `KillMode=mixed`。
+- **`release-interrupted <attempt> --approval`：** 只允许 `unknown`、没有 HTTP 状态、原因是 network_error / driver_lost / interrupted 的采集请求。历史记录不改，任务回到 pending，再发一次。要用户批准，因为无法证明网站没收到。不放开的话，worker 轮到它会隔离，而辽宁 `isolation_streak=1`，整张报表随之暂停。
+
+`plan` 的 `never_asked` 改名 `no_original`：它只说明没有原件和日报队列记录，不说明没问过（09-10、09-13 问过，中断了）。
+
 ## r7：报表引擎三条线（2026-11-01）
 
 用户定的第二优先。10-23 网站把这三张报表搬到了 FineReport 页面（路由 `spotgoodsSum`）。
