@@ -1142,6 +1142,22 @@ class PageHealth(unittest.IsolatedAsyncioTestCase):
         failed = [e for e in events if e["phase"] == "page_recovery_failed"]
         self.assertEqual((failed[0]["code"], failed[0]["planned"]), ("portal_page_missing", True))
 
+    async def test_prioritized_datasets_go_first_and_the_rest_keeps_its_order(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        province = make_province(tmp.path, [dataset("aa", start=TODAY), dataset("bb", start=TODAY), dataset("cc", start=TODAY)],
+                                 policy={"response_interval_seconds": 1})
+        self.transport = FakeTransport(self.clock)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        engine.state.write("priority_datasets", ["cc"])
+        for _ in range(3):
+            await engine.tick()
+            self.clock.advance(2)
+        self.assertEqual([r["path"] for r in self.transport.sent], ["/px-test/cc", "/px-test/aa", "/px-test/bb"])
+
     async def test_a_lost_driver_leaves_the_send_unknown_writes_no_block_and_ends_the_worker(self):
         from pmos.faults import DriverLost
         engine = self.engine()

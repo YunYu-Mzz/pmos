@@ -387,6 +387,19 @@ class Engine:
             return task, missing
         return None, missing
 
+    def _prioritized(self, specs: list[DatasetSpec]) -> list[DatasetSpec]:
+        """``prioritize``: these datasets go first, in that order; the rest keeps the handoff order.
+
+        Anhui 2026-11-01: an acceptance run reaches the whole-day and per-option
+        reports only after ~150 date-only days; nothing else changes (lag,
+        priming, bootstrap and every check run as in normal collection).
+        """
+        first = self.state.read("priority_datasets", []) or []
+        if not first:
+            return specs
+        rank = {name: index for index, name in enumerate(first)}
+        return sorted(specs, key=lambda spec: rank.get(spec.id, len(rank)))
+
     def _waiting_publication(self, enabled: list[DatasetSpec]) -> list[str]:
         return sorted(spec.id for spec in enabled
                       if (newest := spec.newest_due()) and self.ledger.pending_after(spec.id, newest))
@@ -814,7 +827,7 @@ class Engine:
                 return await self._recover_query_lapse(lapse)
             self.seed()
             holds = self.dataset_holds()
-            enabled = [s for s in self.collection_specs() if s.id not in holds]
+            enabled = self._prioritized([s for s in self.collection_specs() if s.id not in holds])
             task, missing = self._next_sendable(enabled)
             if task is None:
                 await self.keep_session()
@@ -1418,7 +1431,7 @@ class Engine:
         them: that day and the scope whose single value is ``option``.
         """
         if period is None:
-            task = self.ledger.next_task([spec.id])
+            task = self.ledger.next_task([spec.id], newest=spec.newest_due())
         else:
             keys = [key for key, values in spec.scope_items() if option is not None and list(values.values()) == [option]]
             if len(keys) != 1:

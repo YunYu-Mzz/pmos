@@ -447,6 +447,18 @@ def cmd_review_unsent(province: Province, args) -> None:
             "tasks": [{"dataset": r[1], "period": r[2], "scope": r[3]} for r in reopened]})
 
 
+def cmd_prioritize(province: Province, args) -> None:
+    """These datasets are collected first (normal collection otherwise); --clear restores the handoff order."""
+    state = StateStore(province.instance() / "state")
+    names = [] if args.clear else [n for n in (args.datasets or "").split(",") if n]
+    unknown = [n for n in names if n not in province.datasets()]
+    if unknown or (not names and not args.clear):
+        raise ValueError("prioritize_datasets_unknown:" + ",".join(unknown) if unknown else "prioritize_datasets_required")
+    state.write("priority_datasets", names)
+    state.event("datasets_prioritized", datasets=",".join(names) or "-")
+    _print({"province": province.id, "priority_datasets": names})
+
+
 def cmd_extend_scope(province: Province, args) -> None:
     """Offline: the approved order (a superset of the scope) and the datasets seeded daily from their spec periods."""
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
@@ -677,6 +689,9 @@ def main(argv: list[str] | None = None) -> int:
                                   help="offline: user-approved, an answer saved before its day was published waits again")
         re_.add_argument("attempt", type=int)
         re_.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        pr = commands.add_parser("prioritize", help="these datasets are collected first (read by the running worker)")
+        pr.add_argument("datasets", nargs="?", help="comma-separated dataset ids, in order")
+        pr.add_argument("--clear", action="store_true", help="back to the handoff order")
         ru = commands.add_parser("review-unsent",
                                  help="offline: user-approved, reviewed page-menu failures (or one stopped mid-navigation) consume nothing")
         ru.add_argument("attempts", help="attempt ids, e.g. 3-16 or 3,4,17")
@@ -754,7 +769,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "release-discovery", "review-unsent", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-discovery", "review-unsent", "prioritize", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -794,6 +809,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_release_discovery(province, args)
             elif args.command == "review-unsent":
                 cmd_review_unsent(province, args)
+            elif args.command == "prioritize":
+                cmd_prioritize(province, args)
             elif args.command == "extend-scope":
                 cmd_extend_scope(province, args)
             elif args.command == "import-legacy-manifest":
