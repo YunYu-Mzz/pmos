@@ -25,7 +25,7 @@ from .paging import set_path
 
 STATUSES = ("candidate", "sampled", "verified", "enabled", "denied", "quarantined", "retired")
 TRANSPORTS = ("fetch", "component", "native", "ui", "finereport")
-RESPONSE_KINDS = ("json", "xlsx", "xls", "excel", "pdf", "binary", "document", "finereport_daily", "finereport_table")
+RESPONSE_KINDS = ("json", "xlsx", "xls", "excel", "pdf", "binary", "document", "finereport_daily", "finereport_table", "finereport_page")
 PLACEHOLDERS = set(periods.variables("day", "2026-01-01"))
 # A documents download request is rendered per attachment, not per period.
 DOWNLOAD_PLACEHOLDERS = {"record", "row", "attachment", "title", "record_id", "published", "period"}

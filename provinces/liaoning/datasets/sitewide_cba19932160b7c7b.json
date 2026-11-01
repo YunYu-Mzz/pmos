@@ -11,7 +11,7 @@
   "request": {
     "transport": "finereport",
     "method": "POST",
-    "path": "/px-basesystem-reportform/decision/view/form",
+    "path": "/px-basesystem-reportform/decision/view/report",
     "frame": "lnsnxh_rjsxx.cpt",
     "site_menu": {
       "source": "jyjg_rjsdl",
@@ -24,16 +24,26 @@
     "form": {
       "date_widget": "日期",
       "unit": null,
-      "follow_day": "2026-10-25"
+      "view": "report"
     }
   },
   "response": {
-    "kind": "finereport_daily"
+    "kind": "finereport_page"
   },
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "jyjg_rjsdl",
-    "note": "probed 2026-11-01: a .cpt report under /decision/view/report with a 日期 widget. Its stages and table are unknown until a probe follows one day: request and response here are placeholders."
+    "note": "followed 2026-10-25: parameters_d, then op=page_content answering {html, watermark, sheets, copyright}; its table's shape shows at the first try-report",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    },
+    "max_consecutive_empty": 30
   },
   "history": [
     {
@@ -45,6 +55,11 @@
       "at": "2026-11-01T20:25:00+08:00",
       "event": "probed",
       "note": "mapped, form ready, path /decision/view/report"
+    },
+    {
+      "at": "2026-11-01T22:30:00+08:00",
+      "event": "followed",
+      "note": "r17 probe: stages known"
     }
   ]
 }

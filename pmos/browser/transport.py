@@ -715,9 +715,14 @@ class PageTransport:
             return await finereport.probe(self.page, request, _Expect, self.timeout)
         if kind == "finereport":
             frame = await finereport.open_report(self.page, request, self.timeout, self.finereport_sessions)
-            return await finereport.query_day(self.page, frame, request["set"][request["date_field"]], _Expect, self.timeout,
-                                              self.finereport_sessions, request["frame"],
-                                              widget=(request.get("form") or {}).get("date_widget", finereport.DATE_WIDGET))
+            form = request.get("form") or {}
+            # The form's own widgets (a date and dropdowns), or its one date under the request's own field.
+            fields = (dict(request["set"]) if form.get("widgets_in_set")
+                      else {form.get("date_widget", finereport.DATE_WIDGET): request["set"][request["date_field"]]})
+            report = form.get("view") == "report"
+            return await finereport.query_day(self.page, frame, fields, _Expect, self.timeout, self.finereport_sessions, request["frame"],
+                                              stages=finereport.REPORT_STAGES if report else finereport.STAGES,
+                                              path=finereport.REPORT_PATH if report else finereport.PATH)
         raise Fault("transport_unknown", "local")
 
     async def _fetch(self, request: dict) -> Response:

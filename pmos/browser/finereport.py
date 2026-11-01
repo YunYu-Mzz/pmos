@@ -16,7 +16,7 @@ import time
 from urllib.parse import parse_qs, urlsplit
 
 from ..faults import Fault
-from ..finereport import MAPPING_PATH, PATH, SESSION_END, STAGES, html_rows
+from ..finereport import MAPPING_PATH, PATH, REPORT_PATH, REPORT_STAGES, SESSION_END, STAGES, html_rows
 from ..validate import Response
 from . import ui
 
@@ -38,11 +38,12 @@ _REOPEN_JS = """async source => {
 
 _INSTALL_JS = r"""() => {
   if (typeof FR === 'undefined' || typeof _g !== 'function' || !_g() || !_g().parameterEl) throw new Error('not_ready');
-  if (window.__pmosFrQueue) return false;
-  window.__pmosFrQueue = []; window.__pmosFrAjax = FR.ajax;
+  if (window.__pmosFrQueue && window.__pmosFrFilter === 2) return false;
+  window.__pmosFrQueue = window.__pmosFrQueue || []; window.__pmosFrAjax = window.__pmosFrAjax || FR.ajax; window.__pmosFrFilter = 2;
   FR.ajax = function (o) {
     const u = new URL(o.url || FR.servletURL, location.href), d = o.data || {}, op = d.op || u.searchParams.get('op'), cmd = d.cmd || u.searchParams.get('cmd');
-    if (cmd === 'form_getsource' || op === 'js_log' || /\/(preview|adaptive)\/info\/collect$/.test(u.pathname)) return;
+    if (cmd === 'form_getsource' || op === 'js_log' || op === 'fr_watermark' || op === 'fr_copyright'
+        || /\/(preview|adaptive)\/info\/collect$/.test(u.pathname) || /\/elite\/checkAssistantPermission$/.test(u.pathname)) return;
     window.__pmosFrQueue.push(o);
   };
   return true;
@@ -55,8 +56,15 @@ _PEEK_JS = """() => window.__pmosFrQueue.map(o => { const u = new URL(o.url || F
   return {path: u.pathname, method: (o.type || $.ajaxSettings.type || 'GET').toUpperCase(),
           op: d.op || u.searchParams.get('op'), cmd: d.cmd || u.searchParams.get('cmd')}; })"""
 
-_COMMIT_JS = """x => { const f = _g(), v = f.parameterEl.getWidgetByName(x.widget); v.setValue(x.date);
-  if (v.getValue() !== x.date) throw new Error('date_not_applied'); f.parameterCommit(); return v.getValue(); }"""
+_COMMIT_JS = """fields => { const f = _g();
+  for (const [name, value] of Object.entries(fields)) {
+    const w = f.parameterEl.getWidgetByName(name);
+    w.setValue(value);
+    if (w.getValue() !== value) throw new Error('date_not_applied');
+  }
+  f.parameterCommit(); return true; }"""
+
+_PAGES_JS = "() => { const p = window.contentPane; return p && Number.isInteger(p.reportTotalPage) ? p.reportTotalPage : null; }"
 
 _RELEASE_JS = "() => { const o = window.__pmosFrQueue.shift(); window.__pmosFrAjax.call(FR, o); return true; }"
 
@@ -300,7 +308,7 @@ async def probe(page, request: dict, expect, timeout: float) -> Response:
     return Response(200, "application/json", json.dumps({"status": 0, "data": found}, ensure_ascii=False).encode())
 
 
-async def _next_stage(frame, stage: tuple, timeout: float, *, first: bool) -> None:
+async def _next_stage(frame, stage: tuple, timeout: float, *, first: bool, path: str = PATH) -> None:
     """Exactly this stage's request waits in the queue (the form queues it from its previous answer)."""
     cmd, op, method = stage
     loop = asyncio.get_running_loop()
@@ -309,34 +317,36 @@ async def _next_stage(frame, stage: tuple, timeout: float, *, first: bool) -> No
         if loop.time() > deadline:
             raise Fault("finereport_stage_missing", "local", unsent=first, detail={"stage": cmd})
         await asyncio.sleep(0.05)
-    if queue != [{"path": PATH, "method": method, "op": op, "cmd": cmd}]:
+    if queue != [{"path": path, "method": method, "op": op, "cmd": cmd}]:
         raise Fault("finereport_stage_changed", "local", unsent=first, detail={"stage": cmd, "queued": len(queue)})
 
 
-def _is_stage(request, frame, cmd: str) -> bool:
+def _is_stage(request, frame, stage: tuple, path: str = PATH) -> bool:
+    cmd, op, method = stage
     try:
-        if request.frame != frame or urlsplit(request.url).path != PATH:
+        if request.frame != frame or urlsplit(request.url).path != path or request.method != method:
             return False
-        names = parse_qs(urlsplit(request.url).query).get("cmd", []) + parse_qs(request.post_data or "").get("cmd", [])
+        sent = {**parse_qs(urlsplit(request.url).query), **parse_qs(request.post_data or "")}
     except Exception:
         return False
-    return cmd in names
+    return sent.get("op", [None])[0] == op and (cmd is None or sent.get("cmd", [None])[0] == cmd)
 
 
-async def query_day(page, frame, date: str, expect, timeout: float, last: dict, source: str, *, widget: str = DATE_WIDGET) -> Response:
-    """The three stages of one day; the last answer, or the first that was no answer to go on from."""
+async def query_day(page, frame, fields: dict, expect, timeout: float, last: dict, source: str, *,
+                    stages: tuple = STAGES, path: str = PATH) -> Response:
+    """The stages of one day (``fields``: the form's widgets to set); the last answer, or the first that was no answer to go on from."""
     if await frame.evaluate(_PEEK_JS):
         last.pop(source, None)
         raise _unsent("finereport_queue_not_empty")
     try:
-        await frame.evaluate(_COMMIT_JS, {"date": date, "widget": widget})
+        await frame.evaluate(_COMMIT_JS, fields)
     except Exception:
         raise _unsent("finereport_date_not_applied") from None
-    for index, stage in enumerate(STAGES):
-        cmd = stage[0]
-        await _next_stage(frame, stage, timeout, first=index == 0)
+    for index, stage in enumerate(stages):
+        cmd, op = stage[0], stage[1]
+        await _next_stage(frame, stage, timeout, first=index == 0, path=path)
         try:
-            async with expect(page, "response", lambda r, c=cmd: _is_stage(r.request, frame, c), timeout=timeout * 1000) as captured:
+            async with expect(page, "response", lambda r, s=stage: _is_stage(r.request, frame, s, path), timeout=timeout * 1000) as captured:
                 await frame.evaluate(_RELEASE_JS)
             answer = await captured.value
             raw = await answer.body()
@@ -350,7 +360,7 @@ async def query_day(page, frame, date: str, expect, timeout: float, last: dict, 
             return Response(answer.status, answer.headers.get("content-type", ""), raw)
         if SESSION_END in raw:
             last.pop(source, None)
-            raise _unsent("finereport_session_ended", {"stage": cmd})
+            raise _unsent("finereport_session_ended", {"stage": cmd or op})
         if cmd == "parameters_d":
             try:
                 settled = json.loads(raw) == {"status": "success"}
@@ -364,5 +374,10 @@ async def query_day(page, frame, date: str, expect, timeout: float, last: dict, 
             raise Fault("finereport_report_structure_changed", "site_data", http_status=200)
         elif cmd == "load_report_content":
             return Response(200, "application/json", raw)
+        elif op == "page_content":
+            # The page takes its count of pages from this answer; a report of several must not pass as one.
+            await asyncio.sleep(STAGE_PAUSE_SECONDS)
+            return Response(200, answer.headers.get("content-type", "application/json"), raw,
+                            operation={"report_total_pages": await frame.evaluate(_PAGES_JS)})
         await asyncio.sleep(STAGE_PAUSE_SECONDS)
     raise Fault("finereport_stage_missing", "local")

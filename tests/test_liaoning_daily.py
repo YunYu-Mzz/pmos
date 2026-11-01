@@ -621,8 +621,7 @@ class RealTrial(unittest.TestCase):
         specs = [s for s in REAL.datasets().values() if s.request.get("transport") == "finereport" and s.status == "candidate"]
         self.assertEqual(len(specs), self.FINEREPORT - 4, "4 answered their samples")
         self.assertEqual({s.request["site_menu"]["route"] for s in specs}, {"spotgoodsSum"})
-        self.assertEqual(len([s for s in specs if (s.request.get("form") or {}).get("combos")]), 3, "the three with dropdowns to read")
-        self.assertEqual(len([s for s in specs if (s.request.get("form") or {}).get("follow_day")]), 6, "the five .cpt and 日前容量")
+        self.assertEqual(len([s for s in specs if s.response["kind"] == "finereport_page"]), 5, "the five .cpt")
 
     def test_the_nine_per_option_reports_read_their_dictionary_without_a_selection(self):
         specs = REAL.datasets()
@@ -646,6 +645,14 @@ class RealTrial(unittest.TestCase):
                 self.assertEqual(specs[name].status, "sampled")
                 self.assertEqual(specs[name].response["kind"], "finereport_daily")
                 self.assertEqual(bool(specs[name].response.get("text_values")), text)
+
+    def test_the_day_ahead_capacity_asks_every_channel_and_type_by_its_own_widgets(self):
+        spec = REAL.datasets()["sitewide_49aa17d82da46bfb"]
+        self.assertEqual(len(spec.scopes), 250, "125 channels x 2 types")
+        built = spec.build("2026-10-25", spec.scopes[1])
+        self.assertEqual(built["set"], {"日期": "2026-10-25", "交易日期": "2026-10-25", "通道名称": spec.scopes[1]["channel"], "数据类型": "正向可用"})
+        identity = migration.task_identity("liaoning", "liaoning-production", spec, "2026-10-25", next(k for k, v in spec.scope_items() if v == spec.scopes[1]))
+        self.assertEqual(identity.dimensions, {"channel": spec.scopes[1]["channel"], "type": "正向可用"})
 
     def test_the_aliases_are_retired(self):
         specs = REAL.datasets()

@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- Offline stand-in for a .cpt report's page (Liaoning 2026-11-01): parameterCommit asks its parameters and then its page,
+     with the requests a person never needs in between; the page's answer tells it how many pages there are. -->
+<html><head><meta charset="utf-8"><title>report</title></head><body>
+<script>
+const url = '/px-basesystem-reportform/decision/view/report';
+window.$ = {ajaxSettings: {type: 'GET'}};
+window.contentPane = {reportTotalPage: 0};
+window.FR = {servletURL: url, ajax(o) {
+  const d = o.data || {}, q = new URLSearchParams(d), get = o.type === 'GET';
+  fetch(o.url || (get ? url + '?' + q : url), {method: get ? 'GET' : 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: get ? undefined : q}).then(r => r.text()).then(t => { if (o.success) o.success(t); });
+}};
+let date = '2026-10-09';
+const form = {parameterEl: {getWidgetByName: () => ({setValue(v) { date = v; }, getValue: () => date}), name_widgets: {}},
+  parameterCommit() {
+    FR.ajax({url: '/px-basesystem-reportform/decision/url/elite/checkAssistantPermission', type: 'GET'});
+    FR.ajax({type: 'POST', data: {op: 'fr_dialog', cmd: 'parameters_d', date}, success: () => {
+      FR.ajax({type: 'GET', data: {op: 'page_content'}, success: t => { window.contentPane.reportTotalPage = JSON.parse(t).testPages || 1; }});
+      FR.ajax({type: 'GET', data: {op: 'fr_watermark', cmd: 'get_watermark_attr'}});
+      FR.ajax({type: 'GET', data: {op: 'fr_copyright', cmd: 'get_copyright_info'}});
+    }});
+  }};
+window._g = () => form;
+</script></body></html>

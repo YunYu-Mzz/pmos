@@ -18,23 +18,15 @@
       "route": "spotgoodsSum"
     },
     "set": {
-      "queryParam.mdate": "{date}"
+      "日期": "{date}",
+      "交易日期": "{date}",
+      "通道名称": "{scope[channel]}",
+      "数据类型": "{scope[type]}"
     },
-    "date_field": "queryParam.mdate",
+    "date_field": "日期",
     "form": {
-      "date_widget": "日期",
-      "unit": null,
-      "combos": [
-        "通道名称",
-        "数据类型"
-      ],
-      "probe_date": "2026-10-25",
-      "follow_day": "2026-10-25",
-      "follow_fields": {
-        "交易日期": "2026-10-25",
-        "通道名称": "京津唐冀北",
-        "数据类型": "正向可用"
-      }
+      "widgets_in_set": true,
+      "unit": null
     }
   },
   "response": {
@@ -43,7 +35,20 @@
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_dasm_corridor_7_7_1",
-    "note": "probed 2026-11-01: two dates and two dropdowns (通道名称 many, 数据类型 two). One combination followed before any spec."
+    "note": "125 channels x 2 types from the form's dropdowns, 2026-11-01. 京津唐冀北 正向可用 on 10-25 answers 999999.00 in every slot: kept as the site gives it.",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "日期",
+        "交易日期"
+      ],
+      "dimension_fields": {
+        "通道名称": "channel",
+        "数据类型": "type"
+      }
+    }
   },
   "history": [
     {
@@ -60,6 +65,1013 @@
       "at": "2026-11-01T20:25:00+08:00",
       "event": "probed",
       "note": "dropdowns read"
+    },
+    {
+      "at": "2026-11-01T22:30:00+08:00",
+      "event": "followed",
+      "note": "r17 probe: a 96-point grid for one combination"
+    }
+  ],
+  "scopes": [
+    {
+      "channel": "东天＋月锦断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "东天＋月锦断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "京津唐冀北",
+      "type": "反向可用"
+    },
+    {
+      "channel": "京津唐冀北",
+      "type": "正向可用"
+    },
+    {
+      "channel": "京津唐北京",
+      "type": "反向可用"
+    },
+    {
+      "channel": "京津唐北京",
+      "type": "正向可用"
+    },
+    {
+      "channel": "京津唐天津",
+      "type": "反向可用"
+    },
+    {
+      "channel": "京津唐天津",
+      "type": "正向可用"
+    },
+    {
+      "channel": "京津唐申报约束",
+      "type": "反向可用"
+    },
+    {
+      "channel": "京津唐申报约束",
+      "type": "正向可用"
+    },
+    {
+      "channel": "伊克昭联变断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "伊克昭联变断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "古敬双回",
+      "type": "反向可用"
+    },
+    {
+      "channel": "古敬双回",
+      "type": "正向可用"
+    },
+    {
+      "channel": "吉林蒙东",
+      "type": "反向可用"
+    },
+    {
+      "channel": "吉林蒙东",
+      "type": "正向可用"
+    },
+    {
+      "channel": "吉泉直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "吉泉直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "吉黑断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "吉黑断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "嘉沐双回线",
+      "type": "反向可用"
+    },
+    {
+      "channel": "嘉沐双回线",
+      "type": "正向可用"
+    },
+    {
+      "channel": "四鱼断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "四鱼断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "复奉直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "复奉直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "天中直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "天中直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宁夏受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宁夏受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宁月塔青断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宁月塔青断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宜华直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宜华直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宜昌直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宜昌直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宾金直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宾金直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "山东京津唐",
+      "type": "反向可用"
+    },
+    {
+      "channel": "山东京津唐",
+      "type": "正向可用"
+    },
+    {
+      "channel": "山西外送京津唐",
+      "type": "反向可用"
+    },
+    {
+      "channel": "山西外送京津唐",
+      "type": "正向可用"
+    },
+    {
+      "channel": "山西外送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "山西外送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "山西外送河北",
+      "type": "反向可用"
+    },
+    {
+      "channel": "山西外送河北",
+      "type": "正向可用"
+    },
+    {
+      "channel": "川渝断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "川渝断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "川藏断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "川藏断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "德宝直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "德宝直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "攀西外送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "攀西外送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "新疆外送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "新疆外送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "施州直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "施州直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "昭沂直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "昭沂直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "景邡双回＋谭龙双回",
+      "type": "反向可用"
+    },
+    {
+      "channel": "景邡双回＋谭龙双回",
+      "type": "正向可用"
+    },
+    {
+      "channel": "林枫直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "林枫直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "柴拉直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "柴拉直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "河北京津唐",
+      "type": "反向可用"
+    },
+    {
+      "channel": "河北京津唐",
+      "type": "正向可用"
+    },
+    {
+      "channel": "泸复＋宾沐断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "泸复＋宾沐断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "浙沪交流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "浙沪交流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "灵宝直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "灵宝直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "灵绍直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "灵绍直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "皖浙交流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "皖浙交流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "皖苏交流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "皖苏交流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "祁韶直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "祁韶直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "福建外送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "福建外送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "苏沪交流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "苏沪交流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "苏浙交流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "苏浙交流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "葛南直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "葛南直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "西北西电东送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "西北西电东送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "豫中－豫南东通道断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "豫中－豫南东通道断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "辽吉断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "辽吉断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "辽宁蒙东",
+      "type": "反向可用"
+    },
+    {
+      "channel": "辽宁蒙东",
+      "type": "正向可用"
+    },
+    {
+      "channel": "鄂湘断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "鄂湘断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "鄂豫断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "鄂豫断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "鄂赣断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "鄂赣断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "银东直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "银东直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "锡泰直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "锡泰直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "锦苏四川二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "锦苏四川二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "锦苏直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "锦苏直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "长南线",
+      "type": "反向可用"
+    },
+    {
+      "channel": "长南线",
+      "type": "正向可用"
+    },
+    {
+      "channel": "雁淮直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "雁淮直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "雅湖直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "雅湖直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "青甘断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "青甘断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "青豫直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "青豫直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "高岭直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "高岭直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "鲁固直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "鲁固直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "黑龙江蒙东",
+      "type": "反向可用"
+    },
+    {
+      "channel": "黑龙江蒙东",
+      "type": "正向可用"
+    },
+    {
+      "channel": "龙政直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "龙政直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "��克�回线",
+      "type": "反向可用"
+    },
+    {
+      "channel": "��克�回线",
+      "type": "正向可用"
+    },
+    {
+      "channel": "三水东送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "三水东送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "主网送湘断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "主网送湘断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "主网送豫断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "主网送豫断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "主网送赣断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "主网送赣断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "主网送鄂断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "主网送鄂断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "天中青豫直流和功率约束",
+      "type": "反向可用"
+    },
+    {
+      "channel": "天中青豫直流和功率约束",
+      "type": "正向可用"
+    },
+    {
+      "channel": "山东交直流和功率",
+      "type": "反向可用"
+    },
+    {
+      "channel": "山东交直流和功率",
+      "type": "正向可用"
+    },
+    {
+      "channel": "山东直流群",
+      "type": "反向可用"
+    },
+    {
+      "channel": "山东直流群",
+      "type": "正向可用"
+    },
+    {
+      "channel": "建苏直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "建苏直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "彩芨吐天断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "彩芨吐天断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "月宁塔青断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "月宁塔青断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "江苏过江",
+      "type": "反向可用"
+    },
+    {
+      "channel": "江苏过江",
+      "type": "正向可用"
+    },
+    {
+      "channel": "皖苏北交流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "皖苏北交流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "皖苏南交流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "皖苏南交流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "蒙西外送京津唐",
+      "type": "反向可用"
+    },
+    {
+      "channel": "蒙西外送京津唐",
+      "type": "正向可用"
+    },
+    {
+      "channel": "蒙西外送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "蒙西外送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "西电东送断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "西电东送断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "银川东主变下网断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "银川东主变下网断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "锡泰受端送出虚拟通道",
+      "type": "反向可用"
+    },
+    {
+      "channel": "锡泰受端送出虚拟通道",
+      "type": "正向可用"
+    },
+    {
+      "channel": "锡盟京津唐",
+      "type": "反向可用"
+    },
+    {
+      "channel": "锡盟京津唐",
+      "type": "正向可用"
+    },
+    {
+      "channel": "陕武直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "陕武直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "雁淮受端送出虚拟通道",
+      "type": "反向可用"
+    },
+    {
+      "channel": "雁淮受端送出虚拟通道",
+      "type": "正向可用"
+    },
+    {
+      "channel": "华北直调京津唐",
+      "type": "反向可用"
+    },
+    {
+      "channel": "华北直调京津唐",
+      "type": "正向可用"
+    },
+    {
+      "channel": "金塘直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "金塘直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "建苏四川二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "建苏四川二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "金塘四川二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "金塘四川二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "雅湖四川二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "雅湖四川二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "上海受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "上海受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "中衡直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "中衡直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "坤渝直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "坤渝直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "坤渝重庆二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "坤渝重庆二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "塘木塘哈断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "塘木塘哈断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "复奉四川二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "复奉四川二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "天中配套外送",
+      "type": "反向可用"
+    },
+    {
+      "channel": "天中配套外送",
+      "type": "正向可用"
+    },
+    {
+      "channel": "天山联变断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "天山联变断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宾金四川二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宾金四川二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "庆东直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "庆东直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "浉嵖双回线",
+      "type": "反向可用"
+    },
+    {
+      "channel": "浉嵖双回线",
+      "type": "正向可用"
+    },
+    {
+      "channel": "浙江南部受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "浙江南部受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "湘中湘南断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "湘中湘南断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "灵绍配套外送",
+      "type": "反向可用"
+    },
+    {
+      "channel": "灵绍配套外送",
+      "type": "正向可用"
+    },
+    {
+      "channel": "祁韶中衡直流和功率约束",
+      "type": "反向可用"
+    },
+    {
+      "channel": "祁韶中衡直流和功率约束",
+      "type": "正向可用"
+    },
+    {
+      "channel": "祁韶配套外送",
+      "type": "反向可用"
+    },
+    {
+      "channel": "祁韶配套外送",
+      "type": "正向可用"
+    },
+    {
+      "channel": "苏南受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "苏南受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "金塘浙江受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "金塘浙江受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "龙政宜昌直流和功率",
+      "type": "反向可用"
+    },
+    {
+      "channel": "龙政宜昌直流和功率",
+      "type": "正向可用"
+    },
+    {
+      "channel": "复奉上海受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "复奉上海受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宾金浙江受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宾金浙江受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "锦苏江苏受入断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "锦苏江苏受入断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "京津唐京津唐",
+      "type": "反向可用"
+    },
+    {
+      "channel": "京津唐京津唐",
+      "type": "正向可用"
+    },
+    {
+      "channel": "云霄直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "云霄直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "柴拉西藏二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "柴拉西藏二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "江城直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "江城直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "宝合直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "宝合直流",
+      "type": "正向可用"
+    },
+    {
+      "channel": "皖北送出断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "皖北送出断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "昭沂鲁固直流和功率约束",
+      "type": "反向可用"
+    },
+    {
+      "channel": "昭沂鲁固直流和功率约束",
+      "type": "正向可用"
+    },
+    {
+      "channel": "木里送出断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "木里送出断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "金永二级断面",
+      "type": "反向可用"
+    },
+    {
+      "channel": "金永二级断面",
+      "type": "正向可用"
+    },
+    {
+      "channel": "金永直流",
+      "type": "反向可用"
+    },
+    {
+      "channel": "金永直流",
+      "type": "正向可用"
     }
   ]
 }

@@ -105,6 +105,23 @@ class TextGrid(unittest.TestCase):
         self.assertEqual(caught.exception.code, "finereport_daily_times_changed")
 
 
+class ReportPage(unittest.TestCase):
+    def evaluate(self, body, content_type="text/html;charset=UTF-8", **operation):
+        from pmos.validate import Response, evaluate
+        raw = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode()
+        return evaluate({"kind": "finereport_page"}, Response(200, content_type, raw, operation=operation or None))
+
+    def test_a_page_with_rows_is_saved_a_blank_one_is_empty_whatever_its_content_type(self):
+        self.assertEqual(self.evaluate({"html": "<table><tr><td>甲</td></tr></table>", "sheets": []}).result, "saved")
+        self.assertEqual(self.evaluate({"html": "<table><tr><td></td></tr></table>", "sheets": []}).result, "empty")
+
+    def test_anything_else_is_this_reports_answer_to_look_at_and_never_stops_the_province(self):
+        for body in (b"<html>no</html>", {"errorCode": "x"}):
+            with self.assertRaises(Fault) as caught:
+                self.evaluate(body)
+            self.assertEqual((caught.exception.code, caught.exception.category), ("finereport_page_changed", "site_data"))
+
+
 class Table(unittest.TestCase):
     def evaluate(self, body):
         from pmos.validate import Response, evaluate

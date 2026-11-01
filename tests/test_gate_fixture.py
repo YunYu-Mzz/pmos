@@ -42,6 +42,7 @@ class Site(http.server.SimpleHTTPRequestHandler):
     finereport_dead = False      # the session ended: parameters_d answers FineReport's error page
     finereport_blank = False
     finereport_denied: set = set()   # reports whose mapping answers 40302
+    finereport_pages = 1             # how many pages a .cpt report says it has
 
     def finereport_answer(self, query: dict) -> None:
         from urllib.parse import parse_qs
@@ -69,11 +70,14 @@ class Site(http.server.SimpleHTTPRequestHandler):
             if source in Site.finereport_denied:
                 return self.reply(json.dumps({"status": 40302, "message": "无权限"}).encode(), "application/json")
             url = f"/px-basesystem-reportform/decision/view/form?ref_t={len(Site.finereport)}&viewlet=dir%2F{source}.frm"
-            if source == "lnsnxh_c":        # a .cpt report is served from another path, with no form of its own
+            if source in ("lnsnxh_c", "lnsnxh_d"):        # a .cpt report is served from another path; c has no form at all
                 url = f"/px-basesystem-reportform/decision/view/report?viewlet=dir%2F{source}.cpt"
             return self.reply(json.dumps({"status": 0, "data": {"url": url}}).encode(), "application/json")
         if self.path == "/px-basesystem-reportform/decision/view/form":
             return self.finereport_answer(parse_qs(Site.bodies[-1].decode()))
+        if self.path == "/px-basesystem-reportform/decision/view/report":
+            Site.finereport.append("parameters_d")
+            return self.reply(b'{"status":"success"}', "application/json")
         if self.path == "/px-x/export":
             body, kind = EXPORT, "application/vnd.ms-excel;charset=UTF-8"
         elif self.path == "/px-x/deniedExport":
@@ -85,6 +89,16 @@ class Site(http.server.SimpleHTTPRequestHandler):
     challenges = 0          # the next document answers of /pxf-settlement-outnetpub/ that are a 412 challenge
 
     def do_GET(self):
+        if self.path.startswith("/px-basesystem-reportform/decision/url/"):
+            Site.finereport.append("assistant")
+            return self.reply(b'{"errorCode":"x"}', "application/json")
+        if "lnsnxh_d" in self.path and self.path.startswith("/px-basesystem-reportform/decision/view/report"):
+            Site.finereport.append("report_document")
+            return self.reply((FIXTURES / "finereport_report.html").read_bytes(), "text/html;charset=UTF-8")
+        if self.path.startswith("/px-basesystem-reportform/decision/view/report?op="):
+            Site.finereport.append(self.path.split("op=")[1].split("&")[0])
+            return self.reply(json.dumps({"html": "<table><tr><td>断面</td><td>1</td></tr></table>", "watermark": {}, "sheets": [], "copyright": {},
+                                          "testPages": Site.finereport_pages}, ensure_ascii=False).encode(), "text/html;charset=UTF-8")
         if self.path.startswith("/px-basesystem-reportform/decision/view/report"):
             return self.reply("<!doctype html><title>cpt</title><script>window.contentPane = {reportTotalPage: 1, currentPageIndex: 1};</script><table><tr><td>甲</td></tr></table>".encode(), "text/html;charset=UTF-8")
         if self.path.startswith("/px-basesystem-reportform/decision/view/form"):
@@ -591,6 +605,38 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([s["cmd"] for s in follow["stages"]], ["parameters_d", "load_content", "load_report_content"])
         self.assertEqual((follow["last"]["rows"], follow["last"]["cols"], follow["last"]["totalPage"]), (12, [16], 1))
         self.assertEqual(follow["last"]["sample"][0][0], "00:15")
+
+    def report_request(self, day="2026-10-25"):
+        return {"transport": "finereport", "method": "POST", "path": "/px-basesystem-reportform/decision/view/report", "frame": "lnsnxh_d.cpt",
+                "site_menu": {"source": "lnsnxh_d", "route": "spotgoodsSum"}, "set": {"queryParam.mdate": day}, "date_field": "queryParam.mdate",
+                "form": {"unit": None, "view": "report"}}
+
+    async def test_a_cpt_report_asks_its_parameters_and_its_page_and_nothing_a_person_never_needs(self):
+        from pmos.validate import evaluate
+        await self.finereport_page()
+        Site.finereport_pages = 1
+        response = await self.transport.send(self.report_request())
+        self.assertEqual(Site.finereport, ["map:lnsnxh_d", "report_document", "parameters_d", "page_content"], "no assistant, watermark or copyright")
+        self.assertEqual(evaluate({"kind": "finereport_page"}, response).result, "saved")
+        self.assertEqual(response.operation, {"report_total_pages": 1})
+
+    async def test_a_cpt_report_of_several_pages_is_not_saved_as_if_it_had_one(self):
+        from pmos.validate import evaluate
+        await self.finereport_page()
+        Site.finereport_pages = 3
+        self.addCleanup(lambda: setattr(Site, "finereport_pages", 1))
+        response = await self.transport.send(self.report_request())
+        with self.assertRaises(Fault) as caught:
+            evaluate({"kind": "finereport_page"}, response)
+        self.assertEqual((caught.exception.code, caught.exception.category), ("finereport_table_more_pages", "site_data"))
+
+    async def test_a_form_with_dropdowns_sets_each_of_them_before_it_asks(self):
+        await self.finereport_page()
+        request = {**self.finereport_request("lnsnxh_b"), "frame": "lnsnxh_b.frm", "date_field": "日期",
+                   "set": {"日期": "2026-10-25", "交易日期": "2026-10-25", "机组名称": "1号机"}, "form": {"widgets_in_set": True, "unit": None}}
+        await self.transport.send(request)
+        frame = next(f for f in self.page.frames if "lnsnxh_b" in f.url)
+        self.assertEqual(await frame.evaluate("window.picked"), "1号机")
 
     async def test_a_refused_mapping_is_the_probes_answer_and_no_fault(self):
         await self.finereport_page()

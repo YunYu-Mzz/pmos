@@ -109,6 +109,18 @@ def evaluate(spec_response: dict, response: Response) -> Outcome:
         raise Fault("permission_denied", "permission", http_status=403)
     if not 200 <= response.status < 300:
         raise Fault("http_error", "unknown", http_status=response.status)
+    if kind == "finereport_page":
+        # A .cpt report's page: anything else here is this report's answer to look at, no sign of a lost login.
+        body = _json(response)
+        from .finereport import page_rows
+        try:
+            rows = page_rows(body)
+        except ValueError as exc:
+            raise Fault(str(exc), "site_data", http_status=response.status) from None
+        pages = (response.operation or {}).get("report_total_pages")
+        if isinstance(pages, int) and pages > 1:
+            raise Fault("finereport_table_more_pages", "site_data", http_status=response.status)
+        return Outcome("saved" if rows else "empty", ".json")
     if response.media_type == "text/html":
         # Usually the login page or a gateway error page, never an export.
         raise Fault("unexpected_html", "unknown", http_status=response.status)

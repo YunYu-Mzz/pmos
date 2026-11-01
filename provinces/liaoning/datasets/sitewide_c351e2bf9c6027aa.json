@@ -29,6 +29,17 @@
   "response": {
     "kind": "json"
   },
+  "scopes": [
+    {
+      "mtype": "保供省间支援"
+    },
+    {
+      "mtype": "调峰省间支援"
+    },
+    {
+      "mtype": "辅助调峰跨省交易"
+    }
+  ],
   "source": {
     "legacy": "lncrawler/sitewide_specs.py",
     "legacy_phase": "empty_sample",
@@ -42,7 +53,7 @@
       "set": {},
       "method": "GET"
     },
-    "note": "options by its dictionary 2026-11-01 (3), asked by GET, not bound to a date.",
+    "note": "options by its dictionary 2026-11-01 (3), asked by GET, not bound to a date. Tried 2026-11-01: 10-25 and 06-15 answered nothing: given up.",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -76,17 +87,31 @@
       "at": "2026-11-01T20:25:00+08:00",
       "event": "options_read",
       "note": "三个选项 from the form's dictionary"
-    }
-  ],
-  "scopes": [
-    {
-      "mtype": "保供省间支援"
     },
     {
-      "mtype": "调峰省间支援"
+      "at": "2026-11-01T22:14:56+08:00",
+      "event": "sample_ok",
+      "period": "2026-10-25",
+      "result": "empty",
+      "sha256": null,
+      "scope": {
+        "mtype": "保供省间支援"
+      }
     },
     {
-      "mtype": "辅助调峰跨省交易"
+      "at": "2026-11-01T22:15:00+08:00",
+      "event": "sample_ok",
+      "period": "2026-06-15",
+      "result": "empty",
+      "sha256": null,
+      "scope": {
+        "mtype": "保供省间支援"
+      }
+    },
+    {
+      "at": "2026-11-01T22:30:00+08:00",
+      "event": "given_up",
+      "note": "two empty samples"
     }
   ]
 }

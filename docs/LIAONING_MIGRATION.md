@@ -185,6 +185,22 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r18：.cpt 报表和日前容量（2026-11-01）
+
+r17 22:12 上线，用户原话"确认切 r17，放开水电周报，做探测和试采"。r18 = r17 加下面这些。
+
+**r17 跟一天的结果（10-25，真实网站）：**
+- 5 张 `.cpt`：先 `parameters_d`，再 `GET op=page_content`，答复是 `{html, watermark, sheets, copyright}`。中间夹着 `checkAssistantPermission`、`fr_watermark`、`fr_copyright`，顺序每张不同，和数据无关。这些现在和 `form_getsource` 一样不发。
+- 日前容量：标准的 3 段，96 点表格。通道 125 个，数据类型 2 个，共 250 个组合。京津唐冀北 + 正向可用 这天每个时段都是 999999.00，看着像"无限制"的占位值，按网站原样存，不改。
+- 机组预计划、终计划：下拉依赖 `memberId`，这个账号都是空的，放弃。075 两天都空，放弃。
+
+**新能力。**
+- `request.form.view: report` 和 `response.kind: finereport_page`：`.cpt` 的一天。答复不是 `{html}` 时算这张报表的问题（`site_data`，原件进 quarantine），不会封锁全省。页面说自己超过一页时不保存，报 `finereport_table_more_pages`。多页还不支持，试采时看有没有。
+- `request.form.widgets_in_set`：表单的多个控件都写在 `set` 里，每个设完都读回来核对，没生效就不发（`finereport_date_not_applied`）。
+- `try-report --scope '{"channel":"...","type":"..."}'`：试某一个组合。
+
+**规模。** 日前容量全年是 250 x 303，约 7.6 万条。按这几张 FineReport 的速度（每条约 5 秒）约 4.4 天，磁盘约 2 GB。它在范围里排在节点电价前面，所以节点电价的完成时间会往后推约 4.4 天。
+
 ## r17：换页后等菜单，.cpt 和日前容量跟一天看看（2026-11-01）
 
 r16 20:09 上线，用户原话"确认切 r16，做探测"。r17 = r16 加下面这些。

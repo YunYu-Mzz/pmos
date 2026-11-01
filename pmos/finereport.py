@@ -14,6 +14,9 @@ MAPPING_PATH = "/px-settlement-infpubquery/spotgoods/queryIpSpotgoodsInfoBytable
 STAGES = (("parameters_d", "fr_dialog", "POST"), ("load_content", "fr_form", "GET"), ("load_report_content", "fr_form", "POST"))
 # FineReport's own error page, HTTP 200, when its session ended (idle 66 min and more; never within 11.5 min).
 SESSION_END = b"Dec-Session_Lifecycle_End"
+# A .cpt report is served from another path: its parameters, then its page. Probed on 2026-11-01.
+REPORT_PATH = "/px-basesystem-reportform/decision/view/report"
+REPORT_STAGES = (("parameters_d", "fr_dialog", "POST"), (None, "page_content", "GET"))
 
 
 class _Cells(HTMLParser):
@@ -50,6 +53,13 @@ def html_rows(html: str) -> list[list[str]]:
     parser = _Cells()
     parser.feed(html)
     return [row for row in parser.rows if any(row)]
+
+
+def page_rows(body) -> list[list[str]]:
+    """The rows of a .cpt report's page ({html, watermark, sheets, copyright}), [] for a blank one. ValueError: another answer."""
+    if not isinstance(body, dict) or not isinstance(body.get("html"), str):
+        raise ValueError("finereport_page_changed")
+    return html_rows(body["html"])
 
 
 def table_rows(body) -> list[list[str]]:

@@ -23,11 +23,7 @@
     "date_field": "queryParam.mdate",
     "form": {
       "date_widget": "日期",
-      "unit": null,
-      "combos": [
-        "机组名称"
-      ],
-      "probe_date": "2026-10-25"
+      "unit": null
     }
   },
   "response": {
@@ -36,7 +32,7 @@
   "source": {
     "legacy": "state/server_verified_expansion_20261023/native_menu.json",
     "legacy_source": "sn_xhpl_rqjzzjh_7_8",
-    "note": "a blank 机组名称 answers a blank page; the dropdown depends on memberId: 终计划 listed [] on 2026-11-01, 预计划's answer was mistaken for an image. If this account has no units, there is nothing to collect.",
+    "note": "its 机组名称 dropdown depends on memberId and lists nothing for this account (2026-11-01), and a blank choice answers a blank page: given up",
     "identity_contract": {
       "request_data_path": [
         "set"
@@ -81,6 +77,11 @@
       "at": "2026-11-01T20:25:00+08:00",
       "event": "probed",
       "note": "dropdown depends on memberId"
+    },
+    {
+      "at": "2026-11-01T22:30:00+08:00",
+      "event": "given_up",
+      "note": "no units for this account"
     }
   ]
 }

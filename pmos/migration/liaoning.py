@@ -347,7 +347,10 @@ TRIAL_LANE = ("tie_line_intraday", "sitewide_deb417edc0244802", "sitewide_f95e53
               "sitewide_7a300d985f7a8cfc", "sitewide_c351e2bf9c6027aa", "sitewide_04b5500fb8e7813c", "pdbln_report_028",
               # FineReport forms the r14 probes found mapped, with a date and at most a blank unit list.
               "sitewide_3ebbdf40ca6ec2b1", "sitewide_bd2561ac7f825385", "sitewide_546644ece23fec6a", "sitewide_e87a7708ade1e187",
-              "sitewide_676f39b53210a68b", "sitewide_bb3ebe897b7667ff")
+              "sitewide_676f39b53210a68b", "sitewide_bb3ebe897b7667ff",
+              # The five .cpt reports and the day-ahead capacity, followed for one day by the r17 probes.
+              "sitewide_7bcb1dac6ce9bb94", "sitewide_31308b59070354ef", "sitewide_481d223eb622ae1f", "sitewide_cba19932160b7c7b",
+              "sitewide_9283ddfd847d1f6e", "sitewide_49aa17d82da46bfb")
 WEEKLY_LANE = ("sitewide_d86eb498e4cf0eca", "sitewide_f5d806b38bb8a248")
 DAILY_QUEUES = "state/crawlee_daily_verified_20261014/request_queues"
 DAILY_ORIGINALS = "data/2026/original/power_reports"

@@ -390,8 +390,14 @@ def cmd_try_report(province: Province, args) -> None:
         ledger.close()
     if handoff is None or args.dataset not in handoff["scope"]:
         raise ValueError("not_in_the_handoff_scope")
+    scope = None
+    if getattr(args, "scope", None):
+        from .spec import scope_key
+        scope = scope_key(json.loads(args.scope))
+        if scope not in {key for key, _ in spec.scope_items()}:
+            raise ValueError("scope_not_of_this_report")
     state = StateStore(province.instance() / "state")
-    command_id = enqueue(state, {"action": "sample", "dataset": args.dataset, "period": args.period, "scope": None})
+    command_id = enqueue(state, {"action": "sample", "dataset": args.dataset, "period": args.period, "scope": scope})
     state.event("report_tried", dataset=args.dataset, period=args.period, approval=args.approval)
     deadline = time.time() + args.wait
     while time.time() < deadline:
@@ -793,6 +799,7 @@ def main(argv: list[str] | None = None) -> int:
         tr.add_argument("dataset")
         tr.add_argument("period")
         tr.add_argument("--approval", required=True, help="the user's words, verbatim")
+        tr.add_argument("--scope", help="one option, as JSON (default the report's first)")
         tr.add_argument("--wait", type=float, default=300)
         rd = commands.add_parser("read-dictionary", help="queue: the options a report's own dictionary call lists now; no data request")
         rd.add_argument("dataset")
