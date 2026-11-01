@@ -1,0 +1,12 @@
+[Unit]
+Description=Check the Liaoning PMOS collection every five minutes
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+AccuracySec=15s
+Persistent=true
+Unit=pmos-liaoning-monitor.service
+
+[Install]
+WantedBy=timers.target

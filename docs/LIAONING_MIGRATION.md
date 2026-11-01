@@ -185,6 +185,27 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r9：常驻服务和停采告警（2026-11-01）
+
+用户定的第三优先。之前 `pmos-liaoning` 是 `systemd-run` 的临时单元，服务器重启后不会自启；`liaoning-crawler` 又已 disable，所以重启后没人采。旧的 `liaoning-monitor.timer` 已停，5 分钟一次的告警没有替代，只剩每小时邮件。
+
+**服务（`deploy/liaoning/`）。** `pmos-liaoning.service`：开机自启，`Wants`/`After` 浏览器属主；`KillMode=mixed`；`Restart=on-failure`，但退出码 2（封锁等人工）不重启；工作目录和 `PYTHONPATH` 指向软链 `/home/ecs-user/pmos-liaoning-current`。切版本：`stop-all`，等退出，改软链，`systemctl start`。
+
+**告警（`pmos/monitor.py`、`tools/pmos_monitor.py`、timer 每 5 分钟）。** 只读，不碰网站、浏览器和封锁。邮件账号用状态邮件的 `reporting-private/config.json`，不新增凭据。
+
+| 条件 | 含义 |
+|---|---|
+| `worker_down` | 服务不在运行，也不是人为 `stop-all` |
+| `blocked` | 全省被封锁 |
+| `held:<报表>` | 报表长期暂停，要人工放开（带冷却时间的不算） |
+| `stalled` | 30 分钟没有答复（已追平、等发布、暂停等不算） |
+| `worker_hung` | 进程在，5 分钟没更新状态 |
+| `disk_paused` | 磁盘不足，采集暂停 |
+
+每种情况发一封，持续时每 6 小时提醒一次，恢复时再发一封；发送失败下次重试。状态记在 `<实例>/monitor.json`。
+
+**没有覆盖。** 服务器整机宕机、断网时告警发不出来，这时只能靠"每小时状态邮件没来"发现。浏览器属主服务 `Restart=no`，它自己崩了不会重启，只会表现为 `blocked` 或 `worker_down`。重启后如果登录失效，也只能告警，要人工重新登录。
+
 ## r8：stop 打断在途请求（2026-11-01）
 
 16:21 第 A 步停 r6 时，`systemctl stop` 把 SIGTERM 发给整个 cgroup（KillMode 默认值），Playwright 驱动被杀，一条 0.4 秒的查询等满 45 秒，记成 `unknown / network_error`。辽宁不隔离 network 类故障，于是全省被封锁。

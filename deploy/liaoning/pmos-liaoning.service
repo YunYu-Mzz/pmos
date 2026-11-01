@@ -1,0 +1,26 @@
+# The Liaoning PMOS worker, a standing service (replaces the transient systemd-run unit, 2026-11-01).
+# A version switch: pmos liaoning stop-all, wait for it to exit, point /home/ecs-user/pmos-liaoning-current at the new
+# release, systemctl start pmos-liaoning. After a reboot it starts by itself.
+[Unit]
+Description=PMOS collector (Liaoning)
+Wants=network-online.target liaoning-browser-owner.service
+After=network-online.target liaoning-browser-owner.service
+
+[Service]
+User=ecs-user
+Group=ecs-user
+WorkingDirectory=/home/ecs-user/pmos-liaoning-current
+Environment=PMOS_DATA=/home/ecs-user/pmos-data
+Environment=PYTHONPATH=/home/ecs-user/pmos-liaoning-current
+ExecStart=/home/ecs-user/sd_crawler/liaoning/.venv/bin/python -B -m pmos liaoning accept
+# Exit 0: stop-all, or the budget is used. Exit 2: a block waiting for review; restarting would only refuse again.
+Restart=on-failure
+RestartSec=30
+RestartPreventExitStatus=2
+# SIGTERM to the worker only: it finishes the request in flight. The whole cgroup would kill its Playwright driver and
+# lose the answer (2026-11-01 16:21: a 0.4 s query waited out 45 s as network_error and blocked the province).
+KillMode=mixed
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

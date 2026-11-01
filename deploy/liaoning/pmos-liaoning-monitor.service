@@ -1,0 +1,14 @@
+[Unit]
+Description=Check the Liaoning PMOS collection and mail what stopped (read-only, no website request)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ecs-user
+Group=ecs-user
+WorkingDirectory=/home/ecs-user/pmos-liaoning-current
+Environment=PMOS_DATA=/home/ecs-user/pmos-data
+ExecStart=/home/ecs-user/sd_crawler/liaoning/.venv/bin/python -B tools/pmos_monitor.py liaoning --unit pmos-liaoning --label 辽宁 --mail-config /home/ecs-user/sd_crawler/liaoning/reporting-private/config.json
+TimeoutStartSec=75
+UMask=0077
