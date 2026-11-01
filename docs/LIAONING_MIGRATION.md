@@ -185,6 +185,12 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r6：提前采到的空结果不重采（2026-11-01）
+
+用户在辽宁会话的原话："确认切 r4，空结果不重采，做保活验证"。`plan` 和 `apply` 都带 `--early-empty-consumed`，那 15 天也写成墓碑（`daily_lane(early_empty_consumed=True)`），状态如实记 `empty`，任务原因是 `legacy_consumed:empty`。计划：5,164 条墓碑，21 个日子要采。
+
+这 15 天的归档就是 0 个数据点，不会再有数据，除非用户以后决定补采。`release-early` 用不上，它只能释放 PMOS 自己发过的请求。真要补，要另写一个小命令：把这些 `daily:<报表>:<日期>` 记录改成未消耗，再把任务重开。
+
 ## r5：日报和系统负荷 17 张（2026-11-01）
 
 r4 没有部署就被 r5 取代。r4 把 `nonmarket_generation_forecast`（033）放进了组件通道，但 10-23 网站把它搬到了 FineReport 页面（路由 `spotgoodsSum`），旧系统从此把它排除在组件通道外（`runtime_excluded`），组件原件停在 10-16，新日期都来自引擎。所以 033 归第二优先的引擎线，它的新日期和 04-14 都在那里采。下面 r4 这一节里 18 张、5,453 条墓碑、37 个日子的数字，r5 是 17 张，以 r5 的 `plan` 为准。

@@ -100,6 +100,19 @@ class Classification(unittest.TestCase):
         self.assertEqual(result["handled_without_original"], [day(6)], "a legacy failure: not re-sent, listed")
         self.assertEqual(result["consumed"], 3, "data, a late empty answer, the legacy failure")
 
+    def test_the_users_choice_makes_early_empty_answers_tombstones_recorded_as_empty(self):
+        """User 2026-11-01: "空结果不重采"."""
+        name = "hydro_daily"
+        self.legacy.original(name, day(1), answer(), captured=day(0))
+        self.legacy.original(name, day(2), {"status": 0, "data": []}, captured=day(2))
+        self.legacy.queue(name, day(3), handled=False)
+        default = migration.daily_lane(self.legacy.root, REAL.datasets(), names=(name,))
+        chosen = migration.daily_lane(self.legacy.root, REAL.datasets(), names=(name,), early_empty_consumed=True)
+        self.assertEqual((len(default["rows"]), default["will_be_asked"], default["states"]), (1, 2, {}))
+        self.assertEqual((len(chosen["rows"]), chosen["will_be_asked"]), (2, 1), "the day never answered is still asked")
+        self.assertEqual(chosen["states"], {f"daily:{name}:{day(2)}": "empty"})
+        self.assertNotEqual(default["snapshot_sha256"], chosen["snapshot_sha256"])
+
     def test_a_day_either_line_of_033_completed_is_done_and_an_interrupted_one_is_not(self):
         name = "nonmarket_generation_forecast"
         self.legacy.original(name, day(3), answer(), captured=day(0))
@@ -203,6 +216,21 @@ class Handoff(unittest.IsolatedAsyncioTestCase):
         solar = engine.province.datasets()["distributed_solar_actual"].request["component"]
         self.assertEqual(dates[solar], [day(2)], "its same-day empty answer is asked again, once published (lag 2)")
         self.assertIsNone(engine.state.blocked())
+
+    async def test_an_early_empty_day_the_user_chose_to_keep_is_never_asked_and_says_it_was_empty(self):
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        spec = self.province.datasets()["hydro_daily"]
+        from pmos.engine import task_identity
+        identity = task_identity("liaoning", "liaoning-production", spec, day(1), "")
+        ledger.import_late_legacy("empties", "b" * 64, [("k", identity)], "同意", states={"k": "empty"})
+        ledger.close()
+        engine = self.engine()
+        for _ in range(14):
+            await engine.tick()
+            self.clock.advance(3)
+        hydro = spec.request["component"]
+        self.assertEqual([r["set"].get("queryParam.mdate") for r in self.transport.sent if r["component"] == hydro], [day(2)])
+        self.assertEqual(engine.ledger.task("hydro_daily", day(1))["reason"], "legacy_consumed:empty")
 
     async def test_an_idle_session_is_renewed_with_the_fixed_day_though_nothing_is_archived(self):
         """Liaoning 2026-11-01: outside the scope and without an original, keep_session could send nothing."""

@@ -344,12 +344,14 @@ class Ledger:
             raise
         return {"scope": len(order), "seeded": len(seeded), "added": sorted(set(order) - set(current["scope"]))}
 
-    def import_late_legacy(self, source_id: str, snapshot_sha256: str, rows: list[tuple], approval: str) -> dict:
+    def import_late_legacy(self, source_id: str, snapshot_sha256: str, rows: list[tuple], approval: str,
+                           *, states: dict | None = None) -> dict:
         """After the handoff, add legacy facts that were not imported at cutover: consumed tombstones only.
 
         ``rows``: (legacy_key, identity) of records the legacy owner completed
         (e.g. its main archive manifest). A tombstone can only stop a send,
-        never allow one; each snapshot is imported once.
+        never allow one; each snapshot is imported once. ``states``: legacy key -> what the record really
+        was, if not "saved" (Liaoning's empty answers the user chose not to ask again).
         """
         from .contracts import canonical
         if not source_id or len(snapshot_sha256) != 64 or any(c not in "0123456789abcdef" for c in snapshot_sha256):
@@ -374,8 +376,9 @@ class Ledger:
                     raise ValueError("ledger_province_account_mismatch")
                 cursor = self.db.execute(
                     "INSERT OR IGNORE INTO legacy_records(source_id,snapshot_sha256,legacy_key,identity_key,identity_json,"
-                    "state,consumed,blockers_json,facts_sha256) VALUES(?,?,?,?,?,'saved',1,'[]',?)",
-                    (source_id, snapshot_sha256, key, identity.key, canonical(identity.document()).decode(), digest))
+                    "state,consumed,blockers_json,facts_sha256) VALUES(?,?,?,?,?,?,1,'[]',?)",
+                    (source_id, snapshot_sha256, key, identity.key, canonical(identity.document()).decode(),
+                     (states or {}).get(key, "saved"), digest))
                 added += cursor.rowcount
             self.db.execute("INSERT INTO migration_sources(source_id,snapshot_sha256,rows_sha256) VALUES(?,?,?)",
                             (source_id, snapshot_sha256, digest))

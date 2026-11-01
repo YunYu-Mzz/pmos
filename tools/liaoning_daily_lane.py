@@ -33,9 +33,12 @@ def active(unit: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("plan")
+    plan = commands.add_parser("plan")
     apply = commands.add_parser("apply")
     apply.add_argument("--approval", required=True)
+    for command in (plan, apply):
+        command.add_argument("--early-empty-consumed", action="store_true",
+                             help="the empty answers asked before publication become tombstones too (user's decision); give it to plan and apply alike")
     args = parser.parse_args()
     if not os.environ.get("PMOS_DATA"):
         raise SystemExit("PMOS_DATA must be set (e.g. /home/ecs-user/pmos-data)")
@@ -44,9 +47,9 @@ def main() -> None:
     weak = [name for name in liaoning.DAILY_LANE if specs[name].status not in ("sampled", "verified", "enabled")]
     if weak:
         raise SystemExit("not verified: " + ",".join(weak))
-    lane = liaoning.daily_lane(LEGACY, specs)
-    summary = {"tombstones": len(lane["rows"]), "snapshot_sha256": lane["snapshot_sha256"], "per_dataset": lane["per_dataset"],
-               "will_be_asked": sum(len(v["open"]) + len(v["early_empty"]) for v in lane["per_dataset"].values())}
+    lane = liaoning.daily_lane(LEGACY, specs, early_empty_consumed=args.early_empty_consumed)
+    summary = {"tombstones": len(lane["rows"]), "will_be_asked": lane["will_be_asked"], "early_empty_consumed": lane["early_empty_consumed"],
+               "snapshot_sha256": lane["snapshot_sha256"], "per_dataset": lane["per_dataset"]}
     if args.command == "plan":
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return

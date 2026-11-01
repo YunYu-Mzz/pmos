@@ -374,15 +374,19 @@ def _power_original(day_dir: Path, day: str) -> str | None:
     return verdict
 
 
-def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-production", names=DAILY_LANE) -> dict:
+def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-production", names=DAILY_LANE,
+               *, early_empty_consumed: bool = False) -> dict:
     """What the legacy worker completed of the daily reports, as tombstones in PMOS's own identities. Read-only.
 
     A day is complete with an original holding data, or a later empty answer. A day whose only answer came
     before it was published stays open, and so does one the queue never handled. A day the queue handled
     without any original is a legacy failure: never re-sent, and listed.
+
+    ``early_empty_consumed``: those early answers count too, recorded as empty (user 2026-11-01, of Liaoning's
+    15 such days: "空结果不重采"). PMOS's release-early does not reach them: it releases PMOS's own attempts.
     """
     root = Path(root).resolve()
-    rows, report = [], {}
+    rows, report, states = [], {}, {}
     for name in names:
         spec = specs[name]
         days = {}
@@ -418,10 +422,16 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
                 consumed.append(day)
             else:
                 opened.append(day)
+        if early_empty_consumed:
+            states.update({f"daily:{name}:{day}": "empty" for day in early})
+            consumed = sorted(consumed + early)
         rows += [(f"daily:{name}:{day}", task_identity("liaoning", account_alias, spec, day, "")) for day in consumed]
         report[name] = {"consumed": len(consumed), "early_empty": early, "open": opened, "handled_without_original": failed}
-    return {"rows": rows, "per_dataset": report, "datasets": list(names),
-            "snapshot_sha256": digest([[key, identity.key] for key, identity in rows])}
+    return {"rows": rows, "states": states, "per_dataset": report, "datasets": list(names),
+            "early_empty_consumed": early_empty_consumed,
+            "will_be_asked": sum(len(item["open"]) + (0 if early_empty_consumed else len(item["early_empty"]))
+                                 for item in report.values()),
+            "snapshot_sha256": digest([[key, identity.key, states.get(key, "saved")] for key, identity in rows])}
 
 
 def apply_daily_lane(ledger, lane: dict, approval: str) -> dict:
@@ -430,7 +440,8 @@ def apply_daily_lane(ledger, lane: dict, approval: str) -> dict:
     if handoff is None:
         raise ValueError("daily_lane_requires_a_handoff")
     try:
-        imported = ledger.import_late_legacy("liaoning-daily-lane", lane["snapshot_sha256"], lane["rows"], approval)
+        imported = ledger.import_late_legacy("liaoning-daily-lane", lane["snapshot_sha256"], lane["rows"], approval,
+                                             states=lane["states"])
     except ValueError as exc:
         if str(exc) != "late_import_already_done":
             raise
