@@ -355,6 +355,54 @@ def cmd_probe_blank(province: Province, args) -> None:
     _print({"queued": command_id, "note": "the worker has not run it yet"})
 
 
+def cmd_look(province: Province, args) -> None:
+    """Queue probe-report / read-dictionary for the running worker and wait for what it found. No data request."""
+    if args.dataset not in province.datasets():
+        raise ValueError("unknown_dataset")
+    command = {"action": args.command.replace("-", "_"), "dataset": args.dataset}
+    if getattr(args, "period", None):
+        command["period"] = args.period
+    state = StateStore(province.instance() / "state")
+    command_id = enqueue(state, command)
+    deadline = time.time() + args.wait
+    while time.time() < deadline:
+        result = state.read("command_results", {}).get(command_id)
+        if result is not None:
+            _print(result)
+            return
+        time.sleep(2)
+    _print({"queued": command_id, "note": "the worker has not run it yet"})
+
+
+def cmd_try_report(province: Province, args) -> None:
+    """One real request for a report on trial (a candidate in the handoff's scope), on the user's words; an answer makes it sampled."""
+    if not args.approval.strip():
+        raise ValueError("approval_required")
+    spec = province.datasets().get(args.dataset)
+    if spec is None:
+        raise ValueError("unknown_dataset")
+    if spec.status != "candidate":
+        raise ValueError("not_a_candidate:" + spec.status)
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        handoff = ledger.handoff()
+    finally:
+        ledger.close()
+    if handoff is None or args.dataset not in handoff["scope"]:
+        raise ValueError("not_in_the_handoff_scope")
+    state = StateStore(province.instance() / "state")
+    command_id = enqueue(state, {"action": "sample", "dataset": args.dataset, "period": args.period, "scope": None})
+    state.event("report_tried", dataset=args.dataset, period=args.period, approval=args.approval)
+    deadline = time.time() + args.wait
+    while time.time() < deadline:
+        result = state.read("command_results", {}).get(command_id)
+        if result is not None:
+            _print(result)
+            return
+        time.sleep(2)
+    _print({"queued": command_id, "note": "the worker has not run it yet"})
+
+
 def cmd_queue_and_wait(province: Province, args) -> None:
     """Queue collect-one / probe-api-blank for the running worker (one request sequence) and wait for it."""
     spec = province.datasets().get(args.dataset)
@@ -738,6 +786,18 @@ def main(argv: list[str] | None = None) -> int:
         co.add_argument("--period", help="with --option: that day and option instead of the next pending item")
         co.add_argument("--option")
         co.add_argument("--wait", type=float, default=180)
+        pr = commands.add_parser("probe-report", help="queue: what a report's form asks for (its mapping and widgets, or its query fields); no data request")
+        pr.add_argument("dataset")
+        pr.add_argument("--wait", type=float, default=180)
+        tr = commands.add_parser("try-report", help="queue: one real request for a candidate in the handoff's scope; an answer makes it sampled")
+        tr.add_argument("dataset")
+        tr.add_argument("period")
+        tr.add_argument("--approval", required=True, help="the user's words, verbatim")
+        tr.add_argument("--wait", type=float, default=300)
+        rd = commands.add_parser("read-dictionary", help="queue: the options a report's own dictionary call lists now; no data request")
+        rd.add_argument("dataset")
+        rd.add_argument("--period", help="the day it is asked for (default yesterday)")
+        rd.add_argument("--wait", type=float, default=180)
         pa = commands.add_parser("probe-api-blank",
                                  help="queue: replay the page's query once with every option blank (after collect-one)")
         pa.add_argument("dataset")
@@ -845,7 +905,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "backfill", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-discovery", "review-unsent", "prioritize", "probe-blank", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-discovery", "review-unsent", "prioritize", "probe-blank", "probe-report", "read-dictionary", "try-report", "collect-one", "probe-api-blank", "probe-export-blank"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -877,6 +937,10 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_probe_blank(province, args)
             elif args.command in ("collect-one", "probe-api-blank", "probe-export-blank"):
                 cmd_queue_and_wait(province, args)
+            elif args.command in ("probe-report", "read-dictionary"):
+                cmd_look(province, args)
+            elif args.command == "try-report":
+                cmd_try_report(province, args)
             elif args.command == "release-denied":
                 cmd_release_denied(province, args)
             elif args.command == "release-early":

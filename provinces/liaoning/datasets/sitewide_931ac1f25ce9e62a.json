@@ -74,7 +74,16 @@
         "queryParam.name": "name"
       }
     },
-    "note": "same component call as the legacy advanced/sitewide browser code"
+    "note": "same component call as the legacy advanced/sitewide browser code",
+    "dictionary": {
+      "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReportDic030",
+      "call": "initDataDic",
+      "field": "name",
+      "set": {
+        "queryParam.mdate": "{date}",
+        "queryParam.name": null
+      }
+    }
   },
   "history": [
     {

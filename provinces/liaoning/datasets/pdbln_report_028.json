@@ -1,0 +1,51 @@
+{
+  "id": "pdbln_report_028",
+  "name": "发输变电设备检修计划（日）",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport028",
+    "frame": "/pdbln/report/PdblnReport028",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport028",
+    "component": "pdblnReport028",
+    "call": "initData",
+    "set": {
+      "tableData": [],
+      "queryParam.mdate": "{date}"
+    },
+    "site_menu": {
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport028"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py + native_menu.json",
+    "number": "028",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    },
+    "note": "appeared in the menu by 2026-10-23, no component source kept: read its query fields with probe-report before any sample; the date field here is a guess"
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_trial",
+      "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
+    }
+  ]
+}

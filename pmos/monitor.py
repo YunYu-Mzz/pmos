@@ -55,6 +55,9 @@ def conditions(instance: Path, unit_state: str, now: float) -> dict[str, str]:
     for name, hold in (_state(instance, "dataset_holds") or {}).items():
         if not hold.get("until"):
             found["held:" + name] = f"报表 {name} 已暂停，要人工放开：{hold.get('reason')}（{hold.get('at')}）。"
+    for name, item in (_state(instance, "new_options") or {}).items():
+        found["new_options:" + name] = (f"报表 {name} 的字典出现 {item.get('count')} 个新选项（{item.get('period')}）："
+                                        f"{'、'.join(item.get('new') or [])}。没有自动采，要人决定补哪些日子。")
     if unit_state == "active" and not block and not control.get("stop_all") and not control.get("paused"):
         try:
             age = now - datetime.fromisoformat(status["updated_at"]).timestamp()

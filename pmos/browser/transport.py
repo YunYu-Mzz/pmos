@@ -65,14 +65,16 @@ _FETCH_JS = """async args => {
 
 # Vue 2 component lookup shared by the component scripts: by component name
 # (case-insensitive; "*" = any name) and optional exact field values, e.g.
-# {"viewId": "<menu guid>"} or {"queryUrl": "<the path it queries>"}.
+# {"viewId": "<menu guid>"} or {"queryUrl": "<the path it queries>"}; "*function" = any
+# function, for a view that has no name and no field of its own to tell it by.
 _FIND = """
   const pmosFind = (name, match) => {
     const roots = [...document.querySelectorAll('*')].map(e => e.__vue__).filter(Boolean);
     const seen = new Set(), found = [];
     const walk = v => { if (!v || seen.has(v)) return; seen.add(v);
       if (v.$options && (name === '*' || String(v.$options.name || '').toLowerCase() === name.toLowerCase())
-          && Object.entries(match || {}).every(([k, x]) => JSON.stringify(v[k]) === JSON.stringify(x))) found.push(v);
+          && Object.entries(match || {}).every(([k, x]) => x === '*function' ? typeof v[k] === 'function'
+                                                                             : JSON.stringify(v[k]) === JSON.stringify(x))) found.push(v);
       (v.$children || []).forEach(walk); };
     roots.forEach(r => walk(r.$root || r));
     return found;
@@ -93,6 +95,12 @@ _FIND = """
     }
   };
 """
+
+_INSPECT_JS = "args => {" + _FIND + """
+  const vm = pmosOne(args.component, args.match);
+  return {queryParam: JSON.parse(JSON.stringify(vm.queryParam === undefined ? null : vm.queryParam)),
+          methods: Object.keys((vm.$options && vm.$options.methods) || {})};
+}"""
 
 _COMPONENT_JS = "args => {" + _FIND + """
   const vm = pmosOne(args.component, args.match);
@@ -694,12 +702,17 @@ class PageTransport:
         kind = request["transport"]
         if kind == "fetch":
             return await self._fetch(request)
+        if kind == "component" and request.get("action") == "inspect":
+            with self.templates.window():
+                return await self._inspect(request)
         if kind in ("component", "native"):
             with self.templates.window():
                 return await self._call(request)
         if kind == "ui":
             with self.templates.window():
                 return await self._ui(request)
+        if kind == "finereport" and request.get("action") == "probe":
+            return await finereport.probe(self.page, request, _Expect, self.timeout)
         if kind == "finereport":
             frame = await finereport.open_report(self.page, request, self.timeout, self.finereport_sessions)
             return await finereport.query_day(self.page, frame, request["set"][request["date_field"]], _Expect, self.timeout,
@@ -768,6 +781,17 @@ class PageTransport:
                 for condition in request.get("preflight", []):
                     await self._wait_for(frame, condition, "preflight_condition_unmet")
             self.last_preflight = gate.summary()
+
+    async def _inspect(self, request: dict) -> Response:
+        """A report's form as its component holds it (preflight opened it, the gate up): nothing is called, nothing sent."""
+        frame = await ui.ensure_frame(self.page, request, self.timeout)
+        target = {"component": request["component"], "match": request.get("match")}
+        await self._wait_for(frame, target, "component_missing")
+        try:
+            found = await frame.evaluate(_INSPECT_JS, target)
+        except Exception as exc:
+            raise Fault(_page_error(exc, "component_missing"), "local", unsent=True) from None
+        return Response(200, "application/json", json.dumps({"status": 0, "data": found}, ensure_ascii=False).encode())
 
     async def _call(self, request: dict) -> Response:
         """Trigger the page's own code and keep the response it causes on ``path``."""

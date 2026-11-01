@@ -24,13 +24,19 @@
   },
   "source": {
     "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "pending"
+    "legacy_phase": "pending",
+    "note": "not in the account's menu on 2026-10-23: not collected"
   },
   "history": [
     {
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "pending"
+    },
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "noted",
+      "note": "not in the account's menu on 2026-10-23"
     }
   ]
 }

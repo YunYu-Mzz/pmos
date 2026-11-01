@@ -16,7 +16,7 @@ import time
 from urllib.parse import parse_qs, urlsplit
 
 from ..faults import Fault
-from ..finereport import PATH, SESSION_END, STAGES
+from ..finereport import MAPPING_PATH, PATH, SESSION_END, STAGES
 from ..validate import Response
 from . import ui
 
@@ -57,6 +57,14 @@ _COMMIT_JS = """date => { const f = _g(), v = f.parameterEl.getWidgetByName('日
   if (v.getValue() !== date) throw new Error('date_not_applied'); f.parameterCommit(); return v.getValue(); }"""
 
 _RELEASE_JS = "() => { const o = window.__pmosFrQueue.shift(); window.__pmosFrAjax.call(FR, o); return true; }"
+
+
+# What the form asks for: every widget's name, kind and current value (no secrets: a form's own defaults).
+_WIDGETS_JS = """() => Object.entries(_g().parameterEl.name_widgets || {}).map(([name, w]) => {
+  let value = null;
+  try { const v = w.getValue && w.getValue(); value = v === null || typeof v === 'object' ? null : v; } catch (e) {}
+  return {name, type: (w.options && w.options.type) || null, value};
+})"""
 
 
 def _unsent(code: str, detail: dict | None = None) -> Fault:
@@ -109,6 +117,52 @@ async def open_report(page, request: dict, timeout: float, last: dict):
         frame = found[0]
     await _ready(frame, timeout)
     return frame
+
+
+async def probe(page, request: dict, expect, timeout: float) -> Response:
+    """What a report's form asks for, without asking it: the mapping's answer and the form's widgets. No data request.
+
+    A mapping refused (40302, as two of these were on 2026-10-16) is the answer, no fault: the widgets are then absent.
+    """
+    await ui.bring_forward(page)
+    try:
+        async with expect(page, "response", lambda r: urlsplit(r.url).path == MAPPING_PATH, timeout=timeout * 1000) as captured:
+            await page.evaluate(ui._SITE_MENU_JS, request["site_menu"])
+        answer = await captured.value
+        raw = await answer.body()
+    except Fault:
+        raise
+    except Exception as exc:
+        raise _unsent("site_menu_entry_missing" if "site_menu_entry_missing" in str(exc) else "finereport_mapping_no_answer") from None
+    try:
+        body = json.loads(raw)
+    except ValueError:
+        body = {}
+    data = body.get("data") if isinstance(body, dict) else None
+    url = data.get("url") if isinstance(data, dict) else None
+    found = {"mapping": {"http_status": answer.status, "business_status": body.get("status") if isinstance(body, dict) else None,
+                         "mapped": bool(url)}}
+    if url:
+        viewlet = parse_qs(urlsplit(url).query).get("viewlet", [None])[0]
+        found["viewlet"] = viewlet
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + timeout
+        frame = None
+        while frame is None and loop.time() < deadline:
+            frame = next((f for f in page.frames if urlsplit(f.url).path == PATH
+                          and parse_qs(urlsplit(f.url).query).get("viewlet", [None])[0] == viewlet), None)
+            if frame is None:
+                await asyncio.sleep(0.2)
+        found["form_ready"] = False
+        while frame is not None and loop.time() < deadline:
+            try:
+                await frame.evaluate(_INSTALL_JS)
+                found["widgets"] = await frame.evaluate(_WIDGETS_JS)
+                found["form_ready"] = True
+                break
+            except Exception:
+                await asyncio.sleep(0.2)
+    return Response(200, "application/json", json.dumps({"status": 0, "data": found}, ensure_ascii=False).encode())
 
 
 async def _next_stage(frame, stage: tuple, timeout: float, *, first: bool) -> None:

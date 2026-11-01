@@ -1,0 +1,40 @@
+{
+  "id": "sitewide_e87a7708ade1e187",
+  "name": "省间联络线输电曲线预测",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "finereport",
+    "method": "POST",
+    "path": "/px-basesystem-reportform/decision/view/form",
+    "frame": "lnsnxh_rnxtjllxqxyc",
+    "site_menu": {
+      "source": "lnsnxh_rnxtjllxqxyc",
+      "route": "spotgoodsSum"
+    },
+    "set": {
+      "queryParam.mdate": "{date}"
+    },
+    "date_field": "queryParam.mdate"
+  },
+  "response": {
+    "kind": "finereport_daily"
+  },
+  "source": {
+    "legacy": "state/server_verified_expansion_20261023/native_menu.json",
+    "legacy_source": "lnsnxh_rnxtjllxqxyc",
+    "note": "the menu's FineReport entry of this code. Its form is unknown: probe-report first; request and response here are placeholders."
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_probe",
+      "note": "user 2026-11-01: \"都按你建议的来\""
+    }
+  ]
+}

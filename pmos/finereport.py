@@ -9,6 +9,7 @@ from decimal import Decimal, InvalidOperation
 from html.parser import HTMLParser
 
 PATH = "/px-basesystem-reportform/decision/view/form"
+MAPPING_PATH = "/px-settlement-infpubquery/spotgoods/queryIpSpotgoodsInfoBytableName"
 # (cmd, op, method), in the order the page's own form asks them after parameterCommit.
 STAGES = (("parameters_d", "fr_dialog", "POST"), ("load_content", "fr_form", "GET"), ("load_report_content", "fr_form", "POST"))
 # FineReport's own error page, HTTP 200, when its session ended (idle 66 min and more; never within 11.5 min).

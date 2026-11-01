@@ -24,8 +24,10 @@ import inspect
 import os
 import time
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
+from pathlib import Path
 
+from . import periods as _periods
 from .archive import Archive
 from .contracts import TaskIdentity
 from .faults import Decision, DriverLost, Fault, decide, driver_gone
@@ -33,7 +35,7 @@ from .ledger import BUDGET_KINDS, Ledger, validate_ledger_path
 from .pacing import DAY, wait_seconds
 from .periods import last_day, today
 from .province import Province
-from .spec import DatasetSpec
+from .spec import DatasetSpec, render
 from .state import StateStore
 from .validate import Outcome, Response, evaluate
 
@@ -344,6 +346,7 @@ class Engine:
             for key, _ in spec.scope_items():
                 self.ledger.seed(spec.id, due, key)
         self._roll_forward_options(seeded, day)
+        self._queue_dictionaries(seeded, day)
         self._seeded_on = day
 
     def _roll_forward_options(self, seeded: set, day) -> None:
@@ -376,6 +379,70 @@ class Engine:
                 if (("discover_options", spec.id, newest_due) not in queued
                         and not self.ledger.consumed(spec.id, newest_due, "discover_options")):
                     self.enqueue({"action": "discover_options", "dataset": spec.id, "period": newest_due})
+
+    def _queue_dictionaries(self, seeded: set, day) -> None:
+        """Once a day, each per-option report's dictionary: a new option is told to a person, never seeded by itself.
+
+        Under a spec_periods handoff a new option would be asked for the whole year.
+        """
+        read = self.state.read("dictionary_reads", {}) or {}
+        queued = {(c.get("action"), c.get("dataset")) for c in self.state.read("commands", []) or []}
+        for spec in self.collection_specs():
+            if (spec.source.get("dictionary") and spec.scopes and spec.id in seeded and read.get(spec.id) != day.isoformat()
+                    and ("read_dictionary", spec.id) not in queued):
+                self.enqueue({"action": "read_dictionary", "dataset": spec.id, "day": day.isoformat(),
+                              "period": spec.newest_due(on=day) or (day - timedelta(days=1)).isoformat()})
+
+    async def _read_dictionary(self, spec: DatasetSpec, period: str | None, day: str | None = None) -> dict:
+        """The options a report's own form lists now, by its own dictionary call. Reports them; asks no data.
+
+        Empty is a day not published yet (the legacy lane saw it on recent days): it says nothing about options.
+        """
+        import json
+        config = spec.source.get("dictionary")
+        if not config:
+            raise Fault("dictionary_not_declared", "local", unsent=True)
+        period = period or (today() - timedelta(days=1)).isoformat()
+        request = {key: spec.request[key] for key in ("transport", "frame", "open_url", "site_menu", "component", "match",
+                                                      "prepare", "method") if key in spec.request}
+        request.update(path=config["path"], call=config["call"], args=config.get("args", []),
+                       set=render(config.get("set", {}), _periods.variables("day", period)))
+        result = await self.request("probe", request, {"kind": "json"}, dataset=spec.id, period=period, scope="dictionary",
+                                    lane=spec.source.get("lane"))
+        rows = json.loads(result.response.body).get("data") or []
+        listed = sorted({str(row[config["field"]]) for row in rows if isinstance(row, dict) and row.get(config["field"]) not in (None, "")})
+        known = {str(value) for _, values in spec.scope_items() for value in values.values()}
+        new = [name for name in listed if name not in known] if spec.scopes else []
+        if day:
+            self.state.write("dictionary_reads", {**(self.state.read("dictionary_reads", {}) or {}), spec.id: day})
+        if listed:
+            self.samples.store(spec.id, period, result.response.body, ".json", scope="dictionary", acquisition="dictionary_read")
+            pending = dict(self.state.read("new_options", {}) or {})
+            if new:
+                pending[spec.id] = {"period": period, "new": new[:50], "count": len(new), "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+            else:
+                pending.pop(spec.id, None)
+            self.state.write("new_options", pending)
+        self.state.event("dictionary_read", dataset=spec.id, period=period, listed=len(listed), new=len(new))
+        return {"dataset": spec.id, "period": period, "listed": len(listed), "new": new[:50], "new_count": len(new),
+                "options": listed if not spec.scopes else None}
+
+    async def _probe_report(self, spec: DatasetSpec) -> dict:
+        """What a report's form asks for (a FineReport mapping and its widgets, a component's query fields). No data request."""
+        import json
+        if spec.request.get("transport") == "finereport":
+            request = {"transport": "finereport", "action": "probe", "site_menu": spec.request["site_menu"], "frame": spec.request["frame"]}
+        elif spec.request.get("transport") == "component":
+            request = {key: spec.request[key] for key in ("transport", "frame", "open_url", "site_menu", "component", "match", "prepare")
+                       if key in spec.request}
+            request.update(action="inspect", call=spec.request["call"], method="POST", path=spec.request["path"])
+        else:
+            raise Fault("probe_report_transport_unsupported", "local", unsent=True)
+        result = await self.request("probe", request, {"kind": "json"}, dataset=spec.id, scope="probe_report",
+                                    lane=spec.source.get("lane"))
+        found = json.loads(result.response.body)["data"]
+        self.state.event("report_probed", dataset=spec.id, mapped=(found.get("mapping") or {}).get("mapped"))
+        return {"dataset": spec.id, "name": spec.name, **found}
 
     def _cursor_task(self, enabled: list[DatasetSpec]):
         """A paginated task in progress keeps priority until its last page."""
@@ -511,7 +578,7 @@ class Engine:
             return await self._collect_page(spec, period, scope)
         values = spec.scope_values(scope)
         identity = self.task_identity(spec, period, scope)
-        if self._skip_consumed(spec, period, scope, identity):
+        if self._skip_consumed(spec, period, scope, identity) or self._settle_from_sample(spec, period, scope, identity):
             return None
         request = self._sendable(spec.build(period, values))
         if request is None:
@@ -592,6 +659,23 @@ class Engine:
             return False
         self.ledger.settle_task(spec.id, period, "skipped", scope=scope,
                                 reason="legacy_consumed:" + ",".join(states))
+        return True
+
+    def _settle_from_sample(self, spec: DatasetSpec, period: str, scope: str, identity) -> bool:
+        """The period an adaptation sample already asked: its answer is this task's, never a second request."""
+        outcome = self.ledger.sample_outcome(identity.key)
+        if outcome == "empty":
+            self.ledger.settle_task(spec.id, period, "empty", scope=scope, reason="answered_by_sample")
+            return True
+        if outcome != "success":
+            return False
+        kept = [r for r in self.samples.records(spec.id) if r["period"] == period and r.get("scope", "") == scope]
+        if not kept or not self.samples.verify(kept[-1]):
+            return False                      # the dispatch guard then stops it for review
+        body = (self.samples.root / kept[-1]["path"]).read_bytes()
+        record = self.archive.store(spec.id, period, body, Path(kept[-1]["path"]).suffix, scope=scope,
+                                    acquisition="adaptation_sample")
+        self.ledger.settle_task(spec.id, period, "saved", scope=scope, sha256=record["sha256"], reason="answered_by_sample")
         return True
 
     async def _collect_page(self, spec: DatasetSpec, period: str, scope: str) -> Result:
@@ -1528,7 +1612,7 @@ class Engine:
         spec = self.province.datasets().get(commands[0].get("dataset"))
         lane = (spec.source.get("lane") if spec is not None
                 and commands[0].get("action") in ("probe_blank", "collect_one", "probe_api_blank", "probe_export_blank",
-                                                  "discover_options")
+                                                  "discover_options", "read_dictionary", "probe_report")
                 else None)
         if self.spacing_wait("sample", lane) > 0:
             return False
@@ -1553,6 +1637,10 @@ class Engine:
                 results[command["id"]] = {"ok": True, **await self._probe_export_blank(spec, command)}
             elif command.get("action") == "discover_options":
                 results[command["id"]] = {"ok": True, **await self._discover_options(spec, command["period"])}
+            elif command.get("action") == "read_dictionary":
+                results[command["id"]] = {"ok": True, **await self._read_dictionary(spec, command.get("period"), command.get("day"))}
+            elif command.get("action") == "probe_report":
+                results[command["id"]] = {"ok": True, **await self._probe_report(spec)}
             else:
                 raise ValueError("command_unknown")
         except Fault as fault:
@@ -1563,6 +1651,11 @@ class Engine:
                 # report's discovery waits for review; its known options roll on.
                 # A login, permission, rate-limit or network answer is the site's and still stops it.
                 self._hold_discovery(command["dataset"], fault.code, fault.detail)
+            elif command.get("action") in ("read_dictionary", "probe_report") and fault.category not in ("auth", "rate_limit"):
+                # A look at one report's form: whatever it answers is that report's, and collection goes on.
+                if command.get("day"):
+                    self.state.write("dictionary_reads", {**(self.state.read("dictionary_reads", {}) or {}), command["dataset"]: command["day"]})
+                self.state.event("report_look_failed", dataset=command.get("dataset"), action=command["action"], reason=fault.code)
             else:
                 decision = decide(fault, "sample")
                 if decision.scope == "province":

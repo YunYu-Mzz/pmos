@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Liaoning's daily (--lane daily, 17), FineReport (--lane engine, 3), weekly (--lane weekly, 2) reports or the disclosure
-columns and their files with the member lists (--lane lists, 63 + 3; --only a,b,c for a pilot) join the PMOS handoff.
+"""Liaoning's daily (--lane daily, 17), FineReport (--lane engine, 3), weekly (--lane weekly, 2) reports, the disclosure
+columns and their files with the member lists (--lane lists, 63 + 3; --only a,b,c for a pilot), or the reports on trial
+(--lane trial, 11, still candidates until a `sample` of theirs has an answer) join the PMOS handoff.
 
 Offline; sends nothing. plan: what the legacy worker completed of them (read-only).
 apply --approval "...": their tombstones and the new collection order, with pmos-liaoning and the legacy
@@ -38,7 +39,7 @@ def main() -> None:
     apply = commands.add_parser("apply")
     apply.add_argument("--approval", required=True)
     for command in (plan, apply):
-        command.add_argument("--lane", choices=("daily", "engine", "weekly", "lists"), default="daily")
+        command.add_argument("--lane", choices=("daily", "engine", "weekly", "lists", "trial"), default="daily")
         command.add_argument("--early-empty-consumed", action="store_true",
                              help="the empty answers asked before publication become tombstones too (user's decision); give it to plan and apply alike")
         command.add_argument("--only", help="lists: join just these columns now (comma separated); tombstones cover all")
@@ -57,11 +58,12 @@ def main() -> None:
                                             "first_listing_pages_all_columns", "files_left_to_download_all_columns", "files_beyond_the_legacy_queue",
                                             "answered_without_a_file", "resend_empty", "withheld_year_conflict")}
     else:
-        names = {"daily": liaoning.DAILY_LANE, "engine": liaoning.ENGINE_LANE, "weekly": liaoning.WEEKLY_LANE}[args.lane]
+        names = {"daily": liaoning.DAILY_LANE, "engine": liaoning.ENGINE_LANE, "weekly": liaoning.WEEKLY_LANE,
+                 "trial": liaoning.TRIAL_LANE}[args.lane]
         lane = liaoning.daily_lane(LEGACY, specs, names=names, early_empty_consumed=args.early_empty_consumed)
         extra = {"early_empty_consumed": lane["early_empty_consumed"]}
     weak = [name for name in names if specs[name].status not in ("sampled", "verified", "enabled")]
-    if weak:
+    if weak and args.lane != "trial":         # a trial's reports join as candidates: a `sample` decides each
         raise SystemExit("not verified: " + ",".join(weak))
     summary = {"tombstones": len(lane["rows"]), "will_be_asked": lane["will_be_asked"], **extra,
                "snapshot_sha256": lane["snapshot_sha256"], "per_dataset": lane["per_dataset"]}

@@ -1,7 +1,7 @@
 {
   "id": "sitewide_055496fd163e494f",
   "name": "电网负荷总体情况（新）",
-  "status": "candidate",
+  "status": "retired",
   "period": {
     "kind": "month",
     "start": "2026-01",
@@ -32,6 +32,11 @@
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "pending"
+    },
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "retired",
+      "note": "the same request as sitewide_0fd64918a3163888"
     }
   ]
 }

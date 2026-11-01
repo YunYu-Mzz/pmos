@@ -1,7 +1,7 @@
 {
   "id": "dayahead_constraints",
   "name": "日前市场各时段出清的断面约束及阻塞情况",
-  "status": "candidate",
+  "status": "retired",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -31,6 +31,11 @@
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "pending"
+    },
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "retired",
+      "note": "the same request as the FineReport entry lnsnxh_sddmzsqk"
     }
   ]
 }

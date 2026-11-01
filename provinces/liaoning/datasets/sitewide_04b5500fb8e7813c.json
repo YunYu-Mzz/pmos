@@ -1,0 +1,61 @@
+{
+  "id": "sitewide_04b5500fb8e7813c",
+  "name": "调峰电力",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport061",
+    "frame": "/pdbln/report/PdblnReport061",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport061",
+    "component": "pdblnReport061",
+    "call": "initData",
+    "set": {
+      "tableData": [],
+      "queryParam.mdate": "{date}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_tfdl",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport061"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py + native_menu.json",
+    "number": "061",
+    "legacy_source": "lnsnxh_tfdl",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    },
+    "note": "three dimensions: date, unit, type (legacy cascading_061). Options first.",
+    "dictionary": {
+      "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReportDicName061",
+      "call": "initDataDicName",
+      "field": "name",
+      "set": {
+        "queryParam.mdate": "{date}"
+      }
+    }
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_trial",
+      "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
+    }
+  ]
+}

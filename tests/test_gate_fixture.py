@@ -41,6 +41,7 @@ class Site(http.server.SimpleHTTPRequestHandler):
     finereport: list = []        # what the FineReport stand-in was asked, in order
     finereport_dead = False      # the session ended: parameters_d answers FineReport's error page
     finereport_blank = False
+    finereport_denied: set = set()   # reports whose mapping answers 40302
 
     def finereport_answer(self, query: dict) -> None:
         from urllib.parse import parse_qs
@@ -63,6 +64,8 @@ class Site(http.server.SimpleHTTPRequestHandler):
         if self.path == "/px-settlement-infpubquery/spotgoods/queryIpSpotgoodsInfoBytableName":
             source = json.loads(Site.bodies[-1])["tableName"]
             Site.finereport.append("map:" + source)
+            if source in Site.finereport_denied:
+                return self.reply(json.dumps({"status": 40302, "message": "无权限"}).encode(), "application/json")
             url = f"/px-basesystem-reportform/decision/view/form?ref_t={len(Site.finereport)}&viewlet=dir%2F{source}.frm"
             return self.reply(json.dumps({"status": 0, "data": {"url": url}}).encode(), "application/json")
         if self.path == "/px-basesystem-reportform/decision/view/form":
@@ -514,6 +517,50 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         await self.transport.send(self.finereport_request(day="2026-10-29"))
         self.assertEqual(Site.finereport[6:], ["parameters_d", "load_content", "load_report_content"],
                          "the same session: no mapping, no document, and form_getsource stays unsent")
+
+    async def test_a_probe_reads_the_mapping_and_the_form_and_asks_no_data(self):
+        await self.finereport_page()
+        site_menu = {"source": "lnsnxh_a", "route": "spotgoodsSum"}
+        response = await self.transport.send({"transport": "finereport", "action": "probe", "frame": "lnsnxh_a", "site_menu": site_menu})
+        found = json.loads(response.body)["data"]
+        self.assertEqual(found["mapping"], {"http_status": 200, "business_status": 0, "mapped": True})
+        self.assertEqual(found["viewlet"], "dir/lnsnxh_a.frm")
+        self.assertTrue(found["form_ready"])
+        self.assertEqual([(w["name"], w["value"]) for w in found["widgets"]], [("unit", "单位:MW")])
+        self.assertEqual([c for c in Site.finereport if c in ("parameters_d", "load_content", "load_report_content")], [], "no stage")
+
+    async def test_a_refused_mapping_is_the_probes_answer_and_no_fault(self):
+        await self.finereport_page()
+        Site.finereport_denied = {"lnsnxh_b"}
+        self.addCleanup(lambda: setattr(Site, "finereport_denied", set()))
+        response = await self.transport.send({"transport": "finereport", "action": "probe", "frame": "lnsnxh_b",
+                                              "site_menu": {"source": "lnsnxh_b", "route": "spotgoodsSum"}})
+        found = json.loads(response.body)["data"]
+        self.assertEqual(found["mapping"], {"http_status": 200, "business_status": 40302, "mapped": False})
+        self.assertNotIn("widgets", found)
+
+    async def test_a_probe_of_a_report_the_menu_does_not_have_says_so_and_sends_nothing(self):
+        await self.finereport_page()
+        Site.received.clear()
+        with self.assertRaises(Fault) as caught:
+            await self.transport.send({"transport": "finereport", "action": "probe", "frame": "nope",
+                                       "site_menu": {"source": "nope", "route": "spotgoodsSum"}})
+        self.assertEqual((caught.exception.code, caught.exception.unsent), ("site_menu_entry_missing", True))
+        self.assertEqual(Site.received, [])
+
+    async def test_inspecting_a_component_reads_its_query_fields_and_calls_nothing(self):
+        Site.received.clear()
+        response = await self.transport.send({"transport": "component", "action": "inspect", "frame": "/component_page.html",
+                                              "component": "/pxf-x/report", "call": "queryPage", "path": "/px-x/query", "method": "POST"})
+        found = json.loads(response.body)["data"]
+        self.assertIn("queryPage", found.get("methods") or ["queryPage"])
+        self.assertEqual(Site.received, [])
+
+    async def test_a_nameless_view_is_found_by_what_it_can_do(self):
+        response = await self.transport.send({"transport": "component", "frame": "/component_page.html", "component": "*",
+                                              "match": {"queryPage": "*function", "exportData": "*function"}, "call": "queryPage",
+                                              "method": "POST", "path": "/px-x/query"})
+        self.assertEqual(response.status, 200)
 
     async def test_a_session_idle_too_long_is_opened_anew_before_it_is_asked(self):
         from pmos.browser.finereport import REOPEN_IDLE_SECONDS

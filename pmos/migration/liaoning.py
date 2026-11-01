@@ -340,6 +340,11 @@ DAILY_LANE = ("system_load", "centralized_solar_daily", "centralized_wind_daily"
 # The FineReport reports (routes moved 2026-10-23): their originals are in report_engine, 033's older ones in power_reports.
 ENGINE_LANE = ("sitewide_e38351fe661a034a", "sitewide_0353290a57044c3e", "nonmarket_generation_forecast")
 # The two weekly reports the verified queue held without a parameter rule: their originals are in advanced_reports.
+# Reports the legacy owner asked and got nothing from, or never asked (user 2026-11-01: "都按你建议的来"). They join the
+# scope still candidates: nothing is seeded until a `sample` of theirs has an answer, which makes them sampled.
+TRIAL_LANE = ("tie_line_intraday", "sitewide_deb417edc0244802", "sitewide_f95e530cd8bf1d85", "sitewide_f09e45e44534ce37",
+              "sitewide_5878dbf34cf4177a", "historical_electricity", "additional_1410113473630834688",
+              "sitewide_7a300d985f7a8cfc", "sitewide_c351e2bf9c6027aa", "sitewide_04b5500fb8e7813c", "pdbln_report_028")
 WEEKLY_LANE = ("sitewide_d86eb498e4cf0eca", "sitewide_f5d806b38bb8a248")
 DAILY_QUEUES = "state/crawlee_daily_verified_20261014/request_queues"
 DAILY_ORIGINALS = "data/2026/original/power_reports"

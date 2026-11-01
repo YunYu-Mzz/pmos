@@ -1,0 +1,40 @@
+{
+  "id": "sitewide_3ebbdf40ca6ec2b1",
+  "name": "省内电力平衡裕度",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "finereport",
+    "method": "POST",
+    "path": "/px-basesystem-reportform/decision/view/form",
+    "frame": "sn_xhpl_dlphyd_7_4",
+    "site_menu": {
+      "source": "sn_xhpl_dlphyd_7_4",
+      "route": "spotgoodsSum"
+    },
+    "set": {
+      "queryParam.mdate": "{date}"
+    },
+    "date_field": "queryParam.mdate"
+  },
+  "response": {
+    "kind": "finereport_daily"
+  },
+  "source": {
+    "legacy": "state/server_verified_expansion_20261023/native_menu.json",
+    "legacy_source": "sn_xhpl_dlphyd_7_4",
+    "note": "excluded by the user 2026-10-16. Its form is unknown: probe-report first; request and response here are placeholders."
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_probe",
+      "note": "user 2026-11-01: \"都按你建议的来\""
+    }
+  ]
+}

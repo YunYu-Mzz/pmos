@@ -1,0 +1,53 @@
+{
+  "id": "sitewide_5878dbf34cf4177a",
+  "name": "水电（含抽蓄）总出力预测（周）",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReport023",
+    "frame": "/pdbln/report/PdblnReport023",
+    "open_url": "/pxf-dif-settlement-outnetpub/#/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport023",
+    "component": "pdblnReport023",
+    "call": "initData",
+    "set": {
+      "tableData": [],
+      "queryParam.date": "{date}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_w_sdjh",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport023"
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "lncrawler/sitewide_specs.py + native_menu.json",
+    "number": "023",
+    "legacy_source": "lnsnxh_w_sdjh",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.date"
+      ],
+      "dimension_fields": {}
+    },
+    "note": "excluded by the user 2026-10-16, tried once now: user 2026-11-01. queryParam.date per the legacy component source"
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_trial",
+      "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
+    }
+  ]
+}

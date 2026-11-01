@@ -5,8 +5,7 @@
   "period": {
     "kind": "year",
     "start": "2026",
-    "end": "today",
-    "complete_only": true
+    "end": "today"
   },
   "request": {
     "transport": "component",
@@ -17,7 +16,12 @@
     "component": "pdblnReport064",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{year}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_sngjsddmkyrlnd",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport064"
     }
   },
   "response": {
@@ -25,13 +29,30 @@
   },
   "source": {
     "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "empty_sample"
+    "legacy_phase": "empty_sample",
+    "number": "064",
+    "legacy_source": "lnsnxh_sngjsddmkyrlnd",
+    "note": "legacy: one sample, empty",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    }
   },
   "history": [
     {
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "empty_sample"
+    },
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_trial",
+      "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
     }
   ]
 }

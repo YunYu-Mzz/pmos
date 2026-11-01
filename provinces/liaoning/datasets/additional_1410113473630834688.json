@@ -1,0 +1,45 @@
+{
+  "id": "additional_1410113473630834688",
+  "name": "交易公告",
+  "status": "candidate",
+  "period": {
+    "kind": "snapshot",
+    "daily": true
+  },
+  "request": {
+    "transport": "component",
+    "method": "POST",
+    "path": "/px-trade-extranet/tradeNotice/queryTradeInfoByTypeAndUser",
+    "frame": "/myTransaction/Announcement",
+    "open_url": "/pxf-trade-extranet/#/pxf-trade-extranet/myTransaction/Announcement",
+    "component": "AnnountTable",
+    "call": "pageQuery",
+    "set": {},
+    "pagination": {
+      "page": "queryParam.pageInfo.pageNum",
+      "size": "queryParam.pageInfo.pageSize",
+      "page_size": 10,
+      "first_page": 1,
+      "records": "data.list",
+      "total": "data.total",
+      "max_pages": 100
+    }
+  },
+  "response": {
+    "kind": "json"
+  },
+  "source": {
+    "legacy": "state/server_verified_expansion_20261023/active_manifest.json",
+    "legacy_dataset": "additional_1410113473630834688",
+    "legacy_saved_pages": 3,
+    "listed_total_20261023": 141,
+    "note": "Announcement.search only lists the trade types; its child AnnountTable.pageQuery asks (legacy screenshot_table_binding). Its rows name files in trFiles: not collected here."
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_trial",
+      "note": "user 2026-11-01: \"都按你建议的来\": of the three reachable additional lists, this one only."
+    }
+  ]
+}

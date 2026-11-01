@@ -288,6 +288,14 @@ class Ledger:
             (identity_key,)).fetchone()
             or self.db.execute("SELECT 1 FROM legacy_records WHERE identity_key=? AND consumed=1 LIMIT 1", (identity_key,)).fetchone())
 
+    def sample_outcome(self, identity_key: str) -> str | None:
+        """How an adaptation sample of this very identity ended, if one was asked and not released."""
+        row = self.db.execute("SELECT a.outcome FROM attempt_identities i JOIN attempts a ON a.id=i.attempt_id"
+                              " WHERE i.identity_key=? AND a.kind='sample'"
+                              " AND a.id NOT IN (SELECT attempt_id FROM released_attempts) ORDER BY a.id DESC LIMIT 1",
+                              (identity_key,)).fetchone()
+        return row[0] if row else None
+
     def has_legacy_shadow(self) -> bool:
         return self.db.execute("SELECT 1 FROM migration_sources LIMIT 1").fetchone() is not None
 

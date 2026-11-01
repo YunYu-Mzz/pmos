@@ -1,0 +1,40 @@
+{
+  "id": "sitewide_49aa17d82da46bfb",
+  "name": "日前省间联络线输电可用容量",
+  "status": "candidate",
+  "period": {
+    "kind": "day",
+    "start": "2026-01-01",
+    "end": "today",
+    "lag_days": 2
+  },
+  "request": {
+    "transport": "finereport",
+    "method": "POST",
+    "path": "/px-basesystem-reportform/decision/view/form",
+    "frame": "sn_xhpl_dasm_corridor_7_7_1",
+    "site_menu": {
+      "source": "sn_xhpl_dasm_corridor_7_7_1",
+      "route": "spotgoodsSum"
+    },
+    "set": {
+      "queryParam.mdate": "{date}"
+    },
+    "date_field": "queryParam.mdate"
+  },
+  "response": {
+    "kind": "finereport_daily"
+  },
+  "source": {
+    "legacy": "state/server_verified_expansion_20261023/native_menu.json",
+    "legacy_source": "sn_xhpl_dasm_corridor_7_7_1",
+    "note": "denied 40302 on 2026-10-16. Its form is unknown: probe-report first; request and response here are placeholders."
+  },
+  "history": [
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_probe",
+      "note": "user 2026-11-01: \"都按你建议的来\""
+    }
+  ]
+}

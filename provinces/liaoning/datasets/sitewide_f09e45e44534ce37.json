@@ -17,7 +17,12 @@
     "component": "pdblnReport063",
     "call": "initData",
     "set": {
+      "tableData": [],
       "queryParam.mdate": "{month}"
+    },
+    "site_menu": {
+      "source": "lnsnxh_ydfdsbjxjh",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport063"
     }
   },
   "response": {
@@ -25,13 +30,30 @@
   },
   "source": {
     "legacy": "lncrawler/sitewide_specs.py",
-    "legacy_phase": "failed"
+    "legacy_phase": "failed",
+    "number": "063",
+    "legacy_source": "lnsnxh_ydfdsbjxjh",
+    "note": "legacy: one sample failed; the 10-23 menu has this code for the same request",
+    "identity_contract": {
+      "request_data_path": [
+        "set"
+      ],
+      "date_fields": [
+        "queryParam.mdate"
+      ],
+      "dimension_fields": {}
+    }
   },
   "history": [
     {
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "failed"
+    },
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_trial",
+      "note": "user 2026-11-01: \"都按你建议的来\". Stays a candidate until a sample has an answer."
     }
   ]
 }

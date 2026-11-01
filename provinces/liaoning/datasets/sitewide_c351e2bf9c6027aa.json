@@ -18,6 +18,10 @@
     "set": {
       "queryParam.mdate": "{date}",
       "queryParam.mtype": "保供省间支援"
+    },
+    "site_menu": {
+      "source": "lnsnxh_tfdlfjqk",
+      "route": "/pxf-dif-settlement-outnetpub/pdbln/report/PdblnReport075"
     }
   },
   "response": {
@@ -26,13 +30,27 @@
   "source": {
     "legacy": "lncrawler/sitewide_specs.py",
     "legacy_phase": "empty_sample",
-    "options_api": "pdblnReportDic075"
+    "options_api": "pdblnReportDic075",
+    "number": "075",
+    "legacy_source": "lnsnxh_tfdlfjqk",
+    "dictionary": {
+      "path": "/px-dif-settlement-infpubquery/pdblnReportController/pdblnReportDic075",
+      "call": "initDataDic",
+      "field": "type",
+      "set": {}
+    },
+    "note": "the form's dictionary call posts {} (legacy component source), so it is not bound to a date"
   },
   "history": [
     {
       "at": "2026-10-23T10:28:32+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "empty_sample"
+    },
+    {
+      "at": "2026-11-01T19:20:00+08:00",
+      "event": "prepared_for_trial",
+      "note": "options first, by read-dictionary"
     }
   ]
 }

@@ -602,5 +602,208 @@ class Columns(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.transport.sent) - sent, 1, "page 1 is all known: the listing ends there")
 
 
+class RealTrial(unittest.TestCase):
+    FINEREPORT = 14
+
+    def test_the_reports_on_trial_are_candidates_with_what_their_forms_ask(self):
+        specs = REAL.datasets()
+        for name in migration.TRIAL_LANE:
+            self.assertEqual(specs[name].status, "candidate", name)
+        self.assertEqual(specs["sitewide_5878dbf34cf4177a"].request["set"]["queryParam.date"], "{date}", "023 asks date, not mdate")
+        self.assertNotIn("complete_only", specs["sitewide_deb417edc0244802"].period, "or 2026 is never asked")
+        self.assertEqual(specs["sitewide_f09e45e44534ce37"].request["site_menu"]["source"], "lnsnxh_ydfdsbjxjh", "the code on the 10-23 menu")
+        self.assertEqual(specs["historical_electricity"].request["timeout"], 240, "the site took 161 s to answer in October")
+        self.assertEqual(specs["additional_1410113473630834688"].request["component"], "AnnountTable")
+        self.assertIs(specs["additional_1410113473630834688"].period["daily"], True)
+
+    def test_the_fourteen_finereport_forms_are_candidates_to_probe(self):
+        specs = [s for s in REAL.datasets().values() if s.request.get("transport") == "finereport" and s.status == "candidate"]
+        self.assertEqual(len(specs), self.FINEREPORT)
+        self.assertEqual({s.request["site_menu"]["route"] for s in specs}, {"spotgoodsSum"})
+
+    def test_the_nine_per_option_reports_read_their_dictionary_without_a_selection(self):
+        specs = REAL.datasets()
+        reading = {name for name, s in specs.items() if s.source.get("dictionary") and s.scopes}
+        self.assertEqual(reading, {"sitewide_7d2f4e6e4598aba8", "sitewide_39c86b17616d219e", "sitewide_1c01651cb1051d47",
+                                   "sitewide_931ac1f25ce9e62a", "sitewide_46fa5856d5315e4e", "sitewide_e6a2dcfefa4e7391",
+                                   "realtime_node_price", "sitewide_0400f0e45de22dcd", "dayahead_power_and_average_price"})
+        for name in reading:
+            config = specs[name].source["dictionary"]
+            with self.subTest(name=name):
+                self.assertEqual(list(specs[name].scopes[0]), [config["field"]])
+                self.assertIn("{date}", config["set"].values())
+                self.assertIn(None, config["set"].values(), "no option selected: the form's own first read")
+                self.assertTrue(config["path"].rsplit("/", 1)[1].startswith("pdblnReport"))
+
+    def test_the_aliases_are_retired(self):
+        specs = REAL.datasets()
+        for name in ("sitewide_055496fd163e494f", "sitewide_c23050b85c48fa15", "dayahead_constraints"):
+            self.assertEqual(specs[name].status, "retired")
+
+
+class Trial(unittest.IsolatedAsyncioTestCase):
+    """Real specs on a handoff: a candidate waits for its sample; a look at a form asks no data and stops nothing."""
+
+    def setUp(self):
+        self.tmp = TempDir()
+        self.addCleanup(self.tmp.cleanup)
+        self.clock = Clock()
+        patcher = patch.dict(os.environ, {"PMOS_DATA": str(self.tmp.path / "data")})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        directory = self.tmp.path / "provinces" / "liaoning"
+        (directory / "datasets").mkdir(parents=True)
+        (directory / "province.json").write_text(json.dumps({
+            "id": "liaoning", "name": "辽宁", "origin": "https://pmos.ln.sgcc.com.cn",
+            "policy": {"response_interval_seconds": 1, "renew_after_idle_seconds": 1500, "probe_after_idle_seconds": 1500,
+                       "isolate_items": ["unknown", "site_data", "permission"], "isolation_streak": 1, "denial_streak": 1},
+            "session": {"keepalive_dataset": None, "probe": None}}))
+        self.names = ("sitewide_46fa5856d5315e4e", "tie_line_intraday", "sitewide_49aa17d82da46bfb")
+        for name in self.names:
+            value = json.loads((REPO / "provinces/liaoning/datasets" / f"{name}.json").read_text(encoding="utf-8"))
+            if name == "tie_line_intraday":
+                value["period"] = {**value["period"], "start": day(6)}
+            if name == "sitewide_46fa5856d5315e4e":
+                value["period"] = {**value["period"], "start": day(2)}
+            (directory / "datasets" / f"{name}.json").write_text(json.dumps(value, ensure_ascii=False))
+        self.province = Province.load("liaoning", self.tmp.path / "provinces")
+        instance = self.province.instance()
+        instance.mkdir(parents=True)
+        ledger = Ledger(instance / "ledger.sqlite3")
+        import_shadow(ledger, [], QueueContext("liaoning", "liaoning-production"), source_id="queue", snapshot_sha256="a" * 64)
+        ledger.grant_handoff({"version": 1, "province": "liaoning", "account_alias": "liaoning-production",
+                              "legacy_owner": {"stopped_evidence": "fixture"},
+                              "snapshots": [{"source_id": "queue", "snapshot_sha256": "a" * 64}], "scope": ["sitewide_46fa5856d5315e4e"],
+                              "request_budget": 100, "code_sha": "c", "approval": "fixture",
+                              "session": {}, "seeding": "spec_periods"})
+        lane = migration.daily_lane(self.tmp.path / "legacy", self.province.datasets(), names=("tie_line_intraday",))
+        migration.apply_daily_lane(ledger, lane, "都按你建议的来", source_id="liaoning-trial-lane")
+        ledger.extend_scope(ledger.handoff()["scope"], ledger.handoff()["scope"], "fixture")
+        ledger.close()
+
+    def engine(self):
+        self.transport = FakeTransport(self.clock, duration=1, default=Response(
+            200, "application/json", json.dumps(answer()).encode()))
+        engine = Engine(self.province, self.transport, instance=self.province.instance(), clock=self.clock,
+                        account_alias="liaoning-production")
+        self.addCleanup(engine.ledger.close)
+        return engine
+
+    async def run_commands(self, engine, limit=6):
+        for _ in range(limit):
+            self.clock.advance(5)
+            await engine.run_command()
+        return engine.state.read("command_results", {})
+
+    def test_trying_a_report_needs_the_users_words_a_candidate_and_the_scope(self):
+        from argparse import Namespace
+        from pmos import cli
+        args = Namespace(dataset="tie_line_intraday", period=day(3), approval="都按你建议的来", wait=0)
+        cli.cmd_try_report(self.province, args)
+        queued = self.engine().state.read("commands", [])
+        self.assertEqual([(c["action"], c["dataset"], c["period"]) for c in queued], [("sample", "tie_line_intraday", day(3))])
+        with self.assertRaisesRegex(ValueError, "approval_required"):
+            cli.cmd_try_report(self.province, Namespace(**{**vars(args), "approval": " "}))
+        with self.assertRaisesRegex(ValueError, "not_in_the_handoff_scope"):
+            cli.cmd_try_report(self.province, Namespace(**{**vars(args), "dataset": "sitewide_49aa17d82da46bfb"}))
+        with self.assertRaisesRegex(ValueError, "not_a_candidate"):
+            cli.cmd_try_report(self.province, Namespace(**{**vars(args), "dataset": "sitewide_46fa5856d5315e4e"}))
+
+    async def test_a_candidate_is_not_seeded_until_its_sample_answers_and_that_day_is_not_asked_again(self):
+        engine = self.engine()
+        engine.seed()
+        name = "tie_line_intraday"
+        self.assertFalse(engine.ledger.has_tasks(name), "a candidate in the scope: nothing to collect yet")
+        from pmos.adapt import sample
+        self.clock.advance(5)
+        self.transport.queue.append(Response(200, "application/json", json.dumps(answer()).encode()))
+        result = await sample(engine, self.province.datasets()[name], day(3))
+        self.assertEqual((result["result"], result["status"]), ("saved", "sampled"))
+        sent = len(self.transport.sent)
+        tomorrow = today() + timedelta(days=1)
+        with patch("pmos.engine.today", return_value=tomorrow):
+            engine.seed()
+        spec = self.province.datasets()[name]
+        self.assertTrue(engine.ledger.has_tasks(name), "the next day's seed takes it in")
+        await engine.collect(spec, day(3), "")
+        self.assertEqual(len(self.transport.sent), sent, "the sampled day: its sample's answer, no second request")
+        row = engine.ledger.task(name, day(3))
+        self.assertEqual((row["status"], row["reason"]), ("saved", "answered_by_sample"))
+        self.assertEqual(len(engine.archive.records(name)), 1)
+
+    async def test_a_sample_that_answered_nothing_keeps_the_candidate_and_its_day_settles_empty(self):
+        engine = self.engine()
+        engine.seed()
+        name = "tie_line_intraday"
+        from pmos.adapt import sample
+        self.clock.advance(5)
+        self.transport.queue.append(Response(200, "application/json", json.dumps({"status": 0, "data": []}).encode()))
+        result = await sample(engine, self.province.datasets()[name], day(3))
+        self.assertEqual((result["result"], result["status"]), ("empty", "candidate"))
+        engine.ledger.seed(name, [day(3)])
+        spec = self.province.datasets()[name]
+        sent = len(self.transport.sent)
+        await engine.collect(spec, day(3), "")
+        self.assertEqual(len(self.transport.sent), sent)
+        self.assertEqual(engine.ledger.task(name, day(3))["reason"], "answered_by_sample")
+
+    async def test_the_dictionary_is_read_once_a_day_and_a_new_option_is_told_not_seeded(self):
+        from pmos import monitor
+        engine = self.engine()
+        name = "sitewide_46fa5856d5315e4e"
+        known = [item["name"] for item in self.province.datasets()[name].scopes]
+        engine.seed()
+        commands = engine.state.read("commands", [])
+        self.assertEqual([(c["action"], c["dataset"]) for c in commands], [("read_dictionary", name)])
+        tasks = engine.ledger.db.execute("SELECT COUNT(*) FROM tasks WHERE dataset=?", (name,)).fetchone()[0]
+        self.transport.queue.append(Response(200, "application/json", json.dumps(
+            {"status": 0, "data": [{"name": n} for n in (*known, "新节点")]}).encode()))
+        await self.run_commands(engine, 1)
+        request = self.transport.sent[-1]
+        self.assertEqual(request["call"], "initDic")
+        self.assertTrue(request["path"].endswith("pdblnReportDic001"))
+        self.assertIsNone(request["set"]["queryParam.name"], "no option selected")
+        self.assertRegex(request["set"]["queryParam.mdate"], r"^\d{4}-\d{2}-\d{2}$")
+        self.assertEqual(engine.state.read("new_options")[name]["new"], ["新节点"])
+        self.assertEqual(engine.ledger.db.execute("SELECT COUNT(*) FROM tasks WHERE dataset=?", (name,)).fetchone()[0], tasks, "not seeded")
+        found = monitor.conditions(self.province.instance(), "active", self.clock())
+        self.assertIn("新节点", found["new_options:" + name])
+        engine._seeded_on = None
+        engine.seed()
+        self.assertEqual(engine.state.read("commands", []), [], "read already today")
+        self.clock.advance(5)
+        self.transport.queue.append(Response(200, "application/json", json.dumps({"status": 0, "data": []}).encode()))
+        await engine._read_dictionary(self.province.datasets()[name], day(1))
+        self.assertIn(name, engine.state.read("new_options"), "an empty answer is a day not published: it says nothing")
+        self.clock.advance(5)
+        self.transport.queue.append(Response(200, "application/json", json.dumps({"status": 0, "data": [{"name": n} for n in known]}).encode()))
+        await engine._read_dictionary(self.province.datasets()[name], day(2))
+        self.assertEqual(engine.state.read("new_options"), {}, "cleared once the spec knows it, or the site dropped it")
+
+    async def test_a_refused_look_is_that_reports_answer_and_collection_goes_on(self):
+        engine = self.engine()
+        engine.enqueue({"action": "read_dictionary", "dataset": "sitewide_46fa5856d5315e4e", "period": day(2)})
+        self.transport.queue.append(Response(200, "application/json", json.dumps({"status": 40302, "message": "无权限"}).encode()))
+        results = await self.run_commands(engine, 1)
+        self.assertFalse(next(iter(results.values()))["ok"])
+        self.assertIsNone(engine.state.blocked(), "the province goes on")
+        self.assertEqual(engine.dataset_holds(), {})
+
+    async def test_a_probe_reports_what_the_form_asks_for_and_costs_no_budget(self):
+        engine = self.engine()
+        before = engine.ledger.budget_starts(0) if hasattr(engine.ledger, "budget_starts") else None
+        body = {"status": 0, "data": {"mapping": {"http_status": 200, "business_status": 0, "mapped": True},
+                                      "widgets": [{"name": "日期", "type": "datetime", "value": "2026-10-01"}]}}
+        self.transport.queue.append(Response(200, "application/json", json.dumps(body, ensure_ascii=False).encode()))
+        engine.enqueue({"action": "probe_report", "dataset": "sitewide_49aa17d82da46bfb"})
+        results = await self.run_commands(engine, 1)
+        result = next(iter(results.values()))
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["widgets"][0]["name"], "日期")
+        self.assertEqual(result["name"], "日前省间联络线输电可用容量")
+        self.assertEqual(self.transport.sent[-1]["action"], "probe")
+        self.assertEqual(engine.ledger.budget_starts(0), before)
+
+
 if __name__ == "__main__":
     unittest.main()
