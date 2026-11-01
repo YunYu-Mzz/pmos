@@ -15,6 +15,8 @@ fmonth, fday, ...}``. A documents spec keeps the list call in ``request``
       "period": [{"fields": {"year": "fyear", "month": "fmonth", "day": "fday"}},
                  {"title_regex": "(20\\d{2})年\\s*(1[0-2]|0?[1-9])月", "kind": "month"}],
       "stop_at_known": true,                       # stop listing at a page of known records
+      "daily_listing": true,                       # list again every day, after a handoff too
+      "business_year": 2026,                       # download only this year's files (see _year_admits)
       "download": {"transport": "fetch", "method": "GET",
                    "path": "/px-settlement-infpubmeex/fileService/download",
                    "query": {"fileId": "{attachment[id]}"}},
@@ -38,7 +40,8 @@ from .periods import CHINA
 # week_of_day: the ISO week of a matched date (a weekly report titled by its date range).
 TITLE_KINDS = ("day", "month", "year", "week", "quarter", "week_of_day")
 KEYS = {"fields", "published_format", "filter", "expect", "attachments", "period", "stop_at_known",
-        "download", "download_response", "record_only"}
+        "download", "download_response", "record_only", "daily_listing", "business_year"}
+YEAR_IN_TEXT = re.compile(r"(?<!\d)(20\d{2})\s*年")
 
 
 class DocumentError(ValueError):
@@ -53,6 +56,10 @@ def check(block: dict) -> None:
         raise DocumentError("documents.fields.id is required")
     if not isinstance(block.get("download"), dict) or "transport" not in block["download"]:
         raise DocumentError("documents.download must be a request with a transport")
+    if "business_year" in block and (type(block["business_year"]) is not int or not 2000 <= block["business_year"] <= 2099):
+        raise DocumentError("documents.business_year must be a year")
+    if "daily_listing" in block and type(block["daily_listing"]) is not bool:
+        raise DocumentError("documents.daily_listing must be true or false")
     for rule in block.get("period", []):
         if not isinstance(rule, dict) or not ({"fields", "title_regex"} & set(rule)):
             raise DocumentError("each documents.period rule needs fields or title_regex")
@@ -140,6 +147,31 @@ def _attachments(record: dict, spec: dict) -> list[dict]:
     return out
 
 
+def _year_admits(record: dict, title: str, name: str, year: int) -> bool:
+    """Is this file of the business year? The rule the Liaoning legacy collector kept (attachment_dimensions.expand_records).
+
+    The year is ``fyear``, else ``businessYear``, else the first year in the title; never the publication date, and a
+    record that names none is out. A title naming another year is out whatever the fields say: the legacy collector
+    held those for review and never asked them. ``fyear`` can be the year a record was published instead: such a record
+    is still in when the title names only this year, ``businessYear`` does not disagree, and this file's own name names
+    only it too.
+    """
+    target = str(year)
+    title_years = set(YEAR_IN_TEXT.findall(title))
+    if title_years - {target}:
+        return False
+    for key in ("fyear", "businessYear"):
+        if re.fullmatch(r"20\d{2}", str(record.get(key, ""))):
+            selected = record[key]
+            break
+    else:
+        selected = next(iter(title_years), None)
+    if str(selected) == target:
+        return True
+    return (title_years == {target} and str(record.get("businessYear") or "") in ("", target)
+            and set(YEAR_IN_TEXT.findall(name)) == {target})
+
+
 def extract(records: list | None, block: dict) -> list[dict]:
     """Download items of one list page: {record, attachment, period, ...}."""
     fields = block.get("fields", {})
@@ -162,6 +194,8 @@ def extract(records: list | None, block: dict) -> list[dict]:
         attachments = [{"id": f"record:{record_id}", "name": ""}] if block.get("record_only") else \
             _attachments(record, block.get("attachments", {}))
         for attachment in attachments:
+            if "business_year" in block and not _year_admits(record, title, attachment["name"], block["business_year"]):
+                continue
             period, basis = derive_period(record, title, block.get("period", []), published, attachment["name"])
             items.append({"record_id": str(record_id), "title": title, "published": published,
                           "period": period, "period_basis": basis, "attachment": attachment,

@@ -185,6 +185,50 @@ python3 -c "import json; from pathlib import Path; from pmos.migration import li
   - 导入旧引擎队列作为墓碑；
   - 从 11-02 起补采。
 
+## r10：63 个披露栏目和它们的附件，加两张周报（2026-11-01）
+
+第四优先的前两项。周报在上一个提交里（`--lane weekly`）。这一版接列表和附件，工具是 `tools/liaoning_daily_lane.py --lane lists`。
+
+**规格和旧系统逐项核对。** 63 个 `pub_*` 和旧清单的 `list` 一一对应（`source` 相同，菜单 guid、接口、页大小都比过）。查出两个错，都已改：
+- `pub_jyjgJbxx`：应该是 `tabFlag: true`、`getDataJY`。页面的 `getIpc` 对 `jyjgJbxx` 打开 tabFlag，旧系统的 `native_list_contract` 和归档也是这样。
+- `pub_dwqyqyjbxx`：10-23 网站把这个菜单搬到 `operationOrganizationQuery`（旧系统 `state/menu_recheck_20261023/organization_route/receipt.json`），规格还是旧组件名。
+
+13 个 `candidate` 改成 `sampled`，证据是旧系统每天把它们列到底。
+
+**每天列一次（`documents.daily_listing`）。** 交接之后，`seed` 对 `snapshot` 规格只播种一次，文档栏目也不例外，这样列过一次就再也发现不了新文件。打开这个键的规格每天播种。山西的栏目没打开，行为不变；是否也要打开由山西会话决定。
+
+**停在已知页（`stop_at_known`）。** 第一次列到真正的末尾，之后遇到整页都已知就停。只读回放了旧系统归档的约 1,235 页（10-23 到 11-01）：
+- 所有栏目都是新的在前，没有一处倒序。
+- 不存在新记录出现在已知页之后的情况。回放报出 3 个栏目 10-29 "会漏"，核对后不是：10-23 旧系统只翻到第 6、7 页，10-29 第一次翻到更深的页，那些是老记录。
+- 和旧系统的差别：旧系统每天全部翻完（约 180 页），PMOS 每天约 63 页。老记录被原地改动（guid 不变）PMOS 看不到。
+
+**只下 2026 年的附件（`documents.business_year`）。** 规则照搬旧系统 `attachment_dimensions.expand_records` 和它的派发条件：
+- 年份取 `fyear`，其次 `businessYear`，再其次标题里第一个年份，不看发布日期。
+- 标题写了别的年份就不取，不管字段写什么。旧系统把这种放进 `scope_reviews` 待审，从没发过。
+- `fyear` 可能是发布年，所以标题和这个文件名都只写目标年份、`businessYear` 不矛盾时也算。
+
+回放旧系统全部列表页：PMOS 选中 295 个文件，就是旧队列的已存 292 个加 0 字节 3 个，没有解析失败。其中 9 个已经不在今天的列表上（记录换过文件）。**不取的文件：**
+- 标题和字段年份冲突 9 个（旧系统也扣着）：标题写 2025 年的 4 个（市场结构情况、2025年12月交易总体情况、12月零售市场电费结算、12月市场化用户电费结算），写 2027 年的 5 个（年度测试交易公告、申报功能介绍）。
+- 2020 到 2025 年 1,199 个，2027 年 3 个。
+- 没写任何年份的 328 个，其中 161 个是 2026 年发布的：市场干预情况原始日志 114、通知公告 23、新闻发布 22、其他 2。旧系统也不取。要不要取由用户定，而且要在第一次全量列表之前定：列表走过之后，老记录不会再读一遍。
+
+**墓碑（`list_lane`）。** 只读 `state/attachment_coverage_20261029/queue.json`：
+- 已存 292 个：写 `saved`（身份 `document_identity`，按文件 id），不再下载。`import_late_legacy` 现在同时写 `file_tombstones`。
+- 0 字节 3 个：`2026年7月` 的三份并网考核文件。旧系统 10-29 发出，网站回 HTTP 200、0 字节，旧系统复核后记 `settled_empty_http200_attachment_preserved_no_retry`。默认写 `empty` 不再发；`--resend-empty` 才留给 PMOS 重发。墓碑收不回来，所以这要在第一次 `apply` 之前定。重发如果还是 0 字节：`empty_file` 让这个栏目暂停（`isolation_streak: 1`），告警发出，放开之后才继续，其余两个也等着。
+- 年份冲突 9 个：不写墓碑，`business_year` 不取，计划里列出。
+- 旧的列表页不导入：列表属于当天，PMOS 第一次自己列到底，约 180 个请求。
+
+所以默认情况下，第一次全量只发列表请求，一个文件都不下载，要等网站出新文件。
+
+**分两步。** 这些栏目在 PMOS 上一次都没发过（`attempts` 里 0 条）。先 `--only` 试 4 个，通过后再全量：
+- `pub_LSTCFDJGCS`：9 个文件全有墓碑，验证跳过。
+- `pub_jyjgJbxx`、`pub_dwqyqyjbxx`：验证刚改的两个。
+- `pub_ddjg_lgxzkhztjgdckhmx`：4 页，已存 33 个加那 3 个 0 字节。带 `--resend-empty` 时，这是唯一能验证下载的地方。
+
+**还没有验证：** 真实网站上的打开菜单、列表、下载都还没跑过，不重发那 3 个的话下载要等第一个新文件；隔一天再列时这个子系统的会话还在不在（山西出现过子系统闲置后 40302）。
+
+其他：`check_document` 认出 `.pptx`（原来存成 `.zip`，旧系统有 13 个）和 `.ppt`。
+
 ## r9：常驻服务和停采告警（2026-11-01）
 
 用户定的第三优先。之前 `pmos-liaoning` 是 `systemd-run` 的临时单元，服务器重启后不会自启；`liaoning-crawler` 又已 disable，所以重启后没人采。旧的 `liaoning-monitor.timer` 已停，5 分钟一次的告警没有替代，只剩每小时邮件。

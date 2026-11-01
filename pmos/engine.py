@@ -329,7 +329,8 @@ class Engine:
         for spec in self.collection_specs():
             if spec.id not in seeded:
                 continue
-            if spec.period["kind"] == "snapshot" and self.ledger.has_tasks(spec.id):
+            if (spec.period["kind"] == "snapshot" and self.ledger.has_tasks(spec.id)
+                    and not (spec.documents or {}).get("daily_listing")):
                 continue  # a registry snapshot is taken once, not every day
             done = legacy.get(spec.id, {})
             strict = bool(spec.source.get("skip_legacy_periods"))
@@ -719,11 +720,7 @@ class Engine:
         return task_identity(self.province.id, self.account_alias, spec, period, scope, page=page)
 
     def document_identity(self, spec: DatasetSpec, item: dict) -> TaskIdentity:
-        record_only = spec.documents.get("record_only") is True
-        return TaskIdentity(self.province.id, self.account_alias, spec.id,
-            {"kind": "snapshot", "anchor": "undated"},
-            {"record_id": item["record_id"]} if record_only else {"file_id": item["attachment"]["id"]},
-            operation="article" if record_only else "attachment")
+        return document_identity(self.province.id, self.account_alias, spec, item)
 
     # -- session keeping --------------------------------------------------
     def _keepalive_app(self, spec: DatasetSpec) -> list[str] | None:
@@ -1865,6 +1862,14 @@ def app_of(spec: DatasetSpec) -> str | None:
     """
     segment = str(spec.request.get("path") or "").strip("/").split("/", 1)[0]
     return segment or None
+
+
+def document_identity(province: str, account_alias: str, spec: DatasetSpec, item: dict) -> TaskIdentity:
+    """The business identity of one listed file (or article), as the ledger and legacy tombstones key it."""
+    record_only = spec.documents.get("record_only") is True
+    return TaskIdentity(province, account_alias, spec.id, {"kind": "snapshot", "anchor": "undated"},
+                        {"record_id": item["record_id"]} if record_only else {"file_id": item["attachment"]["id"]},
+                        operation="article" if record_only else "attachment")
 
 
 def task_identity(province: str, account_alias: str, spec: DatasetSpec, period: str, scope: str = "", *,

@@ -178,6 +178,8 @@ def check_document(payload: bytes) -> dict:
             return {"format": ".xlsx", "parts": len(names)}
         if "word/document.xml" in names:
             return {"format": ".docx", "parts": len(names)}
+        if "ppt/presentation.xml" in names:
+            return {"format": ".pptx", "parts": len(names)}
         return {"format": ".zip", "parts": len(names)}
     if payload.startswith(XLS_SIGNATURE):
         try:
@@ -197,5 +199,7 @@ def check_document(payload: bytes) -> dict:
             if header != b"\xec\xa5":
                 raise ContainerError("doc_signature_invalid")
             return {"format": ".doc"}
+        if "PowerPoint Document" in streams:
+            return {"format": ".ppt"}
         raise ContainerError("ole_document_kind_unknown")
     raise ContainerError("document_format_unreviewed")

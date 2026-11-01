@@ -148,7 +148,9 @@
     },
     "download_response": {
       "kind": "document"
-    }
+    },
+    "daily_listing": true,
+    "business_year": 2026
   },
   "source": {
     "legacy": "liaoning/state/local_adaptation_20261020/adapters",

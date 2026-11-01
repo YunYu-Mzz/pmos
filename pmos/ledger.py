@@ -380,6 +380,9 @@ class Ledger:
                     (source_id, snapshot_sha256, key, identity.key, canonical(identity.document()).decode(),
                      (states or {}).get(key, "saved"), digest))
                 added += cursor.rowcount
+                if identity.file_key:
+                    self.db.execute("INSERT OR IGNORE INTO file_tombstones VALUES(?,?,?)",
+                                    (identity.file_key, identity.key, source_id + ":" + snapshot_sha256))
             self.db.execute("INSERT INTO migration_sources(source_id,snapshot_sha256,rows_sha256) VALUES(?,?,?)",
                             (source_id, snapshot_sha256, digest))
             self.db.execute("INSERT INTO late_legacy_imports VALUES(?,?,?,?,?)",

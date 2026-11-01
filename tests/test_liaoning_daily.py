@@ -316,5 +316,178 @@ class Handoff(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(engine.ledger.db.execute("SELECT 1 FROM tasks WHERE status='saved'").fetchone(), "no task's result")
 
 
+PDF = b"%PDF-1.7\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n"
+
+
+def row(guid, title, *files, **fields):
+    return {"guid": guid, "title": title, "operateDate": 1_790_000_000_000, "marketId": "PDBLN",
+            "attachment": json.dumps([{"id": f, "name": f + ".pdf"} for f in files]), **fields}
+
+
+def page(rows, total=None):
+    body = {"status": 0, "message": "Success", "data": {"list": rows, "total": len(rows) if total is None else total}}
+    return Response(200, "application/json", json.dumps(body, ensure_ascii=False).encode())
+
+
+class RealColumns(unittest.TestCase):
+    def test_the_63_columns_can_join(self):
+        specs = {name: spec for name, spec in REAL.datasets().items() if name.startswith("pub_")}
+        self.assertEqual(len(specs), 63)
+        self.assertEqual(len({spec.source["legacy_dataset"] for spec in specs.values()}), 63)
+        for name, spec in specs.items():
+            with self.subTest(name=name):
+                self.assertIn(spec.status, ("sampled", "verified"))
+                self.assertIs(spec.documents["daily_listing"], True)
+                self.assertEqual(spec.documents["business_year"], 2026)
+                self.assertIs(spec.documents["stop_at_known"], True)
+
+    def test_the_two_columns_the_legacy_manifest_corrected(self):
+        specs = REAL.datasets()
+        jy = specs["pub_jyjgJbxx"].request
+        self.assertEqual((jy["path"].rpartition("/")[2], jy["set"]["tabFlag"]), ("getDataJY", True),
+                         "the view's getIpc turns tabFlag on for jyjgJbxx")
+        moved = json.dumps(specs["pub_dwqyqyjbxx"].request, ensure_ascii=False)
+        self.assertNotIn("operationOrganizationQueryDwqy", moved, "the site moved this menu on 2026-10-23")
+        self.assertEqual(specs["pub_dwqyqyjbxx"].request["component"], "operationOrganizationQuery")
+
+
+class Columns(unittest.IsolatedAsyncioTestCase):
+    """One real column spec on a handoff: its saved file is not asked, its queued one is, it is listed every day."""
+    NAME = "pub_LSTCFDJGCS"
+    LEGACY = "sitewide_ede1cd2300c54661"
+
+    def setUp(self):
+        self.tmp = TempDir()
+        self.addCleanup(self.tmp.cleanup)
+        self.clock = Clock()
+        patcher = patch.dict(os.environ, {"PMOS_DATA": str(self.tmp.path / "data")})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        directory = self.tmp.path / "provinces" / "liaoning"
+        (directory / "datasets").mkdir(parents=True)
+        (directory / "scripts").mkdir()
+        (directory / "scripts" / "open_column_menu.js").write_text("async () => true")
+        (directory / "province.json").write_text(json.dumps({
+            "id": "liaoning", "name": "辽宁", "origin": "https://pmos.ln.sgcc.com.cn",
+            "policy": {"response_interval_seconds": 1, "renew_after_idle_seconds": 1500, "probe_after_idle_seconds": 1500},
+            "session": {"keepalive_dataset": None, "probe": None}}))
+        for name, source in (("actual", "tie_line_dayahead"), (self.NAME, self.NAME), ("pub_jyjgJbxx", "pub_jyjgJbxx")):
+            value = json.loads((REPO / "provinces/liaoning/datasets" / f"{source}.json").read_text(encoding="utf-8"))
+            value["id"] = name
+            if name == "actual":
+                value["period"] = {**value["period"], "start": day(1)}
+            (directory / "datasets" / f"{name}.json").write_text(json.dumps(value, ensure_ascii=False))
+        self.province = Province.load("liaoning", self.tmp.path / "provinces")
+        instance = self.province.instance()
+        instance.mkdir(parents=True)
+        ledger = Ledger(instance / "ledger.sqlite3")
+        import_shadow(ledger, [], QueueContext("liaoning", "liaoning-production"), source_id="queue", snapshot_sha256="a" * 64)
+        ledger.grant_handoff({"version": 1, "province": "liaoning", "account_alias": "liaoning-production",
+                              "legacy_owner": {"stopped_evidence": "fixture"},
+                              "snapshots": [{"source_id": "queue", "snapshot_sha256": "a" * 64}], "scope": ["actual"],
+                              "request_budget": 100, "code_sha": "c", "approval": "fixture",
+                              "session": {}, "seeding": "spec_periods"})
+        ledger.close()
+        self.root = self.tmp.path / "legacy"
+
+    def queue(self, outcomes=(), queued=(), asked=(), empty=(), withheld=()):
+        def job(file_id, **more):
+            return {"dataset": self.LEGACY, "attachment_id": file_id, "filename": file_id + ".pdf", "record_id": "g", **more}
+        asked = (*asked, *empty)
+        value = {"active": None, "global_hold": None, "source_holds": {},
+                 "outcomes": {"k" + f: job(f, outcome="saved") for f in outcomes},
+                 "pending": {"k" + f: job(f) for f in (*queued, *asked, *withheld)},
+                 "isolated_job_reviews": {"k" + f: {"reason": "settled_empty_http200_attachment_preserved_no_retry"} for f in empty},
+                 "scope_reviews": {"k" + f: {"reason": "native_title_year_conflicts_with_metadata", "title_years": ["2025"]}
+                                   for f in withheld}}
+        path = self.root / migration.ATTACHMENT_QUEUE
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value))
+        for file_id in asked:
+            operation = self.root / migration.ATTACHMENT_OPERATIONS / ("k" + file_id)
+            operation.mkdir(parents=True)
+            (operation / "issued.json").write_text("{}")
+        listed = self.root / migration.NATIVE_LISTS / self.LEGACY / "2026-11-01" / "1" / "abc"
+        listed.mkdir(parents=True, exist_ok=True)
+        (listed / "metadata.json").write_text(json.dumps({"total": 41}))
+        return self.root
+
+    def engine(self):
+        self.transport = FakeTransport(self.clock, duration=1, default=Response(
+            200, "application/json", json.dumps(answer()).encode()))
+        engine = Engine(self.province, self.transport, instance=self.province.instance(), clock=self.clock,
+                        account_alias="liaoning-production")
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        return engine
+
+    def test_what_the_legacy_queue_left_is_classified_and_a_0_byte_answer_is_resent_only_if_the_user_says(self):
+        root = self.queue(outcomes=["f1"], queued=["f2"], asked=["f3"], empty=["f5"], withheld=["f6"])
+        specs = self.province.datasets()
+        lane = migration.list_lane(root, specs)
+        self.assertEqual(sorted(key for key, _ in lane["rows"]), ["kf1", "kf3", "kf5"])
+        self.assertEqual(lane["states"], {"kf3": "unknown", "kf5": "empty"})
+        self.assertEqual([(i["file_id"], i["state"]) for i in lane["answered_without_a_file"]], [("f3", "unknown"), ("f5", "empty")])
+        self.assertEqual([i["file_id"] for i in lane["withheld_year_conflict"]], ["f6"], "never asked, and never a tombstone")
+        self.assertEqual(lane["files_left_to_download"], 1)
+        self.assertEqual(lane["first_listing_pages"], 3 + 1, "41 records at 20 a page, and a column the legacy tree has no page of")
+        self.assertEqual(lane["will_be_asked"], 4 + 1)
+        resend = migration.list_lane(root, specs, resend_empty=True)
+        self.assertEqual(sorted(key for key, _ in resend["rows"]), ["kf1", "kf3"], "an unknown answer is not resent by this")
+        self.assertEqual(resend["files_left_to_download"], 2)
+        self.assertNotEqual(resend["snapshot_sha256"], lane["snapshot_sha256"])
+
+    def test_a_pilot_joins_only_its_columns_but_every_tombstone(self):
+        root = self.queue(outcomes=["f1"])
+        lane = migration.list_lane(root, self.province.datasets(), only=["pub_jyjgJbxx"])
+        self.assertEqual(lane["datasets"], ["pub_jyjgJbxx"])
+        self.assertEqual(len(lane["rows"]), 1)
+        with self.assertRaisesRegex(ValueError, "pub_nothing"):
+            migration.list_lane(root, self.province.datasets(), only=["pub_nothing"])
+
+    def test_an_unsettled_legacy_queue_is_refused(self):
+        root = self.queue()
+        path = root / migration.ATTACHMENT_QUEUE
+        path.write_text(json.dumps({**json.loads(path.read_text()), "active": {"key": "x"}}))
+        with self.assertRaisesRegex(ValueError, "not_settled"):
+            migration.list_lane(root, self.province.datasets())
+
+    async def test_only_the_files_left_are_asked_and_the_column_is_listed_again_tomorrow(self):
+        root = self.queue(outcomes=["f1"], queued=["f2"], empty=["f3"])
+        lane = migration.list_lane(root, self.province.datasets(), only=[self.NAME])
+        ledger = Ledger(self.province.instance() / "ledger.sqlite3")
+        applied = migration.apply_daily_lane(ledger, lane, "同意", source_id="liaoning-lists-lane")
+        ledger.close()
+        self.assertEqual((applied["imported"]["added"], applied["added"]), (2, [self.NAME]))
+        engine = self.engine()
+        self.transport.queue += [
+            page([row("g2", "2026年9月公告", "f2", "f1", "f3"), row("g3", "2025年12月公告", "f6", fyear="2026"),
+                  row("g1", "2025年公告", "f4", fyear="2025")]),
+            Response(200, "application/pdf", PDF)]
+        for _ in range(8):
+            await engine.tick()
+            self.clock.advance(3)
+        tasks = {row_["scope"]: dict(row_) for row_ in engine.ledger.db.execute(
+            "SELECT scope, status, reason FROM tasks WHERE dataset=? AND scope != ''", (self.NAME,))}
+        from pmos.documents import item_scope
+        self.assertEqual(tasks[item_scope("f1")]["reason"], "legacy_consumed:saved")
+        self.assertEqual(tasks[item_scope("f3")]["reason"], "legacy_consumed:empty")
+        self.assertEqual(tasks[item_scope("f2")]["status"], "saved")
+        self.assertNotIn(item_scope("f4"), tasks, "a 2025 file is not this collection's")
+        self.assertNotIn(item_scope("f6"), tasks, "the fields say 2026, the title 2025: the legacy queue held it, so does this")
+        calls = [r for r in self.transport.sent if r.get("component") == "attchViewQueryJY"]
+        self.assertEqual([r["call"] for r in calls], ["queryData", "fileDownload"])
+        self.assertEqual([item["id"] for item in calls[1]["args"][0]["attachment"]], ["f2"], "the row narrowed to this file")
+        tomorrow = today() + timedelta(days=1)
+        self.transport.queue.append(page([row("g2", "2026年9月公告", "f2", "f1", "f3"), row("g3", "2025年12月公告", "f6", fyear="2026"),
+                                          row("g1", "2025年公告", "f4", fyear="2025")]))
+        sent = len(self.transport.sent)
+        self.clock.advance(100)
+        with patch("pmos.engine.today", return_value=tomorrow), patch("pmos.spec.periods.today", return_value=tomorrow):
+            await engine.tick()
+        self.assertEqual(engine.ledger.task(self.NAME, tomorrow.isoformat())["status"], "saved")
+        self.assertEqual(len(self.transport.sent) - sent, 1, "page 1 is all known: the listing ends there")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -26,7 +26,7 @@ from collections import Counter
 from pathlib import Path
 
 from ..contracts import canonical
-from ..engine import task_identity
+from ..engine import document_identity, task_identity
 from ..faults import Fault
 from ..queue_audit import _source_rule_refs
 from ..queue_compat import QueueContext, decode_liaoning, read_json
@@ -447,6 +447,76 @@ def daily_lane(root: Path, specs: dict, account_alias: str = "liaoning-productio
             "will_be_asked": sum(len(item["open"]) + len(item["no_original"]) + (0 if early_empty_consumed else len(item["early_empty"]))
                                  for item in report.values()),
             "snapshot_sha256": digest([[key, identity.key, states.get(key, "saved")] for key, identity in rows])}
+
+
+ATTACHMENT_QUEUE = "state/attachment_coverage_20261029/queue.json"
+ATTACHMENT_OPERATIONS = "state/attachment_coverage_20261029/operations"
+NATIVE_LISTS = "data/2026/original/native_lists"
+
+
+def list_lane(root: Path, specs: dict, account_alias: str = "liaoning-production", *, only: list[str] | None = None,
+              resend_empty: bool = False) -> dict:
+    """The disclosure columns (``pub_*``): what the legacy attachment queue holds, as tombstones in PMOS's own identities. Read-only.
+
+    A saved file is never asked again. A file the site answered with nothing (HTTP 200, 0 bytes; the legacy review
+    kept it "no retry") is recorded as empty and not asked either, unless ``resend_empty``: tombstones cannot be taken
+    back, so that is decided before the import. A file sent and never settled in any other way is recorded as unknown.
+    A file the legacy queue held for review (its title names another year) was never asked and PMOS's ``business_year``
+    leaves it out too; they are listed. The legacy list pages are not imported: a listing is of its own day, and a first
+    PMOS listing reads to the real end. ``only``: join just these columns now (a pilot); the tombstones cover every
+    column either way.
+    """
+    root = Path(root).resolve()
+    names = sorted(name for name, spec in specs.items() if name.startswith("pub_") and spec.documents)
+    by_legacy = {specs[name].source["legacy_dataset"]: name for name in names}
+    queue = json.loads(_declared(root, ATTACHMENT_QUEUE).read_bytes())
+    if queue.get("active") or queue.get("global_hold") or queue.get("source_holds"):
+        raise ValueError("legacy_attachment_queue_not_settled")
+    rows, states, report = [], {}, {name: Counter() for name in names}
+    answered, withheld, left = [], [], 0
+
+    def identity(job):
+        name = by_legacy[job["dataset"]]
+        return name, document_identity("liaoning", account_alias, specs[name], {"attachment": {"id": job["attachment_id"]}})
+
+    for key, job in sorted(queue["outcomes"].items()):
+        if job.get("outcome") != "saved":
+            raise ValueError("legacy_attachment_outcome_unknown:" + key)
+        name, value = identity(job)
+        rows.append((key, value))
+        report[name]["saved"] += 1
+    for key, job in sorted(queue["pending"].items()):
+        name, value = identity(job)
+        listed = {"dataset": name, "filename": job["filename"], "file_id": job["attachment_id"]}
+        if key in queue.get("scope_reviews", {}):
+            withheld.append({**listed, "title_years": queue["scope_reviews"][key].get("title_years")})
+            report[name]["withheld"] += 1
+        elif (root / ATTACHMENT_OPERATIONS / key / "issued.json").is_file():
+            review = queue.get("isolated_job_reviews", {}).get(key, {})
+            state = "empty" if str(review.get("reason", "")).startswith("settled_empty") else "unknown"
+            answered.append({**listed, "state": state})
+            report[name][state] += 1
+            if resend_empty and state == "empty":
+                left += 1
+            else:
+                rows.append((key, value))
+                states[key] = state
+        else:
+            left += 1
+            report[name]["queued"] += 1
+    pages = 0
+    for name in names:
+        newest = sorted((root / NATIVE_LISTS / specs[name].source["legacy_dataset"]).glob("*/*/*/metadata.json"))
+        total = json.loads(newest[-1].read_bytes()).get("total") if newest else None
+        size = specs[name].request["pagination"]["page_size"]
+        pages += max(1, -(-int(total or 0) // size))
+    datasets = names if only is None else [name for name in names if name in set(only)]
+    if only is not None and len(datasets) != len(set(only)):
+        raise ValueError("list_lane_only_unknown:" + ",".join(sorted(set(only) - set(names))))
+    return {"rows": rows, "states": states, "per_dataset": {name: dict(tally) for name, tally in report.items() if tally},
+            "datasets": datasets, "columns": len(names), "answered_without_a_file": answered, "resend_empty": resend_empty,
+            "withheld_year_conflict": withheld, "first_listing_pages": pages, "files_left_to_download": left,
+            "will_be_asked": pages + left, "snapshot_sha256": digest([[key, value.key, states.get(key, "saved")] for key, value in rows])}
 
 
 def apply_daily_lane(ledger, lane: dict, approval: str, *, source_id: str = "liaoning-daily-lane") -> dict:

@@ -89,6 +89,33 @@ class ExtractTests(unittest.TestCase):
         with self.assertRaisesRegex(documents.DocumentError, "attachment_json_invalid"):
             documents.extract([{**rows[0], "attachment": "[{"}], DOCUMENTS)
 
+    def test_business_year_is_the_legacy_rule(self):
+        """Liaoning's lncrawler/attachment_dimensions.expand_records: fields, then title; never the publication date."""
+        block = {**DOCUMENTS, "business_year": 2026}
+        def kept(title, name, **fields):
+            row = {**record("g", title, []), "attachment": json.dumps([{"id": "f", "name": name}]), **fields}
+            return bool(documents.extract([row], block))
+        self.assertTrue(kept("公告", "a.pdf", fyear="2026"))
+        self.assertTrue(kept("公告", "a.pdf", fyear=2026), "the site sends some as a number")
+        self.assertTrue(kept("公告", "a.pdf", businessYear="2026"))
+        self.assertTrue(kept("辽宁2026年9月公告", "a.pdf"))
+        self.assertFalse(kept("公告", "a.pdf"), "a record naming no year is out, whenever it was published")
+        self.assertFalse(kept("2025年公告", "2026年a.pdf"), "the title's first year decides")
+        self.assertFalse(kept("公告", "a.pdf", fyear="2025"))
+        # the legacy queue held these 9 for review and never asked them: the fields say 2026, the title does not
+        self.assertFalse(kept("辽宁电网2025年12月交易总体情况", "a.pdf", fyear="2026"))
+        self.assertFalse(kept("辽宁省2027年年度滚动撮合测试交易公告", "2026年a.pdf", fyear="2026"))
+        self.assertFalse(kept("2026年与2025年公告", "a.pdf", fyear="2026"))
+        # fyear can be the publication year: title and this file must both name only the business year
+        self.assertTrue(kept("2026年公告", "2026年a.pdf", fyear="2025"))
+        self.assertFalse(kept("2026年公告", "a.pdf", fyear="2025"))
+        self.assertFalse(kept("2026年与2025年公告", "2026年a.pdf", fyear="2025"))
+        self.assertFalse(kept("2026年公告", "2026年a.pdf", fyear="2025", businessYear="2025"))
+        self.assertTrue(kept("2026年公告", "2026年a.pdf", fyear="2025", businessYear="2026"))
+        self.assertEqual(len(documents.extract([record("g", "公告", ["a"], fyear="2025")], DOCUMENTS)), 1, "no rule, no filter")
+        with self.assertRaisesRegex(documents.DocumentError, "business_year"):
+            documents.check({**DOCUMENTS, "business_year": "2026"})
+
     def test_record_only_and_week_quarter_titles(self):
         block = {**DOCUMENTS, "record_only": True,
                  "period": [{"title_regex": r"(20\d{2})年第(\d+)周", "kind": "week"},
@@ -114,6 +141,11 @@ class FormatAndSpecTests(unittest.TestCase):
         self.assertEqual(check_document(PDF)["format"], ".pdf")
         self.assertEqual(check_document(PNG)["format"], ".png")
         self.assertEqual(check_document(docx())["format"], ".docx")
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr("[Content_Types].xml", b"types")
+            archive.writestr("ppt/presentation.xml", b"<presentation/>")
+        self.assertEqual(check_document(buffer.getvalue())["format"], ".pptx", "Liaoning's 13 slide decks")
         for broken, reason in ((PDF[:-7], "pdf_container_invalid"), (b"<html>", "document_format_unreviewed"),
                                (b"PK\x03\x04broken", "zip_container_invalid")):
             with self.assertRaisesRegex(ContainerError, reason):
