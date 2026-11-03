@@ -675,6 +675,12 @@ class PageTransport:
         """Could ``send`` run now without a local failure? Never sends anything."""
         if request["transport"] != "fetch":
             return True
+        # Match get(): an expired entry must schedule the page bootstrap, not
+        # pass admission and fail after the attempt has been recorded.
+        # Keep detached entries here: readiness is also queried before the
+        # caller enables its main-frame fallback. The check below rejects
+        # them when the fallback is off; get() decides at actual dispatch.
+        self.templates.prune(keep_detached=True)
         path = request.get("template", request["path"])
         template = self.templates.items.get(path)
         if template is None:

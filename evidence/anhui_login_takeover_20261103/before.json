@@ -1,0 +1,36 @@
+{
+  "at": "2026-11-03T09:38:23+08:00",
+  "release_before": "/Users/yunyu/pmos-anhui/release-20261101-r25",
+  "release_after": "/Users/yunyu/pmos-anhui/release-20261103-r26",
+  "control_before": {
+    "collect": true,
+    "paused": false,
+    "stop_all": false,
+    "updated_at": "2026-11-03T08:46:23+08:00"
+  },
+  "status_before": {
+    "phase": "waiting",
+    "province": "anhui",
+    "last_dataset": "publication_6d80c3d4514ccfc2",
+    "last_period": "2026-04-29",
+    "last_scope": "sbcf87ca4137deb7",
+    "updated_at": "2026-11-03T09:38:23+08:00",
+    "pid": 26383,
+    "wait_seconds": 0.7,
+    "block": null,
+    "hold_keepalive": null,
+    "session_keeping_waiting": null,
+    "skipped": 1,
+    "seconds_left": 55,
+    "held": [
+      "important_channel_transmission_actual",
+      "intertie_actual_huan_i",
+      "publication_6d80c3d4514ccfc2",
+      "queryRqscjjcqfslj",
+      "real_time_transmission_constraints"
+    ]
+  },
+  "unsettled_before": 0,
+  "max_attempt_before": 77252,
+  "terminal_unknowns": 36
+}

@@ -1,0 +1,114 @@
+{
+  "at": "2026-11-03T09:40:59+08:00",
+  "release": "/Users/yunyu/pmos-anhui/release-20261103-r26",
+  "browser_pid_preserved": 38322,
+  "status": {
+    "phase": "waiting",
+    "province": "anhui",
+    "last_dataset": "publication_6d80c3d4514ccfc2",
+    "last_period": "2026-04-28",
+    "last_scope": "sa702b445925b1ed",
+    "updated_at": "2026-11-03T09:40:58+08:00",
+    "pid": 37799,
+    "wait_seconds": 0.7,
+    "block": null,
+    "hold_keepalive": null,
+    "session_keeping_waiting": null,
+    "skipped": 1,
+    "seconds_left": 55,
+    "held": [
+      "important_channel_transmission_actual",
+      "intertie_actual_huan_i",
+      "publication_6d80c3d4514ccfc2",
+      "queryRqscjjcqfslj",
+      "real_time_transmission_constraints"
+    ]
+  },
+  "control": {
+    "collect": true,
+    "paused": false,
+    "stop_all": false,
+    "updated_at": "2026-11-03T09:38:51+08:00"
+  },
+  "events": [
+    {
+      "at": "2026-11-03T09:38:53+08:00",
+      "phase": "session_baseline_verified",
+      "dataset": "queryRqxtfhyc",
+      "period": "2026-11-02",
+      "points": 97,
+      "archived_sha256": "4f82f9530bc8bd1ce44ca2cdcff141566cbc7085bc3c95765b2e32ab79db7fde"
+    },
+    {
+      "at": "2026-11-03T09:38:53+08:00",
+      "phase": "session_verified_after_attach"
+    },
+    {
+      "at": "2026-11-03T09:38:57+08:00",
+      "phase": "template_primed",
+      "dataset": "publication_6d80c3d4514ccfc2",
+      "period": "2026-11-01",
+      "sample_sha256": "44e58ba04000c2d2ee6acf1551b7d931f2c9fa7a79554551848360cc9358fb6d"
+    }
+  ],
+  "post_deploy_counts": [
+    {
+      "kind": "collect",
+      "outcome": "empty",
+      "count": 82
+    },
+    {
+      "kind": "keepalive",
+      "outcome": "success",
+      "count": 1
+    },
+    {
+      "kind": "sample",
+      "outcome": "success",
+      "count": 1
+    }
+  ],
+  "last_response": {
+    "id": 77336,
+    "kind": "collect",
+    "dataset": "publication_6d80c3d4514ccfc2",
+    "finished_at": 1793670058.108893,
+    "outcome": "empty",
+    "http_status": 200,
+    "business_status": "0"
+  },
+  "terminal_unknowns": 36,
+  "historical_unknowns_preserved": true,
+  "request_interval_seconds": 1,
+  "idle_renewal_seconds": 300,
+  "tests": {
+    "release_offline": {
+      "ran": 610,
+      "skipped": 36,
+      "passed": true
+    },
+    "source_offline": {
+      "ran": 693,
+      "skipped": 58,
+      "passed": true
+    },
+    "browser_gate": {
+      "ran": 31,
+      "passed": true
+    },
+    "login_takeover": {
+      "ran": 11,
+      "passed": true
+    }
+  },
+  "scope_limit": "Automatic post-login navigation, template renewal and business baseline check. Credential login and CAPTCHA automation not implemented.",
+  "long_stability_limit": "Four-hour expiry reproduced with fake clock; no claim of an elapsed four-hour production observation.",
+  "files": {
+    "pmos/browser/attach.py": "14899b7626994f6ffe3bd3bbfdb2fabf219acde8582660d5d28a11b9123d0ddc",
+    "pmos/browser/ui.py": "feaea19da53662dc1603947bb9f33b6e504b180fe0f4ea346da81a9119d80c16",
+    "pmos/browser/transport.py": "dbd5b31f31ceaf2af14a75d75e8d607033837b8642ffe7d217a6ee7958f85327",
+    "pmos/engine.py": "8dbe8703f400c5936d6190d72333f6e128aa80cf7a85a7533304ab0f8ac9685f",
+    "provinces/anhui/province.json": "b7b4604a4596f318181e7afdd9f72a94129b094b783bb2db73d74bcf60c4848b",
+    "tests/test_anhui_login_takeover.py": "976a30892a96d2152aa4058c6fb757230088adc70f62dafd395489cb85f278c8"
+  }
+}

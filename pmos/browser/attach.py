@@ -106,11 +106,17 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
     for page in pages:
         try:
             if await page.evaluate("() => window.name") == config["name"]:
-                named.append(page)
+                # Re-login can leave our old named tab on the site's home
+                # column. Its name alone does not make it 综合查询.
+                if (config.get("initial_section") and config.get("url_contains")
+                        and config["url_contains"] not in page.url):
+                    await page.evaluate("() => { window.name = ''; }")
+                else:
+                    named.append(page)
         except Exception:
             continue                      # a crashed or closing page plays no role
     if len(named) == 1:
-        return named[0]
+        return await _prepare_work_page(named[0], config, timeout)
     if named:
         raise AttachError("work_page_not_unique")
     if config.get("adopt_url_contains"):
@@ -119,7 +125,7 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
             raise AttachError("work_page_candidates_not_unique")
         if kind:
             await kind[0].evaluate("name => { window.name = name; }", config["name"])
-            return kind[0]
+            return await _prepare_work_page(kind[0], config, timeout)
     # Anhui 2026-11-01 12:39: the portal is /?ACYxOEl1=…#/dashboard (the site's dynamic parameter
     # sits before the hash), so its address is matched without the query.
     portals = [page for page in pages if config["open_from"] in _without_query(page.url)]
@@ -146,6 +152,16 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
         await page.wait_for_load_state("load", timeout=timeout * 1000)
     if await page.evaluate("() => window.name") != config["name"]:
         raise AttachError("work_page_name_lost")
+    return await _prepare_work_page(page, config, timeout)
+
+
+async def _prepare_work_page(page, config: dict, timeout: float):
+    """Anhui's login handoff ends at a ready market tree, not just a tab."""
+    if config.get("initial_section"):
+        from . import ui
+        await ui.bring_forward(page)
+        await ui.select_section(page, config["initial_section"], timeout)
+        await ui._leave_hover_menu(page)
     return page
 
 
@@ -158,19 +174,65 @@ def _without_query(url: str) -> str:
 async def _open_by_menu(portal, labels: list, timeout: float):
     """Click the portal's menu as a person does (Anhui open_disclosure): expand the parents if the
     leaf is not visible, then the leaf opens a new tab through the site's own script."""
-    leaf = portal.get_by_text(labels[-1], exact=True)
-    if not await leaf.is_visible():
+    import asyncio
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    async def visible_label(label, *, wait=True):
+        while True:
+            locator = portal.get_by_text(label, exact=True)
+            matches = [locator.nth(i) for i in range(await locator.count())
+                       if await locator.nth(i).is_visible()]
+            if len(matches) == 1:
+                return matches[0]
+            if len(matches) > 1:
+                raise AttachError("portal_menu_leaf_not_unique")
+            if not wait:
+                return None
+            if loop.time() >= deadline:
+                raise AttachError("portal_menu_not_ready")
+            await asyncio.sleep(0.2)
+
+    leaf = await visible_label(labels[-1], wait=False)
+    if leaf is None:
         for label in labels[:-1]:
-            await portal.get_by_text(label, exact=True).first.click(timeout=timeout * 1000)
-    if await leaf.count() != 1:
-        raise AttachError("portal_menu_leaf_not_unique")
-    async with portal.context.expect_page(timeout=timeout * 1000) as opened:
-        await leaf.click(timeout=timeout * 1000, no_wait_after=True)
+            parent = await visible_label(label)
+            await parent.click(timeout=max(1, (deadline - loop.time()) * 1000), no_wait_after=True)
+        leaf = await visible_label(labels[-1])
+    async with portal.context.expect_page(timeout=max(1, (deadline - loop.time()) * 1000)) as opened:
+        await leaf.click(timeout=max(1, (deadline - loop.time()) * 1000), no_wait_after=True)
     return await opened.value
+
+
+async def reenter_work_page(browser, origin: str, config: dict):
+    """A new login gets a fresh query app from the portal's own menu.
+
+    The old app may retain an expired session even with a valid role URL.
+    Only this worker's named query tab is closed, after its replacement is
+    ready. The portal and any user-owned tabs stay.
+    """
+    old = []
+    exclude = []
+    for context in browser.contexts:
+        for page in context.pages:
+            if not page.url.startswith(origin + "/") or config["open_from"] in _without_query(page.url):
+                continue
+            owned = await page.evaluate("() => window.name") == config["name"]
+            if owned:
+                old.append(page)
+            if owned or config.get("adopt_url_contains", config["url_contains"]) in page.url:
+                exclude.append(page)
+    fresh = await work_page(browser, origin, config, exclude=exclude)
+    for page in old:
+        if not page.is_closed():
+            await page.close()
+    return fresh
 
 
 async def attach(playwright, origin: str, browser_config: dict):
     browser = await playwright.chromium.connect_over_cdp(cdp_endpoint(browser_config))
     if browser_config.get("work_page"):
-        return browser, await work_page(browser, origin, browser_config["work_page"])
+        config = browser_config["work_page"]
+        page = await (reenter_work_page(browser, origin, config) if config.get("reenter_on_attach")
+                      else work_page(browser, origin, config))
+        return browser, page
     return browser, select_page(browser, origin, browser_config.get("page_url_contains"))

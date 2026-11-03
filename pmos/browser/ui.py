@@ -310,18 +310,7 @@ async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = 
 
 
 async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, force: bool, state: dict) -> None:
-    nodes = await page.locator(".el-tree-node").evaluate_all(_MENU_NODES_JS)
-    if not any(n["path"] == labels[:1] and n["visible"] for n in nodes):
-        # The root section is chosen in the horizontal top menu first.
-        top = page.locator(".el-menu-item:visible, .el-submenu__title:visible").filter(
-            has_text=re.compile(r"^\s*" + re.escape(labels[0]) + r"\s*$"))
-        if await top.count() != 1:
-            raise Fault("menu_label_not_unique", "local")
-        await top.click(timeout=timeout * 1000)
-        await asyncio.sleep(0.3)
-        # The pointer now rests on the top bar, whose hover menu may cover the tree: as the Anhui
-        # legacy (clear_hover_menu) it is moved off first (月度输变电设备检修计划, 中长期市场, 11-01).
-        hover_exit = True
+    await select_section(page, labels[0], timeout)
     if hover_exit:
         await _leave_hover_menu(page)
     for depth in range(1, len(labels) + 1):
@@ -330,7 +319,6 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
         if (node["current"] and not force) if leaf else node["expanded"]:
             continue
         item = page.locator(".el-tree-node").nth(node["index"])
-        # Labels: .asideTreeSpan / .el-tree-node__label (Liaoning, Anhui), .span-ellipsis (Shanxi portal).
         target = item.locator(":scope > .el-tree-node__content .asideTreeSpan, :scope > .el-tree-node__content .el-tree-node__label,"
                               " :scope > .el-tree-node__content > .span-ellipsis"
                               if leaf else ":scope > .el-tree-node__content > .el-tree-node__expand-icon")
@@ -338,8 +326,6 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
             raise Fault("menu_control_changed", "local")
         await target.scroll_into_view_if_needed(timeout=timeout * 1000)
         point = await target.evaluate(_VISIBLE_POINT_JS)
-        # A subtree just expanded still grows from height 0 inside its collapse transition
-        # (Anhui r17 2026-11-01 15:00:47, 省内现货市场: a 12x12 icon clipped): give it a moment.
         loop = asyncio.get_running_loop()
         settle = loop.time() + min(timeout, 3)
         while point is None and loop.time() < settle:
@@ -352,7 +338,8 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
                 "menu_depth": depth, "menu_label": labels[depth - 1], "menu_target": "label" if leaf else "expand_icon",
                 "box_width": box[0], "box_height": box[1], "box_rects": box[2]})
         state["leaf_clicked"] = state["leaf_clicked"] or leaf
-        await target.click(position=point, timeout=timeout * 1000)
+        # Verify the tree below instead of waiting for unrelated SPA navigation.
+        await target.click(position=point, timeout=timeout * 1000, no_wait_after=True)
         deadline = loop.time() + timeout
         while True:
             node = await _menu_node(page, labels[:depth], timeout)
@@ -361,6 +348,39 @@ async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, for
             if loop.time() > deadline:
                 raise Fault("menu_navigation_timeout", "local")
             await asyncio.sleep(0.1)
+
+
+async def select_section(page, label: str, timeout: float) -> None:
+    """Select the horizontal market tab, including just after login/recycle.
+
+    Wait for the actual header to load; nested/hover menu labels do not
+    identify the top tab. Verify the requested tree before touching a report.
+    """
+    nodes = await page.locator(".el-tree-node").evaluate_all(_MENU_NODES_JS)
+    if any(n["path"] == [label] and n["visible"] for n in nodes):
+        return
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    exact = re.compile(r"^\s*" + re.escape(label) + r"\s*$")
+    while True:
+        # Anhui's horizontal tabs are direct LI children. A same-named entry
+        # can also appear in a hover menu or nested submenu.
+        top = page.locator(".el-menu--horizontal > .el-menu-item:visible, "
+                           ".el-menu--horizontal > .el-submenu > .el-submenu__title:visible").filter(has_text=exact)
+        count = await top.count()
+        if count == 0 and await page.locator(".el-menu--horizontal").count() == 0:
+            top = page.locator(".el-menu-item:visible, .el-submenu__title:visible").filter(has_text=exact)
+            count = await top.count()
+        if count == 1:
+            break
+        if count > 1:
+            raise Fault("menu_label_not_unique", "local")
+        if loop.time() >= deadline:
+            raise Fault("menu_navigation_timeout", "local")
+        await asyncio.sleep(0.2)
+    await top.click(timeout=max(1, (deadline - loop.time()) * 1000), no_wait_after=True)
+    await _leave_hover_menu(page)
+    await _menu_node(page, [label], max(0.1, deadline - loop.time()))
 
 
 async def _leave_hover_menu(page) -> None:

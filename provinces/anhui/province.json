@@ -9,6 +9,7 @@
     "note": "local override: <instance>/browser.json {\"profile_dir\": \"/Users/yunyu/Desktop/sd_crawler/anhui/state/server_browser_profile\"} (the dedicated Edge; its DevToolsActivePort gives the CDP port after a relaunch); only the one 综合查询 page matches",
     "request_gate": true,
     "work_page": {
+      "initial_section": "现货市场",
       "name": "pmos-anhui-work",
       "open_from": "/#/dashboard",
       "menu": [
@@ -17,7 +18,8 @@
       ],
       "url_contains": "columnHomeLeftMenuNew",
       "adopt_url_contains": "columnHomeLeftMenuNew",
-      "note": "the one 综合查询 page the legacy worker left is adopted (one tab only); after a renderer crash a fresh one opens by the portal's own menu click (the site's script adds a dynamic verified parameter; a bare window.open is unproven) — Anhui open_disclosure, proven 2026-10-31 16:01"
+      "note": "the one 综合查询 page the legacy worker left is adopted (one tab only); after a renderer crash a fresh one opens by the portal's own menu click (the site's script adds a dynamic verified parameter; a bare window.open is unproven) — Anhui open_disclosure, proven 2026-10-31 16:01",
+      "reenter_on_attach": true
     },
     "page_recycle": {
       "max_age_seconds": 3600,
@@ -62,6 +64,9 @@
     ]
   },
   "session": {
+    "verify_on_attach": true,
+    "verify_points_on_attach": 96,
+    "renewal_bootstrap_retry_seconds": 600,
     "keepalive_dataset": null,
     "probe": null,
     "collection_order": [

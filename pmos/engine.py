@@ -157,6 +157,7 @@ class Engine:
         self.serial = asyncio.Lock()
         self._lock_fd: int | None = None
         self._seeded_on = None
+        self._session_bootstrap_pending = bool(self._session().get("verify_on_attach"))
 
     # -- process ownership ------------------------------------------------
     def acquire(self) -> None:
@@ -845,7 +846,7 @@ class Engine:
             self._app_cache = ((spec.id, app), [s.id for s in self.province.datasets().values() if app_of(s) == app])
         return self._app_cache[1]
 
-    async def keep_session(self, lane: str | None = None) -> str | None:
+    async def keep_session(self, lane: str | None = None, *, force: bool = False) -> str | None:
         """Renew with a business request when the keepalive's subsystem is idle; else a TIME probe if configured.
 
         ``lane``: the spacing the renewal may use (a collection slot it takes).
@@ -854,29 +855,47 @@ class Engine:
         spec = self._keepalive_spec()
         idle = self.clock() - self.ledger.last_business_end(self._keepalive_app(spec) if spec is not None else None)
         waiting = []
-        if spec is not None and idle >= self.policy.renew_after_idle_seconds and self.spacing_wait("keepalive", lane) == 0:
+        if (spec is not None and (force or idle >= self.policy.renew_after_idle_seconds)
+                and self.spacing_wait("keepalive", lane) == 0):
             # A fixed, proven period (Shanxi production renews with the day its
             # start-up check archived) wins over the latest period archived here.
             period = self._session().get("keepalive_period") or self.archive.latest_period(spec.id)
             built = spec.build(period) if period is not None else None
             request = self._sendable(built) if built is not None else None
             failed = self.state.read("renewal_bootstrap_failed")
+            retry_seconds = self._session().get("renewal_bootstrap_retry_seconds")
+            if failed and retry_seconds:
+                last = self.ledger.last_attempt("keepalive")
+                # Old versions kept the latch even after the renewal later
+                # succeeded. That historical page fault must not disable a
+                # newly attached, logged-in browser forever.
+                if last and last["outcome"] == "success":
+                    self.state.remove("renewal_bootstrap_failed")
+                    failed = None
+                elif failed.get("unsent") and self.clock() >= failed.get("retry_after", float("inf")):
+                    failed = None
             if built is None:
                 waiting.append("renewal_needs_one_saved_period")
             elif request is None or (request.get("bootstrapping") and failed):
                 waiting.append("renewal_template:" + built["path"])
             else:
                 try:
-                    await self.request("keepalive", request, spec.response, dataset=spec.id, period=period, lane=lane)
+                    result = await self.request("keepalive", request, spec.response, dataset=spec.id, period=period, lane=lane)
                 except Fault as fault:
                     if not (request.get("bootstrapping") and fault.category == "local"):
                         raise
                     # The page could not be driven: never retried; one 导出
                     # click in the page (the template) resumes renewals.
-                    self.state.write("renewal_bootstrap_failed", {"code": fault.code, "path": built["path"]})
+                    failure = {"code": fault.code, "path": built["path"], "unsent": fault.unsent}
+                    if retry_seconds and fault.unsent:
+                        failure["retry_after"] = self.clock() + max(60, float(retry_seconds))
+                    self.state.write("renewal_bootstrap_failed", failure)
                     self.state.event("renewal_bootstrap_failed", reason=fault.code)
                     waiting.append("renewal_template:" + built["path"])
                 else:
+                    if force:
+                        self._verify_session_baseline(spec, period, result)
+                    self.state.remove("renewal_bootstrap_failed")
                     self._note_session_keeping(None)
                     return "renewal"
         probe = self._session().get("probe")
@@ -893,6 +912,28 @@ class Engine:
                 waiting.append("probe_template:" + request["path"])
         self._note_session_keeping(", ".join(waiting) if waiting else None)
         return None
+
+    def _verify_session_baseline(self, spec: DatasetSpec, period: str, result: Result) -> None:
+        """A ready menu or an empty answer is insufficient login evidence."""
+        if result.outcome.result != "saved":
+            raise Fault("session_baseline_empty", "local")
+        points = self._session().get("verify_points_on_attach")
+        if not points:
+            return
+        import json
+        from .browser.challenge import numeric_series
+        records = [r for r in self.archive.records(spec.id) if r["period"] == period]
+        try:
+            archived = records[-1]
+            expected = numeric_series(json.loads((self.archive.root / archived["path"]).read_bytes()))
+            found = numeric_series(json.loads(result.response.body))
+            matches = self.archive.verify(archived) and found == expected and len(found) >= points
+        except (ValueError, OSError, IndexError):
+            matches = False
+        if not matches:
+            raise Fault("session_baseline_mismatch", "local")
+        self.state.event("session_baseline_verified", dataset=spec.id, period=period,
+                         points=len(found), archived_sha256=archived["sha256"])
 
     async def _renew(self, lane: str | None) -> str | bool | None:
         """keep_session within collection: what it sent, False if nothing, None if its failure blocked.
@@ -1006,6 +1047,15 @@ class Engine:
             return 1
         control = self.state.control()
         try:
+            if self._session_bootstrap_pending:
+                # One serialized, archived keeper baseline verifies a newly
+                # attached login before normal collection. A proven unsent
+                # menu fault cools down; it cannot monopolize the queue.
+                if await self.keep_session(force=True) == "renewal":
+                    self._session_bootstrap_pending = False
+                    self.state.event("session_verified_after_attach")
+                    self._status("renewed")
+                    return 0.2
             if not control.get("collect") or control.get("paused"):
                 await self.keep_session()
                 self._status("idle" if not control.get("collect") else "paused")
