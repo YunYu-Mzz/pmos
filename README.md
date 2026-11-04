@@ -16,7 +16,9 @@
 
 陕西的代码从 `experiments/pmos_shaanxi_20261102/` 合并进来，和合并时 `mz` 上运行的 `20261103_direct_v25` 逐文件一致。陕西和另外三省的接法不同：不走 `pmos shaanxi ...` 这些通用命令，也没有 dataset 规格。入口是 `tools/shaanxi_owner.py`，任务在 ledger 的 `sn_*` 表里，来源清单是 `provinces/shaanxi/inventory.json`。
 
-线上版本靠代码指纹固定，所以这次合并不改变线上。以后从主线部署，要走 `tools/upgrade_shaanxi_direct.py`。说明见[直接采集](docs/SHAANXI_DIRECT.md)、[接入记录](docs/SHAANXI_INTEGRATION.md)、[运行笔记](docs/SHAANXI_NOTES.md)和[部署](deploy/SHAANXI_DEPLOY.md)。线上运行记录留在 `experiments/pmos_shaanxi_20261102/evidence/`，不进 Git。
+线上版本靠代码指纹固定，所以这次合并不改变线上。以后从主线部署，要走 `tools/upgrade_shaanxi_direct.py`。运行环境是 `mz` 的系统 Python 3.10.12，PDF 解析依赖见 `requirements-shaanxi.txt`。主线声明要 3.11+，在 3.10 上只有 `pmos.legacy` 和 `pmos.recovery.catalog` 用不了（`hashlib.file_digest`），陕西的代码路径用不到它们。
+
+说明见[直接采集](docs/SHAANXI_DIRECT.md)、[接入记录](docs/SHAANXI_INTEGRATION.md)、[运行笔记](docs/SHAANXI_NOTES.md)和[部署](deploy/SHAANXI_DEPLOY.md)。线上运行记录留在 `experiments/pmos_shaanxi_20261102/evidence/`，不进 Git。
 
 ## 辽宁迁移（2026-10-31）
 
