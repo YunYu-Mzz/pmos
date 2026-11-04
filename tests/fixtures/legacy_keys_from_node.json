@@ -1,0 +1,58 @@
+{
+  "fixture_only": true,
+  "generated_by": "Node crypto + original legacy canonical algorithm",
+  "jobs": [
+    {
+      "datasetId": "fixture-grid",
+      "kind": "table",
+      "params": {
+        "date": "2026-01-01",
+        "page": 1,
+        "size": 20,
+        "valueType": "火电",
+        "unit": "合成机组甲",
+        "nativeFilters": {
+          "type": "1"
+        }
+      },
+      "status": "pending",
+      "key": "6f3d4d8b2d554acbc9e612967019ed30894cf4607a405a6bd65c1aea58ace2c6"
+    },
+    {
+      "datasetId": "fixture-grid",
+      "kind": "table",
+      "params": {
+        "date": "2026-01-01",
+        "page": 1,
+        "size": 20,
+        "valueType": "火电",
+        "unit": "合成机组乙",
+        "nativeFilters": {
+          "type": "1"
+        }
+      },
+      "status": "pending",
+      "key": "2b0860a32909910a82e3415d17821efab3c2a5b6ecda94e0e046561fb9131468"
+    },
+    {
+      "datasetId": "fixture-directory-a",
+      "kind": "download",
+      "params": {
+        "fileId": "fixture-file",
+        "snapshotDate": "2026-01-01"
+      },
+      "status": "saved",
+      "key": "305f1665bbccc6df32ebedbe564421f5bde1133b71282657b587e498432f4c9c"
+    },
+    {
+      "datasetId": "fixture-directory-b",
+      "kind": "download",
+      "params": {
+        "fileId": "fixture-file",
+        "snapshotDate": "2026-01-02"
+      },
+      "status": "pending",
+      "key": "305f1665bbccc6df32ebedbe564421f5bde1133b71282657b587e498432f4c9c"
+    }
+  ]
+}

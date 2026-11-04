@@ -1,0 +1,18 @@
+[Unit]
+Description=Independent PMOS Shaanxi direct native collector
+StartLimitIntervalSec=1800
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=/home/mz/sd_crawler/pmos_shaanxi_lab/releases/RELEASE
+ExecStart=/usr/bin/python3 -B -u /home/mz/sd_crawler/pmos_shaanxi_lab/releases/RELEASE/tools/shaanxi_owner.py run --config /home/mz/sd_crawler/pmos_shaanxi_lab/instances/production_20261102/handoff.json
+Restart=on-failure
+RestartSec=30
+KillSignal=SIGTERM
+KillMode=mixed
+TimeoutStopSec=620
+NoNewPrivileges=true
+UMask=0077
+# Manual start only. Browser, observer, keeper, proxy and report service are
+# deliberately neither restarted nor pulled in by this unit.

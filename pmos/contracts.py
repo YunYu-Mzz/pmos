@@ -73,6 +73,16 @@ def normalized_period(value: dict) -> dict:
     if set(value) - {"kind", "label", "start", "end", "anchor"}:
         raise ValueError("period_fields_unreviewed")
     label = value.get("label", value.get("start", value.get("anchor")))
+    if kind == 'native_open_range':
+        if set(value) != {'kind', 'start', 'end'} or value['end'] is not None:
+            raise ValueError('explicit_native_open_range_required')
+        if date.fromisoformat(value['start']).isoformat() != value['start']:
+            raise ValueError('canonical_native_start_required')
+        return {'kind': kind, 'start': value['start'], 'end': None}
+    if kind == 'request_anchor':
+        if set(value) != {'kind', 'anchor'} or not isinstance(value['anchor'], str) or not value['anchor']:
+            raise ValueError('explicit_request_anchor_required')
+        return {'kind': kind, 'anchor': value['anchor']}
     if kind == "week_start_monday":
         if (set(value) - {"kind", "label", "anchor"} or not isinstance(label, str)
                 or any(v != label for k, v in value.items() if k != "kind")):
@@ -128,12 +138,16 @@ class TaskIdentity:
     operation: str = "query"
 
     def document(self) -> dict:
-        value = {"version": 1, **self.__dict__}
+        # New native open ranges/request anchors are explicitly versioned;
+        # existing calendar identities retain their original v1 keys.
+        version = 2 if self.period.get('kind') in {'native_open_range','request_anchor'} else 1
+        value = {"version": version, **self.__dict__}
         if any(not isinstance(value[k], str) or not value[k] for k in
                ("province", "account_alias", "dataset", "operation")):
             raise ValueError("identity_fields_required")
         if not isinstance(self.period, dict) or self.period.get("kind") not in {
-                "day", "week", "month", "year", "snapshot", "range", "week_start_monday"}:
+                "day", "week", "month", "year", "snapshot", "range", "week_start_monday",
+                "native_open_range", "request_anchor"}:
             raise ValueError("explicit_period_kind_required")
         if self.page is not None and (type(self.page) is not int or self.page < 1):
             raise ValueError("page_invalid")

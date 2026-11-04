@@ -18,7 +18,7 @@ from typing import Iterable
 TASK_STATUSES = ("pending", "saved", "empty", "skipped", "failed", "deferred")
 ATTEMPT_KINDS = ("collect", "sample", "keepalive", "probe")
 # ``not_sent``: provably never reached the network; it consumes no identity.
-OUTCOMES = ("pending", "success", "empty", "failed", "unknown", "not_sent")
+OUTCOMES = ("pending", "success", "empty", "failed", "unknown", "not_sent", "local_transition")
 # Kinds that the site counts as user activity (they renew the login).
 BUSINESS_KINDS = ("collect", "sample", "keepalive")
 # Kinds charged to the collection budget (hour/day caps).
@@ -278,12 +278,15 @@ class Ledger:
             if identity:
                 self.db.execute("INSERT INTO attempt_identities VALUES(?,?,?)", (attempt, identity.key, document))
                 if kind in BUDGET_KINDS and identity.file_key:
-                    self.db.execute("INSERT INTO file_tombstones VALUES(?,?,?)", (identity.file_key, identity.key, f"attempt:{attempt}"))
+                    self.claim_file(identity.file_key, identity.key, attempt)
             self.db.execute("COMMIT")
             return attempt
         except BaseException:
             self.db.execute("ROLLBACK")
             raise
+
+    def claim_file(self, file_key, identity_key, attempt):
+        self.db.execute("INSERT INTO file_tombstones VALUES(?,?,?)", (file_key, identity_key, f"attempt:{attempt}"))
 
     def consumed_identity(self, identity_key: str) -> bool:
         return bool(self.db.execute("SELECT 1 FROM attempt_identities i JOIN attempts a ON a.id=i.attempt_id"

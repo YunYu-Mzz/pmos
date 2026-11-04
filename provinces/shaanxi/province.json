@@ -1,0 +1,14 @@
+{
+  "id": "shaanxi",
+  "name": "陕西",
+  "origin": "https://pmos.sn.sgcc.com.cn",
+  "release": "offline_only",
+  "policy": {
+    "response_interval_seconds": 1,
+    "renew_after_idle_seconds": 300
+  },
+  "browser": {},
+  "session": {
+    "keepalive_dataset": null
+  }
+}

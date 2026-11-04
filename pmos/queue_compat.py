@@ -16,7 +16,7 @@ import sqlite3
 
 from .contracts import TaskIdentity, canonical, reject_secrets
 
-PROVINCES = {"liaoning", "anhui", "shanxi"}
+PROVINCES = {"liaoning", "anhui", "shanxi", "shaanxi"}
 TERMINAL = {"saved", "empty", "failed", "denied", "skipped"}
 UNKNOWN = {"sent", "leased", "reserved", "interrupted", "unknown", "attempting", "running", "pending_review",
            "prior_attempt_requires_review", "download_saved_pending_validation"}

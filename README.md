@@ -12,6 +12,12 @@
 
 按用户要求先切山西，标准是不低于服务器现在的效果。设计与步骤见[山西迁移](docs/SHANXI_MIGRATION.md)。依据服务器只读快照对齐了生产行为（分通道5/15秒、单项隔离、发送前预检、页面导出取Blob、空闲300秒导出固定已证明日续期、只处理已有队列），并对服务器当前原生队列做了逐条身份核对：30个数据集17,677行全部一致。切换计划覆盖原生待办12,633/13,205（其余为用户暂缓）。本轮网站请求为0。
 
+## 陕西（2026-11-04 合并）
+
+陕西的代码从 `experiments/pmos_shaanxi_20261102/` 合并进来，和合并时 `mz` 上运行的 `20261103_direct_v25` 逐文件一致。陕西和另外三省的接法不同：不走 `pmos shaanxi ...` 这些通用命令，也没有 dataset 规格。入口是 `tools/shaanxi_owner.py`，任务在 ledger 的 `sn_*` 表里，来源清单是 `provinces/shaanxi/inventory.json`。
+
+线上版本靠代码指纹固定，所以这次合并不改变线上。以后从主线部署，要走 `tools/upgrade_shaanxi_direct.py`。说明见[直接采集](docs/SHAANXI_DIRECT.md)、[接入记录](docs/SHAANXI_INTEGRATION.md)、[运行笔记](docs/SHAANXI_NOTES.md)和[部署](deploy/SHAANXI_DEPLOY.md)。线上运行记录留在 `experiments/pmos_shaanxi_20261102/evidence/`，不进 Git。
+
 ## 辽宁迁移（2026-10-31）
 
 首个迁移目标是辽宁，设计和切换步骤见[辽宁迁移](docs/LIAONING_MIGRATION.md)。从旧生产 manifest 生成40个报表规格，并离线证明引擎身份与旧队列身份逐条相等（本地10/23快照11,278条中11,267条相同）；切换计划可接管32个来源。交接回执、旧墓碑跳过、请求预算和 stop_all 已实现并测试。真实切换的每一步仍需用户批准，本轮网站请求为0。

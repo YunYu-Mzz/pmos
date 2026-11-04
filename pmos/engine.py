@@ -236,7 +236,8 @@ class Engine:
                 request = {**request, "_preflighted": True}
             attempt = self.ledger.begin(kind, dataset, period, scope, identity=identity)
             try:
-                response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request})
+                response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request,
+                                                      "_pmos_attempt": attempt})
             except Fault as fault:
                 if (request.get("transport") == "ui" and fault.category == "local" and fault.code not in PAGE_ANSWERED_CODES
                         # A dropdown that lists others, only not this option (an old one): the page works
@@ -267,6 +268,17 @@ class Engine:
                     # block, or the restarted worker would refuse to start (Anhui 02:08).
                     raise DriverLost(str(exc)[:200]) from None
                 raise Fault("transport_exception", "network") from None
+            # An exact-task native coordinator may expand classifications or
+            # finish a local parent without returning a business artifact.
+            # Record the operation; never invent an HTTP response/original.
+            if response.operation and response.operation.get('transition_only') is True:
+                if request.get('transport') != 'native' or response.status != 0 or response.body or response.parts:
+                    self.ledger.finish(attempt, 'failed', reason='invalid_native_transition')
+                    raise Fault('invalid_native_transition', 'local')
+                self.ledger.finish(attempt, 'local_transition', reason=response.operation.get('phase'))
+                self.state.event('native_transition', attempt=attempt, dataset=dataset,
+                                 source_result=response.operation.get('source_result'))
+                return Result(Outcome('empty','.json',detail={'transition_only':True}),response)
             try:
                 outcome = evaluate(response_spec, response)
                 parsed = self.decode_response(response.body) if self.decode_response else None
