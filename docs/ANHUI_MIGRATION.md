@@ -429,3 +429,45 @@ PMOS 对照检查后补了三处：
 - `6d80` 的选项值是内部 ID，没有下拉框发现，只能用现有 44 个选项。只存在于早期的机组不会被发现。
 - 旧系统的 `held` 326 条、`unknown` 14 条仍算已消耗，要采需要用户单独批准。
 - 按月的报表不在这次范围内。
+
+## r22：补 6d80 没采的机组（2026-11-01）
+
+用户原话："6d80 补那 42 台，安徽恢复后开始"。代码从 r22 起在分支 `anhui/pmos-live` 上，由安徽会话维护。
+
+**缺口。** 6d80 的下拉框每天列 86 台机组，请求要发内部 ID（`unitId`）。旧系统只能从已存原件的 `unit_id` 解析，PMOS 因此只有 44 台。
+
+**做法。** 下拉框的 ElOption value 就是这个 ID，`discover_options` 新增 `value_field`，把它读进 scope：`{机组名称, unitId}`。
+
+- **已知机组当证明**：每次读取，列表里的已知机组必须显示已知的 ID。有一台不符就整份拒绝（`option_value_unproven`，只暂停这张表的发现）；列表里一台已知机组都没有，就什么都不加。
+- **存疑的不加**：一个名字两个 ID、一个 ID 两个名字、已被已知机组占用的 ID、非字符串的值（这么长的数字在页面里已丢精度）。
+- **逐条回显**：`response.echo {unit_id: unitId}`，答复的每条记录必须带所问的 ID，否则隔离。开启前只读核对过：811 份已存 6d80 原件的 `unit_id` 和 `NAME` 全部与请求一致。
+- 新机组下一轮就建上全部到期日期。旧系统已完成的身份照旧跳过。最多约 1.3 万次请求，在已批准的预算内。
+
+## r23：间隔未到的预热不再隔离任务（2026-11-01）
+
+6d80 的一次预热被间隔规则（`spacing_not_elapsed`）拒绝，没有发出任何请求，却被记成 `isolated:bootstrap_spacing_not_elapsed`。`collect()` 的预热失败包装现在排除这个码。已经被这样隔离、没有发过请求的任务，经用户批准用 `reopen-refused-bootstrap <dataset> <period> <scope> --approval` 改回待采（只接受这一种原因、没有 attempt 的任务）。
+
+## r24：页面步骤里的意外超时只暂停那张报表（2026-11-01）
+
+**事故。** 20:25 到 20:26 上游代理节点中断约 1 分钟，三次请求连续网络错误，PMOS 封锁停采。等用户确认的 1 小时 42 分里站点会话过期，用户重新登录、综合查询页换新后重启，第一个请求（整日电价的模板预热）45 秒后从 `ensure_frame` 里抛出一个原始的 Playwright 超时。它在引擎里落入 `except Exception`，被记成 `transport_exception`（网络类），全省封锁。侧栏菜单、所有报表的菜单路径在新页上都核对过存在，展开也正常，所以这不是菜单变了。
+
+**原因。** `PageTransport._ui` 的 `bring_forward` / `ensure_frame` 在保护块之外，`ui.select_menu` 只包装 `Fault`。页面步骤自己放弃（点击在时限内不可操作、滚动失败）时抛出的原始异常没有被分类。这个时点还没点报表自己的查询，没有发出任何业务请求。
+
+**做法。**
+
+- `ui.select_menu`：叶子点击之前的原始异常（非 driver 丢失）→ `menu_click_failed`，local、unsent。叶子点过之后、driver 丢失，维持原样往上抛。
+- `PageTransport._ui`：`bring_forward` 和 `ensure_frame` 的原始异常（非 driver 丢失）→ `page_step_failed`，local、unsent。
+- 两个码都加进 `NAVIGATION_CODES`。unsent 的 local 故障本来就走现有的路：这次尝试记 `not_sent`，不消耗身份；`decide` 只暂停这张报表（预热则 `_hold_unsent`）；连续 3 次页面操作失败才封全省。
+- 测试 `tests/test_ui_raw_page_errors.py`：7 项，在 r23 上 2 项失败、r24 上通过。
+
+**运行上的教训（安徽会话）。** 封锁停采期间不要让保活停掉：站点空闲会话会过期。先起旧 keeper 或确认 PMOS 保活，再等用户确认。
+
+## r25：登录过期的答复可由用户改回待采；ack 复位页面失败计数（2026-11-01）
+
+用户原话："两件都同意，放开吧"（实时断面约束的暂停，和 `renewables_output_actual` 10-30 被 401 隔离的那条）。
+
+**登录过期的那条。** 23:08 PMOS 停了 54 分钟，站点会话过期，重启后的第一个请求得到 HTTP 200、业务码 401（`auth_expired`），没有数据；重启把该项隔离成 `isolated:consumed_identity_requires_review`。现有的 `release-denied` 只收 40302，没有命令能把它改回。新增离线命令 `release-auth-expired <attempts> --approval "<用户原话>"`：只接受 `collect / failed / 200 / 401 / auth_expired` 的尝试；任务必须是 `failed`；该项不能有别的未释放的尝试（已有 `unknown`、`success` 等就拒绝）；尝试留在历史里，任务回到待采。
+
+**ack 复位计数。** `ack page_operations_failing` 只清封锁，`page_operation_failures` 里的 3 条旧失败还在，下一次单独的失败就和它们凑成连续 3 次，把全省再封一次（23:16 就是这样）。现在 ack 这个原因时同时清空该列表；其他原因的 ack 不动它。
+
+测试 `tests/test_release_auth_expired.py`：6 项，在 r24 上失败；全套 599 项通过（32 项真浏览器跳过）。

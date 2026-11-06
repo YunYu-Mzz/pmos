@@ -48,13 +48,20 @@
       ],
       "dimension_fields": {}
     },
-    "note": "same component call as the legacy advanced/sitewide browser code"
+    "note": "same component call as the legacy advanced/sitewide browser code",
+    "empty_response_policy": "continue",
+    "empty_response_policy_reason": "User 2026-11-05: preserve verified empty dates; continue other unissued dates. No replay and no relaxation of auth/rate/network/unknown protections."
   },
   "history": [
     {
       "at": "2026-10-31T16:18:48+08:00",
       "event": "generated_from_legacy_manifest",
       "manifest_sha256": "75394b920ba78dd7d665c0b76beba6c783148a2c650592b8280bf17ff2121339"
+    },
+    {
+      "at": "2026-11-05",
+      "event": "verified_empty_is_terminal_continue_unissued_periods",
+      "approval": "修好这两项并接回22条待补任务，间隔0.5秒，采集及保活不停"
     }
   ]
 }

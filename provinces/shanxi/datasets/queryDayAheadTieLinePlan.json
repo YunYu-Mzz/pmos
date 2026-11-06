@@ -14,6 +14,25 @@
     "body": {
       "intertie_NAME": "总加",
       "date": "{date}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/riqianlianluoxian",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/riqianlianluoxian",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/infoGrid/rqllxjhExcel"
+      },
+      "set": {
+        "queryConfig.data": {
+          "intertie_NAME": "总加",
+          "date": "{date}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/infoGrid/rqllxjhExcel",
+      "method": "POST",
+      "capture": "blob"
     }
   },
   "response": {
@@ -24,13 +43,19 @@
     "legacy_status": "current_process_template_recovery_pending",
     "query_endpoint": "/px-phbsx-retail-shop/infoGrid/rqllxjh",
     "evidence_sha256": "828175a16ecc822fa0d78b9a150f5479a592fc3430ba8b438458483fc1735866",
-    "note": "fetch replays the page's own export template; until the page has shown it, this report waits (one 导出 click in the page provides it)"
+    "note": "fetch replays the page's own export template; PMOS shows it by calling the page's exportData (route observed by the legacy report inspection 2026-10-18)",
+    "page_route": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/riqianlianluoxian"
   },
   "history": [
     {
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "current_process_template_recovery_pending"
+    },
+    {
+      "at": "2026-11-01T12:00:00+08:00",
+      "event": "bootstrap_added",
+      "reason": "user 2026-11-01: collect the full year; export template from the page's own exportData"
     }
   ]
 }

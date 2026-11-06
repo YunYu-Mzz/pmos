@@ -1,0 +1,60 @@
+{
+ "id": "queryRealtimeNodeMarginalPriceExport",
+ "name": "实时节点边际电价（导出）",
+ "status": "verified",
+ "period": {
+  "kind": "day",
+  "start": "2026-01-01",
+  "end": "today"
+ },
+ "request": {
+  "transport": "component",
+  "frame": "/pxf-phbsx-other-outer/#/pxf-phbsx-other-outer/dayTime",
+  "open_url": "/pxf-phbsx-other-outer/#/pxf-phbsx-other-outer/dayTime",
+  "path": "/px-sy-retailsettlement-sx/resource/export",
+  "method": "POST",
+  "component": "/pxf-phbsx-other-outer/dayTime",
+  "set": {
+   "queryParam.data": {
+    "nodeName": "",
+    "atDate": "{date}"
+   }
+  },
+  "call": "exportData",
+  "capture": "blob",
+  "timeout": 180
+ },
+ "response": {
+  "kind": "xlsx",
+  "any_media_type": true
+ },
+ "source": {
+  "legacy": "page source of /pxf-phbsx-other-outer/dayTime (read 2026-11-01)",
+  "query_endpoint": "/px-sy-retailsettlement-sx/resource/timeNodePrice",
+  "note": "the page's own 导出: exportData posts {atDate, nodeName, isDay:'n'} and saves the xlsx; nodeName blank = every node, as the JSON query",
+  "lane": "native"
+ },
+ "history": [
+  {
+   "at": "2026-11-01T13:10:00+08:00",
+   "event": "candidate_from_page_source",
+   "reason": "user 2026-11-01: 节点电价能不能也用导出加快 / 测吧，一致就直接切换"
+  },
+  {
+   "at": "2026-11-01T13:25:00+08:00",
+   "event": "test_day_in_scope",
+   "reason": "one export of 2026-10-19 (already complete as JSON, 84 pages / 83616 rows) to compare row by row before switching; user: 测吧，一致就直接切换"
+  },
+  {
+   "at": "2026-11-01T13:40:00+08:00",
+   "event": "sample_ok",
+   "period": "2026-10-19",
+   "reason": "attempt 10177: HTTP 200, 2949929-byte xlsx in 11 s (quarantined only for its media type, sha256 543632b1...); 83616 rows / 871 nodes identical to the 84 JSON pages of 2026-10-19 (multiset of node, date, time and the three prices)"
+  },
+  {
+   "at": "2026-11-01T13:40:00+08:00",
+   "event": "collection_switched",
+   "reason": "user 2026-11-01: 测吧，一致就直接切换; one export per day replaces about 85 JSON pages"
+  }
+ ]
+}

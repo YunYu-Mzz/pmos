@@ -1609,3 +1609,90 @@ class ExportBlankProbe(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(engine.state.blocked(), "a refused probe never blocks the province")
         attempt = engine.ledger.db.execute("SELECT scope, outcome FROM attempts").fetchone()
         self.assertEqual(tuple(attempt), ("exportoption", "failed"))
+
+
+class PartialPeriods(unittest.IsolatedAsyncioTestCase):
+    """A failing page keeps the archived pages and records what is missing; nothing is asked again."""
+
+    async def test_a_failed_later_page_records_a_partial_period_and_keeps_the_answer(self):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        clock = Clock()
+        spec = dataset("prices", start=TODAY, response="json")
+        spec["request"] = {"transport": "fetch", "method": "POST", "path": "/px-test/prices",
+                           "body": {"data": {"date": "{date}"}, "pageInfo": {"pageNum": 1, "pageSize": 2}},
+                           "pagination": {"page": "pageInfo.pageNum", "size": "pageInfo.pageSize", "page_size": 2,
+                                          "records": "data.list", "total": "data.total", "last": "data.isLastPage"}}
+        province = make_province(tmp.path, [spec], policy={"response_interval_seconds": 15,
+                                                           "isolate_items": ["unknown", "site_data"]})
+        first = {"status": 0, "data": {"list": [{"n": 1}, {"n": 2}], "total": 6, "isLastPage": False}}
+        transport = FakeTransport(clock, duration=1)
+        transport.queue += [Response(200, "application/json", json.dumps(first).encode()),
+                            Response(200, "text/html", b"<html>busy</html>")]
+        engine = Engine(province, transport, instance=tmp.path / "var", clock=clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        for _ in range(4):
+            await engine.tick()
+            clock.advance(20)
+        task = engine.ledger.task("prices", TODAY)
+        self.assertEqual(task["status"], "failed")
+        self.assertTrue(task["reason"].startswith("partial:"), task["reason"])
+        self.assertIn("failed_page=2,pages=1,records=2", task["reason"])
+        partial = engine.state.read("partial_periods")[0]
+        self.assertEqual((partial["dataset"], partial["period"], partial["failed_page"], partial["pages_saved"]),
+                         ("prices", TODAY, 2, 1))
+        self.assertIsNone(engine.state.blocked())
+        self.assertEqual(len(transport.sent), 2, "the failed page is not asked again")
+        kept = list((tmp.path / "var" / "quarantine").rglob("*.bin"))
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0].read_bytes(), b"<html>busy</html>")
+        self.assertIsNone(engine.dataset_holds().get("prices"), "a partial period does not count toward a hold")
+
+
+class NetworkTimeoutIsolation(unittest.IsolatedAsyncioTestCase):
+    """With "network" isolated, a timeout skips that item (never sent again); three in a row still stop."""
+
+    def make(self, start_days_back=5):
+        tmp = TempDir()
+        self.addCleanup(tmp.cleanup)
+        self.clock = Clock()
+        first = today().fromordinal(today().toordinal() - start_days_back).isoformat()
+        province = make_province(tmp.path, [dataset("report", start=first)],
+                                 policy={"response_interval_seconds": 15,
+                                         "isolate_items": ["unknown", "site_data", "network"]})
+        self.transport = FakeTransport(self.clock, duration=1)
+        engine = Engine(province, self.transport, instance=tmp.path / "var", clock=self.clock)
+        self.addCleanup(engine.ledger.close)
+        engine.state.set_control(collect=True)
+        return engine
+
+    async def ticks(self, engine, count):
+        for _ in range(count):
+            await engine.tick()
+            self.clock.advance(20)
+
+    async def test_a_timeout_skips_the_item_and_collection_goes_on(self):
+        engine = self.make()
+        self.transport.queue += [Fault("network_error", "network"), excel(), excel()]
+        await self.ticks(engine, 3)
+        self.assertIsNone(engine.state.blocked())
+        statuses = [engine.ledger.task("report", r["body"]["date"])["status"] for r in self.transport.sent]
+        self.assertEqual(statuses, ["failed", "saved", "saved"])
+        self.assertEqual(engine.ledger.task("report", self.transport.sent[0]["body"]["date"])["reason"],
+                         "isolated:network_error")
+        self.assertEqual(len({r["body"]["date"] for r in self.transport.sent}), 3, "the timed-out item is not asked again")
+
+    async def test_three_timeouts_in_a_row_still_stop_the_province(self):
+        engine = self.make()
+        self.transport.queue += [Fault("network_error", "network")] * 3
+        await self.ticks(engine, 4)
+        self.assertEqual(engine.state.blocked()["reason"], "network_error")
+        self.assertEqual(len(self.transport.sent), 3)
+
+    async def test_an_answer_in_between_resets_the_streak(self):
+        engine = self.make()
+        self.transport.queue += [Fault("network_error", "network"), Fault("network_error", "network"), excel(),
+                                 Fault("network_error", "network"), Fault("network_error", "network"), excel()]
+        await self.ticks(engine, 6)
+        self.assertIsNone(engine.state.blocked())

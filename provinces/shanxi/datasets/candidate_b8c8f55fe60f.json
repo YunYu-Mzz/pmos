@@ -19,20 +19,55 @@
       "transport": "component",
       "frame": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
       "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/tabSjxianhuofentongdao",
-      "component": "*",
-      "match": {
-        "exportUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrqftdcjqkExport"
-      },
+      "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+      "prepare": [
+        {
+          "wait": {
+            "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao"
+          }
+        },
+        {
+          "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+          "set": {
+            "activeName": "riqian"
+          },
+          "call": "handleClick",
+          "unless": {
+            "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+            "equals": {
+              "activeName": "riqian",
+              "queryUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrqftdcjqkQuery",
+              "exportUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrqftdcjqkExport"
+            }
+          }
+        }
+      ],
+      "preflight": [
+        {
+          "component": "/pxf-phbsx-infomation/tabSjxianhuofentongdao",
+          "equals": {
+            "activeName": "riqian",
+            "queryUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrqftdcjqkQuery",
+            "exportUrl": "/px-phbsx-retail-shop/informationRelease/sjxxrqftdcjqkExport"
+          }
+        }
+      ],
       "set": {
+        "date": "{date}",
+        "rangeDate": [
+          "{date}",
+          "{date}"
+        ],
         "queryConfig.data": {
-          "endDate": "{date}",
-          "startDate": "{date}"
+          "startDate": "{date}",
+          "endDate": "{date}"
         }
       },
       "call": "exportData",
+      "capture": "blob",
+      "timeout": 90,
       "path": "/px-phbsx-retail-shop/informationRelease/sjxxrqftdcjqkExport",
-      "method": "POST",
-      "capture": "blob"
+      "method": "POST"
     }
   },
   "response": {
@@ -50,6 +85,11 @@
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "verified_waiting_sequential_collection"
+    },
+    {
+      "at": "2026-11-02T00:20:00+08:00",
+      "event": "bootstrap_with_tab_switch",
+      "reason": "the daily (日前) tab is not the page's default: the export waited for a human click (7440, f7296) or failed unsent with component_missing when the 日内 tab was active (b8c8, 2026-10-31 and 11-02); the prepare step switches to 日前 as the 日内 specs do for 日内"
     }
   ]
 }

@@ -268,6 +268,36 @@ class EngineTests(unittest.IsolatedAsyncioTestCase):
         await engine.tick()
         self.assertEqual(self.transport.sent[-1]["path"], "/px-test/plain")
 
+    async def test_a_bootstrap_the_spacing_refused_is_not_isolated(self):
+        """Anhui 2026-11-01 16:19: right after a slow keepalive an unsent item was isolated as site data."""
+        booted = {**dataset("booted", start=TODAY),
+                  "request": {**dataset("booted", start=TODAY)["request"],
+                              "bootstrap": {"transport": "component", "frame": "#/info/booted", "component": "*",
+                                            "match": {"exportUrl": "/px-test/booted"}, "call": "exportData",
+                                            "path": "/px-test/booted"}}}
+        engine = self.engine([booted, dataset("load", keepalive=True, start=TODAY)])
+        self.transport.unready.add("/px-test/booted")
+        self.transport.queue.append(Fault("spacing_not_elapsed", "local"))
+        engine.state.set_control(collect=True)
+        self.assertEqual(await engine.tick(), 1)
+        row = engine.ledger.task("booted", TODAY, "")
+        self.assertEqual((row["status"], row["reason"]), ("pending", None))
+        self.assertEqual(engine.dataset_holds(), {})
+        self.assertIsNone(engine.state.blocked())
+
+    async def test_a_refused_bootstrap_can_be_reopened_and_nothing_else(self):
+        engine = self.engine([dataset("load", keepalive=True, start=TODAY)])
+        engine.ledger.seed("load", [TODAY], "")
+        reason = "isolated:bootstrap_spacing_not_elapsed"
+        engine.ledger.settle_task("load", TODAY, "failed", reason=reason)
+        with self.assertRaises(ValueError):
+            engine.ledger.reopen_refused_bootstrap("load", TODAY, "", " ")
+        engine.ledger.reopen_refused_bootstrap("load", TODAY, "", "用户原话")
+        self.assertEqual(engine.ledger.task("load", TODAY, "")["status"], "pending")
+        engine.ledger.settle_task("load", TODAY, "failed", reason="isolated:network_error")
+        with self.assertRaises(ValueError):
+            engine.ledger.reopen_refused_bootstrap("load", TODAY, "", "用户原话")
+
     async def test_a_bootstrap_the_page_cannot_run_holds_only_that_report(self):
         booted = {**dataset("booted", start=TODAY),
                   "request": {**dataset("booted", start=TODAY)["request"],

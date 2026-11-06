@@ -203,3 +203,21 @@ class LoginBrowser(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(stale.is_closed())
         self.assertFalse(self.page.is_closed())
         self.assertIsNot(fresh, stale)
+
+    async def test_old_query_redirected_to_portal_does_not_hide_new_login_portal(self):
+        await self.page.goto(self.origin + "/anhui_portal.html#/dashboard")
+        redirected = await self.context.new_page()
+        await redirected.goto(self.origin + "/anhui_portal.html#/dashboard")
+        await redirected.evaluate("() => { window.name = 'owned'; }")
+        config = {"name": "owned", "open_from": "/anhui_portal.html#/dashboard",
+                  "menu": ["信息披露", "综合查询"], "url_contains": "columnHomeLeftMenuNew",
+                  "adopt_url_contains": "columnHomeLeftMenuNew", "initial_section": "现货市场"}
+        fresh = await reenter_work_page(self.browser, self.origin, config)
+        self.assertIn("columnHomeLeftMenuNew", fresh.url)
+        self.assertFalse(redirected.is_closed())
+        self.assertEqual(await redirected.evaluate("() => window.name"), "")
+        self.assertTrue(await self.page.locator("#query").is_visible(), "the new login portal's menu was used")
+        # A later recycle still finds the chosen portal among the two tabs.
+        again = await work_page(self.browser, self.origin, config, exclude=(fresh,))
+        self.assertIsNot(again, fresh)
+        self.assertIn("columnHomeLeftMenuNew", again.url)

@@ -1,7 +1,7 @@
 {
   "id": "queryRealtimeNodeMarginalPrice",
   "name": "实时节点边际电价",
-  "status": "sampled",
+  "status": "retired",
   "period": {
     "kind": "day",
     "start": "2026-01-01",
@@ -47,7 +47,8 @@
       "page_size": 1000,
       "max_pages": 200,
       "size": "queryParam.pageInfo.pageSize"
-    }
+    },
+    "timeout": 120
   },
   "response": {
     "kind": "json"
@@ -81,6 +82,11 @@
       "at": "2026-10-31T20:20:00+08:00",
       "event": "page_size_1000",
       "reason": "全年采集：用页面自己的最大选项 1000；已按 20 开始的周期仍以 20 完成（不重叠不缺页）"
+    },
+    {
+      "at": "2026-11-01T13:40:00+08:00",
+      "event": "retired_for_export",
+      "reason": "queryRealtimeNodeMarginalPriceExport collects every day (incl. the partial ones) with one export each; the JSON pages already saved stay as they are"
     }
   ]
 }

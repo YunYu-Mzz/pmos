@@ -155,8 +155,11 @@ class ShanxiFullYearPlan(unittest.TestCase):
         specs = Province.load("shanxi").datasets()
         self.assertTrue(set(self.RECEIPT_SCOPE) <= set(plan["order"]))
         self.assertTrue(all(name in specs for name in plan["order"]))
-        self.assertTrue(all(specs[name].status in ("sampled", "verified", "enabled") for name in plan["seeded"]))
-        self.assertEqual(plan["order"][-6:], plan["groups"]["per_object_legacy_pending_last"] + plan["groups"]["heavy_last"])
+        # Nothing leaves the seeded set; a dataset replaced later is retired instead
+        # (Shanxi node prices: JSON pages -> one export per day, 2026-11-01).
+        self.assertTrue(all(specs[name].status in ("sampled", "verified", "enabled", "retired") for name in plan["seeded"]))
+        last = plan["groups"]["per_object_legacy_pending_last"] + plan["groups"]["heavy_last"]
+        self.assertEqual(plan["order"][-len(last):], last)
         self.assertFalse(set(plan["seeded"]) & set(plan["groups"]["per_object_legacy_pending_last"]),
                          "per-object history comes from the exports")
         self.assertFalse(set(plan["order"]) & set(plan["excluded"]))

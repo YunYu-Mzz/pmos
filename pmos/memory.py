@@ -230,19 +230,46 @@ def decide(values: dict, was_paused: bool = False) -> dict:
     return {"allowed": not reasons, "reasons": reasons}
 
 
+# The worker's cgroup is charged for the page and dentry caches of the files it
+# writes (Shanxi, 2026-11-01 23:40: ~220 MiB of cache with only ~200 MiB in use
+# paused collection 1 MiB short of the resume reserve, and nothing reclaims
+# below memory.high). Ask the kernel to drop some of it, at most every 5 minutes.
+RECLAIM_BYTES = 128 * MIB
+RECLAIM_EVERY = 300
+
+
+def reclaim_worker(proc: Path = Path("/proc"), root: Path = CGROUP_ROOT) -> bool:
+    """cgroup v2 memory.reclaim of this worker's own cgroup: cache only, no process is touched."""
+    try:
+        (own_cgroup(proc, root) / "memory.reclaim").write_text(str(RECLAIM_BYTES))
+        return True
+    except (OSError, ValueError, StopIteration):
+        return False
+
+
 class Admission:
     """Checked by the engine before each collection request."""
 
-    def __init__(self, state, config: dict, *, observe=observe, clock=time.monotonic):
+    def __init__(self, state, config: dict, *, observe=observe, clock=time.monotonic, reclaim=reclaim_worker):
         self.state, self.config, self.observe, self.clock = state, config, observe, clock
+        self.reclaim, self.reclaimed = reclaim, float("-inf")
         self.paused, self.written = False, (None, float("-inf"))
 
-    def __call__(self) -> dict:
+    def _decide(self) -> dict:
         try:
             values = self.observe(self.config)
-            result = {**decide(values, self.paused), "observations": values}
+            return {**decide(values, self.paused), "observations": values}
         except (OSError, ValueError, KeyError, TypeError, StopIteration):
-            result = {"allowed": False, "reasons": ["memory_observation_unavailable"]}
+            return {"allowed": False, "reasons": ["memory_observation_unavailable"]}
+
+    def __call__(self) -> dict:
+        result = self._decide()
+        if result["reasons"] == ["worker_memory_reserve"] and self.clock() - self.reclaimed >= RECLAIM_EVERY:
+            self.reclaimed = self.clock()
+            done = self.reclaim()
+            self.state.event("memory_reclaim", ok=done, website_requests=0)
+            if done:
+                result = self._decide()
         self.paused = not result["allowed"]
         # One small latest snapshot: on every change, else once a minute.
         if self.written[0] != result["reasons"] or self.clock() - self.written[1] >= 60:

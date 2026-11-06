@@ -5,6 +5,7 @@ served from 127.0.0.1 and the browser runs with a temporary profile. Skipped
 when no Chromium-family browser is available to Playwright.
 """
 import functools
+import asyncio
 import http.server
 import json
 import threading
@@ -99,6 +100,21 @@ class UiFixtureTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(Fault) as gone:
             await self.transport.send(self.request("record", record=missing))
         self.assertEqual(gone.exception.code, "record_not_listed")
+
+    async def test_query_ignores_a_faster_response_for_another_date(self):
+        async def answer(route):
+            day = route.request.post_data_json["businessTime"]
+            if day == "2026-11-02":
+                await asyncio.sleep(0.1)
+            await route.fulfill(json={"status": 0, "data": {"date": day}})
+        await self.page.route(self.origin + "/baseline", answer)
+        await self.page.set_content("""<button onclick='
+            fetch("/baseline", {method:"POST", body:JSON.stringify({businessTime:"2026-11-04"})});
+            fetch("/baseline", {method:"POST", body:JSON.stringify({businessTime:"2026-11-02"})});
+            '>查询</button>""")
+        response = await self.transport.send(self.request("query", path="/baseline",
+            match_request_body={"businessTime": "2026-11-02"}))
+        self.assertEqual(json.loads(response.body)["data"]["date"], "2026-11-02")
 
 
 if __name__ == "__main__":

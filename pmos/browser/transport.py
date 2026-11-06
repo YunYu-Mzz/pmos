@@ -47,6 +47,25 @@ from . import challenge, finereport, ui
 
 MAX_RESPONSE_BYTES = 64 * 1024 * 1024
 
+
+def _matches_request_body(request, expected: dict | None) -> bool:
+    """Opt-in exact payload binding: ignore an older automatic query's response."""
+    if not expected:
+        return True
+    try:
+        body = request.post_data_json
+        for path, wanted in expected.items():
+            value = body
+            for part in path.split("."):
+                if not isinstance(value, dict) or part not in value:
+                    return False
+                value = value[part]
+            if value != wanted:
+                return False
+        return True
+    except Exception:
+        return False
+
 _FETCH_JS = """async args => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), args.timeout);
@@ -933,8 +952,17 @@ class PageTransport:
         raise Fault(code, "local")
 
     async def _ui(self, request: dict) -> Response:
-        await ui.bring_forward(self.page)
-        frame = await ui.ensure_frame(self.page, request, self.timeout)
+        try:
+            await ui.bring_forward(self.page)
+            frame = await ui.ensure_frame(self.page, request, self.timeout)
+        except Fault:
+            raise
+        except Exception as exc:
+            # Before the report's own query: nothing of ours was sent (Anhui r23 22:14, a raw page timeout
+            # here stopped the province as ``transport_exception``). A dead driver is the engine's.
+            if driver_gone(exc):
+                raise
+            raise Fault("page_step_failed", "local", unsent=True, detail={"error": type(exc).__name__}) from None
         if request["action"] in ("list", "record"):
             try:
                 if request.get("menu"):
@@ -953,13 +981,24 @@ class PageTransport:
             try:
                 for field in request.get("fields", []):
                     await ui.fill(frame, field, self.timeout)
+                if request.get("verify_date"):
+                    await ui.settled(frame, self.timeout)
                 options = await ui.select_options(frame, request["select"], self.timeout)
+                evidence = {}
+                if request.get("verify_date"):
+                    dates = [f for f in request.get("fields", []) if f.get("kind") == "date"]
+                    if len(dates) != 1:
+                        raise Fault("inventory_date_field_invalid", "local")
+                    observed = await (await ui._field(frame, dates[0])).input_value()
+                    if observed != dates[0]["value"]:
+                        raise Fault("inventory_date_changed", "local")
+                    evidence = {"observed_date": observed}
             except Fault:
                 raise
             except Exception:
                 raise Fault("network_error", "network") from None
             return Response(200, "application/json",
-                            json.dumps({"status": 0, "data": options}, ensure_ascii=False).encode())
+                            json.dumps({"status": 0, "data": options, **evidence}, ensure_ascii=False).encode())
         try:
             for field in request.get("fields", []):
                 await ui.fill(frame, field, self.timeout)
@@ -968,12 +1007,25 @@ class PageTransport:
             raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True,
                         detail=fault.detail) from None
 
+        # Bind a captured query to the exact values selected on this page, not only its date.
+        selected_match = dict(request.get("match_request_body") or {})
+        for body_key, label in (request.get("match_selected_models") or {}).items():
+            fields = [f for f in request.get("fields", []) if f.get("kind") == "select" and f.get("label") == label]
+            if len(fields) != 1:
+                raise Fault("selected_model_field_invalid", "local", unsent=True)
+            locator = await ui._field(frame, fields[0])
+            model, text = json.loads(await locator.evaluate(ui._SELECT_STATE_JS))
+            if model is None or not isinstance(model, (str, int, float)) or isinstance(model, bool) or not text:
+                raise Fault("selected_model_missing", "local", unsent=True)
+            selected_match[body_key] = model
+
         def from_report(response) -> bool:
             req = response.request
             path = urlsplit(req.url).path
             return (req.frame == frame and req.resource_type in ("xhr", "fetch")
                     and path not in platform.NATIVE_BACKGROUND_PATHS
-                    and (not request.get("path") or path == request["path"]))
+                    and (not request.get("path") or path == request["path"])
+                    and _matches_request_body(req, selected_match))
 
         try:
             async with _Expect(self.page, "response", from_report, timeout=self.timeout * 1000) as captured:

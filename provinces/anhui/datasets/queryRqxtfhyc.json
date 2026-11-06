@@ -33,7 +33,10 @@
       ],
       "action": "query",
       "path": "/px-phdah-settlement-oinfpubgrid/fineReport/select3_1",
-      "method": "POST"
+      "method": "POST",
+      "match_request_body": {
+        "businessTime": "{date}"
+      }
     }
   },
   "response": {

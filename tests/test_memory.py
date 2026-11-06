@@ -228,6 +228,33 @@ class MemoryAdmission(unittest.TestCase):
         self.assertNotIn("headroom", values["worker"])
         self.assertTrue(memory.decide(values)["allowed"])
 
+    def test_a_short_worker_reserve_first_asks_the_kernel_to_drop_cache(self):
+        state = StateStore(self.tmp.path / "state")
+        machines = [self.observe(worker=(500, 640)), self.observe(worker=(300, 640))]
+        asked = []
+        admission = memory.Admission(state, self.config, observe=lambda config: machines.pop(0),
+                                     clock=Clock(), reclaim=lambda: asked.append(1) or True)
+        result = admission()
+        self.assertEqual((result["allowed"], asked), (True, [1]), "re-observed after the reclaim")
+        self.assertFalse(state.read("memory_admission")["reasons"])
+
+    def test_reclaim_is_rate_limited_and_only_for_the_worker_reserve(self):
+        state = StateStore(self.tmp.path / "state")
+        clock, asked = Clock(), []
+        short = lambda config: self.observe(worker=(500, 640))
+        admission = memory.Admission(state, self.config, observe=short, clock=clock,
+                                     reclaim=lambda: asked.append(1) or False)
+        self.assertFalse(admission()["allowed"])
+        self.assertFalse(admission()["allowed"])
+        self.assertEqual(len(asked), 1, "a failed reclaim is not retried within 5 minutes")
+        clock.advance(memory.RECLAIM_EVERY + 1)
+        admission()
+        self.assertEqual(len(asked), 2)
+        other = memory.Admission(state, self.config, observe=lambda config: self.observe(available=300),
+                                 clock=Clock(), reclaim=lambda: asked.append(1) or True)
+        self.assertEqual(other()["reasons"], ["host_memory_reserve"])
+        self.assertEqual(len(asked), 2, "host shortage is not the worker cache")
+
     def test_a_missing_observation_pauses_business_and_is_recorded(self):
         state = StateStore(self.tmp.path / "state")
         admission = memory.Admission(state, self.config, observe=lambda config: memory.observe(

@@ -210,14 +210,19 @@ def build_specs(root: Path, ui_specs: dict[str, DatasetSpec]) -> dict:
             "request": {"transport": "fetch", "method": "POST", "path": route["endpoint"], "template_body_set": body,
                         "bootstrap": bootstrap},
             "response": {"kind": "json", **({"echo": {route["echo"][label][0]: label for label in route["echo"]}}
-                                            if route["echo"] else {})},
+                                            if route["echo"] else {}),
+                         # An internal option's answers carry the ID that was asked for.
+                         **({"echo": {"unit_id": next(iter(route["options"].values()))}} if route["internal"] else {})},
             "scopes": [scopes[key] for key in sorted(scopes)],
             "source": {"legacy": "anhui multidimensional candidates", "binding_sha256": route["binding_sha256"],
                        "ui_request": page, "roll_forward_options": name not in WHOLE_DAY,
                        # One-dropdown reports with text-valued options: new days' options are read from the page.
                        **({"discover_options": {"label": next(iter(route["options"]))}}
                           if name not in WHOLE_DAY and not route["internal"] and len(route["options"]) == 1 else {}),
-                       **({"partial_options": True} if route["internal"] else {}),
+                       **({"partial_options": True,
+                           "discover_options": {"label": next(iter(route["options"])),
+                                                "value_field": next(iter(route["options"].values()))}}
+                          if route["internal"] else {}),
                        "identity_contract": {"request_data_path": ["template_body_set"], "date_fields": [route["date_path"]],
                                              "dimension_fields": {route["date_path"]: "日期" if kind == "day" else "月份",
                                                                   **({} if route["internal"] else

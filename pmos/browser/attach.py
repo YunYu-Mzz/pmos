@@ -103,6 +103,7 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
     pages = [page for context in browser.contexts for page in context.pages
              if page.url.startswith(origin + "/") and page not in exclude]
     named = []
+    returned_to_portal = []
     for page in pages:
         try:
             if await page.evaluate("() => window.name") == config["name"]:
@@ -110,6 +111,7 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
                 # column. Its name alone does not make it 综合查询.
                 if (config.get("initial_section") and config.get("url_contains")
                         and config["url_contains"] not in page.url):
+                    returned_to_portal.append(page)
                     await page.evaluate("() => { window.name = ''; }")
                 else:
                     named.append(page)
@@ -119,6 +121,8 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
         return await _prepare_work_page(named[0], config, timeout)
     if named:
         raise AttachError("work_page_not_unique")
+    if config.get("existing_only"):
+        raise AttachError("existing_work_page_missing_no_navigation")
     if config.get("adopt_url_contains"):
         kind = [page for page in pages if config["adopt_url_contains"] in page.url]
         if len(kind) > 1:
@@ -129,9 +133,24 @@ async def work_page(browser, origin: str, config: dict, timeout: float = 30, *, 
     # Anhui 2026-11-01 12:39: the portal is /?ACYxOEl1=…#/dashboard (the site's dynamic parameter
     # sits before the hash), so its address is matched without the query.
     portals = [page for page in pages if config["open_from"] in _without_query(page.url)]
+    # A previous named query app may redirect to dashboard during re-login.
+    # Keep it, but prefer the one separate portal the login flow just left.
+    # Two unrelated portals remain ambiguous; tab order is never evidence.
+    separate = [page for page in portals if page not in returned_to_portal]
+    if returned_to_portal and len(separate) == 1:
+        portals = separate
+    portal_name = config["name"] + "-portal" if config.get("initial_section") else None
+    if len(portals) > 1 and portal_name:
+        remembered = [page for page in portals if await page.evaluate("() => window.name") == portal_name]
+        if len(remembered) == 1:
+            portals = remembered
     if len(portals) != 1:
         raise AttachError("portal_page_not_unique" if portals else "portal_page_missing")
     portal = portals[0]
+    if portal_name:
+        # Keep the chosen login portal identifiable across planned page
+        # recycling without closing other portal tabs.
+        await portal.evaluate("name => { window.name = name; }", portal_name)
     if config.get("menu"):
         page = await _open_by_menu(portal, config["menu"], timeout)
         await page.wait_for_url(lambda url: config["url_contains"] in url, timeout=timeout * 1000)

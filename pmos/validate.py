@@ -160,7 +160,9 @@ def evaluate(spec_response: dict, response: Response) -> Outcome:
         raise Fault("json_instead_of_file", "unknown", http_status=response.status, business_status=status)
     try:
         if kind in ("xlsx", "xls", "excel"):
-            if response.media_type not in EXCEL_TYPES:
+            # ``any_media_type``: a page whose export is labelled with another type
+            # (Shanxi node prices, 2026-11-01); the workbook checks below still decide.
+            if response.media_type not in EXCEL_TYPES and not spec_response.get("any_media_type"):
                 raise Fault("file_type_changed", "unknown", http_status=response.status)
             if response.body.startswith(b"PK") and kind in ("xlsx", "excel"):
                 return Outcome("saved", ".xlsx", detail=check_xlsx(response.body))

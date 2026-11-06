@@ -10,6 +10,7 @@
     "request_gate": true,
     "work_page": {
       "initial_section": "现货市场",
+      "reenter_on_attach": true,
       "name": "pmos-anhui-work",
       "open_from": "/#/dashboard",
       "menu": [
@@ -18,8 +19,7 @@
       ],
       "url_contains": "columnHomeLeftMenuNew",
       "adopt_url_contains": "columnHomeLeftMenuNew",
-      "note": "the one 综合查询 page the legacy worker left is adopted (one tab only); after a renderer crash a fresh one opens by the portal's own menu click (the site's script adds a dynamic verified parameter; a bare window.open is unproven) — Anhui open_disclosure, proven 2026-10-31 16:01",
-      "reenter_on_attach": true
+      "note": "the one 综合查询 page the legacy worker left is adopted (one tab only); after a renderer crash a fresh one opens by the portal's own menu click (the site's script adds a dynamic verified parameter; a bare window.open is unproven) — Anhui open_disclosure, proven 2026-10-31 16:01"
     },
     "page_recycle": {
       "max_age_seconds": 3600,
@@ -46,7 +46,7 @@
     "template_note": "Anhui legacy keeps a page request template (URL, session headers, body shape) until restart and sends it from the current page's main frame after a recycle (2026-11-01 00:37: four whole-day requests succeeded on the pre-recycle templates); PMOS keeps it 4 h and falls back to the main frame"
   },
   "policy": {
-    "response_interval_seconds": 1,
+    "response_interval_seconds": 0.2,
     "max_per_hour": null,
     "max_per_day": null,
     "request_timeout_seconds": 45,
@@ -58,7 +58,7 @@
       "site_data",
       "network"
     ],
-    "note": "Anhui production (2026-10-31): one lane, 1 s after every response (user 23:40: 也改成1s的间隔吧; legacy adaptation_workflow_policy since 23:39); keepalive after 300 s idle; 401/403/40302/429 stop the province; a transient or unknown failure settles that item for review, never re-sent, other dates go on (3 in a row pause the report); network (2026-11-01 14:00, as the legacy isolating the date): one network fault settles only that item, 3 in a row across reports stop the province",
+    "note": "2026-11-04 user: 把采集间隔缩短到0.2s，加快采集. One shared serialized lane; 0.2 seconds after response end. Anhui production (2026-10-31): one lane, 1 s after every response (user 23:40: 也改成1s的间隔吧; legacy adaptation_workflow_policy since 23:39); keepalive after 300 s idle; 401/403/40302/429 stop the province; a transient or unknown failure settles that item for review, never re-sent, other dates go on (3 in a row pause the report); network (2026-11-01 14:00, as the legacy isolating the date): one network fault settles only that item, 3 in a row across reports stop the province",
     "quiet_windows": [
       "23:58-00:10"
     ]
@@ -73,7 +73,8 @@
       "actual_load"
     ],
     "legacy_keepalive_dataset": "actual_load",
-    "cutover_keepalive_dataset": "queryRqxtfhyc"
+    "cutover_keepalive_dataset": "queryRqxtfhyc",
+    "keepalive_period": "2026-11-02"
   },
   "notices": {},
   "release": {

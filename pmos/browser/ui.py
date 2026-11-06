@@ -21,7 +21,7 @@ import asyncio
 import json
 import re
 
-from ..faults import Fault
+from ..faults import Fault, driver_gone
 
 _BUSY_JS = """() => ![...document.querySelectorAll('[aria-busy="true"], .el-loading-mask')]
   .some(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden')"""
@@ -230,6 +230,8 @@ async def ensure_frame(page, request: dict, timeout: float):
         return found[0]
     if len(found) > 1:
         raise Fault("report_frame_ambiguous", "local")
+    if request.get("existing_frame_only"):
+        raise Fault("observation_existing_frame_missing", "local", unsent=True)
     await bring_forward(page)
     loop = asyncio.get_running_loop()
     if request.get("site_menu"):
@@ -307,6 +309,14 @@ async def select_menu(page, labels: list, timeout: float, *, hover_exit: bool = 
         if state["leaf_clicked"] or fault.unsent:
             raise
         raise Fault(fault.code, fault.category, http_status=fault.http_status, unsent=True, detail=fault.detail) from None
+    except Exception as exc:
+        # A Playwright step that gave up (a click not actionable within its timeout, a scroll) before the
+        # leaf was clicked opened no report either. Anhui r23 2026-11-01 22:14: such a raw timeout was
+        # recorded as ``transport_exception`` (network) and stopped the whole province; it is this
+        # report's page step. A dead driver stays the engine's (DriverLost).
+        if state["leaf_clicked"] or driver_gone(exc):
+            raise
+        raise Fault("menu_click_failed", "local", unsent=True, detail={"error": type(exc).__name__}) from None
 
 
 async def _select_menu(page, labels: list, timeout: float, hover_exit: bool, force: bool, state: dict) -> None:

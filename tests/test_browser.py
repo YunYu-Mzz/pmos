@@ -119,6 +119,13 @@ class FetchTransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(transport.ready({"transport": "ui", "frame": "x"}))
         self.assertEqual(frame.calls, [])
 
+    async def test_ready_agrees_with_send_on_an_expired_template(self):
+        frame = Frame()
+        transport = self.transport(frame)
+        transport.templates.items["/px-x/export"]["at"] -= transport.templates.ttl + 1
+        self.assertFalse(transport.ready({"transport": "fetch", "path": "/px-x/export"}))
+        self.assertEqual(frame.calls, [])
+
     async def test_browser_side_failure_is_a_network_fault(self):
         transport = self.transport(Frame(error=RuntimeError("AbortError with token xyz")))
         with self.assertRaises(Fault) as caught:

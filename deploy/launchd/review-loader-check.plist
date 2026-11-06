@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PMOS_DATA</key>
+		<string>/Users/yunyu/pmos-anhui/data</string>
+		<key>PYTHONPATH</key>
+		<string>/Users/yunyu/pmos-anhui/release-20261105-r32-review</string>
+	</dict>
+	<key>KeepAlive</key>
+	<false/>
+	<key>Label</key>
+	<string>com.yunyu.pmos.anhui-review-check</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/true</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>ThrottleInterval</key>
+	<integer>30</integer>
+</dict>
+</plist>

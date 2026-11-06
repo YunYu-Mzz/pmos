@@ -15,6 +15,25 @@
     "body": {
       "endDate": "{month}",
       "startDate": "{month}"
+    },
+    "bootstrap": {
+      "transport": "component",
+      "frame": "/pxf-phbsx-infomation/zhongchangqichengjiaoqk",
+      "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/zhongchangqichengjiaoqk",
+      "component": "*",
+      "match": {
+        "exportUrl": "/px-phbsx-retail-shop/informationRelease/zcqcjqkExport"
+      },
+      "set": {
+        "queryConfig.data": {
+          "endDate": "{month}",
+          "startDate": "{month}"
+        }
+      },
+      "call": "exportData",
+      "path": "/px-phbsx-retail-shop/informationRelease/zcqcjqkExport",
+      "method": "POST",
+      "capture": "blob"
     }
   },
   "response": {
@@ -32,6 +51,11 @@
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "verified_waiting_sequential_collection"
+    },
+    {
+      "at": "2026-11-02T06:05:00+08:00",
+      "event": "bootstrap_added",
+      "reason": "the monthly export waited for a human click; same page-own exportData bootstrap as the other disclosure exports (route from the 2026-10-18 page inspection); the page's exportUrl is checked before anything is sent"
     }
   ]
 }

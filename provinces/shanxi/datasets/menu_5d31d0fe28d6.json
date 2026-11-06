@@ -11,44 +11,35 @@
     "transport": "component",
     "frame": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/pilv96",
     "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/pilv96",
-    "path": "/px-phbsx-retail-shop/infoGrid/xxpl96",
+    "path": "/px-phbsx-retail-shop/infoGrid/xxpl96Excel",
     "method": "POST",
     "component": "*",
     "match": {
       "queryUrl": "/px-phbsx-retail-shop/infoGrid/xxpl96"
     },
     "set": {
-      "queryConfig.pageInfo": {
-        "pageNum": 1,
-        "pageSize": 1000,
-        "pageSizes": [
-          20,
-          50,
-          100,
-          200,
-          500,
-          1000
-        ],
-        "total": 0
-      },
-      "date": "{date}"
+      "date": "{date}",
+      "queryConfig.data": {
+        "date": "{date}"
+      }
     },
-    "call": "handleCurrentChange",
-    "args": [
-      1
-    ],
-    "pagination": {
-      "page": "args.0",
-      "records": "data.list",
-      "total": "data.total",
-      "last": "data.isLastPage",
-      "page_size": 1000,
-      "max_pages": 200,
-      "size": "queryConfig.pageInfo.pageSize"
-    }
+    "call": "exportData",
+    "capture": "blob",
+    "timeout": 90,
+    "preflight": [
+      {
+        "component": "*",
+        "match": {
+          "queryUrl": "/px-phbsx-retail-shop/infoGrid/xxpl96"
+        },
+        "equals": {
+          "exportUrl": "/px-phbsx-retail-shop/infoGrid/xxpl96Excel"
+        }
+      }
+    ]
   },
   "response": {
-    "kind": "json"
+    "kind": "xlsx"
   },
   "source": {
     "legacy": "shanxi/adapters/native_dispatch.py",
@@ -66,7 +57,8 @@
       ],
       "page_size": 1000
     },
-    "lane": "native"
+    "lane": "native",
+    "query_endpoint": "/px-phbsx-retail-shop/infoGrid/xxpl96"
   },
   "history": [
     {
@@ -78,6 +70,11 @@
       "at": "2026-10-31T20:20:00+08:00",
       "event": "page_size_1000",
       "reason": "全年采集：用页面自己的最大选项 1000；已按 20 开始的周期仍以 20 完成（不重叠不缺页）"
+    },
+    {
+      "at": "2026-11-01T14:05:00+08:00",
+      "event": "query_to_export",
+      "reason": "queries of this disclosure service answer 40302 while its exports work (2026-11-01); the page's own exportData, checked against the page's exportUrl before sending. User 2026-11-01: 好，逐个看能不能改成导出"
     }
   ]
 }

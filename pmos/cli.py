@@ -76,6 +76,10 @@ def cmd_ack(province: Province, args) -> None:
         raise ValueError("approval_required")
     state = StateStore(province.instance() / "state")
     cleared = state.clear_block(args.reason)
+    if args.reason == "page_operations_failing":
+        # Its failures were acted on by this block; left in state they join the next single failure into
+        # three at once (Anhui r24 2026-11-01 23:16: one failure blocked the province again).
+        state.write("page_operation_failures", [])
     state.event("block_acknowledged", reason=args.reason, approval=args.approval)
     _print({"cleared": cleared})
 
@@ -180,7 +184,7 @@ def cmd_review_attempt(province: Province, args) -> None:
         ledger.close()
 
 
-async def _browser(province: Province, *, record: bool = False):
+async def _browser(province: Province, *, record: bool = False, preserve_existing_page: bool = False):
     from playwright.async_api import async_playwright
     from .browser.attach import attach
     from .browser.session import Recorder, visible_logout
@@ -190,7 +194,12 @@ async def _browser(province: Province, *, record: bool = False):
     memory.prepare_driver(province, province.instance() / "state")
     memory.install_asyncio_wait_fix()
     playwright = await async_playwright().start()
-    browser, page = await attach(playwright, province.origin, province.browser_config())
+    config = province.browser_config()
+    if preserve_existing_page:
+        if province.id != "liaoning" or not config.get("work_page", {}).get("name"):
+            raise ValueError("preserving_handoff_requires_liaoning_named_page")
+        config = {**config, "work_page": {**config["work_page"], "existing_only": True}}
+    browser, page = await attach(playwright, province.origin, config)
     tasks: set = set()
 
     def spawn(coroutine):
@@ -206,7 +215,8 @@ async def _browser(province: Province, *, record: bool = False):
                               province.scripts(), gate=bool(province.browser_config().get("request_gate")),
                               main_frame_fallback=province.browser_config().get("template_frame_fallback") == "main_frame")
     # Frames a previous run opened may carry a session from before a re-login.
-    await transport.reset_frames()
+    if not preserve_existing_page:
+        await transport.reset_frames()
 
     async def reopen(old):
         """A fresh page of the crashed one's role: the work page from the portal, else the same address."""
@@ -295,12 +305,14 @@ def acceptance_gate(province: Province) -> dict:
         ledger.close()
 
 
-async def _accept(province: Province, handoff: dict) -> None:
+async def _accept(province: Province, handoff: dict, *, preserve_existing_page: bool = False) -> None:
     """Work the receipt's scope until its budget is used, anything blocks, or the scope is done."""
     print(json.dumps({"acceptance": province.id, "scope": len(handoff["scope"]), "budget": handoff["request_budget"],
                       "used": handoff["used"], "receipt_sha256": handoff["receipt_sha256"]}, ensure_ascii=False),
           file=sys.stderr)
-    playwright, transport, check_session, _ = await _browser(province)
+    if preserve_existing_page and province.id != "liaoning":
+        raise ValueError("preserving_handoff_liaoning_only")
+    playwright, transport, check_session, _ = await _browser(province, preserve_existing_page=True) if preserve_existing_page else await _browser(province)
     try:
         engine = Engine(province, transport, check_session, account_alias=handoff["account_alias"])
         engine.state.set_control(collect=True, stop_all=False)
@@ -455,6 +467,26 @@ def cmd_release_denied(province: Province, args) -> None:
     _print({"province": province.id, "released": len(reopened), "datasets": sorted({r[1] for r in reopened})})
 
 
+def cmd_release_auth_expired(province: Province, args) -> None:
+    """Offline, user-approved: attempts answered "login expired" (401) carried no data; their items are pending again."""
+    ids = []
+    for part in args.attempts.split(","):
+        low, _, high = part.partition("-")
+        ids += list(range(int(low), int(high or low) + 1))
+    if not ids or len(ids) > 1000:
+        raise ValueError("attempt_range_invalid")
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        if ledger.unsettled():
+            raise ValueError("unsettled_attempt")
+        reopened = ledger.release_auth_expired(ids, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("auth_expired_released", attempts=f"{ids[0]}-{ids[-1]}",
+                                                    count=len(reopened), approval=args.approval)
+    _print({"province": province.id, "released": len(reopened), "datasets": sorted({r[1] for r in reopened})})
+
+
 def cmd_release_early(province: Province, args) -> None:
     """Offline, user-approved: an answer saved before its day was published waits for its day again."""
     ledger = Ledger(province.instance() / "ledger.sqlite3")
@@ -558,6 +590,18 @@ def cmd_review_unsent(province: Province, args) -> None:
                                                     count=len(reopened), approval=args.approval)
     _print({"province": province.id, "not_sent": [r[0] for r in reopened],
             "tasks": [{"dataset": r[1], "period": r[2], "scope": r[3]} for r in reopened]})
+
+
+def cmd_reopen_refused_bootstrap(province: Province, args) -> None:
+    """Offline, user-approved: an item isolated when the spacing refused its bootstrap; nothing was sent."""
+    ledger = Ledger(province.instance() / "ledger.sqlite3")
+    try:
+        ledger.reopen_refused_bootstrap(args.dataset, args.period, args.scope, args.approval)
+    finally:
+        ledger.close()
+    StateStore(province.instance() / "state").event("refused_bootstrap_reopened", dataset=args.dataset, period=args.period,
+                                                    scope=args.scope, approval=args.approval)
+    _print({"province": province.id, "reopened": {"dataset": args.dataset, "period": args.period, "scope": args.scope}})
 
 
 def cmd_prioritize(province: Province, args) -> None:
@@ -811,7 +855,8 @@ def main(argv: list[str] | None = None) -> int:
         ra.add_argument("--decision", required=True, choices=("not_sent", "isolated"))
         ra.add_argument("--approval", required=True, help="the user's approval, verbatim")
         commands.add_parser("run", help="attach to the logged-in browser and run the worker")
-        commands.add_parser("accept", help="acceptance run: only with a handoff receipt, stops at its budget")
+        accept = commands.add_parser("accept", help="acceptance run: only with a handoff receipt, stops at its budget")
+        accept.add_argument("--preserve-existing-page", action="store_true", help="reviewed Liaoning handoff only: attach existing named page, no frame reset or new page")
         commands.add_parser("stop-all", help="no request of any kind, keepalive included (read by the worker)")
         eb = commands.add_parser("extend-budget", help="offline: add a user-approved request budget to the handoff")
         eb.add_argument("--add", required=True, type=int)
@@ -866,6 +911,10 @@ def main(argv: list[str] | None = None) -> int:
         rd.add_argument("attempts", help="attempt ids, e.g. 622-637 or 622,623")
         rd.add_argument("--defer", action="store_true", help="not yet published: the items wait for the next day")
         rd.add_argument("--approval", required=True, help="the user's approval, verbatim")
+        ra = commands.add_parser("release-auth-expired",
+                                 help="offline: user-approved, attempts answered 'login expired' (401) back to pending")
+        ra.add_argument("attempts", help="attempt ids, e.g. 17579 or 17579,17580")
+        ra.add_argument("--approval", required=True, help="the user's approval, verbatim")
         re_ = commands.add_parser("release-early",
                                   help="offline: user-approved, an answer saved before its day was published waits again")
         re_.add_argument("attempt", type=int)
@@ -873,6 +922,12 @@ def main(argv: list[str] | None = None) -> int:
         pr = commands.add_parser("prioritize", help="these datasets are collected first (read by the running worker)")
         pr.add_argument("datasets", nargs="?", help="comma-separated dataset ids in order, each optionally :N items")
         pr.add_argument("--clear", action="store_true", help="back to the handoff order")
+        rb = commands.add_parser("reopen-refused-bootstrap",
+                                 help="an item isolated when the spacing refused its bootstrap goes back to pending")
+        rb.add_argument("dataset")
+        rb.add_argument("period")
+        rb.add_argument("scope")
+        rb.add_argument("--approval", required=True, help="the user's approval, verbatim")
         ru = commands.add_parser("review-unsent",
                                  help="offline: user-approved, reviewed page-menu failures (or one stopped mid-navigation) consume nothing")
         ru.add_argument("attempts", help="attempt ids, e.g. 3-16 or 3,4,17")
@@ -968,7 +1023,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.target == "new-province" or getattr(args, "command", None) not in (
                 None, "check", "datasets", "status", "accept", "stop-all", "cutover-plan", "cutover-apply",
                 "extend-budget", "review-attempt", "ack", "release-hold", "extend-scope", "backfill", "pause", "resume", "skip-lapse",
-                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-sample", "reopen-task", "release-stage-failure", "release-discovery", "review-unsent", "prioritize", "probe-blank", "probe-report", "read-dictionary", "try-report", "collect-one", "probe-api-blank", "probe-export-blank"):
+                "import-legacy-manifest", "release-denied", "release-early", "release-interrupted", "release-sample", "reopen-task", "release-stage-failure", "release-discovery", "review-unsent", "prioritize", "probe-blank", "probe-report", "read-dictionary", "try-report", "collect-one", "probe-api-blank", "probe-export-blank", "release-auth-expired", "reopen-refused-bootstrap"):
             # This release cannot attach outside acceptance, queue a sample or
             # enable a dataset; clearing a block or a hold needs the user's
             # approval text. pause/resume only toggle collection of a running
@@ -990,7 +1045,7 @@ def main(argv: list[str] | None = None) -> int:
                 asyncio.run(_run(province))
             elif args.command == "accept":
                 handoff = acceptance_gate(province)
-                asyncio.run(_accept(province, handoff))
+                asyncio.run(_accept(province, handoff, preserve_existing_page=True) if args.preserve_existing_page else _accept(province, handoff))
             elif args.command == "stop-all":
                 StateStore(province.instance() / "state").set_control(stop_all=True)
                 _print({"province": province.id, "stop_all": True})
@@ -1006,6 +1061,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_try_report(province, args)
             elif args.command == "release-denied":
                 cmd_release_denied(province, args)
+            elif args.command == "release-auth-expired":
+                cmd_release_auth_expired(province, args)
             elif args.command == "release-early":
                 cmd_release_early(province, args)
             elif args.command == "release-discovery":
@@ -1020,6 +1077,8 @@ def main(argv: list[str] | None = None) -> int:
                 cmd_release_interrupted(province, args)
             elif args.command == "review-unsent":
                 cmd_review_unsent(province, args)
+            elif args.command == "reopen-refused-bootstrap":
+                cmd_reopen_refused_bootstrap(province, args)
             elif args.command == "prioritize":
                 cmd_prioritize(province, args)
             elif args.command == "extend-scope":

@@ -85,6 +85,7 @@
     "candidate_495c3378e14d",
     "candidate_6c19b801474c",
     "menu_8dd88ee4e39e",
+    "queryRealtimeNodeMarginalPriceExport",
     "queryRealtimeNodeMarginalPrice"
   ],
   "seeded": [
@@ -157,7 +158,8 @@
     "disclosure_6fdbf04105db4320b918d328055a44b8",
     "disclosure_b7bec810a43d4ed38f3e19a6c96b5178",
     "menu_8dd88ee4e39e",
-    "queryRealtimeNodeMarginalPrice"
+    "queryRealtimeNodeMarginalPrice",
+    "queryRealtimeNodeMarginalPriceExport"
   ],
   "groups": {
     "native_small": [
@@ -258,6 +260,7 @@
     ],
     "heavy_last": [
       "menu_8dd88ee4e39e",
+      "queryRealtimeNodeMarginalPriceExport",
       "queryRealtimeNodeMarginalPrice"
     ]
   },

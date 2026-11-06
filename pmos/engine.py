@@ -24,6 +24,7 @@ import inspect
 import os
 import re
 import time
+from collections import Counter
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
@@ -32,15 +33,18 @@ from . import periods as _periods
 from .archive import Archive
 from .contracts import TaskIdentity
 from .faults import Decision, DriverLost, Fault, decide, driver_gone
-from .ledger import BUDGET_KINDS, Ledger, validate_ledger_path
+from .ledger import BUDGET_KINDS, CHARGED_KINDS, Ledger, validate_ledger_path
 from .pacing import DAY, wait_seconds
 from .periods import last_day, today
 from .province import Province
 from .spec import DatasetSpec, render
 from .state import StateStore
 from .validate import Outcome, Response, evaluate
+from . import period_options
 
 PROBE_RESPONSE = {"kind": "json", "empty_when_no_data": False}
+# A failing answer up to this size is kept in quarantine for review.
+QUARANTINE_MAX_BYTES = 4 * 1024 * 1024
 # Local faults that describe the worker or province, never one item.
 GLOBAL_LOCAL_FAULTS = frozenset({
     "spacing_not_elapsed", "stop_all_requested", "handoff_request_budget_exhausted", "province_blocked",
@@ -73,6 +77,8 @@ PRIME_SCOPE = "template_prime"
 PAGE_FAILURES_TO_STOP = 3
 # Network faults in a row (any reports) before the province stops instead of isolating the item.
 NETWORK_FAULTS_TO_STOP = 3
+# The name Shanxi's publication_watch uses for the same limit.
+NETWORK_STREAK = NETWORK_FAULTS_TO_STOP
 # The page was driven and answered; only a read's own check failed (Anhui 2026-11-01 12:32:
 # three dropdown reads in a row stopped a working page). Not counted as a failing page.
 PAGE_ANSWERED_CODES = frozenset({"select_value_changed_by_reading", "select_text_not_restored", "select_value_unsettled"})
@@ -134,6 +140,7 @@ class Engine:
         # Optional memory admission (pmos.memory.Admission): () -> {"allowed", "reasons"}.
         self.admission = None
         self._held_block = None
+        self._network_streak = 0  # timeouts in a row; any answered request resets it
         self._app_cache = None
         self.clock = clock
         self._recycle_checked = float("-inf")
@@ -180,7 +187,7 @@ class Engine:
 
     # -- one request ------------------------------------------------------
     def spacing_wait(self, kind: str, lane: str | None = None) -> float:
-        charged = kind in BUDGET_KINDS
+        charged = kind in CHARGED_KINDS
         starts = self.ledger.budget_starts(self.clock() - DAY) if charged else None
         return wait_seconds(self.policy, self.clock(), self.ledger.last_response_end(), starts, charged=charged,
                             lane=lane)
@@ -190,6 +197,9 @@ class Engine:
                       lane: str | None = None) -> Result:
         """Send one request if spacing allows; the attempt is durable before sending."""
         async with self.serial:
+            if kind == "watch":
+                from .publication_watch import assert_grant
+                assert_grant(self, dataset, period, scope)
             blocker = self.ledger.dispatch_blocker()
             if blocker == "legacy_shadow_requires_owner_handoff":
                 # Offline compatibility imports never authorize ownership or
@@ -200,22 +210,38 @@ class Engine:
             if self.state.control().get("stop_all"):
                 raise Fault("stop_all_requested", "local")
             handoff = self.ledger.handoff()
-            if handoff and kind in BUDGET_KINDS and dataset not in handoff["scope"]:
+            if handoff and kind in CHARGED_KINDS and dataset not in handoff["scope"]:
                 raise Fault("dataset_outside_handoff_scope", "local")
             if identity is not None:
                 if (identity.province != self.province.id or identity.dataset != dataset
                         or identity.account_alias != self.account_alias):
                     raise Fault("business_identity_context_mismatch", "local")
-                if kind in BUDGET_KINDS and self.ledger.consumed_identity(identity.key):
+                if kind in ("collect", "sample") and self.ledger.consumed_identity(identity.key):
                     raise Fault("consumed_identity_requires_review", "unknown")
-                if kind in BUDGET_KINDS and identity.file_key and self.ledger.consumed_file(identity.file_key):
+                if kind in ("collect", "sample") and identity.file_key and self.ledger.consumed_file(identity.file_key):
                     raise Fault("consumed_file_requires_review", "unknown")
+            if kind == "observe":
+                trial = self.state.read("disclosure_trial", {}) or {}
+                pending = trial.get("pending") or {}
+                if (trial.get("phase") != "requesting" or identity is None
+                        or pending.get("identity_key") != identity.key
+                        or pending.get("dataset") != dataset or pending.get("period") != period
+                        or pending.get("scope", "") != scope
+                        or not identity.operation.startswith("disclosure_observation:")):
+                    raise Fault("observation_purpose_not_reserved", "local", unsent=True)
             block = self.state.blocked()
             if block and (kind not in ("keepalive", "probe") or not block.get("keepalive_allowed")):
                 raise Fault("province_blocked", "local")
             if self.ledger.unsettled():
                 raise Fault("unsettled_attempt", "local")
-            if kind in BUDGET_KINDS and dataset is not None and period is not None and scope != PRIME_SCOPE:
+            if self.policy.extra.get('preserve_failed_requests') and dataset is not None and period is not None:
+                bad = self.ledger.db.execute(
+                    "SELECT 1 FROM attempts WHERE dataset=? AND period=? AND scope=? AND outcome IN ('failed','unknown','pending') LIMIT 1",
+                    (dataset, period, scope)).fetchone()
+                if bad:
+                    raise Fault('previous_failure_preserved', 'local', unsent=True)
+            # Only a collect or a sample consumes an identity; a Shanxi watch only observes (r43).
+            if kind in ("collect", "sample") and dataset is not None and period is not None and scope != PRIME_SCOPE:
                 if self.ledger.consumed(dataset, period, scope):
                     raise Fault("consumed_identity_requires_review", "unknown")
             if self.spacing_wait(kind, lane) > 0:
@@ -234,7 +260,7 @@ class Engine:
                     # Not sent, nothing consumed: the dataset waits for review.
                     raise Fault("preflight_deferred:" + fault.code, "local") from None
                 request = {**request, "_preflighted": True}
-            attempt = self.ledger.begin(kind, dataset, period, scope, identity=identity)
+            attempt = self.ledger.begin(kind, dataset, period, scope, identity=identity, watch_authorized=(kind == "watch"))
             try:
                 response = await self.transport.send({"timeout": self.policy.request_timeout_seconds, **request,
                                                       "_pmos_attempt": attempt})
@@ -279,11 +305,25 @@ class Engine:
                 self.state.event('native_transition', attempt=attempt, dataset=dataset,
                                  source_result=response.operation.get('source_result'))
                 return Result(Outcome('empty','.json',detail={'transition_only':True}),response)
+            observation_raw = None
+            if kind == "observe":
+                import hashlib, json
+                raw = response.body
+                observation_raw = self.responses.store(dataset, period, raw or b"{\"raw_body_empty\":true}",
+                    ".bin" if raw else ".json", scope=f"attempt_{attempt}",
+                    acquisition="disclosure_observation", attempt_id=attempt,
+                    body_sha256=hashlib.sha256(raw).hexdigest(), body_size=len(raw),
+                    body_encoding="identity" if raw else "empty_body_metadata",
+                    purpose="disclosure_observation", identity_key=identity.key, http_status=response.status)
             try:
                 outcome = evaluate(response_spec, response)
-                parsed = self.decode_response(response.body) if self.decode_response else None
+                parsed = self.decode_response(response.body) if self.decode_response and kind != "observe" else None
             except Fault as fault:
-                if fault.category == "site_data" and response.body:
+                # Keep what the site answered for review, whatever the category
+                # (a non-JSON page of a large listing was otherwise lost: Shanxi
+                # node prices 2026-11-01, json_expected on random pages), and every probe's answer.
+                if response.body and (fault.category == "site_data" or kind == "probe"
+                                      or len(response.body) <= QUARANTINE_MAX_BYTES):
                     self.quarantine.store(dataset or "response", period or "undated", response.body,
                                           ".bin", scope=f"attempt_{attempt}", reason=fault.code)
                 self.ledger.finish(attempt, "failed", http_status=response.status,
@@ -298,6 +338,7 @@ class Engine:
                 for number, (part, part_outcome) in enumerate(zip(response.parts, outcome.detail["parts"]), 1):
                     self.responses.store(dataset or "response", period or "undated", part.body,
                                          part_outcome.extension, scope=f"attempt_{attempt}.{number}")
+            self._network_streak = 0
             self.ledger.finish(attempt, "empty" if outcome.result == "empty" else "success",
                                http_status=response.status, business_status=outcome.business_status)
             self._network_streak = 0
@@ -309,7 +350,7 @@ class Engine:
                     k: v for k, v in response.operation.items() if k != "blocked_paths"},
                     **({"blocked_paths": ",".join(response.operation["blocked_paths"])}
                        if response.operation.get("blocked_paths") else {}))
-            return Result(outcome, response, parsed=parsed)
+            return Result(outcome, response, record=observation_raw, parsed=parsed)
 
     # -- collection -------------------------------------------------------
     def collection_specs(self) -> list[DatasetSpec]:
@@ -332,10 +373,25 @@ class Engine:
         if self._seeded_on == day:
             return
         # Items deferred as not yet published get their one try of the day.
-        self.ledger.reopen_deferred(time.mktime(day.timetuple()))
+        if not self.policy.extra.get('preserve_failed_requests'):
+            self.ledger.reopen_deferred(time.mktime(day.timetuple()))
+        else:
+            # Only an unsent, incomplete calendar period may be reopened.
+            self.ledger.db.execute(
+                "UPDATE tasks SET status='pending',updated_at=? WHERE status='deferred' AND reason='period_not_complete' "
+                "AND NOT EXISTS (SELECT 1 FROM attempts a WHERE a.dataset=tasks.dataset AND a.period=tasks.period "
+                "AND a.scope=tasks.scope AND a.outcome IN ('failed','unknown','pending'))", (self.clock(),))
         handoff = self.ledger.handoff()
+        option_mode = any(period_options.enabled(spec) for spec in self.collection_specs())
+        if option_mode or self.ledger.db.execute("SELECT 1 FROM period_options LIMIT 1").fetchone():
+            self.state.status(period_option_mode="date_scoped" if option_mode else "cartesian")
+        for spec in self.collection_specs():
+            if period_options.enabled(spec):
+                self.ledger.seed_option_periods(spec.id, spec.periods_to_collect(on=day))
         if handoff is None:
             for spec in self.collection_specs():
+                if period_options.enabled(spec):
+                    continue
                 due = spec.periods_to_collect(on=day)
                 for key, _ in spec.scope_items():
                     self.ledger.seed(spec.id, due, key)
@@ -351,6 +407,8 @@ class Engine:
         extension = handoff["seeding"] == "legacy_pending_only"
         legacy = self.ledger.legacy_periods() if seeded and extension else {}
         for spec in self.collection_specs():
+            if period_options.enabled(spec):
+                continue
             if spec.id not in seeded:
                 continue
             if spec.period["kind"] == "snapshot" and not spec.period.get("daily") and self.ledger.has_tasks(spec.id):
@@ -378,6 +436,8 @@ class Engine:
         """
         legacy = None
         for spec in self.collection_specs():
+            if period_options.enabled(spec):
+                continue
             if not spec.source.get("roll_forward_options"):
                 continue
             if legacy is None:
@@ -431,6 +491,15 @@ class Engine:
             request["method"] = config["method"]    # 026 and 075 list their options by GET
         result = await self.request("probe", request, {"kind": "json"}, dataset=spec.id, period=period, scope="dictionary",
                                     lane=spec.source.get("lane"))
+        # Preserve each date-bound dictionary, including a zero-option answer.
+        # This is metadata evidence, never a new collected data period.
+        attempt = self.ledger.last_attempt("probe")
+        self.samples.store(spec.id, period, result.response.body, ".json",
+            scope=f"dictionary_audit_{attempt['id']}", acquisition="dictionary_audit_native",
+            attempt_id=attempt["id"], http_status=result.response.status,
+            business_status=result.outcome.business_status, request_path=request["path"],
+            request_method=request.get("method", "POST"), native_set=request.get("set", {}),
+            dictionary_field=config["field"], intended_period=period)
         rows = json.loads(result.response.body).get("data") or []
         listed = sorted({str(row[config["field"]]) for row in rows if isinstance(row, dict) and row.get(config["field"]) not in (None, "")})
         known = {str(value) for _, values in spec.scope_items() for value in values.values()}
@@ -493,9 +562,19 @@ class Engine:
         turns = [(spec, backfill.get(spec.id), False) for spec in enabled]
         turns += [(spec, None, True) for spec in sorted((s for s in enabled if s.id in backfill), key=lambda s: len(s.scopes))]
         for spec, oldest, early in turns:
-            task = self.ledger.next_task([spec.id], newest=spec.newest_due(), oldest=oldest)
+            task = (self.ledger.next_date_scoped_task(spec.id, newest=spec.newest_due(), oldest=oldest)
+                    if period_options.enabled(spec) else
+                    self.ledger.next_task([spec.id], newest=spec.newest_due(), oldest=oldest))
+            if self.policy.extra.get('preserve_failed_requests'):
+                # Shanxi r43: an item with a failed, unknown or unsettled attempt stays as it is, never asked again.
+                task = self.ledger.db.execute(
+                    "SELECT * FROM tasks t WHERE dataset=? AND status='pending' AND NOT EXISTS "
+                    "(SELECT 1 FROM attempts a WHERE a.dataset=t.dataset AND a.period=t.period AND a.scope=t.scope "
+                    "AND a.outcome IN ('failed','unknown','pending')) ORDER BY period DESC,scope LIMIT 1", (spec.id,)).fetchone()
             if task is None:
                 continue
+            if isinstance(task, dict) and task.get("date_options"):
+                return task, missing
             if spec.request["transport"] == "fetch" and not task["scope"].startswith("f"):
                 built = spec.build(task["period"], spec.scope_values(task["scope"]))
                 # An early day's dropdown may not list the option, or anything: its template comes from the newest day.
@@ -610,7 +689,10 @@ class Engine:
             result = await self.request("collect", request, spec.response, dataset=spec.id, period=period, scope=scope,
                                         identity=identity, lane=spec.source.get("lane"))
         except Fault as fault:
-            if request.get("bootstrapping") and fault.category == "local" and not fault.unsent:
+            # The spacing refused it before the page was touched: nothing failed, the tick waits
+            # (Anhui 2026-11-01 16:19: right after a slow keepalive it isolated an unsent 6d80 item).
+            if (request.get("bootstrapping") and fault.category == "local" and not fault.unsent
+                    and fault.code != "spacing_not_elapsed"):
                 # The page could not be driven: that report waits, the others go on.
                 raise Fault("bootstrap_" + fault.code, "site_data") from None
             # Proven unsent (the menu never reached the report, Anhui 2026-11-01 12:07): no
@@ -638,7 +720,11 @@ class Engine:
             streaks = self.state.read("empty_streaks", {})
             streaks[spec.id] = streaks.get(spec.id, 0) + 1
             self.state.write("empty_streaks", streaks)
-            if streaks[spec.id] >= spec.source.get("max_consecutive_empty", self.policy.max_consecutive_empty):
+            # Explicit source policy: a verified empty response is terminal for
+            # this identity, and does not disable future unissued periods.
+            # Validation, raw retention and all fault protections already ran.
+            if (spec.source.get("empty_response_policy") != "continue"
+                    and streaks[spec.id] >= spec.source.get("max_consecutive_empty", self.policy.max_consecutive_empty)):
                 self.hold_dataset(spec.id, "consecutive_empty_periods", "paused")
         return result
 
@@ -655,7 +741,8 @@ class Engine:
         """
         skipped = 0
         deadline = time.monotonic() + SKIP_BATCH_SECONDS
-        while task is not None and not (isinstance(task, dict) and task.get("prime")) and skipped < SKIP_BATCH_ITEMS:
+        while (task is not None and skipped < SKIP_BATCH_ITEMS
+               and not (isinstance(task, dict) and (task.get("prime") or task.get("date_options")))):
             spec = next((s for s in enabled if s.id == task["dataset"]), None)
             if (spec is None or "pagination" in spec.request or (spec.documents is not None and task["scope"])
                     or (spec.period["kind"] in ("month", "year") and last_day(spec.period["kind"], task["period"]) >= today())):
@@ -888,7 +975,7 @@ class Engine:
                     failed = None
             if built is None:
                 waiting.append("renewal_needs_one_saved_period")
-            elif request is None or (request.get("bootstrapping") and failed):
+            elif request is None or (request.get("bootstrapping") and failed and failed.get('path') == built['path']):
                 waiting.append("renewal_template:" + built["path"])
             else:
                 try:
@@ -965,11 +1052,26 @@ class Engine:
     def _session(self) -> dict:
         """Session keeping: the handoff receipt's reviewed settings, else the province's."""
         handoff = self.ledger.handoff()
-        return {**self.province.session, **handoff["session"]} if handoff else self.province.session
+        value = {**self.province.session, **handoff["session"]} if handoff else self.province.session
+        reviewed = self.state.read('reviewed_keepalive')
+        if reviewed:
+            from .retained_recheck import APPROVAL
+            key = '|'.join((reviewed['dataset'], reviewed['period'], ''))
+            accepted = self.state.read('p0_accepted_versions', {}).get(key, {})
+            if (reviewed.get('approval') != APPROVAL or not accepted.get('all_fields_96')
+                    or accepted.get('sha256') != reviewed.get('sha256')):
+                raise Fault('reviewed_keepalive_evidence_invalid', 'local')
+            if self.ledger.db.execute(
+                    "SELECT 1 FROM attempts WHERE dataset=? AND period=? AND outcome IN ('failed','unknown','pending') LIMIT 1",
+                    (reviewed['dataset'], reviewed['period'])).fetchone():
+                raise Fault('reviewed_keepalive_previous_failure_preserved', 'local')
+            value = {**value, 'keepalive_dataset':reviewed['dataset'], 'keepalive_period':reviewed['period']}
+        return value
 
     def _keepalive_spec(self) -> DatasetSpec | None:
         handoff = self.ledger.handoff()
-        name = (handoff or {}).get("session", {}).get("keepalive_dataset")
+        name = (self._session().get('keepalive_dataset') if self.state.read('reviewed_keepalive')
+                else (handoff or {}).get("session", {}).get("keepalive_dataset"))
         if not name:
             return self.province.keepalive_spec()
         spec = self.province.datasets().get(name)
@@ -1055,6 +1157,20 @@ class Engine:
                     raise
             self._status("quiet_window", seconds_left=round(quiet))
             return min(quiet, 60)
+        queued = self.state.read("commands", []) or []
+        if queued:
+            # Do not let selection of a normal task spend the short remaining
+            # shared response interval and repeatedly steal a queued command's
+            # next slot. Long cap/lane waits retain normal keeper handling.
+            command_spec = self.province.datasets().get(queued[0].get("dataset"))
+            command_lane = (command_spec.source.get("lane") if command_spec is not None
+                            and queued[0].get("action") in ("probe_blank", "collect_one", "probe_api_blank", "probe_export_blank",
+                                                            "discover_options", "read_dictionary", "probe_report")
+                            else None)
+            command_wait = self.spacing_wait("sample", command_lane)
+            if 0 < command_wait <= self.policy.response_interval_seconds:
+                self._status("waiting_command_interval", wait_seconds=command_wait)
+                return min(command_wait, 1)
         if await self.run_command():
             return 1
         control = self.state.control()
@@ -1072,15 +1188,38 @@ class Engine:
                 await self.keep_session()
                 self._status("idle" if not control.get("collect") else "paused")
                 return 5
+            if self.state.read('reviewed_keepalive', {}).get('verify_once'):
+                from .retained_recheck import verify_keeper_once
+                if await verify_keeper_once(self):
+                    self._status('reviewed_keeper_verifying')
+                    return 1
+            if self.state.read('p0_recheck', {}).get('enabled'):
+                from .retained_recheck import run_one as run_recheck
+                if await run_recheck(self):
+                    self._status('p0_rechecking')
+                    return 1
             lapse = self.state.read("query_lapse")
             if lapse is not None:
                 return await self._recover_query_lapse(lapse)
+            from . import disclosure_trial
+            observation_wait = await disclosure_trial.tick(self)
+            if observation_wait is not None:
+                return observation_wait
             self.seed()
             holds = self.dataset_holds()
             enabled = self._prioritized([s for s in self.collection_specs() if s.id not in holds])
             task, missing = self._next_sendable(enabled)
             if task is None:
                 await self.keep_session()
+                try:
+                    from .publication_watch import run_one
+                    if await run_one(self, enabled):
+                        return 0.2
+                except Exception as exc:
+                    self.state.write("publication_watch_health", {"status": "observer_error", "reason": type(exc).__name__})
+                    if self.ledger.unsettled():
+                        raise
+                reviews = self.ledger.period_option_reviews([s.id for s in enabled if period_options.enabled(s)])
                 if missing:
                     # Reports whose fetch template the page has not shown yet
                     # (and that have no bootstrap) wait; nothing is blocked.
@@ -1089,17 +1228,28 @@ class Engine:
                     # Held datasets keep pending items for review: not complete,
                     # so an acceptance run stays and keeps the login renewed.
                     self._status("waiting_holds", held=sorted(holds))
+                elif self.state.read('publication_watch', {}).get('mode') == 'deadline_spool_v2':
+                    # A bounded observation trial ending is not permission to
+                    # disconnect the owner's independent session keeping.
+                    self._status('publication_watch_idle')
                 elif waiting := self._waiting_publication(enabled):
                     # Days not yet published wait in the ledger: not complete either.
                     self._status("waiting_publication", datasets=waiting)
+                elif reviews:
+                    self._status("waiting_scope_review", scope_reviews=reviews)
                 elif self._grows_daily(enabled):
                     # Caught up, but tomorrow brings new days: the worker stays (an
                     # acceptance run ending here would leave its launchd unit stopped).
                     self._status("caught_up")
                 else:
                     self._status("complete")
-                return 10
+                return min(10, getattr(self, '_publication_watch_next_wait', 10))
             spec = next(s for s in enabled if s.id == task["dataset"])
+            if isinstance(task, dict) and task.get("date_options"):
+                wait = self.spacing_wait("sample", spec.source.get("lane"))
+                if wait > 0:
+                    return min(wait, 5)
+                return await period_options.prepare(self, spec, task["period"])
             if isinstance(task, dict) and task.get("prime"):
                 # Anhui 2026-11-01 13:14: a prime tried before the spacing elapsed was refused unsent,
                 # yet marked done, so that report was skipped for 10 minutes.
@@ -1157,6 +1307,9 @@ class Engine:
             if fault.code == "spacing_not_elapsed":
                 return 1
             current = task if "task" in locals() else None
+            if isinstance(current, dict) and current.get("date_options"):
+                self.block(fault, decide(fault, "collect"), current["dataset"])
+                return 1
             if isinstance(current, dict) and current.get("prime"):
                 # A prime is no item (no period): never isolated; a site answer still decides for the
                 # province, anything else holds only this report (Anhui 13:23: KeyError 'period').
@@ -1209,7 +1362,9 @@ class Engine:
 
         Only options whose request value is their own text join the report
         (its replay sends the display label); they get this day's task, and
-        the daily roll-forward carries them on. Others are reported only.
+        the daily roll-forward carries them on. Others are reported only, unless
+        ``value_field`` names where the report sends the option's internal value
+        (_join_internal_options).
         """
         config, page = spec.source["discover_options"], spec.source["ui_request"]
         label = config["label"]
@@ -1221,6 +1376,8 @@ class Engine:
                                     scope="discover_options", lane=spec.source.get("lane"))
         import json
         found = json.loads(result.response.body).get("data") or []
+        if config.get("value_field"):
+            return self._join_internal_options(spec, period, label, config["value_field"], found)
         known = {item.get(label) for item in spec.scopes}
         usable = sorted({o["label"] for o in found if o.get("value_type") == "string" and o.get("value") == o.get("label")
                          and o.get("label")})
@@ -1236,6 +1393,24 @@ class Engine:
         self.state.event("options_discovered", dataset=spec.id, period=period, listed=len(found), new=len(new),
                          not_text_valued=len(found) - len(usable))
         return {"dataset": spec.id, "period": period, "listed": len(found), "new": new}
+
+    def _join_internal_options(self, spec: DatasetSpec, period: str, label: str, field: str, found: list) -> dict:
+        """Options whose request value is an internal ID the dropdown itself lists (Anhui 6d80 unitId).
+
+        The legacy worker took a unit's ID only from an archived answer, so PMOS had 44 of the 86
+        units listed each day (2026-11-01). New options get every due day on the next tick; only
+        days the legacy owner left open are seeded, and its consumed identities stay skipped.
+        """
+        new, verified, doubtful = internal_options(spec.scopes, found, label, field)
+        if new:
+            discovered = self.state.read("discovered_options", {}) or {}
+            discovered[spec.id] = (discovered.get(spec.id) or []) + new
+            self.state.write("discovered_options", discovered)
+            self.province.extra_scopes = discovered
+            self._seeded_on = None
+        self.state.event("options_discovered", dataset=spec.id, period=period, listed=len(found), new=len(new),
+                         verified=verified, doubtful=doubtful)
+        return {"dataset": spec.id, "period": period, "listed": len(found), "new": [item[label] for item in new]}
 
     def _prime_listed_option(self, task: dict, fault: Fault) -> bool:
         """A bootstrap whose option today's dropdown does not list: prime the template with a listed one.
@@ -1274,7 +1449,7 @@ class Engine:
         A found option joins the report for its whole period (_discover_options, then the next daily seed).
         """
         boundary = (self.state.read("backfill_before", {}) or {}).get(spec.id)
-        if (not boundary or task["period"] >= boundary or spec.period["kind"] != "day"
+        if (period_options.enabled(spec) or not boundary or task["period"] >= boundary or spec.period["kind"] != "day"
                 or not spec.source.get("discover_options") or not spec.source.get("ui_request")
                 or date.fromisoformat(task["period"]).toordinal() % BACKFILL_DISCOVERY_DAYS
                 or spec.id in (self.state.read("discovery_holds", {}) or {})
@@ -1497,6 +1672,7 @@ class Engine:
             # NETWORK_FAULTS_TO_STOP in a row, any reports, are the connection's: the province stops.
             self._network_streak += 1
             if self._network_streak >= NETWORK_FAULTS_TO_STOP:
+                self._network_streak = 0
                 return False
         if fault.category == "permission" and not (fault.http_status == 200 and fault.business_status == "40302"):
             return False
@@ -1508,9 +1684,23 @@ class Engine:
         if row is None or row["status"] != "pending":
             return False
         cursor = self.state.read("page_cursor")
+        partial = None
         if cursor and (cursor["dataset"], cursor["period"], cursor["scope"]) == (task["dataset"], task["period"], task["scope"]):
             self.state.remove("page_cursor")
-        reason = "denied:40302" if fault.category == "permission" else f"isolated:{fault.code}"
+            if cursor.get("pages") and fault.category != "permission":
+                # The pages before the failed one are archived: record what is missing
+                # instead of discarding the period. Never re-asked automatically (user
+                # decision 2026-11-01: missing pages are collected only on approval).
+                partial = {"dataset": task["dataset"], "period": task["period"], "scope": task["scope"],
+                           "failed_page": cursor["page"], "page_size": cursor.get("page_size"),
+                           "pages_saved": len(cursor["pages"]), "records_saved": cursor.get("records", 0),
+                           "code": fault.code, "at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+                self.state.write("partial_periods", (self.state.read("partial_periods", []) or [])[-999:] + [partial])
+        if partial is not None:
+            reason = (f"partial:{fault.code}:failed_page={partial['failed_page']},"
+                      f"pages={partial['pages_saved']},records={partial['records_saved']}")
+        else:
+            reason = "denied:40302" if fault.category == "permission" else f"isolated:{fault.code}"
         self.ledger.settle_task(task["dataset"], task["period"], "failed", scope=task["scope"], reason=reason)
         entry = {"dataset": task["dataset"], "period": task["period"], "scope": task["scope"], "reason": reason,
                  "category": fault.category, "http_status": fault.http_status,
@@ -1534,6 +1724,8 @@ class Engine:
         run's deferred ones keep their next-day try), the service's queries
         are held and the recovery runs at the next send slot.
         """
+        if self.policy.extra.get('preserve_failed_requests'):
+            return False
         spec = self.province.datasets().get(task["dataset"])
         # Per-option reports are refused option by option for this account
         # (Shanxi 2026-10-31: every option, default and blank): no lapse sign.
@@ -1641,6 +1833,8 @@ class Engine:
 
     def _unpublished(self, dataset: str, period: str) -> bool:
         """A period that ended inside the policy's window (or has not ended): its 40302 means "not yet published"."""
+        if self.policy.extra.get('preserve_failed_requests'):
+            return False
         window = self.policy.unpublished_window_days
         spec = self.province.datasets().get(dataset)
         if window is None or spec is None or spec.period["kind"] not in ("day", "month"):
@@ -1719,6 +1913,18 @@ class Engine:
                 results[command["id"]] = {"ok": True, **await self._read_dictionary(spec, command.get("period"), command.get("day"))}
             elif command.get("action") == "probe_report":
                 results[command["id"]] = {"ok": True, **await self._probe_report(spec)}
+            elif command.get("action") == "review_empty":
+                results[command["id"]] = {"ok": True, **await self._review_empty(spec, command)}
+            elif command.get("action") == "collect_missing_actual_curve":
+                results[command["id"]] = {"ok": True, **await self._collect_missing_actual_curve(spec, command)}
+            elif command.get("action") == "inspect_node_types":
+                results[command["id"]] = {"ok": True, **await self._inspect_node_types(spec, command)}
+            elif command.get("action") == "review_failed":
+                results[command["id"]] = {"ok": True, **await self._review_failed(spec, command)}
+            elif command.get("action") == "collect_missing_dayahead":
+                results[command["id"]] = {"ok": True, **await self._collect_missing_dayahead(spec, command)}
+            elif command.get("action") == "collect_missing_hourly":
+                results[command["id"]] = {"ok": True, **await self._collect_missing_hourly(spec, command)}
             else:
                 raise ValueError("command_unknown")
         except Fault as fault:
@@ -1741,6 +1947,12 @@ class Engine:
                 # rows of one report took the worker down), or a person asked again for what was already asked (r19 23:17: a
                 # retried sample stopped the province). The asker has the answer; collection goes on.
                 self.state.event("command_not_sent", dataset=command.get("dataset"), action=command.get("action"), reason=fault.code)
+            elif (command.get("action") == "review_failed" and fault.code == "unexpected_business_status"
+                  and str(fault.business_status) == "500"):
+                # A source business error is kept for this identity; don't stop independent keepalive.
+                self.state.event("failed_review_isolated", dataset=command.get("dataset"),
+                                 period=command.get("period"), scope=command.get("scope"), reason=fault.code,
+                                 business_status="500")
             else:
                 decision = decide(fault, "sample")
                 if decision.scope == "province":
@@ -1749,6 +1961,350 @@ class Engine:
             results[command["id"]] = {"ok": False, "reason": type(exc).__name__}
         self.state.write("command_results", results)
         return True
+
+    async def _collect_missing_actual_curve(self, spec: DatasetSpec, command: dict) -> dict:
+        """Explicitly check a missing date in one of the three actual generation curves."""
+        import json
+        import math
+        day=command['period']
+        if (self.province.id!='anhui' or spec.id not in {'generation_output_actual','non_market_output_actual',
+                'hydro_storage_output_actual'} or not command.get('approval') or not '2026-10-14'<=day<='2026-10-22'):
+            raise Fault('actual_gap_scope_not_authorized','local',unsent=True)
+        if self.ledger.task(spec.id,day,'') is not None:
+            raise Fault('actual_gap_task_already_present','local',unsent=True)
+        if self.ledger.db.execute("SELECT 1 FROM attempts WHERE kind='probe' AND dataset=? AND period=?"
+                " AND scope='actual_gap' AND outcome!='not_sent' LIMIT 1",(spec.id,day)).fetchone():
+            raise Fault('actual_gap_already_attempted','local',unsent=True)
+        if await self._renew(spec.source.get('lane')) is None:
+            raise Fault('actual_gap_keeper_blocked','local',unsent=True)
+        built=spec.build(day,{})
+        request=self._sendable(built)
+        if request is None:raise Fault('actual_gap_template_missing','local',unsent=True)
+        if request.get('transport')=='ui':
+            if built.get('template_body_set',{}).get('businessTime')!=day:
+                raise Fault('actual_gap_date_binding_missing','local',unsent=True)
+            request={**request,'match_request_body':dict(built['template_body_set'])}
+        delay=self.spacing_wait('probe',spec.source.get('lane'))
+        if delay>0:await asyncio.sleep(delay)
+        result=await self.request('probe',request,spec.response,dataset=spec.id,period=day,scope='actual_gap',lane=spec.source.get('lane'))
+        receipt=self.samples.store(spec.id,day,result.response.body,'.json',scope='actual_gap',acquisition='curve_source_check')
+        saved=None
+        if result.outcome.result=='saved':
+            data=json.loads(result.response.body).get('data')
+            clocks={f'{h:02d}:{m:02d}' for h in range(24) for m in (0,15,30,45)}
+            clocks.remove('00:00');clocks.add('24:00')
+            try: valid=isinstance(data,dict) and set(data)>=clocks and all(math.isfinite(float(data[k])) for k in clocks)
+            except (TypeError,ValueError):valid=False
+            if not valid:raise Fault('actual_gap_values_incomplete','site_data')
+            saved=self.archive.store(spec.id,day,result.response.body,'.json',scope='',acquisition='validated_actual_gap',
+                http_status=result.response.status,business_status=result.outcome.business_status)
+        self.ledger.seed(spec.id,[day]);self.ledger.settle_task(spec.id,day,result.outcome.result,
+            sha256=saved['sha256'] if saved else None,reason='verified_empty_response' if saved is None else None)
+        self.state.event('actual_gap_checked',dataset=spec.id,period=day,result=result.outcome.result,
+                         sha256=receipt['sha256'],approval=command['approval'])
+        return {'dataset':spec.id,'period':day,'result':result.outcome.result,'points':96 if saved else 0,
+                'sha256':receipt['sha256'],'response_path':str(self.samples.root/receipt['path']),
+                'original_path':str(self.archive.root/saved['path']) if saved else None}
+
+    async def _inspect_node_types(self, spec: DatasetSpec, command: dict) -> dict:
+        """Read the site's price-type dropdown without seeding or selecting new tasks."""
+        import json
+        day=command['period']
+        if self.province.id!='anhui' or spec.id not in {'day_ahead_node_marginal_price_whole_day',
+                'real_time_node_marginal_price_whole_day'} or not command.get('approval'):
+            raise Fault('node_type_inspection_not_authorized','local',unsent=True)
+        if await self._renew(spec.source.get('lane')) is None:
+            raise Fault('node_type_keeper_blocked','local',unsent=True)
+        page=spec.request['prime']['request']
+        request={'transport':'ui','action':'options','frame':page['frame'],'menu':page['menu'],
+                 'fields':[{'kind':'date','placeholder':'选择日期','value':day}],
+                 'select':{'kind':'select','label':'数据类型'}}
+        delay=self.spacing_wait('probe',spec.source.get('lane'))
+        if delay>0: await asyncio.sleep(delay)
+        result=await self.request('probe',request,{'kind':'json'},dataset=spec.id,period=day,
+                                  scope='node_type_inventory',lane=spec.source.get('lane'))
+        record=self.samples.store(spec.id,day,result.response.body,'.json',scope='node_type_inventory',
+                                  acquisition='node_type_inventory')
+        options=json.loads(result.response.body).get('data') or []
+        self.state.event('node_types_inspected',dataset=spec.id,period=day,options=options,sha256=record['sha256'])
+        return {'dataset':spec.id,'period':day,'options':options,'sha256':record['sha256'],
+                'response_path':str(self.samples.root/record['path'])}
+
+    async def _review_failed(self, spec: DatasetSpec, command: dict) -> dict:
+        """One explicitly approved new probe for a failed P0 task; preserve all old attempts."""
+        import json
+        import math
+        period, scope = command['period'], command.get('scope') or ''
+        allowed = {'important_channel_transmission_actual', 'real_time_node_marginal_price_whole_day',
+                   'publication_1404bce682303715_whole_day', 'intertie_actual_huan_i',
+                   'publication_22c779b5bdc2edc8', 'publication_9d35ad5e2d74c67c',
+                   'queryRqscjjcqfslj', 'real_time_transmission_constraints', 'renewables_output_actual'}
+        if self.province.id != 'anhui' or spec.id not in allowed or not command.get('approval'):
+            raise Fault('failed_review_not_authorized', 'local', unsent=True)
+        task = self.ledger.task(spec.id,period,scope)
+        if task is None or task['status'] != 'failed':
+            raise Fault('failed_review_requires_failed_task', 'local', unsent=True)
+        old = self.ledger.db.execute("SELECT * FROM attempts WHERE kind='collect' AND dataset=? AND period=?"
+            " AND scope=? ORDER BY id DESC LIMIT 1", (spec.id,period,scope)).fetchone()
+        if old is None:
+            raise Fault('failed_review_attempt_missing', 'local', unsent=True)
+        review_scope='failed_review.'+(scope or 'unscoped')
+        if self.ledger.db.execute("SELECT 1 FROM attempts WHERE kind='probe' AND dataset=? AND period=?"
+            " AND scope=? AND outcome!='not_sent' LIMIT 1",(spec.id,period,review_scope)).fetchone():
+            raise Fault('failed_review_already_attempted','local',unsent=True)
+        if await self._renew(spec.source.get('lane')) is None:
+            raise Fault('failed_review_keeper_blocked','local',unsent=True)
+        values=spec.scope_values(scope)
+        built=spec.build(period,values)
+        request=self._sendable(built)
+        if request and request.get('transport')=='ui' and built.get('bootstrap'):
+            # The historical option may have disappeared from today's dropdown.
+            # Obtain a template with a currently listed option, then send the
+            # historical date and dimension exactly through the native template.
+            prime=self._option_prime(spec, {'period':period,'scope':scope})
+            delay=self.spacing_wait('sample',spec.source.get('lane'))
+            if delay>0: await asyncio.sleep(delay)
+            pr=await self.request('sample',{**prime['request'],'bootstrapping':True},{'kind':'json'},
+                                  dataset=spec.id,period=prime['period'],scope='failed_review_prime',
+                                  lane=spec.source.get('lane'))
+            self.samples.store(spec.id,prime['period'],pr.response.body,'.json',scope='failed_review_prime',
+                               acquisition='failed_review_template_prime')
+            request=self._sendable(built)
+            if request and request.get('transport')=='ui':
+                raise Fault('failed_review_template_unavailable','local',unsent=True)
+        if request is None and spec.request.get('prime'):
+            await self._prime_template(spec)
+            request=self._sendable(built)
+        if request is None:
+            raise Fault('failed_review_template_unavailable','local',unsent=True)
+        if request.get('transport')=='ui':
+            date_body=built.get('template_body_set',{})
+            if date_body.get('businessTime',date_body.get('date')) != period:
+                raise Fault('failed_review_date_binding_missing','local',unsent=True)
+            request={**request,'match_request_body':dict(built['template_body_set'])}
+        delay=self.spacing_wait('probe',spec.source.get('lane'))
+        if delay>0: await asyncio.sleep(delay)
+        result=await self.request('probe',request,spec.response,dataset=spec.id,period=period,
+                                  scope=review_scope,lane=spec.source.get('lane'))
+        receipt=self.samples.store(spec.id,period,result.response.body,'.json',scope=review_scope,
+                                   acquisition='failed_source_recheck',original_attempt=old['id'],scope_values=values)
+        saved=None
+        if result.outcome.result=='saved':
+            data=json.loads(result.response.body).get('data')
+            if spec.response.get('whole_day'):
+                whole_day_mismatch(spec,values,result.response.body)
+                rule=spec.response['whole_day']
+                clocks={f'{h:02d}:{m:02d}' for h in range(24) for m in (0,15,30,45)}
+                clocks.remove('00:00');clocks.add('24:00')
+                groups={}
+                for row in data:
+                    groups.setdefault(row[rule['option_field']],set()).add(row[rule['time_field']])
+                if not groups or any(times != clocks for times in groups.values()):
+                    raise Fault('failed_review_time_labels_invalid','site_data')
+                if spec.id=='real_time_node_marginal_price_whole_day':
+                    try: finite=all(math.isfinite(float(row['record'])) for row in data)
+                    except (KeyError,TypeError,ValueError): finite=False
+                    if not finite: raise Fault('failed_review_values_incomplete','site_data')
+            else:
+                hourly=spec.id in {'publication_22c779b5bdc2edc8','publication_9d35ad5e2d74c67c'}
+                clocks={f'{h:02d}:00' for h in range(1,25)} if hourly else {f'{h:02d}:{m:02d}' for h in range(24) for m in (0,15,30,45)}
+                if not hourly: clocks.remove('00:00');clocks.add('24:00')
+                try:
+                    if spec.id=='publication_22c779b5bdc2edc8':
+                        valid=(isinstance(data,list) and len(data)==24 and {x['dataTime'] for x in data}==clocks
+                               and all(math.isfinite(float(x['record'])) for x in data))
+                    else: valid=isinstance(data,dict) and set(data)>=clocks and all(math.isfinite(float(data[k])) for k in clocks)
+                except (KeyError,TypeError,ValueError): valid=False
+                if not valid: raise Fault('failed_review_values_incomplete','site_data')
+            saved=self.archive.store(spec.id,period,result.response.body,'.json',scope=scope,
+                acquisition='validated_failed_recheck',original_attempt=old['id'],scope_values=values,
+                http_status=result.response.status,business_status=result.outcome.business_status)
+        self.ledger.settle_task(spec.id,period,result.outcome.result,scope=scope,
+            sha256=saved['sha256'] if saved else None,reason='verified_empty_response' if saved is None else None)
+        self.state.event('failed_task_rechecked',dataset=spec.id,period=period,scope=scope,scope_values=values,
+            result=result.outcome.result,sha256=receipt['sha256'],original_attempt=old['id'],approval=command['approval'])
+        return {'dataset':spec.id,'period':period,'scope':scope,'scope_values':values,'result':result.outcome.result,
+            'sha256':receipt['sha256'],'response_path':str(self.samples.root/receipt['path']),
+            'original_path':str(self.archive.root/saved['path']) if saved else None,'original_attempt':old['id']}
+
+    async def _collect_missing_dayahead(self, spec: DatasetSpec, command: dict) -> dict:
+        """A dated price/energy query, with both UI-selected dimensions bound to its response."""
+        import json
+        import math
+        from .spec import scope_key
+        day, kind = command['period'], command.get('price_type')
+        if (self.province.id != 'anhui' or spec.id != 'day_ahead_uniform_settlement_price'
+                or not command.get('approval') or kind not in ('电价', '电量')
+                or not '2026-10-29' <= day <= '2026-11-04'):
+            raise Fault('dayahead_scope_not_authorized', 'local', unsent=True)
+        values = {'数据类型':kind, '调度单元名称':'山西至简能源科技有限公司'}
+        scope = scope_key(values)
+        if self.ledger.task(spec.id, day, scope) is not None:
+            raise Fault('dayahead_task_already_present', 'local', unsent=True)
+        probe_scope = 'hourly_review.' + scope
+        previous = self.ledger.db.execute("SELECT 1 FROM attempts WHERE dataset=? AND period=? AND scope=?"
+            " AND kind='probe' AND outcome!='not_sent' LIMIT 1", (spec.id, day, probe_scope)).fetchone()
+        if previous:
+            raise Fault('dayahead_already_attempted', 'local', unsent=True)
+        if await self._renew(spec.source.get('lane')) is None:
+            raise Fault('dayahead_keeper_blocked', 'local', unsent=True)
+        request = {'transport':'ui','frame':spec.request['frame'],'menu':spec.request['menu'],
+            'fields':[{'kind':'date','placeholder':'选择日期','value':day},
+                      {'kind':'select','label':'数据类型','value':kind},
+                      {'kind':'select','label':'调度单元名称','value':values['调度单元名称']}],
+            'action':'query','method':'POST',
+            'path':'/px-phdah-settlement-oinfpubgrid/fineReport/select5_5',
+            'match_request_body':{'businessTime':day},
+            'match_selected_models':{'type':'数据类型','genName':'调度单元名称'},
+            'bootstrapping':True}
+        delay = self.spacing_wait('probe', spec.source.get('lane'))
+        if delay > 0:
+            await asyncio.sleep(delay)
+        result = await self.request('probe', request, {'kind':'json'}, dataset=spec.id,
+                                    period=day, scope=probe_scope, lane=spec.source.get('lane'))
+        receipt = self.samples.store(spec.id, day, result.response.body, '.json', scope=probe_scope,
+                                     acquisition='hourly_source_check', scope_values=values)
+        saved = None
+        if result.outcome.result == 'saved':
+            data = json.loads(result.response.body).get('data')
+            try:
+                valid = isinstance(data, dict) and set(data) == {f'{h:02d}:00' for h in range(1,25)} and all(math.isfinite(float(v)) for v in data.values())
+            except (TypeError, ValueError):
+                valid = False
+            if not valid:
+                raise Fault('dayahead_values_incomplete', 'site_data')
+            saved = self.archive.store(spec.id, day, result.response.body, '.json', scope=scope,
+                acquisition='validated_hourly_source', scope_values=values, http_status=result.response.status,
+                business_status=result.outcome.business_status)
+        self.ledger.seed(spec.id, [day], scope)
+        self.ledger.settle_task(spec.id, day, result.outcome.result, scope=scope,
+                                sha256=saved['sha256'] if saved else None,
+                                reason='verified_empty_response' if saved is None else None)
+        self.state.event('dayahead_missing_period_collected', dataset=spec.id, period=day, scope=scope,
+                         scope_values=values, result=result.outcome.result, sha256=receipt['sha256'], approval=command['approval'])
+        return {'dataset':spec.id,'period':day,'scope':scope,'scope_values':values,'result':result.outcome.result,
+                'points':24 if saved else 0,'sha256':receipt['sha256'],
+                'response_path':str(self.samples.root / receipt['path']),
+                'original_path':str(self.archive.root / saved['path']) if saved else None}
+
+    async def _collect_missing_hourly(self, spec: DatasetSpec, command: dict) -> dict:
+        """Collect one specifically requested, previously unissued Anhui hourly period."""
+        import json
+        import math
+        day = command['period']
+        if (self.province.id != 'anhui' or spec.id != 'real_time_uniform_settlement_price'
+                or not command.get('approval') or not '2026-10-22' <= day <= '2026-11-04'):
+            raise Fault('hourly_scope_not_authorized', 'local', unsent=True)
+        if self.ledger.task(spec.id, day, '') is not None:
+            raise Fault('hourly_task_already_present', 'local', unsent=True)
+        previous = self.ledger.db.execute("SELECT 1 FROM attempts WHERE dataset=? AND period=? AND scope=?"
+            " AND kind='probe' AND outcome!='not_sent' LIMIT 1", (spec.id, day, 'hourly_review')).fetchone()
+        if previous:
+            raise Fault('hourly_already_attempted', 'local', unsent=True)
+        if await self._renew(spec.source.get('lane')) is None:
+            raise Fault('hourly_keeper_blocked', 'local', unsent=True)
+        # The 2026-10-21 retained binding proves this report has a date-only
+        # request and maps its 24 values to these exact hourly clock labels.
+        bootstrap = {'transport':'ui', 'frame':spec.request['frame'], 'menu':spec.request['menu'],
+            'fields':[{'kind':'date', 'placeholder':'选择日期', 'value':day}], 'action':'query',
+            'method':'POST', 'path':'/px-phdah-settlement-oinfpubgrid/fineReport/select5_6',
+            'match_request_body':{'businessTime':day}, 'bootstrapping':True}
+        built = {'transport':'fetch', 'method':'POST', 'path':bootstrap['path'],
+                 'template_body_set':{'businessTime':day}, 'bootstrap':bootstrap}
+        request = self._sendable(built)
+        if request is None:
+            raise Fault('hourly_template_unavailable', 'local', unsent=True)
+        delay = self.spacing_wait('probe', spec.source.get('lane'))
+        if delay > 0:
+            await asyncio.sleep(delay)
+        result = await self.request('probe', request, {'kind':'json'}, dataset=spec.id,
+                                    period=day, scope='hourly_review', lane=spec.source.get('lane'))
+        receipt = self.samples.store(spec.id, day, result.response.body, '.json', scope='hourly_review',
+                                     acquisition='hourly_source_check')
+        saved = None
+        if result.outcome.result == 'saved':
+            data = json.loads(result.response.body).get('data')
+            hours = {f'{h:02d}:00' for h in range(1, 25)}
+            try:
+                valid = isinstance(data, dict) and set(data) == hours and all(math.isfinite(float(v)) for v in data.values())
+            except (TypeError, ValueError):
+                valid = False
+            if not valid:
+                raise Fault('hourly_values_incomplete', 'site_data')
+            saved = self.archive.store(spec.id, day, result.response.body, '.json', scope='',
+                acquisition='validated_hourly_source', http_status=result.response.status,
+                business_status=result.outcome.business_status)
+        self.ledger.seed(spec.id, [day])
+        self.ledger.settle_task(spec.id, day, result.outcome.result, sha256=saved['sha256'] if saved else None,
+                                reason='verified_empty_response' if saved is None else None)
+        self.state.event('hourly_missing_period_collected', dataset=spec.id, period=day,
+                         result=result.outcome.result, sha256=receipt['sha256'], approval=command['approval'])
+        return {'dataset':spec.id, 'period':day, 'result':result.outcome.result,
+                'points':24 if saved else 0, 'sha256':receipt['sha256'],
+                'response_path':str(self.samples.root / receipt['path']),
+                'original_path':str(self.archive.root / saved['path']) if saved else None}
+
+    async def _review_empty(self, spec: DatasetSpec, command: dict) -> dict:
+        """Independently recheck one recorded empty answer without altering its task or old receipt."""
+        import json
+        import re
+        from datetime import datetime, timezone
+        period, scope = command["period"], command.get("scope") or ""
+        if self.province.id != "anhui" or spec.id == "publication_6d80c3d4514ccfc2":
+            raise Fault("review_source_not_authorized", "local", unsent=True)
+        if not command.get("approval"):
+            raise Fault("review_approval_missing", "local", unsent=True)
+        task = self.ledger.task(spec.id, period, scope)
+        if task is None or task["status"] != "empty":
+            raise Fault("review_requires_recorded_empty", "local", unsent=True)
+        old = self.ledger.db.execute("SELECT * FROM attempts WHERE kind='collect' AND dataset=? AND period=?"
+            " AND scope=? AND outcome='empty' ORDER BY id DESC LIMIT 1", (spec.id, period, scope)).fetchone()
+        if old is None:
+            raise Fault("review_empty_receipt_missing", "local", unsent=True)
+        review_scope = 'review.' + (scope or 'unscoped')
+        prior = self.ledger.db.execute("SELECT 1 FROM attempts WHERE kind='probe' AND dataset=? AND period=?"
+            " AND scope=? AND outcome!='not_sent' LIMIT 1", (spec.id, period, review_scope)).fetchone()
+        if prior:
+            raise Fault("review_already_attempted", "local", unsent=True)
+        if await self._renew(spec.source.get('lane')) is None:
+            raise Fault("review_keeper_blocked", "local", unsent=True)
+        values = spec.scope_values(scope)
+        built = spec.build(period, values)
+        request = self._sendable(built)
+        if request is None and spec.request.get('prime'):
+            await self._prime_template(spec)
+            request = self._sendable(built)
+        if request is None:
+            raise Fault("review_template_unavailable", "local", unsent=True)
+        if request.get('transport') == 'ui':
+            if not built.get('template_body_set', {}).get('businessTime'):
+                raise Fault("review_date_binding_missing", "local", unsent=True)
+            request = {**request, 'match_request_body': dict(built['template_body_set'])}
+        delay = self.spacing_wait('probe', spec.source.get('lane'))
+        if delay > 0:
+            await asyncio.sleep(delay)
+        result = await self.request('probe', request, spec.response, dataset=spec.id, period=period,
+                                    scope=review_scope, lane=spec.source.get('lane'))
+        record = self.samples.store(spec.id, period, result.response.body, '.json', scope=review_scope,
+                                    acquisition='source_recheck', original_attempt=old['id'],
+                                    **({'scope_values': values} if values else {}))
+        complete = None
+        if result.outcome.result == 'saved':
+            body = json.loads(result.response.body)
+            data = body.get('data') if isinstance(body, dict) else None
+            if spec.response.get('whole_day'):
+                whole_day_mismatch(spec, values, result.response.body)
+                complete = True
+            elif isinstance(data, dict):
+                clocks = {f'{h:02d}:{m:02d}' for h in range(24) for m in (0, 15, 30, 45)}
+                clocks.remove('00:00'); clocks.add('24:00')
+                complete = set(data) >= clocks
+        self.state.event('historical_empty_rechecked', dataset=spec.id, period=period, scope=scope,
+                         original_attempt=old['id'], result=result.outcome.result, complete=complete,
+                         sha256=record['sha256'], approval=command['approval'])
+        return {'dataset': spec.id, 'period': period, 'scope': scope, 'result': result.outcome.result,
+                'complete': complete, 'sha256': record['sha256'], 'path': str(self.samples.root / record['path']),
+                'original_attempt': old['id'], 'old_task_unchanged': True}
 
     async def _probe_blank(self, spec: DatasetSpec, period: str, timeout: float | None = None, option: str = "") -> dict:
         """One request with every option of a per-option dataset left blank, 1000 per page (user, 2026-10-31).
@@ -1963,6 +2519,32 @@ class Engine:
 
 def paging_first(spec: DatasetSpec) -> int:
     return spec.request["pagination"].get("first_page", 1)
+
+
+def internal_options(scopes: list, found: list, label: str, field: str) -> tuple[list, int, int]:
+    """(new scopes, known options confirmed, options left out) of a dropdown listing internal IDs.
+
+    The report's known options prove the reading: a known name listed with another ID refuses
+    the whole list, and a list naming no known option adds nothing. A name with two IDs, an ID
+    with two names, and an ID a known option already has stay out; so does a non-string value,
+    since a number this long has already lost digits in the page.
+    """
+    values: dict = {}
+    for option in found:
+        name, value = option.get("label"), option.get("value")
+        if name and value and option.get("value_type") == "string":
+            values.setdefault(name, set()).add(value)
+    known = {item[label]: item[field] for item in scopes}
+    checked = [name for name in values if name in known]
+    if any(values[name] != {known[name]} for name in checked):
+        raise Fault("option_value_unproven", "local")
+    if not checked:
+        return [], 0, len(found)
+    owners = Counter(value for ids in values.values() for value in ids)
+    taken = set(known.values())
+    new = [{label: name, field: next(iter(ids))} for name, ids in sorted(values.items())
+           if name not in known and len(ids) == 1 and owners[next(iter(ids))] == 1 and next(iter(ids)) not in taken]
+    return new, len(checked), len(found) - len(checked) - len(new)
 
 
 def echo_mismatch(spec: DatasetSpec, values: dict, body: bytes) -> None:

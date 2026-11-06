@@ -527,6 +527,19 @@ class GateFixtureTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(await self.page.locator(".el-select-dropdown__item").first.is_visible(), "closed again")
         self.assertEqual(Site.received, [])
 
+    async def test_date_inventory_binds_the_options_to_the_observed_form_date(self):
+        await self.page.goto(self.origin + "/select_page.html")
+        response = await self.transport.send({"transport": "ui", "action": "options", "frame": "/select_page.html",
+                                              "verify_date": True,
+                                              "fields": [{"kind": "date", "placeholder": "选择日期", "value": "2026-03-07"}],
+                                              "select": {"kind": "select", "label": "断面名称"}})
+        self.assertEqual(json.loads(response.body)["observed_date"], "2026-03-07")
+        self.assertEqual(await self.page.locator("#date").input_value(), "2026-03-07")
+        self.assertEqual(await self.page.input_value("#pick"), "甲线", "nothing was chosen")
+        self.assertEqual(await self.page.evaluate("window.queries"), 0, "查询 never clicked")
+        self.assertFalse(await self.page.locator(".el-select-dropdown__item").first.is_visible(), "closed again")
+        self.assertEqual(Site.received, [])
+
     async def test_a_query_whose_form_cannot_be_filled_is_unsent(self):
         await self.page.goto(self.origin + "/select_page.html")
         with self.assertRaises(Fault) as caught:

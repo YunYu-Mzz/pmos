@@ -11,19 +11,35 @@
     "transport": "component",
     "frame": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shichangfenxizhibiao",
     "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shichangfenxizhibiao",
-    "path": "/px-phbsx-retail-shop/infoGrid/sclfxzb",
+    "path": "/px-phbsx-retail-shop/infoGrid/sclfxzbExcel",
     "method": "POST",
     "component": "*",
     "match": {
       "queryUrl": "/px-phbsx-retail-shop/infoGrid/sclfxzb"
     },
     "set": {
-      "date": "{date}"
+      "date": "{date}",
+      "queryConfig.data": {
+        "date": "{date}"
+      }
     },
-    "call": "queryPage"
+    "call": "exportData",
+    "capture": "blob",
+    "timeout": 90,
+    "preflight": [
+      {
+        "component": "*",
+        "match": {
+          "queryUrl": "/px-phbsx-retail-shop/infoGrid/sclfxzb"
+        },
+        "equals": {
+          "exportUrl": "/px-phbsx-retail-shop/infoGrid/sclfxzbExcel"
+        }
+      }
+    ]
   },
   "response": {
-    "kind": "json"
+    "kind": "xlsx"
   },
   "source": {
     "legacy": "shanxi/adapters/native_dispatch.py",
@@ -40,13 +56,24 @@
       "request_envelope": "flat",
       "fixed_page": 1
     },
-    "lane": "native"
+    "lane": "native",
+    "query_endpoint": "/px-phbsx-retail-shop/infoGrid/sclfxzb"
   },
   "history": [
     {
       "at": "2026-10-23T12:01:41+08:00",
       "event": "migrated_from_legacy",
       "legacy_status": "native_json_queue_validated"
+    },
+    {
+      "at": "2026-11-01T14:05:00+08:00",
+      "event": "query_to_export",
+      "reason": "queries of this disclosure service answer 40302 while its exports work (2026-11-01); the page's own exportData, checked against the page's exportUrl before sending. User 2026-11-01: 好，逐个看能不能改成导出"
+    },
+    {
+      "at": "2026-11-01T14:15:00+08:00",
+      "event": "export_body_fixed",
+      "reason": "exportData posts queryConfig.data, which only queryPage fills from date: the 2026-10-29..11-01 exports (r38) went out with {} and hold headers only; the body is now set directly"
     }
   ]
 }

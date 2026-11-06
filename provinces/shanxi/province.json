@@ -28,12 +28,14 @@
     "isolate_items": [
       "unknown",
       "site_data",
-      "permission"
+      "permission",
+      "network"
     ],
     "unpublished_window_days": 7,
     "quiet_windows": [
       "23:58-00:10"
-    ]
+    ],
+    "preserve_failed_requests": true
   },
   "session": {
     "keepalive_dataset": null,

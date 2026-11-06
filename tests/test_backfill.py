@@ -205,7 +205,10 @@ class Order(Fixture):
         engine.ledger.settle_task("other", NEWEST, "skipped", reason="fixture")
         engine.state.write("commands", [])
         self.transport.unready = {"/px-test/small"}
-        await self.run_all(engine, 3)
+        # This checks priming, not the separate weekly option-discovery lane.
+        # A date divisible by BACKFILL_DISCOVERY_DAYS otherwise spends one of these ticks there.
+        with patch.object(engine, "_backfill_discovery", return_value=False):
+            await self.run_all(engine, 3)
         first = next(r for r in self.transport.sent if r["transport"] == "ui" and r.get("action") == "query")
         self.assertEqual(first["fields"][0]["value"], NEWEST, "the template does not depend on the day")
         self.assertTrue(first["fields"][1]["any_listed"])

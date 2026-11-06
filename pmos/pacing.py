@@ -10,9 +10,11 @@ import math
 from dataclasses import dataclass, field, fields
 
 # Validation lower bound, not authorization. Each province keeps its policy.
-MIN_RESPONSE_INTERVAL_SECONDS = 1
+MIN_RESPONSE_INTERVAL_SECONDS = 0.2
 # Item isolation is a per-province choice; a lost login, rate limiting or an
 # unknown network outcome always stops the province.
+# "network" (a timeout, an unknown outcome) is opt-in: that item is never sent again,
+# the province goes on; NETWORK_STREAK timeouts in a row still stop it (engine).
 ISOLATABLE = frozenset({"site_data", "unknown", "permission", "local", "network"})
 HOUR = 3600
 DAY = 86400

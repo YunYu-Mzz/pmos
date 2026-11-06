@@ -111,11 +111,22 @@ def status_metrics(instance: Path, *, now: float | None = None) -> dict:
     status, block, holds = state("status") or {}, state("block"), state("dataset_holds") or {}
     ledger = ledger_snapshot(instance / "ledger.sqlite3")
     business = renewal = since = None
+    option_inventory = []
+    scope_review_pending = 0
     last_hour = 0
     if ledger["exists"]:
         with closing(sqlite3.connect((instance / "ledger.sqlite3").resolve().as_uri() + "?mode=ro", uri=True,
                                      timeout=0.1)) as db:
             db.execute("PRAGMA query_only=ON")
+            if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='period_options'").fetchone():
+                option_inventory = [dict(dataset=r[0],state=r[1],dates=r[2]) for r in db.execute(
+                    "SELECT dataset,state,COUNT(*) FROM period_options GROUP BY dataset,state")]
+                scope_review_pending = db.execute(
+                    "SELECT COUNT(*) FROM tasks t JOIN period_options p ON t.dataset=p.dataset AND t.period=p.period"
+                    " WHERE t.status='pending' AND (p.state='review' OR (p.state='ready' AND NOT EXISTS("
+                    " SELECT 1 FROM json_each(p.scopes_json) j WHERE j.value=t.scope)))").fetchone()[0]
+                if status.get("period_option_mode") == "cartesian":
+                    scope_review_pending = 0  # historical inventories no longer filter this queue
             business = db.execute("SELECT MAX(finished_at) FROM attempts WHERE kind IN ('collect','sample')"
                                   " AND outcome IN ('success','empty')").fetchone()[0]
             renewal = db.execute("SELECT MAX(finished_at) FROM attempts WHERE kind='keepalive'"
@@ -134,6 +145,8 @@ def status_metrics(instance: Path, *, now: float | None = None) -> dict:
         for key, value in counts.items():
             tasks[key] = tasks.get(key, 0) + value
     return {"originals": count, "bytes": size, "last_hour_files_mtime": recent, "missing_originals": missing,
+            "period_option_inventory":option_inventory,"scope_review_pending":scope_review_pending,
+            "period_option_mode":status.get("period_option_mode"),
             "requests_last_hour": last_hour, "tasks": tasks, "attempts": ledger["attempts"],
             "phase": status.get("phase"), "current_dataset": status.get("last_dataset"),
             "status_updated_at": status.get("updated_at"), "worker_pid": status.get("pid"),
@@ -156,6 +169,8 @@ def headline(phase, block, business, now) -> dict:
         line = f"已暂停（{phase}）"
     elif phase in ("caught_up", "waiting_publication"):
         line = "正常（已追平，等待新日期）"
+    elif phase == "waiting_scope_review":
+        line = "当天可选组合已处理，历史维度待核"
     elif phase not in ("complete", "quiet_window") and stalled is not None and stalled >= STALLED_MINUTES:
         line = f"已停滞 {stalled} 分钟"
     else:

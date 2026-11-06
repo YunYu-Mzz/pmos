@@ -16,20 +16,22 @@ from typing import Iterable
 
 # deferred: answered "not yet published"; pending again on the next day.
 TASK_STATUSES = ("pending", "saved", "empty", "skipped", "failed", "deferred")
-ATTEMPT_KINDS = ("collect", "sample", "keepalive", "probe")
+ATTEMPT_KINDS = ("collect", "sample", "keepalive", "probe", "observe", "watch")
 # ``not_sent``: provably never reached the network; it consumes no identity.
 OUTCOMES = ("pending", "success", "empty", "failed", "unknown", "not_sent", "local_transition")
 # Kinds that the site counts as user activity (they renew the login).
-BUSINESS_KINDS = ("collect", "sample", "keepalive")
-# Kinds charged to the collection budget (hour/day caps).
-BUDGET_KINDS = ("collect", "sample")
+BUSINESS_KINDS = ("collect", "sample", "keepalive", "observe", "watch")
+# Kinds charged to the collection budget (hour/day caps): a Shanxi watch is one (r43); an observe is charged below.
+BUDGET_KINDS = ("collect", "sample", "watch")
 # An item settled for meeting an identity already asked: nothing was sent for it.
 CONSUMED_REFUSAL = "isolated:consumed_identity_requires_review"
 # A report's stage answered, and not what the stage answers: the site saw the request, nothing was saved.
 STAGE_FAILURES = ("finereport_report_structure_changed", "finereport_parameter_result_changed")
+CHARGED_KINDS = (*BUDGET_KINDS, "observe")
 # Page-menu failures raised before any report frame opened (ui.select_menu, ui.select_options).
 NAVIGATION_CODES = frozenset({"menu_navigation_timeout", "menu_label_not_unique", "menu_control_changed",
-                              "menu_label_not_visible", "menu_path_ambiguous", "select_options_missing"})
+                              "menu_label_not_visible", "menu_path_ambiguous", "select_options_missing",
+                              "menu_click_failed", "page_step_failed"})
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tasks(
@@ -48,6 +50,11 @@ CREATE TABLE IF NOT EXISTS items(
   dataset TEXT NOT NULL, period TEXT NOT NULL, scope TEXT NOT NULL,
   payload TEXT NOT NULL, created_at REAL NOT NULL,
   PRIMARY KEY(dataset, period, scope));
+CREATE TABLE IF NOT EXISTS period_options(
+  dataset TEXT NOT NULL, period TEXT NOT NULL, state TEXT NOT NULL DEFAULT 'pending',
+  scopes_json TEXT NOT NULL DEFAULT '[]', response_sha256 TEXT, attempt_id INTEGER,
+  reason TEXT, updated_at REAL NOT NULL,
+  PRIMARY KEY(dataset, period));
 CREATE TABLE IF NOT EXISTS records(
   dataset TEXT NOT NULL, record_id TEXT NOT NULL, first_seen REAL NOT NULL,
   PRIMARY KEY(dataset, record_id));
@@ -213,6 +220,76 @@ class Ledger:
         return self.db.execute("SELECT COUNT(*) FROM tasks WHERE dataset=? AND status='pending' AND period>?",
                                (dataset, newest)).fetchone()[0]
 
+    def seed_option_periods(self, dataset: str, periods: Iterable[str]) -> None:
+        """Schedule one options inventory per day, without a Cartesian task product."""
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            self.db.executemany("INSERT OR IGNORE INTO period_options(dataset,period,updated_at) VALUES(?,?,?)",
+                                [(dataset, period, self.clock()) for period in periods])
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def option_period(self, dataset: str, period: str):
+        return self.db.execute("SELECT * FROM period_options WHERE dataset=? AND period=?", (dataset, period)).fetchone()
+
+    def record_period_options(self, dataset: str, period: str, scopes: list[str], *,
+                              response_sha256=None, attempt_id=None, reason=None) -> None:
+        """Persist evidence and seed only listed scopes. Existing task facts never change.
+
+        Unlisted historical tasks stay pending and unconsumed for review.
+        No task is marked empty/skipped just because the UI did not list it.
+        """
+        import json
+        state = 'review' if reason else 'ready'
+        keys = sorted(set(scopes)) if not reason else []
+        now = self.clock()
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            self.db.execute("INSERT INTO period_options VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(dataset,period)"
+                            " DO UPDATE SET state=excluded.state,scopes_json=excluded.scopes_json,"
+                            " response_sha256=excluded.response_sha256,attempt_id=excluded.attempt_id,"
+                            " reason=excluded.reason,updated_at=excluded.updated_at",
+                            (dataset,period,state,json.dumps(keys),response_sha256,attempt_id,reason,now))
+            self.db.executemany("INSERT OR IGNORE INTO tasks(dataset,period,scope,status,created_at,updated_at)"
+                                " VALUES(?,?,?,'pending',?,?)", [(dataset,period,k,now,now) for k in keys])
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def next_date_scoped_task(self, dataset: str, *, newest=None, oldest=None):
+        """Newest unfinished listed day; unlisted pending tasks do not monopolize it."""
+        row = self.db.execute("SELECT p.* FROM period_options p WHERE p.dataset=?"
+                              + (" AND p.period<=?" if newest else '') + (" AND p.period>=?" if oldest else '')
+                              + " AND (p.state='pending' OR (p.state='ready' AND EXISTS("
+                                " SELECT 1 FROM tasks t JOIN json_each(p.scopes_json) j ON j.value=t.scope"
+                                " WHERE t.dataset=p.dataset AND t.period=p.period AND t.status='pending')))"
+                                " ORDER BY p.period DESC LIMIT 1",
+                              (dataset,*([newest] if newest else []),*([oldest] if oldest else []))).fetchone()
+        if row is None:
+            return None
+        if row['state'] == 'pending':
+            return {'dataset':dataset,'period':row['period'],'date_options':True}
+        return self.db.execute("SELECT t.* FROM tasks t JOIN json_each(?) j ON j.value=t.scope"
+                               " WHERE t.dataset=? AND t.period=? AND t.status='pending' ORDER BY t.scope LIMIT 1",
+                               (row['scopes_json'],dataset,row['period'])).fetchone()
+
+    def period_option_reviews(self, datasets: list[str]) -> dict:
+        result = {}
+        for dataset in datasets:
+            counts = dict(self.db.execute("SELECT state,COUNT(*) FROM period_options WHERE dataset=? GROUP BY state",
+                                          (dataset,)).fetchall())
+            pending = self.db.execute("SELECT COUNT(*) FROM tasks t JOIN period_options p"
+                                      " ON t.dataset=p.dataset AND t.period=p.period WHERE t.dataset=?"
+                                      " AND t.status='pending' AND (p.state='review' OR (p.state='ready' AND NOT EXISTS("
+                                      " SELECT 1 FROM json_each(p.scopes_json) j WHERE j.value=t.scope)))", (dataset,)).fetchone()[0]
+            if pending or counts.get('review'):
+                result[dataset] = {'unlisted_or_unverified_pending':pending,'unverified_dates':counts.get('review',0),
+                                   'inventoried_dates':counts.get('ready',0),'dates_to_inventory':counts.get('pending',0)}
+        return result
+
     def settle_task(self, dataset: str, period: str, status: str, *, scope: str = "",
                     sha256: str | None = None, reason: str | None = None) -> None:
         if status not in TASK_STATUSES or status == "pending":
@@ -249,7 +326,9 @@ class Ledger:
         return result
 
     # -- attempts ---------------------------------------------------------
-    def begin(self, kind: str, dataset: str | None = None, period: str | None = None, scope: str = "", *, identity=None) -> int:
+    def begin(self, kind: str, dataset: str | None = None, period: str | None = None, scope: str = "", *, identity=None, watch_authorized=False) -> int:
+        if kind == "watch" and not watch_authorized:
+            raise ValueError("publication_watch_not_authorized")
         if kind not in ATTEMPT_KINDS:
             raise ValueError("attempt_kind_invalid")
         from .contracts import canonical
@@ -261,17 +340,21 @@ class Ledger:
                 # Same transaction as the attempt: no race past the gate or budget.
                 raise ValueError(blocker)
             handoff = self.handoff()
-            if handoff is not None and dataset is not None and kind in BUDGET_KINDS and dataset not in handoff["scope"]:
+            if handoff is not None and dataset is not None and kind in CHARGED_KINDS and dataset not in handoff["scope"]:
                 raise ValueError("dataset_outside_handoff_scope")
             if identity:
                 owner = self.db.execute("SELECT province,account_alias FROM migration_owner WHERE singleton=1").fetchone()
                 if owner and tuple(owner) != (identity.province, identity.account_alias):
                     raise ValueError("ledger_province_account_mismatch")
                 self.db.execute("INSERT OR IGNORE INTO migration_owner VALUES(1,?,?)", (identity.province, identity.account_alias))
-            if identity and kind in BUDGET_KINDS and self.consumed_identity(identity.key):
+            if identity and kind in ("collect", "sample") and self.consumed_identity(identity.key):
                 raise ValueError("business_identity_already_consumed")
-            if identity and kind in BUDGET_KINDS and identity.file_key and self.consumed_file(identity.file_key):
+            if identity and kind in ("collect", "sample") and identity.file_key and self.consumed_file(identity.file_key):
                 raise ValueError("business_file_already_consumed")
+            if kind == "observe" and (identity is None or self.db.execute(
+                    "SELECT 1 FROM attempt_identities i JOIN attempts a ON a.id=i.attempt_id "
+                    "WHERE i.identity_key=? AND a.kind='observe' AND a.outcome!='not_sent' LIMIT 1", (identity.key,)).fetchone()):
+                raise ValueError("observation_round_already_consumed_or_identity_missing")
             cursor = self.db.execute("INSERT INTO attempts(kind,dataset,period,scope,started_at) VALUES(?,?,?,?,?)",
                                      (kind, dataset, period, scope, self.clock()))
             attempt = int(cursor.lastrowid)
@@ -588,6 +671,29 @@ class Ledger:
             self.db.execute("ROLLBACK")
             raise
 
+    def reopen_refused_bootstrap(self, dataset: str, period: str, scope: str, approval: str) -> None:
+        """User-approved: a task isolated when the spacing refused its bootstrap, which never was an attempt.
+
+        Anhui 2026-11-01 16:19 (6d80 2026-10-24): no request, no attempt row, so review_unsent has
+        nothing to act on. Any attempt of that task, or any other reason, refuses.
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("review_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            task = self.db.execute("SELECT status, reason FROM tasks WHERE dataset=? AND period=? AND scope=?",
+                                   (dataset, period, scope)).fetchone()
+            if (task is None or task["status"] != "failed" or task["reason"] != "isolated:bootstrap_spacing_not_elapsed"
+                    or self.db.execute("SELECT 1 FROM attempts WHERE dataset=? AND period=? AND scope=?",
+                                       (dataset, period, scope)).fetchone() is not None):
+                raise ValueError("task_is_not_a_refused_bootstrap")
+            self.db.execute("UPDATE tasks SET status='pending', reason=NULL, updated_at=? WHERE dataset=? AND"
+                            " period=? AND scope=?", (self.clock(), dataset, period, scope))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
     def review_unsent(self, attempts: list[int], approval: str) -> list[tuple]:
         """User-approved, after review: page operations that never opened a report consume nothing.
 
@@ -692,6 +798,45 @@ class Ledger:
             self.db.execute("ROLLBACK")
             raise
         return (attempt, row["dataset"], row["period"], row["scope"])
+
+    def release_auth_expired(self, attempts: list[int], approval: str) -> list[tuple]:
+        """User-approved: an answer that said the login had expired carried no data; its item is pending again.
+
+        Anhui 2026-11-01 23:08: PMOS was stopped for 54 minutes after a re-login, the site's session lapsed, and the
+        first request after the restart was answered HTTP 200 / business 401 (``auth_expired``). The restart then
+        isolated the item as ``consumed_identity_requires_review``. Only that attempt, only when it is the item's
+        one unreleased try; the attempt stays in the history.
+        """
+        if not isinstance(approval, str) or not approval.strip():
+            raise ValueError("release_approval_required")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            reopened = []
+            for attempt in attempts:
+                row = self.db.execute("SELECT * FROM attempts WHERE id=?", (attempt,)).fetchone()
+                if row is None or (row["kind"], row["outcome"], row["http_status"], row["business_status"],
+                                   row["reason"]) != ("collect", "failed", 200, "401", "auth_expired"):
+                    raise ValueError(f"attempt_{attempt}_is_not_an_expired_login")
+                scope = re.sub(r"(^|\.)p\d{4}$", "", row["scope"])
+                task = self.db.execute("SELECT status FROM tasks WHERE dataset=? AND period=? AND scope=?",
+                                       (row["dataset"], row["period"], scope)).fetchone()
+                if task is None or task["status"] != "failed":
+                    raise ValueError(f"attempt_{attempt}_task_is_not_failed")
+                others = self.db.execute(
+                    "SELECT COUNT(*) FROM attempts WHERE dataset=? AND period=? AND (scope=? OR scope LIKE ?)"
+                    " AND id != ? AND outcome != 'not_sent' AND id NOT IN (SELECT attempt_id FROM released_attempts)",
+                    (row["dataset"], row["period"], scope, scope + ".p%" if scope else "p%", attempt)).fetchone()[0]
+                if others:
+                    raise ValueError(f"attempt_{attempt}_item_has_other_attempts")
+                self.db.execute("INSERT INTO released_attempts VALUES(?,?,?)", (attempt, approval, self.clock()))
+                self.db.execute("UPDATE tasks SET status='pending', reason=NULL, updated_at=? WHERE dataset=? AND period=?"
+                                " AND scope=?", (self.clock(), row["dataset"], row["period"], scope))
+                reopened.append((attempt, row["dataset"], row["period"], scope))
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+        return reopened
 
     def release_sample(self, attempt: int, approval: str) -> tuple:
         """User-approved: a sample PMOS itself could not keep (a report of several pages, before paging) may be asked once more.
@@ -864,10 +1009,10 @@ class Ledger:
         return self.db.execute("SELECT * FROM attempts WHERE kind=? ORDER BY id DESC LIMIT 1", (kind,)).fetchone()
 
     def budget_starts(self, since: float) -> list[float]:
-        marks = ",".join("?" * len(BUDGET_KINDS))
+        marks = ",".join("?" * len(CHARGED_KINDS))
         return [row["started_at"] for row in self.db.execute(
             f"SELECT started_at FROM attempts WHERE kind IN ({marks}) AND started_at>=? ORDER BY started_at",
-            (*BUDGET_KINDS, since))]
+            (*CHARGED_KINDS, since))]
 
     def counts(self, since: float) -> dict[str, int]:
         return {row["kind"]: row["n"] for row in self.db.execute(

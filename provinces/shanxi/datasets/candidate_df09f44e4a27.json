@@ -11,11 +11,12 @@
     "transport": "component",
     "frame": "/pxf-phbsx-infomation/shishishudiandmysjzs",
     "open_url": "/pxf-phbsx-infomation/#/pxf-phbsx-infomation/shishishudiandmysjzs",
-    "path": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery",
+    "path": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkExport",
     "method": "POST",
     "component": "*",
     "match": {
-      "queryUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery"
+      "queryUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery",
+      "exportUrl": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkExport"
     },
     "preflight": [
       {
@@ -32,38 +33,17 @@
     "set": {
       "date": "{date}",
       "selectValue": "{scope[tdName]}",
-      "queryConfig": {
-        "data": {
-          "tdate": "{date}",
-          "tdName": "{scope[tdName]}"
-        },
-        "pageInfo": {
-          "pageNum": 1,
-          "pageSize": 1000,
-          "pageSizes": [
-            20,
-            50,
-            100,
-            200,
-            500,
-            1000
-          ],
-          "total": 0
-        }
+      "queryConfig.data": {
+        "tdate": "{date}",
+        "tdName": "{scope[tdName]}"
       }
     },
-    "call": "queryPage",
-    "pagination": {
-      "page": "queryConfig.pageInfo.pageNum",
-      "records": "data.list",
-      "total": "data.total",
-      "last": "data.isLastPage",
-      "page_size": 1000,
-      "max_pages": 50
-    }
+    "call": "exportData",
+    "capture": "blob",
+    "timeout": 90
   },
   "response": {
-    "kind": "json"
+    "kind": "xlsx"
   },
   "scopes": [
     {
@@ -314,13 +294,19 @@
       "page_size": 1000
     },
     "note": "unit names are exactly those in the legacy queue; preflight mirrors the legacy live-form check",
-    "replaces_export_spec": true
+    "replaces_export_spec": true,
+    "query_endpoint": "/px-phbsx-retail-shop/informationRelease/sssddmysjzsqkQuery"
   },
   "history": [
     {
       "at": "2026-10-31T16:38:41+08:00",
       "event": "generated_from_server_native_queue",
       "snapshot": "var/shanxi_server_snapshot_20261031"
+    },
+    {
+      "at": "2026-11-01T13:55:00+08:00",
+      "event": "query_to_option_export",
+      "reason": "queries of every option answer 40302; the page's own exportData with one option works (495c 10-14 default option identical to legacy, 10-31 attempt 1313; 10-13 万家寨 4# 96 rows, 2026-11-01 attempt 10278); blank option export 40302 (attempt 1267). User 2026-11-01: 好，逐个看能不能改成导出"
     }
   ]
 }

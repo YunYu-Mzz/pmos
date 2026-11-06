@@ -29,7 +29,7 @@ RESPONSE_KINDS = ("json", "xlsx", "xls", "excel", "pdf", "binary", "document", "
 PLACEHOLDERS = set(periods.variables("day", "2026-01-01"))
 # A documents download request is rendered per attachment, not per period.
 DOWNLOAD_PLACEHOLDERS = {"record", "row", "attachment", "title", "record_id", "published", "period"}
-RENDERED = ("body", "query", "set", "args", "fields", "match", "prepare", "record", "preflight", "template_body_set")
+RENDERED = ("body", "query", "set", "args", "fields", "match", "prepare", "record", "preflight", "template_body_set", "match_request_body")
 STEP_KEYS = {"unless", "component", "match", "set", "emit", "payload", "bus", "call", "args", "await"}
 SCRIPT = re.compile(r"[a-z][a-z0-9_]{1,63}")
 # Mixed case is allowed so migrated datasets keep their legacy ids (archives

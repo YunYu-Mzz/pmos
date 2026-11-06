@@ -134,12 +134,13 @@ class UnissuedFileLedger(Ledger):
             row = self.db.execute('SELECT identity_key FROM sn_unsent_preflight_reviews WHERE job_key=? AND file_key IS NOT NULL', (job['key'],)).fetchone()
         return bool(row and self.file_review(identity_key=row[0], job=job))
 
-    def begin(self, kind, dataset=None, period=None, scope='', *, identity=None):
+    def begin(self, kind, dataset=None, period=None, scope='', *, identity=None, watch_authorized=False):
         if identity and kind in {'collect','sample'}:
             review = self.file_review(identity_key=identity.key)
             if review and period != review['job_key']:
                 raise ValueError('review_is_bound_to_one_exact_job')
-        return super().begin(kind,dataset,period,scope,identity=identity)
+        # The engine passes Shanxi's watch flag (r43) to every ledger; Shaanxi never watches, so it stays False.
+        return super().begin(kind,dataset,period,scope,identity=identity,watch_authorized=watch_authorized)
 
     def consumed_identity(self, identity_key):
         if not self.file_review(identity_key=identity_key):
